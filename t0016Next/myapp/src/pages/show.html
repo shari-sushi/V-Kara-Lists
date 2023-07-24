@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta httpequiv="ContentType"content="text/html;charset=utf8">
+        <title>情報表示(Unique_id)</title>
+        <!-- <title>情報表示(Unique_id:{{.Unique_id}})</title> -->
+    </head>
+    <body>
+        <p>固有ID : {{.Unique_id}}</p> 
+        <p>動画タイトル： {{.Movie}}</p>
+        <p>URL : {{.Url}}</p>
+        <p>歌い出し：{{.SingStart}}</p>
+        <p>曲名：{{.Song}}</p> 
+        <a href="{{.Url}} "><input type="button" value="動画へ" /></a>
+        <!-- htmlじゃ無理？goでurl生成の関数使うか、JSで動的にするか…？ -->
+            <!-- }{は×、 -->
+        
+                <!-- &?feature=share&t= {{.SingStart}} -->
+
+        <p><a href="/edit?id={{.Unique_id}}"><input type="button" value="編集" /></a>
+        <a href="/index"><input type="button" value="戻る" /></a></p>
+     </body>
+</html>
+
+
+<!-- 
+https://www.youtube.com/live/AlHRqSsF--8?feature=share
+https://www.youtube.com/live/AlHRqSsF--8?feature=share&%20t=%20&%2031:42
+
+
+"{{.Url}} + &t= + {{.SingStart}}"
+https://www.youtube.com/live/AlHRqSsF--8?feature=share%20+%20&t=%20+%2031:42
+
+{{.Url}} &t= {{.SingStart}}
+https://www.youtube.com/live/AlHRqSsF--8?feature=share%20+%20&t=%20+%2031:42
+ -->

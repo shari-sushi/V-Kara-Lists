@@ -1,0 +1,50 @@
+1. Next.js導入
+    cd 
+    npx create-next-app
+
+
+2. githubでprodubt作成
+   
+3. go導入
+    cd 
+        //メインのディレクトリ(ルートディレクトリ)
+    go install github.com/99designs/gqlgen@latest
+        //go の最新バージョンをインストール
+    go mod init  "github.com/sharin-sushi/0016go_next_api"
+　　    githubのproductのページ
+        //go.modを構築　※やり直す場合はgo.modを消してから
+    go get -u github.com/gin-gonic/gin      //最新のginを入れる
+    go get -u github.com/sharin-sushi/0016go_next_api.git
+    go mod tidy
+
+    go env
+　      //環境変数表示　GOROOT, GOPATHの確認
+
+go mod init git@github.com:sharin-sushi/0012GoNext.git
+
+4. git init
+    cd rootディレクトリ
+    git init
+
+    ーーーーーーーーーーーーーーーここまでやったーーーーーーーーーーーー
+    git add .
+    git commit -m "first commit"
+    git branch -M main
+    git remote add origin "https://github.com/sharin-sushi/0016go_next_api.git"
+    　//HTTPにすること。間違えたら　git remote remove origin　でやり直し
+    git push -u origin main
+
+5. **,goへimport
+go get "github.com/sharin-sushi/0010/test/internal/article"
+記述
+     import(
+        "getしたurl"
+    )
+
+
+6. 何かしら変更したら
+    git branch ~~ (branch作成)
+    git checkout ~~(~~を使用)
+    git add .  ←そのディレクトリ以下全部の . 
+    git commit -m "コメント"
+    git push origin -u ~~
