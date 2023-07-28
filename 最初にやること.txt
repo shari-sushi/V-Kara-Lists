@@ -10,7 +10,7 @@
         //メインのディレクトリ(ルートディレクトリ)
     go install github.com/99designs/gqlgen@latest
         //go の最新バージョンをインストール
-    go mod init  "github.com/sharin-sushi/0016go_next_api"
+    go mod init  "github.com/sharin-sushi/0016go_next_relation"
 　　    githubのproductのページ
         //go.modを構築　※やり直す場合はgo.modを消してから
     go get -u github.com/gin-gonic/gin      //最新のginを入れる
@@ -20,8 +20,6 @@
     go env
 　      //環境変数表示　GOROOT, GOPATHの確認
 
-go mod init git@github.com:sharin-sushi/0012GoNext.git
-
 4. git init
     cd rootディレクトリ
     git init
@@ -30,7 +28,7 @@ go mod init git@github.com:sharin-sushi/0012GoNext.git
     git add .
     git commit -m "first commit"
     git branch -M main
-    git remote add origin "https://github.com/sharin-sushi/0016go_next_api.git"
+    git remote add origin "https://github.com/sharin-sushi/0016go_next_relation.git"
     　//HTTPにすること。間違えたら　git remote remove origin　でやり直し
     git push -u origin main
 

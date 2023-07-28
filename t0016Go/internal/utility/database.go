@@ -19,16 +19,19 @@ func init() {
 	var path string = fmt.Sprintf("%s:%s@tcp(localhost:3306)/%s?charset=utf8&parseTime=true", user, pw, db_name)
 	var err error
 
-	fmt.Printf("%s\n%s\n", path, err)
+	// fmt.Printf("%s\n%s\n", path, err)
 
 	if Db, err = sql.Open("mysql", path); err != nil {
 		fmt.Printf("database.goのinitでエラー発生:err=%s, path=%s", err, path)
 		// log.Fatal("Db open error:", err.Error())
 	}
 	fmt.Printf("%s\n%s\n", path, err)
-	checkConnect(1)
+	fmt.Printf("%s\n", Db)
 
+	checkConnect(1)
 }
+
+// init packageがimportされたときに１度だけ自動で呼び出される
 
 // mysqlを使っています。golangからSQLへ接続する際、Database名の指定はしなくて良いのでしょうか？
 // > GolangからMySQLへ接続する際には、Database名を指定する必要があります。

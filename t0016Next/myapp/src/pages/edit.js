@@ -1,48 +1,93 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta httpequiv="ContentType"content="text/html;charset=utf8">
-        <title>情報編集(Unique_id:{{.Unique_id}})</title>
-    </head>
-    <body>
-        <form method="POST" action="edit">
-             <!-- POSTメソッドを使用してデータを送信し、editというパスに対してアクションする -->
-            <input type="hidden" name="Unique_id" value="{{ .Unique_id }}" />
-            <!-- hidden 非表示 -->
-            <p>固有ID : {{ .Unique_id }} </p>
-            <!-- <p>固有ID : <input type=".Unique_id" name=".Unique_id" value="{{.Unique_id}}" /></p> -->
-            <p>動画タイトル： <input type="text" name="Movie" value="{{.Movie}}" /></p>
-            <p>URL : <input type="text" name="url" value="{{.Url}}" /></p>
-            <p>歌い出し： <input type="text" name="singStart" value="{{.SingStart}}" /></p>
-            <p>曲名：</p>
-            <p><textarea name="song" rows="10" cols="40">{{.Song}}</textarea></p>
-            <p><input type="submit" value="更新" /> 
-                <a href="/index"><input type="button" value="戻る" /></a></p>
-        </form>
-    </body>
-</html>
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
+// import { Post } from '../../types/types';
 
-<!-- UPDATE KaraokeList SET movie='oimonouta', url='imo', singStart='5:30', song='いもも' WHERE unique_id=3;
--->
+function EditPage({post}) {
+  const [data, setData] = useState(post);
+  const router = useRouter();
+  const { Unique_id } = router.query;
 
-<!-- unique_id, movie, url, singStart, song -->
+  // console.log("router.queryしたid=", Unique_id);  →undefinedになる
 
-<!-- htmlのフォームデータの送信 -->
-<!-- https://developer.mozilla.org/ja/docs/Learn/Forms/Sending_and_retrieving_form_data -->
+useEffect(() => {
+  console.log("useEffect started"); //ok
+  console.log("Unique_id=", Unique_id); //1で出力されてる
+  if (Unique_id) { //idが定義されている場合に処理
+    console.log("Fetching data for Unique_id=", Unique_id);
+    fetch(`http://localhost:8080/show?Unique_id=${Unique_id}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
+    .then(data => {
+      setData(data); // データをセット
+      console.log("id=", Unique_id) //id=1で出力されてる
+    })
+    .catch(error => {
+      console.error('There has been a problem with your fetch operation: ', error);
+    }), [Unique_id]);
 
-<!-- --------- -->
-<!-- パスにリクエストするって言い方がおかしい
-パスってのはただの置き場所でしかないので、ファイル名とかクエリとか諸々追加してしまうとパスではなくなる(URLとかになる)
-サーバーにリクエストする、とか、〇〇コントローラーにリクエストする、だったら意味が通じる(命名規則によって自動でルーティングするようになるといちいちパス書かないし)
+if (!data) {
+  // const time = data.singStart;
+  return <div>Loading...</div>;
+}
+  
 
-HTML側で
-・ボタン１　登録
-・ボタン２　削除
-・ボタン３　なんかする
 
-ってあった時に
+ {/* 〇getServerSideProps SSG：Server Side Rendering */}
+//  export async function Post({ posts }) {
+    // console.log(post.id);
+    return (
+    <div>
+      <h2>歌情報編集</h2>
+      <ul>
+        <li>歌登録ID　　　：</li>{data.unique_id}<br />
+        {/* <a>動画タイトル ：</a>{data.movie} <br />
+        <a>動画URL　　 ：</a>{data.url}<br />
+        <a>歌い出し　　：</a>{data.singStart}<br />
+        <a>曲名　　　　：</a>{data.song}<br />
+                
+        <br />
+        
+        <Link href={`${data.url}&t=${data.singStart}`}>動画サイト</Link><br />
+        {`↑${data.url}&t=${data.singStart}`}<br></br>
+        <button color="red" >戻る </button>
+        <Link href="/">戻る </Link>
+        <Link href={`/edit?Unique_id=${data.unique_id}`}>編集</Link><br /> */}
 
-サーバー側(コントローラー)で
-・ハンドラー１、登録
-・ハンドラー２、削除　　　　←これ全部アクションと呼ぶ(言語にかかわらずそう呼ぶことになっている)。２はアクション名が削除
-・ハンドラーその他 -->
+       </ul>
+    </div>
+    );
+  }
+
+  export async function getStaticProps(context) {
+    const Unique_id = context.params.Unique_id;
+    const res = await  fetch(`http://localhost:8080/show?Unique_id=${Unique_id}`);
+    const posts = await res.json();
+    console.log(posts);
+    if (!Object.keys(posts).length) {
+      return {
+        notFound: true,
+      };
+    }
+    return { props: { post: posts } };
+  }
+
+  export async function getStaticPaths() {
+    const res = await  fetch(`http://localhost:8080/show`);
+    const posts = await res.json();
+
+    const paths = posts.map((post) => ({
+    params: { Unique_id: post.Unique_id.toString() }, // 文字列に変換
+     }));
+    return { paths, fallback: true };
+    // pathsは各unique?idに対応するパスの配列…事前にビルドするページのパス、静的生成
+    // fallback リクエストされたパスのページが生成されてなかった場合の挙動
+    // true 対応したページを生成→ビルド後に新しいunique_idが登録されていても対応する
+    // fall 404
+  }
+
+export default EditPage;

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import YouTube from 'react-youtube';
 
-function HomePage() {
+function IndexPage() {
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -9,20 +11,26 @@ function HomePage() {
       .then(data => setData(data))
   }, []);
 
+
+
+  const YouTubeComponent = () => {
+      return <YouTube videoId="olUzlbAEMyg"  />;
+    };
+
   return (
     <div>
       <h1>記事一覧</h1>
       <table border="1">
-        <thead>
+        <thead> {/* ← tabeleのheadタグ */}
           <tr>
-            <td>固有ID</td>
+            <td>歌ID</td>
             <td>動画タイトル</td>
-            <td>Url</td>
+            <td>動画URL</td>
             <td>歌い出し</td>
             <td>曲名</td>
-            <td>Show</td>
+            <td>詳細</td>
             <td>Edit</td>
-            <td>Del</td>
+            <td>Dele</td>
           </tr>
         </thead>
         <tbody>
@@ -33,18 +41,20 @@ function HomePage() {
               <td>{item.url}</td>
               <td>{item.singStart}</td>
               <td>{item.song}</td>
-              <td><a href={`/show?Unique_id=${item.unique_id}`}>表示</a></td>
-              <td><a href={`/edit?Unique_id=${item.unique_id}`}>編集</a></td>
-              <td><a href={`/delete?Unique_id=${item.unique_id}`}>削除</a></td>
+              <td><Link href={`/show?Unique_id=${item.unique_id}`}>表示</Link></td>
+              {/* http://localhost:3000/show?Unique_id=1　になった */}
+              <td><Link href={`/edit?Unique_id=${item.unique_id}`}>編集</Link></td>
+              <td><Link href={`/delete?Unique_id=${item.unique_id}`}>削除</Link></td>
             </tr>
-          ))}
+            ))}
         </tbody>
       </table>
+      <YouTubeComponent />
     </div>
   );
 }
 
-export default HomePage;
+export default IndexPage;
 
 
 
