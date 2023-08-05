@@ -1,26 +1,41 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import YouTube from 'react-youtube';
+import style from '../Youtube.module.css';
+import type { SingData } from '../types/types'; //type{}で型情報のみインポート 今回は実は不要多分
 
-function IndexPage() {
-  const [data, setData] = useState([]);
+// const Example = () => {
+//   const opts = {
+//     height: '390',
+//     width: '640',
+//     playerVars: {
+//       // https://developers.google.com/youtube/player_parameters
+//       autoplay: 1,
+//     },
+//   };}
+
+//分割代入？
+// 型注釈IndexPage(posts: Post)
+function IndexPage( posts : SingData )  {
+  // const [data, setData] = useState([]);
+  const [data, setData] = useState<SingData[]>([]);
+
 
   useEffect(() => {
+    //useEffect:関数の実行タイミングをReactのレンダリング後まで遅らせるhook
     fetch('http://localhost:8080/')
       .then(response => response.json())
       .then(data => setData(data))
   }, []);
 
-
-
   const YouTubeComponent = () => {
-      return <YouTube videoId="olUzlbAEMyg"  />;
-    };
+    return <YouTube videoId="olUzlbAEMyg" />;
+  };
 
   return (
-    <div>
-      <h1>記事一覧</h1>
-      <table border="1">
+      <div>
+      <h2>記事一覧</h2>
+      <table border={4} >
         <thead> {/* ← tabeleのheadタグ */}
           <tr>
             <td>歌ID</td>
@@ -41,15 +56,18 @@ function IndexPage() {
               <td>{item.url}</td>
               <td>{item.singStart}</td>
               <td>{item.song}</td>
-              <td><Link href={`/show?Unique_id=${item.unique_id}`}>表示</Link></td>
+              <td><Link href={`/show?Unique_id=${item.unique_id}`}>詳細</Link></td>
               {/* http://localhost:3000/show?Unique_id=1　になった */}
               <td><Link href={`/edit?Unique_id=${item.unique_id}`}>編集</Link></td>
+              {/* <td><Link href={`/posts/${item.unique_id}`}>編集</Link></td> */}
               <td><Link href={`/delete?Unique_id=${item.unique_id}`}>削除</Link></td>
             </tr>
             ))}
         </tbody>
       </table>
-      <YouTubeComponent />
+        <div>
+        <YouTubeComponent  />
+        </div>
     </div>
   );
 }
@@ -99,3 +117,16 @@ export default IndexPage;
 //         </table>
 //     </body>
 // </html>
+
+
+// const Example = () => {
+//   const opts = {
+//     height: '390',
+//     width: '640',
+//     playerVars: {
+//       // https://developers.google.com/youtube/player_parameters
+//       autoplay: 1,
+//     },
+//   };}
+
+

@@ -1,93 +1,66 @@
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/router";
 import Link from 'next/link';
-// import { Post } from '../../types/types';
 
-function EditPage({post}) {
-  const [data, setData] = useState(post);
-  const router = useRouter();
-  const { Unique_id } = router.query;
+export default function EditForm() {
+    const { register="", handleSubmit, formState: { errors } } = useForm();
+    // register：フォームフィールドを登録する関数
+    // handleSubmit：フォームの送信を処理する関数
+    // errors：フォームフィールドのエラー情報を含むオブジェクト　　の３つを取得
+    const router = useRouter();
+    const { Unique_id } = router.query;
 
-  // console.log("router.queryしたid=", Unique_id);  →undefinedになる
+    // フォームの送信が行われたとき(他の処理が終わったとき？)に呼び出される
+    const onSubmit = async (data) => {
+        // data：送信されたフォームフィールドの値を含むオブジェクト
+        // const unique_id = router.query.id;
+        try {
+            //tryブロック　この中でエラー発生したら直後のchatchブロックが実行される
+            const response = await fetch(`/edit?Unique_id=${Unique_id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+                });
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            // router.push(`/edit`) ←更新されなかった
+            // router.push(`/show?Unique_id=${Unique_id}`)
+            
+        } catch (error) {
+            console.error(error);
+        }
+        console.log(data)
+        // →　{Movie: '4', Url: '4', SingStart: '4', Song: '4'}
+    };
 
-useEffect(() => {
-  console.log("useEffect started"); //ok
-  console.log("Unique_id=", Unique_id); //1で出力されてる
-  if (Unique_id) { //idが定義されている場合に処理
-    console.log("Fetching data for Unique_id=", Unique_id);
-    fetch(`http://localhost:8080/show?Unique_id=${Unique_id}`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
-    .then(data => {
-      setData(data); // データをセット
-      console.log("id=", Unique_id) //id=1で出力されてる
-    })
-    .catch(error => {
-      console.error('There has been a problem with your fetch operation: ', error);
-    }), [Unique_id]);
-
-if (!data) {
-  // const time = data.singStart;
-  return <div>Loading...</div>;
-}
-  
-
-
- {/* 〇getServerSideProps SSG：Server Side Rendering */}
-//  export async function Post({ posts }) {
-    // console.log(post.id);
     return (
-    <div>
-      <h2>歌情報編集</h2>
-      <ul>
-        <li>歌登録ID　　　：</li>{data.unique_id}<br />
-        {/* <a>動画タイトル ：</a>{data.movie} <br />
-        <a>動画URL　　 ：</a>{data.url}<br />
-        <a>歌い出し　　：</a>{data.singStart}<br />
-        <a>曲名　　　　：</a>{data.song}<br />
-                
-        <br />
+           <form onSubmit={handleSubmit(onSubmit)}>
+            登録ID: { Unique_id }
+            <input {...register("Unique_id", { required: true })} placeholder="Unique_id" type="hidden" value= { Unique_id }  /><br />
+                       
+            動画タイトル：
+            <input {...register("Movie", { required: true })} placeholder="動画" /><br />
+            {errors.Movie && "Movie is required"}
+            URL:
+            <input {...register("Url", { required: true })} placeholder="Url" /><br />
+            {errors.Url && "Url is required"}
+            歌いだし：
+            <input {...register("SingStart", { required: true })} placeholder="SingStart" /><br />
+            {errors.SingStart && "SingStart is required"}
+            曲名：
+            <input {...register("Song", { required: true })} placeholder="Song" /><br />
+            {errors.Song && "Song is required"}
+            <button type="submit" style={{ background: 'blue' }}>＜決定＞</button>
+
+            <br />
+        <button style={{ background: 'blue' }}><Link href={`/show?Unique_id=${ Unique_id }`} >詳細へ</Link></button>
+        &nbsp;
+        <button style={{ background: 'blue' }}><Link href={`/`}>一覧へ</Link></button>
         
-        <Link href={`${data.url}&t=${data.singStart}`}>動画サイト</Link><br />
-        {`↑${data.url}&t=${data.singStart}`}<br></br>
-        <button color="red" >戻る </button>
-        <Link href="/">戻る </Link>
-        <Link href={`/edit?Unique_id=${data.unique_id}`}>編集</Link><br /> */}
-
-       </ul>
-    </div>
+        </form>
     );
-  }
+}
 
-  export async function getStaticProps(context) {
-    const Unique_id = context.params.Unique_id;
-    const res = await  fetch(`http://localhost:8080/show?Unique_id=${Unique_id}`);
-    const posts = await res.json();
-    console.log(posts);
-    if (!Object.keys(posts).length) {
-      return {
-        notFound: true,
-      };
-    }
-    return { props: { post: posts } };
-  }
-
-  export async function getStaticPaths() {
-    const res = await  fetch(`http://localhost:8080/show`);
-    const posts = await res.json();
-
-    const paths = posts.map((post) => ({
-    params: { Unique_id: post.Unique_id.toString() }, // 文字列に変換
-     }));
-    return { paths, fallback: true };
-    // pathsは各unique?idに対応するパスの配列…事前にビルドするページのパス、静的生成
-    // fallback リクエストされたパスのページが生成されてなかった場合の挙動
-    // true 対応したページを生成→ビルド後に新しいunique_idが登録されていても対応する
-    // fall 404
-  }
-
-export default EditPage;

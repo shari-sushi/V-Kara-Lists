@@ -3,14 +3,16 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import YouTube from 'react-youtube';
 
-function showPage() {
+function ShowPage() {
   const [data, setData] = useState(null);
+      //dataというstate(状態)を定義、初期値をpostとした。setDataで更新できる
   const [prevSong, setPrevSong] = useState(null);
   const [nextSong, setNextSong] = useState(null);
   const router = useRouter();
+    //現在のルーティング(url)を取得。
   const { Unique_id } = router.query;
-
-  // console.log("router.queryしたid=", Unique_id);  →undefinedになる
+    //routerからUnique_idを取得
+   // console.log("router.queryしたid=", Unique_id);  →undefinedになる
 
   useEffect(() => {
     // console.log("useEffect started");
@@ -24,7 +26,7 @@ function showPage() {
           setData(data);
           setPrevSong(Number(data.unique_id) - 1);
           setNextSong(Number(data.unique_id) + 1);
-
+          //number型を期待させてる
         });
         // console.log("id=", Unique_id)
     }
@@ -46,7 +48,7 @@ function showPage() {
       return <YouTube videoId={data.url.split("v=")[1]}
        />;
     }};
-    // console.log(YouTubeComponent());
+    console.log(YouTubeComponent());
 
 
     // const YouTubeComponent = () => {
@@ -59,19 +61,20 @@ function showPage() {
     <div>
       <h2>歌情報詳細</h2>
       <ul>
-        <a>歌ID　　　：</a>{data.unique_id}<br />
+        <a>歌ID　　　　：</a>{data.unique_id}<br />
         <a>動画タイトル ：</a>{data.movie} <br />
         <a>動画URL　　 ：</a>{data.url}<br />
         <a>歌い出し　　：</a>{data.singStart}<br />
         <a>曲名　　　　：</a>{data.song}<br />
-        <YouTubeComponent />
+        {/* <YouTubeComponent /> */}
         
         {prevSong > 0 && <Link href={`/show?Unique_id=${prevSong}`}><u>前の曲</u></Link>}<br />
         <Link href={`/show?Unique_id=${nextSong}`}><u>次の曲</u></Link><br />
           <br />
         
-        <Link href={`${data.url}&t=${data.singStart}`} ><u>YouTube</u></Link><br />
-        {`↑${data.url}&t=${data.singStart}`}<br />
+        <YouTubeComponent/>
+        <Link href={`${data.url}&t=${data.singStart}`} ><u>YouTubeへ</u></Link>
+        {` ← ${data.url}&t=${data.singStart}`}<br />
       
       <button onClick={() => router.push(`/`)} style={{ background: 'blue' }}>
         戻る</button> &nbsp;
@@ -83,7 +86,7 @@ function showPage() {
   );
 }
 
-export default showPage;
+export default ShowPage;
 
 // https://www.youtube.com/live/AlHRqSsF--8&t=51:08 ✖
 // https://www.youtube.com/live/AlHRqSsF--8&t=3068s　✖
