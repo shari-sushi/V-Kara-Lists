@@ -11,12 +11,14 @@ import (
 
 var Db *sql.DB
 
+// init packageがimportされたときに１度だけ自動で呼び出される
 func init() {
 	user := os.Getenv("MYSQL_USER")
 	pw := os.Getenv("MYSQL_PASSWORD")
 	db_name := os.Getenv("MYSQL_DATABASE")
 
 	var path string = fmt.Sprintf("%s:%s@tcp(localhost:3306)/%s?charset=utf8&parseTime=true", user, pw, db_name)
+	// sqlへ接続するための文字列の生成
 	var err error
 
 	// fmt.Printf("%s\n%s\n", path, err)
@@ -29,27 +31,15 @@ func init() {
 	fmt.Printf("%s\n", Db)
 
 	checkConnect(1)
+
+	// defer Db.Close()
 }
 
-// init packageがimportされたときに１度だけ自動で呼び出される
-
-// mysqlを使っています。golangからSQLへ接続する際、Database名の指定はしなくて良いのでしょうか？
-// > GolangからMySQLへ接続する際には、Database名を指定する必要があります。
-// >データベース名は接続情報の一部であり、MySQLサーバー上の特定のデータベースに接続するために必要です。
-//
 // user := "ユーザー名"
 // password := "パスワード"
 // host := "ホスト名"
 // port := "ポート番号"
 // database := "データベース名"
-
-// dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, database)
-
-// db, err := sql.Open("mysql", dsn)
-// if err != nil {
-//     log.Fatal(err)
-// }
-// defer db.Close()
 
 func checkConnect(count uint) {
 	var err error

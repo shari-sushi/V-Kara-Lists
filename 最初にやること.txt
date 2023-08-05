@@ -1,6 +1,8 @@
 1. Next.js導入
     cd 
     npx create-next-app
+    cd ↑で作ったフォルダ(package-lock.jsonがある階層)
+    install react-hook-form
 
 
 2. githubでprodubt作成
@@ -46,3 +48,24 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
     git add .  ←そのディレクトリ以下全部の . 
     git commit -m "コメント"
     git push origin -u ~~
+
+　　コメント修正
+    push前　git commit --amend してenter→テキスト編集
+    push後　↑やってから　git push --force-with-lease origin main
+
+    commit取り消し
+    push前　git reset [打ち消したいコミットID]
+    push後  git reset --soft    //commitのみ取り消し
+            git reset --mixed   //commitとaddの取り消し
+            git reset --hard    //全部を取り消
+    commit取り消しの取り消し
+    git reflog　(略)
+
+7. issue駆動開発
+　issues作成　→　#番号メモ(下は#11のとき)
+　 
+　git switch -c issue/11-hoge
+    //新規ブランチを立てる
+
+　
+

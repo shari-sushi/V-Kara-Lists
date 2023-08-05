@@ -1,0 +1,36 @@
+package utility
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+type User struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
+func SignUp(c *gin.Context) {
+	var newUser User
+	if err := c.ShouldBindJSON(&newUser); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// ユーザー情報をデータベースに保存します
+
+	c.JSON(http.StatusOK, gin.H{"message": "Successfully signed up"})
+}
+
+func LogIn(c *gin.Context) {
+	var user User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// ユーザー情報をデータベースから検索し、パスワードが一致するか確認します
+
+	c.JSON(http.StatusOK, gin.H{"message": "Successfully logged in"})
+}
