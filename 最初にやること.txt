@@ -2,8 +2,8 @@
     cd 
     npx create-next-app
     cd ↑で作ったフォルダ(package-lock.jsonがある階層)
-    install react-hook-form
-
+    npm install react-hook-form
+    npm install react-youtube
 
 2. githubでprodubt作成
    

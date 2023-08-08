@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import YouTube from 'react-youtube';
 import style from '../Youtube.module.css';
-import type { SingData } from '../types/types'; //type{}で型情報のみインポート 今回は実は不要多分
+import type { SingData } from '../types/singdata'; //type{}で型情報のみインポート 今回は実は不要多分
+import DeleteButton from '../components/DeleteButton';
 
 // const Example = () => {
 //   const opts = {
@@ -20,7 +21,6 @@ function IndexPage( posts : SingData )  {
   // const [data, setData] = useState([]);
   const [data, setData] = useState<SingData[]>([]);
 
-
   useEffect(() => {
     //useEffect:関数の実行タイミングをReactのレンダリング後まで遅らせるhook
     fetch('http://localhost:8080/')
@@ -28,13 +28,10 @@ function IndexPage( posts : SingData )  {
       .then(data => setData(data))
   }, []);
 
-  const YouTubeComponent = () => {
-    return <YouTube videoId="olUzlbAEMyg" />;
-  };
-
   return (
       <div>
       <h2>記事一覧</h2>
+      <Link href={`/create`} ><u>歌登録</u></Link>
       <table border={4} >
         <thead> {/* ← tabeleのheadタグ */}
           <tr>
@@ -60,13 +57,13 @@ function IndexPage( posts : SingData )  {
               {/* http://localhost:3000/show?Unique_id=1　になった */}
               <td><Link href={`/edit?Unique_id=${item.unique_id}`}>編集</Link></td>
               {/* <td><Link href={`/posts/${item.unique_id}`}>編集</Link></td> */}
-              <td><Link href={`/delete?Unique_id=${item.unique_id}`}>削除</Link></td>
+              <DeleteButton Unique_id={item.unique_id} />
             </tr>
             ))}
         </tbody>
       </table>
         <div>
-        <YouTubeComponent  />
+        <YouTube videoId="olUzlbAEMyg" />
         </div>
     </div>
   );

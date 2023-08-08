@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import YouTube from 'react-youtube';
+import DeleteButton from '../components/DeleteButton';
 
-function ShowPage() {
+export default function ShowPage() {
   const [data, setData] = useState(null);
       //dataというstate(状態)を定義、初期値をpostとした。setDataで更新できる
   const [prevSong, setPrevSong] = useState(null);
@@ -12,11 +13,9 @@ function ShowPage() {
     //現在のルーティング(url)を取得。
   const { Unique_id } = router.query;
     //routerからUnique_idを取得
-   // console.log("router.queryしたid=", Unique_id);  →undefinedになる
+   // console.log("router.queryしたid=", Unique_id);  →ここだとundefinedになる
 
   useEffect(() => {
-    // console.log("useEffect started");
-    // console.log("Unique_id=", Unique_id);
     if (Unique_id) { //idが定義されている場合に処理
       console.log("Fetching data for Unique_id=", Unique_id);
       fetch(`http://localhost:8080/show?Unique_id=${Unique_id}`)
@@ -34,7 +33,7 @@ function ShowPage() {
   
    if (!data) {
     // const time = data.singStart;
-    return <div>Loading...</div>;
+    return <div>Loading...show page</div>;
     }
 
     const YouTubeComponent = () => {
@@ -49,7 +48,6 @@ function ShowPage() {
        />;
     }};
     console.log(YouTubeComponent());
-
 
     // const YouTubeComponent = () => {
     //   const videoId = data.url.split('v=')[1]; // Extract video ID from URL
@@ -80,13 +78,15 @@ function ShowPage() {
         戻る</button> &nbsp;
       <button onClick={() => router.push(`/edit?Unique_id=${data.unique_id}`)} style={{ background: 'blue' }}>
         編集</button>
+        <DeleteButton Unique_id={Unique_id} />
+
        </ul>
        {/* デザインはcssにまとめること */}
     </div>
   );
 }
 
-export default ShowPage;
+
 
 // https://www.youtube.com/live/AlHRqSsF--8&t=51:08 ✖
 // https://www.youtube.com/live/AlHRqSsF--8&t=3068s　✖
