@@ -1,4 +1,4 @@
-package crud
+package aritcle
 
 import (
 	"context"
@@ -8,7 +8,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/sharin-sushi/0016go_next_relation/t0016Go/internal/utility"
+	"github.com/sharin-sushi/0016go_next_relation/t0016Go\cmd\internal\utility"
+	
 )
 
 type karaokelist struct {
