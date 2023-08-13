@@ -6,7 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
-	"github.com/sharin-sushi/0016go_next_relation/internal/crud"
+	"github.com/sharin-sushi/0016go_next_relation/t0016Go/internal/crud"
 )
 
 func main() {
@@ -18,6 +18,7 @@ func main() {
 	r.HandleFunc("/show", crud.Show).Methods("GET")
 	r.HandleFunc("/create", crud.Create).Methods("GET", "POST")
 	r.HandleFunc("/edit", crud.Edit).Methods("GET", "POST")
+
 	r.HandleFunc("/delete", crud.Delete).Methods("DELETE")
 
 	// r.HandleFunc("/path", AAA.Aa).Methods("hoge")
