@@ -12,11 +12,12 @@
         //メインのディレクトリ(ルートディレクトリ)
     go install github.com/99designs/gqlgen@latest
         //go の最新バージョンをインストール
-    go mod init  "github.com/sharin-sushi/0016go_next_relation"
+    go mod init  "github.com/sharin-sushi/0018GoogleSearch.git"
 　　    githubのproductのページ
         //go.modを構築　※やり直す場合はgo.modを消してから
-    go get -u github.com/gin-gonic/gin      //最新のginを入れる
-    go get -u github.com/sharin-sushi/0016go_next_api.git
+    // go get -u github.com/gocolly/colly/v2
+    // go get -u github.com/gin-gonic/gin      //最新のginを入れる
+
     go mod tidy
 
     go env
@@ -44,13 +45,14 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
 
 6. 何かしら変更したら
     git branch ~~ (branch作成)
+    +
     git checkout ~~(~~を使用)
     git add .  ←そのディレクトリ以下全部の . 
-    git commit -m "コメント"
-    git push origin -u ~~
+    git commit -m "コメント" ※issue駆動開発の例；コメント内に #{4}　※番号はissue番号
+    git push origin -u ~~　※issue駆動開発の例；issue/4-crud
 
 　　コメント修正
-    push前　git commit --amend してenter→テキスト編集
+    push前　git commit --amend してenter→テキスト編集、保存して閉じる
     push後　↑やってから　git push --force-with-lease origin main
 
     commit取り消し
@@ -60,6 +62,9 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
             git reset --hard    //全部を取り消
     commit取り消しの取り消し
     git reflog　(略)
+
+    init取り消し
+    rm -rf .git
 
 7. issue駆動開発
 　issues作成　→　#番号メモ(下は#11のとき)

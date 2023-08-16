@@ -19,6 +19,7 @@ func main() {
 	r.HandleFunc("/create", crud.Create).Methods("GET", "POST")
 	r.HandleFunc("/edit", crud.Edit).Methods("GET", "POST")
 	r.HandleFunc("/delete", crud.Delete).Methods("DELETE")
+	r.HandleFunc("/newfunc", crud.Join).Methods("GET")
 
 	// r.HandleFunc("/path", AAA.Aa).Methods("hoge")
 	// hogeリクエストが"/path"に来た時にAAA.Aa関数が呼び出される

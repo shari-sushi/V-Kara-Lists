@@ -28,6 +28,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 
 	var items []karaokelist //長さと容量が0のスライス、karaokelist型
+	fmt.Printf("itemの中身(空であることを期待)%v\n", items)
 	for rows.Next() {
 		var k karaokelist
 		fmt.Printf("k定義直後の中身%v\n", k) // k は 0および空(nil?)
@@ -35,8 +36,10 @@ func Index(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		items = append(items, k)           // itmemsスライスにkを追加する
+		items = append(items, k) // itmemsスライスにkを追加する
+		fmt.Printf("append直後のitemの中身は%v\n", items)
 		fmt.Printf("append直後のkの中身%v\n", k) //kには全データが入ってる
+		fmt.Printf("\n")
 	}
 
 	if err := rows.Err(); err != nil {

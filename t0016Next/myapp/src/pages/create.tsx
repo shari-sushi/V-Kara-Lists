@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import Link from 'next/link';
 import type { SingData } from '../types/singdata';
 
-
 export default function EditForm() {
     var defaultValues:SingData = {
         unique_id:0,
