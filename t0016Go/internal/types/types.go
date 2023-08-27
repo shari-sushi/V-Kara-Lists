@@ -91,3 +91,11 @@ type User struct { //dbに対してはtable名 小文字かつ複数形に自動
 	Password   string
 	CreatedAt  time.Time
 }
+
+type UserInfoFromFront struct { //dbに対してはtable名 小文字かつ複数形に自動変換
+	//gorm.Model CreatedAtは機能無し
+	MemberId   string
+	MemberName string
+	Email      string
+	Password   string
+}

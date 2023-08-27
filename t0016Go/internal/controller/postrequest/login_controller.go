@@ -7,10 +7,23 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/sharin-sushi/0016go_next_relation/internal/controller/model"
+	"github.com/sharin-sushi/0016go_next_relation/internal/controller/types"
 )
 
 func PostSignup(c *gin.Context) {
+	// var userinfo types.User
+	var json types.UserInfoFromFront
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	//r.BodyがHTTPリクエストのボディを参照し、&userinfoに格納
+	fmt.Printf("r.Bodyの処理完了し、userinfo=%v", userinfo)
+	c.JSON(http.StatusOK, gin.H{"str": json.FieldStr, "int": json.FieldInt, "bool": json.FieldBool})
 
+	fmt.Printf("Editのpostが通り、errはnil\n")
+
+	fmt.Printf("unique_id=%v, movie=%v, url=%v, singStart=%v, song=%v \n", userinfo.Unique_id, userinfo.Movie, userinfo.Url, userinfo.SingStart, userinfo.Song)
 	//要対応ーーーーーーーーーーーーーー
 	id := c.PostForm("user_id")
 	pw := c.PostForm("password")
