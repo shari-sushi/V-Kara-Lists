@@ -1,70 +1,71 @@
 package utility
 
+//"github.com/sharin-sushi/0016go_next_relation/internal/utility"
+
 import (
-	"database/sql"
+	// "database/sql"
 	"fmt"
 	"os"
-	"time"
+
+	// "time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
-var Db *sql.DB
+// var DbGo *sql.DB
+var Db *gorm.DB
 
+// init packageがimportされたときに１度だけ自動で呼び出される
 func init() {
 	user := os.Getenv("MYSQL_USER")
 	pw := os.Getenv("MYSQL_PASSWORD")
 	db_name := os.Getenv("MYSQL_DATABASE")
 
 	var path string = fmt.Sprintf("%s:%s@tcp(localhost:3306)/%s?charset=utf8&parseTime=true", user, pw, db_name)
+	// sqlへ接続するための文字列の生成
 	var err error
 
 	// fmt.Printf("%s\n%s\n", path, err)
 
-	if Db, err = sql.Open("mysql", path); err != nil {
-		fmt.Printf("database.goのinitでエラー発生:err=%s, path=%s", err, path)
-		// log.Fatal("Db open error:", err.Error())
-	}
-	fmt.Printf("%s\n%s\n", path, err)
-	fmt.Printf("%s\n", Db)
+	Db, err = gorm.Open(mysql.Open(path), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
 
-	checkConnect(1)
+	}
+	if Db == nil {
+		panic("failed to connect database")
+
+	} //このif Db文消したい意味的に重複してる
+
+	fmt.Printf("%s\n%s\n", path, err)
+
+	// checkConnect(1)
+
+	// defer Db.Close()
 }
 
-// init packageがimportされたときに１度だけ自動で呼び出される
-
-// mysqlを使っています。golangからSQLへ接続する際、Database名の指定はしなくて良いのでしょうか？
-// > GolangからMySQLへ接続する際には、Database名を指定する必要があります。
-// >データベース名は接続情報の一部であり、MySQLサーバー上の特定のデータベースに接続するために必要です。
-//
 // user := "ユーザー名"
 // password := "パスワード"
 // host := "ホスト名"
 // port := "ポート番号"
 // database := "データベース名"
 
-// dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, database)
-
-// db, err := sql.Open("mysql", dsn)
-// if err != nil {
-//     log.Fatal(err)
+// func checkConnect(count uint) {
+// 	var err error
+// 	if err = DbGo.Ping(); err != nil {
+// 		time.Sleep(time.Second * 2)
+// 		count--
+// 		fmt.Printf("retry... count:%v\n", count)
+// 		if count > 0 {
+// 			checkConnect(count)
+// 		} else {
+// 			fmt.Println("Connection retries exhausted err")
+// 			fmt.Printf("err=%s", err)
+// 			return
+// 		}
+// 	} else {
+// 		fmt.Println("db connected!!")
+// 	}
 // }
-// defer db.Close()
-
-func checkConnect(count uint) {
-	var err error
-	if err = Db.Ping(); err != nil {
-		time.Sleep(time.Second * 2)
-		count--
-		fmt.Printf("retry... count:%v\n", count)
-		if count > 0 {
-			checkConnect(count)
-		} else {
-			fmt.Println("Connection retries exhausted err")
-			fmt.Printf("err=%s", err)
-			return
-		}
-	} else {
-		fmt.Println("db connected!!")
-	}
-}

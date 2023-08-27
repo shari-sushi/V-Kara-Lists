@@ -1,7 +1,9 @@
 1. Next.js導入
     cd 
     npx create-next-app
-
+    cd ↑で作ったフォルダ(package-lock.jsonがある階層)
+    npm install react-hook-form
+    npm install react-youtube
 
 2. githubでprodubt作成
    
@@ -10,11 +12,13 @@
         //メインのディレクトリ(ルートディレクトリ)
     go install github.com/99designs/gqlgen@latest
         //go の最新バージョンをインストール
-    go mod init  "github.com/sharin-sushi/0016go_next_relation"
+    go mod init  "github.com/sharin-sushi/0018GoogleSearch.git"
 　　    githubのproductのページ
         //go.modを構築　※やり直す場合はgo.modを消してから
-    go get -u github.com/gin-gonic/gin      //最新のginを入れる
-    go get -u github.com/sharin-sushi/0016go_next_api.git
+    // go get -u github.com/gocolly/colly/v2
+    // go get -u github.com/gin-gonic/gin     ←済み 　※最新 -u 
+    
+
     go mod tidy
 
     go env
@@ -23,8 +27,6 @@
 4. git init
     cd rootディレクトリ
     git init
-
-    ーーーーーーーーーーーーーーーここまでやったーーーーーーーーーーーー
     git add .
     git commit -m "first commit"
     git branch -M main
@@ -41,8 +43,37 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
 
 
 6. 何かしら変更したら
-    git branch ~~ (branch作成)
-    git checkout ~~(~~を使用)
+    git switch -c ~~ (branch作成して使用)
+    　※issue駆動開発の例：git switch -c issue/4-crud
+    　※既存branchへ切り替えるだけのときはcコマンド無し
     git add .  ←そのディレクトリ以下全部の . 
-    git commit -m "コメント"
-    git push origin -u ~~
+    git commit -m "コメント" ※issue駆動開発の例；コメント内に #{4}　※番号はissue番号
+    git push origin ~~　※issue駆動開発の例；issue/4-crud
+    完成してればmargeする。(pull request)
+
+　　コメント修正
+    push前　git commit --amend してenter→テキスト編集、保存して閉じる
+    push後　↑やってから　git push --force-with-lease origin main
+
+    commit取り消し
+    push前　git reset [打ち消したいコミットID]
+    push後  git reset --soft    //commitのみ取り消し
+            git reset --mixed   //commitとaddの取り消し
+            git reset --hard    //全部を取り消
+    commit取り消しの取り消し
+    git reflog　(略)
+
+    init取り消し
+    rm -rf .git
+
+    〇メモ
+    git branch　--contains 現在のブランチ確認
+
+7. issue駆動開発
+　issues作成　→　#番号メモ(下は#11のとき)
+　 
+　git switch -c issue/11-hoge
+    //新規ブランチを立てる
+
+　
+
