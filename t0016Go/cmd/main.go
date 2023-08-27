@@ -13,19 +13,6 @@ import (
 func main() {
 	r := gin.Default()
 
-<<<<<<< Updated upstream
-	//歌情報のCRUD
-	r.HandleFunc("/", crud.Index).Methods("GET")
-	r.HandleFunc("/show", crud.Show).Methods("GET")
-	r.HandleFunc("/create", crud.Create).Methods("GET", "POST")
-	r.HandleFunc("/edit", crud.Edit).Methods("GET", "POST")
-	r.HandleFunc("/delete", crud.Delete).Methods("DELETE")
-=======
-	// r.GET("/", func(c *gin.Context) {
-	// 	c.String(http.StatusOK, "Hello world")
-	// })
->>>>>>> Stashed changes
-
 	//配信者
 	r.GET("/", crud.GetAllStreamers)
 	r.POST("/", crud.PostStreamer)
