@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/sharin-sushi/0016go_next_relation/t0016Go/internal/controller/crypto"
+
 	"github.com/sharin-sushi/0016go_next_relation/t0016Go/internal/types"
 	"github.com/sharin-sushi/0016go_next_relation/t0016Go/internal/utility"
 
