@@ -48,7 +48,8 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
     　※既存branchへ切り替えるだけのときはcコマンド無し
     git add .  ←そのディレクトリ以下全部の . 
     git commit -m "コメント" ※issue駆動開発の例；コメント内に #{4}　※番号はissue番号
-    git push origin -u ~~　※issue駆動開発の例；issue/4-crud
+    git push origin ~~　※issue駆動開発の例；issue/4-crud
+    完成してればmargeする。(pull request)
 
 　　コメント修正
     push前　git commit --amend してenter→テキスト編集、保存して閉じる
