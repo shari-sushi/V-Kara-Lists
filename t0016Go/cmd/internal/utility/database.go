@@ -1,15 +1,21 @@
 package utility
 
+//"github.com/sharin-sushi/0016go_next_relation/internal/utility"
+
 import (
-	"database/sql"
+	// "database/sql"
 	"fmt"
 	"os"
-	"time"
+
+	// "time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
-var Db *sql.DB
+// var DbGo *sql.DB
+var Db *gorm.DB
 
 // init packageがimportされたときに１度だけ自動で呼び出される
 func init() {
@@ -23,14 +29,19 @@ func init() {
 
 	// fmt.Printf("%s\n%s\n", path, err)
 
-	if Db, err = sql.Open("mysql", path); err != nil {
-		fmt.Printf("database.goのinitでエラー発生:err=%s, path=%s", err, path)
-		// log.Fatal("Db open error:", err.Error())
-	}
-	fmt.Printf("%s\n%s\n", path, err)
-	fmt.Printf("%s\n", Db)
+	Db, err = gorm.Open(mysql.Open(path), &gorm.Config{})
+	if err != nil {
+		panic("failed to connect database")
 
-	checkConnect(1)
+	}
+	if Db == nil {
+		panic("failed to connect database")
+
+	} //このif Db文消したい意味的に重複してる
+
+	fmt.Printf("%s\n%s\n", path, err)
+
+	// checkConnect(1)
 
 	// defer Db.Close()
 }
@@ -41,20 +52,20 @@ func init() {
 // port := "ポート番号"
 // database := "データベース名"
 
-func checkConnect(count uint) {
-	var err error
-	if err = Db.Ping(); err != nil {
-		time.Sleep(time.Second * 2)
-		count--
-		fmt.Printf("retry... count:%v\n", count)
-		if count > 0 {
-			checkConnect(count)
-		} else {
-			fmt.Println("Connection retries exhausted err")
-			fmt.Printf("err=%s", err)
-			return
-		}
-	} else {
-		fmt.Println("db connected!!")
-	}
-}
+// func checkConnect(count uint) {
+// 	var err error
+// 	if err = DbGo.Ping(); err != nil {
+// 		time.Sleep(time.Second * 2)
+// 		count--
+// 		fmt.Printf("retry... count:%v\n", count)
+// 		if count > 0 {
+// 			checkConnect(count)
+// 		} else {
+// 			fmt.Println("Connection retries exhausted err")
+// 			fmt.Printf("err=%s", err)
+// 			return
+// 		}
+// 	} else {
+// 		fmt.Println("db connected!!")
+// 	}
+// }

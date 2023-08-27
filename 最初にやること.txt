@@ -15,8 +15,9 @@
     go mod init  "github.com/sharin-sushi/0016go_next_relation"
 　　    githubのproductのページ
         //go.modを構築　※やり直す場合はgo.modを消してから
-    go get -u github.com/gin-gonic/gin      //最新のginを入れる
-    go get -u github.com/sharin-sushi/0016go_next_api.git
+    // go get -u github.com/gocolly/colly/v2
+    // go get -u github.com/gin-gonic/gin      //最新のginを入れる
+
     go mod tidy
 
     go env
@@ -25,8 +26,6 @@
 4. git init
     cd rootディレクトリ
     git init
-
-    ーーーーーーーーーーーーーーーここまでやったーーーーーーーーーーーー
     git add .
     git commit -m "first commit"
     git branch -M main
@@ -44,6 +43,7 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
 
 6. 何かしら変更したら
     git branch ~~ (branch作成)
+    +
     git checkout ~~(~~を使用)
     git add .  ←そのディレクトリ以下全部の . 
     git commit -m "コメント"
