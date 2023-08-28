@@ -4,18 +4,24 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/sharin-sushi/0016go_next_relation/internal/controller/crypto"
-	"github.com/sharin-sushi/0016go_next_relation/internal/types"
+	"github.com/sharin-sushi/0016go_next_relation/cmd/internal/controller/crypto"
+	"github.com/sharin-sushi/0016go_next_relation/cmd/internal/types"
+	"github.com/sharin-sushi/0016go_next_relation/cmd/internal/utility"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func (u *types.User) LoggedIn() bool {
+//
+type User types.User
+
+//*types.Userで"invalid receiver type *types.User (type not defined in this package)"
+func (u User) LoggedIn() bool {
 	// return u.ID != 0 元々これ
 	return u.MemberId != ""
 }
 
-func Signup(user_id, password string) (*types.User, error) {
+//*types.Userでもエラー出ない
+func Signup(user_id, password string) (*User, error) {
 	var user types.User
 	// user := types.User だとダメ　gorm公式はこの書き方
 	// user := types.User{}最初はこうだった
@@ -27,7 +33,7 @@ func Signup(user_id, password string) (*types.User, error) {
 	// user.Password = "2"
 	// fmt.Printf("user=%v, user_id=%s \n", user, user_id)
 
-	Db.Where("user_id = ?", user_id).First(&user.MemberId) //.Firts 1件だけ()内に格納→DBからEnmpty setが返ってきてるはず
+	utility.Db.Where("user_id = ?", user_id).First(&user.MemberId) //.Firts 1件だけ()内に格納→DBからEnmpty setが返ってきてるはず
 
 	fmt.Printf("userId=%v, password=%v \n", user.MemberId, user.Password) //{0, }期待→ok
 
@@ -49,15 +55,15 @@ func Signup(user_id, password string) (*types.User, error) {
 	//user_idINT, _ := strconv.Atoi(user_id)
 	user = types.User{MemberId: user_id, Password: encryptPw}
 	fmt.Printf("user=%v \n", user)
-	Db.Create(&user)
+	utility.Db.Create(&user)
 	fmt.Printf("a \n")
-	return &user, nil
+	return user, nil
 }
 
 func Login(userId, password string) (*types.User, error) {
 	user := types.User{}
-	Db.Where("user_id = ?", userId).First(&user)
-	if user.MemberId == 0 {
+	utility.Db.Where("user_id = ?", userId).First(&user)
+	if user.MemberId == "" {
 		err := errors.New("MemberIdが一致するユーザーが存在しません。")
 		fmt.Println(err)
 		return nil, err

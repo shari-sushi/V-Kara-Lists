@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/sharin-sushi/0016go_next_relation/internal/controller/model"
+	"github.com/sharin-sushi/0016go_next_relation/cmd/internal/controller/model"
 )
 
 func PostSignup(c *gin.Context) {
