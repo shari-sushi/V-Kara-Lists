@@ -79,11 +79,11 @@ func PostLogin(c *gin.Context) {
 }
 
 //SessionManager.go　　セッション生成
-func SessionManage(g *gin.Context, user DBManager.DBUsers) {
+func SessionManage(g *gin.Context, user types.Member) {
 	session := sessions.Default(g)
 	session.Set("alive", true)
-	session.Set("memberID", user.ID)
-	session.Set("memberName", user.NickName)
+	session.Set("memberID", user.MemberId)
+	session.Set("memberName", user.MemberName)
 	session.Save()
 }
 

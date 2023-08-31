@@ -28,8 +28,8 @@ func (u AUser) LoggedIn() bool {
 //*types.Userでもエラー出ない
 func Signup(user_id, password, accname, mail string) (*AUser, error) {
 	var aUser AUser
-	// user := types.Member だとダメ　gorm公式はこの書き方
-	// user := types.Member{}最初はこうだった
+	// user := types.Member だとダメ　gorm公式はこの書き方なのに
+	// user := types.Member{}記事は最初はこうだった
 
 	fmt.Printf("Sinup関数の受け取った値:user_id=%v, password=%v, accname=%v, mail=%v \n", user_id, password, accname, mail)
 	// fmt.Printf("user=%v \n", user)
