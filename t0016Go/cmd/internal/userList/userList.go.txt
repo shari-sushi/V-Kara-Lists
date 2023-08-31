@@ -1,0 +1,90 @@
+package userList
+
+import (
+	"errors"
+	"fmt"
+
+	"golang.org/x/crypto/bcrypt"
+)
+
+type User struct {
+	//あとでUserInfoに変える
+	Member_id   string `json:"member_id"`
+	Member_name string `json:"member_name"`
+	Email       string `json:"email"`
+	Password    string `json:"pasword"`
+	Created_at  string `json:"created_at"`
+}
+
+//暗号(Hash)化
+func passwordEncrypt(password string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(hash), err
+}
+
+//暗号(Hash)と入力された平パスワードの比較
+func compareHashAndPassword(hash, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+}
+
+//会員登録
+func Signup(userId, password string) (*User, error) {
+	user := User{}
+	Db.Where("user_id = ?", userId).First(&user)
+	if userId != 0 {
+		err := errors.New("同一名のUserIdが既に登録されています。")
+		fmt.Println(err)
+		return nil, err
+	}
+
+	encryptPw, err := passwordEncrypt(password)
+	if err != nil {
+		fmt.Println("パスワード暗号化中にエラーが発生しました。：", err)
+		return nil, err
+	}
+	user = User{UserId: userId, Password: encryptPw}
+	Db.Create(&user)
+	return &user, nil
+}
+
+//ログイン
+func Login(userId, password string) (*User, error) {
+	user := User{}
+	Db.Where("user_id = ?", userId).First(&user)
+	if user.ID == 0 {
+		err := errors.New("UserIdが一致するユーザーが存在しません。")
+		fmt.Println(err)
+		return nil, err
+	}
+
+	err := compareHashAndPassword(user.Password, password)
+	if err != nil {
+		fmt.Println("パスワードが一致しませんでした。：", err)
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+// //ログイン
+// func LogIn(w http.ResponseWriter, r *http.Request) {
+// 	member_id := r.URL.Query().Get("Unique_id")
+// 	row := utility.Db.QueryRow("SELECT * FROM karaokelist WHERE unique_id = ?", member_id)
+// 	fmt.Printf("showにてQueryRowで取得したidは%s。rowデータは%s\n", member_id, row) //この時点ではnill
+
+// 	userInfo := UserInfo{}
+// 	err := row.Scan(&userInfo.Member_id)
+
+// 	if err != nil {
+// 		if err == sql.ErrNoRows {
+// 			http.NotFound(w, r)
+// 			return
+// 		} else {
+// 			http.Error(w, http.StatusText(500), 500)
+// 			return
+// 		}
+// 	}
+
+// 	json.NewEncoder(w).Encode(userInfo)
+// 	fmt.Printf("Enode後showにて取得したidは%s。kListは%v\n※", member_id, userInfo)
+// }

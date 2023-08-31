@@ -4,27 +4,95 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 	"github.com/rs/cors"
-	"github.com/sharin-sushi/0016go_next_relation/t0016Go/internal/article"
+	"github.com/sharin-sushi/0016go_next_relation/cmd/internal/controller/postrequest"
+	"github.com/sharin-sushi/0016go_next_relation/cmd/internal/crud"
+	"github.com/sharin-sushi/0016go_next_relation/cmd/internal/utility"
 )
 
 func main() {
-	r := mux.NewRouter()
-	// 新しいルーターの呼び出し
+	r := gin.Default()
 
-	r.HandleFunc("/", article.Index).Methods("GET")
-	r.HandleFunc("/show", article.Show).Methods("GET")
-	r.HandleFunc("/create", article.Create).Methods("POST")
-	r.HandleFunc("/edit", article.Edit).Methods("PUT")
-	r.HandleFunc("/delete", article.Delete).Methods("DELETE")
+	//配信者
+	r.GET("/", crud.GetAllStreamers)
+	//GETじゃなくてPUTでやりたいことできるかも GET→urlから読み取る、PUT→POSTのべき等版
+	r.POST("/", crud.PostStreamer)
+	r.PUT("/", crud.PutStreamer)
+	r.DELETE("/", crud.DeletetStreamer)
 
-	// r.HandleFunc("/path", AAA.Aa).Methods("hoge")
-	// hogeリクエストが"/path"に来た時にAAA.Aa関数が呼び出される
+	//動画
+	r.GET("/movie", crud.ReadMovies) //まだ何も書いてない
 
-	handler := cors.Default().Handler(r)
+	//歌
+	r.GET("/sing", crud.ReadSings)
+
+	//ログイン、サインナップ ※リンクは"/"に有り
+	r.POST("/signup", postrequest.PostSignup)
+	r.POST("/login", postrequest.PostLogin)
+
+	//Cookie
+	r.GET("/cookie", utility.GetCookie)
+
+	// //開発者用：パスワード照会  0019で作り直した
+	// r.GET("/envpass", postrequest.EnvPass)
+
+	// r.POST("/create", crud.Create)
+	// r.GET("/edit", crud.Edit)
+	// r.POST("/edit", crud.Edit)
+	// r.DELETE("/delete", crud.Delete)
+	// r.GET("/newfunc", crud.Join)
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowCredentials: true,
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
+	})
+	handler := c.Handler(r)
+
+	// handler := cors.Default().Handler(r)
 
 	if err := http.ListenAndServe(":8080", handler); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
+
+	r.Run(":8080")
 }
+
+// // ーーー↓素のGoーーーー
+// func main() {
+// 	r := mux.NewRouter()
+// 	// 新しいルーターの呼び出し
+
+// 	//旧CRUD　歌情報
+// 	// r.HandleFunc("/", crud.Index).Methods("GET")
+// 	// r.HandleFunc("/show", crud.Show).Methods("GET")
+// 	// r.HandleFunc("/create", crud.Create).Methods("GET", "POST")
+// 	// r.HandleFunc("/edit", crud.Edit).Methods("GET", "POST")
+// 	// r.HandleFunc("/delete", crud.Delete).Methods("DELETE")
+
+// 	//新CRUD
+// 	r.HandleFunc("/newtop", crud.ReadAllData).Methods("GET")
+
+// 	// r.HandleFunc("/path", AAA.Aa).Methods("hoge")
+// 	// hogeリクエストが"/path"に来た時にAAA.Aa関数が呼び出される
+
+// 	// //会員登録とログイン
+// 	// r.HandleFunc("/api/signup", userList.SignUp).Methods("GET", "POST")
+// 	// r.HandleFunc("/api/login", userList.LogIn).Methods("GET")
+
+// 	// r.HandleFunc("/login", login.Hash).Methods("DELETE")
+
+// 	c := cors.New(cors.Options{
+// 		AllowedOrigins:   []string{"http://localhost:3000"},
+// 		AllowCredentials: true,
+// 		AllowedMethods:   []string{"GET", "POST", "DELETE"},
+// 	})
+// 	handler := c.Handler(r)
+
+// 	// handler := cors.Default().Handler(r)
+
+// 	if err := http.ListenAndServe(":8080", handler); err != nil {
+// 		log.Fatal("ListenAndServe:", err)
+// 	}
+
+// }
