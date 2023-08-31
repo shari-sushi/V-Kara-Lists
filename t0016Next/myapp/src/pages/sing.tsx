@@ -28,7 +28,7 @@ function AllDatePage( posts : AllData )  {
 
   useEffect(() => {  //useEffect:関数の実行タイミングをReactのレンダリング後まで遅らせるhook
     if (streamer_id) { //idが定義されている場合に処理
-      console.log("Fetching data for Unique_id=", streamer_id);
+      console.log("Fetching data for streamer_id=", streamer_id);
       fetch(`http://localhost:8080/sing?streamer_id=${streamer_id}`)
         .then(response => response.json())
         .then(data => {

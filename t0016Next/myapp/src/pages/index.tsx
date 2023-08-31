@@ -2,13 +2,11 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import YouTube from 'react-youtube';
 import style from '../Youtube.module.css';
-<<<<<<< Updated upstream
-import type { SingData } from '../types/singdata'; //type{}で型情報のみインポート 今回は実は不要多分
-=======
 import type { AllData, Streamer, StreamerMovie } from '../types/singdata'; //type{}で型情報のみインポート
->>>>>>> Stashed changes
 import DeleteButton from '../components/DeleteButton';
 import { useRouter } from 'next/router';
+import { getAllCookies } from '../components/GetCokies';  //Cookiesのため
+
 
 // const Example = () => {
 //   const opts = {
@@ -22,15 +20,6 @@ import { useRouter } from 'next/router';
 
 //分割代入？
 // 型注釈IndexPage(posts: Post)
-<<<<<<< Updated upstream
-function IndexPage( posts : SingData )  {
-  // const [data, setData] = useState([]);
-  const [data, setData] = useState<SingData[]>([]);
-
-  useEffect(() => {
-    //useEffect:関数の実行タイミングをReactのレンダリング後まで遅らせるhook
-    fetch('http://localhost:8080/')
-=======
 function AllDatePage( posts : AllData )  {
   // const [data, setData] = useState<AllColumnsData[]>([]);
   // const [data, setData] = useState<AllColumnsData>({ streamers: [], movies: [] });
@@ -40,9 +29,18 @@ function AllDatePage( posts : AllData )  {
   const router = useRouter();
 
   useEffect(() => {  //useEffect:関数の実行タイミングをReactのレンダリング後まで遅らせるhook
-    fetch('http://localhost:8080/')
     
->>>>>>> Stashed changes
+    //↓Cookiesのために書いた7行…
+    const cookie = getAllCookies();
+    const options: RequestInit = {
+      headers: {
+        cookie,
+      },
+      cache: "no-store",
+    };
+
+    fetch('http://localhost:8080/')
+
       .then(response => response.json())
        
       .then(data => {
@@ -53,11 +51,7 @@ function AllDatePage( posts : AllData )  {
   }, []);
 
   return (
-<<<<<<< Updated upstream
-      <div>
-      <h2>記事一覧</h2>
-      <Link href={`/create`} ><u>歌登録</u></Link>
-=======
+
     <div>
       <h1>TOP画面</h1><br />
         <h3>"推し"の"歌枠"の聴きたい"歌"を再生しよう。 <br />
@@ -75,27 +69,16 @@ function AllDatePage( posts : AllData )  {
         {/* 配信者一覧 */}
         <h2>★配信者</h2>
         <Link href={`/create`} ><u>推し登録</u></Link>
->>>>>>> Stashed changes
+
       <table border={4} >
         <thead> {/* ← tabeleのhead */}
           <tr>
-<<<<<<< Updated upstream
-            <td>歌ID</td>
-            <td>動画タイトル</td>
-            <td>動画URL</td>
-            <td>歌い出し</td>
-            <td>曲名</td>
-            <td>詳細</td>
-            <td>Edit</td>
-            <td>Dele</td>
-=======
             <td>ID</td>
             <td>推し</td>
             <td>読み</td>
             <td>紹介動画</td>
             <td>リンク</td>
             <td>リンク</td>
-
             <td>編集</td>
           </tr>
         </thead>
@@ -115,8 +98,6 @@ function AllDatePage( posts : AllData )  {
 
           <td><Link href={`/movie?streamer_id=${item1.StreamerId}`}>歌枠</Link></td>
           <td><Link href={`/sing?streamer_id=${item1.StreamerId}`}>歌</Link></td>
-
-
                         
               {/* if (${item.self_intro_url} != undefined){
                 return(
@@ -146,38 +127,15 @@ function AllDatePage( posts : AllData )  {
             <td>動画名(クリックで視聴)</td>
             <td>動画url</td>
             <td>編集</td>
- 
->>>>>>> Stashed changes
           </tr>
         </thead>
         <tbody>
           {data2 && data2.map((item2, index) => (
             <tr key={index}>
-<<<<<<< Updated upstream
-              <td>{item.unique_id}</td>
-              <td>{item.movie}</td>
-              <td>{item.url}</td>
-              <td>{item.singStart}</td>
-              <td>{item.song}</td>
-              <td><Link href={`/show?Unique_id=${item.unique_id}`}>詳細</Link></td>
-              {/* http://localhost:3000/show?Unique_id=1　になった */}
-              <td><Link href={`/edit?Unique_id=${item.unique_id}`}>編集</Link></td>
-              {/* <td><Link href={`/posts/${item.unique_id}`}>編集</Link></td> */}
-              <DeleteButton Unique_id={item.unique_id} />
-            </tr>
-            ))}
-        </tbody>
-      </table>
-        <div>
-        <YouTube videoId="olUzlbAEMyg" />
-        </div>
-=======
               <td>{item2.StreamerName}</td>
-              <td>{item2.MovieId}</td>
-          
+              <td>{item2.MovieId}</td>        
               <td><Link href={`/sing?movie_url=${item2.MovieUrl}`}>{item2.MovieTitle}</Link></td>
               <td>{item2.MovieUrl}</td>
- 
 
               {/* {item2.Movies ? ( <td>{item2.Movies'MovieId'}</td>
               ) : ( <td>未登録</td>      )}
@@ -194,11 +152,7 @@ function AllDatePage( posts : AllData )  {
             ))}
         </tbody>
       </table><br />
-
->>>>>>> Stashed changes
     </div>
   )};
-
-
 
 export default AllDatePage;

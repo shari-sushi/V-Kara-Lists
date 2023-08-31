@@ -8,6 +8,7 @@ import (
 	"github.com/rs/cors"
 	"github.com/sharin-sushi/0016go_next_relation/cmd/internal/controller/postrequest"
 	"github.com/sharin-sushi/0016go_next_relation/cmd/internal/crud"
+	"github.com/sharin-sushi/0016go_next_relation/cmd/internal/utility"
 )
 
 func main() {
@@ -30,6 +31,9 @@ func main() {
 	r.POST("/signup", postrequest.PostSignup)
 	r.POST("/login", postrequest.PostLogin)
 
+	//Cookie
+	r.GET("/cookie", utility.GetCookie)
+
 	// //開発者用：パスワード照会  0019で作り直した
 	// r.GET("/envpass", postrequest.EnvPass)
 
@@ -47,8 +51,6 @@ func main() {
 
 	// handler := cors.Default().Handler(r)
 
-	//どこに保存しよう
-	r.GET("/cookie", utility.GetCookie)
 	if err := http.ListenAndServe(":8080", handler); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}

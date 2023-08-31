@@ -6,9 +6,6 @@ export type SingData= {
     song		:	string;
   };
 
-<<<<<<< Updated upstream
-//   import { SingData } from './types'
-=======
 //   import { SingData } from './types'
 
 export type AllData= {
@@ -61,4 +58,3 @@ export type KaraokeList= {
 	Song			:	string | null;
 	SongInputerId	:	string | null;
 };
->>>>>>> Stashed changes
