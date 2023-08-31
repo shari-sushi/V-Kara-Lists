@@ -15,6 +15,7 @@ func main() {
 
 	//配信者
 	r.GET("/", crud.GetAllStreamers)
+	//GETじゃなくてPUTでやりたいことできるかも GET→urlから読み取る、PUT→POSTのべき等版
 	r.POST("/", crud.PostStreamer)
 	r.PUT("/", crud.PutStreamer)
 	r.DELETE("/", crud.DeletetStreamer)
@@ -28,6 +29,9 @@ func main() {
 	//ログイン、サインナップ ※リンクは"/"に有り
 	r.POST("/signup", postrequest.PostSignup)
 	r.POST("/login", postrequest.PostLogin)
+
+	// //開発者用：パスワード照会  0019で作り直した
+	// r.GET("/envpass", postrequest.EnvPass)
 
 	// r.POST("/create", crud.Create)
 	// r.GET("/edit", crud.Edit)
@@ -43,6 +47,8 @@ func main() {
 
 	// handler := cors.Default().Handler(r)
 
+	//どこに保存しよう
+	r.GET("/cookie", utility.GetCookie)
 	if err := http.ListenAndServe(":8080", handler); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}

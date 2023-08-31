@@ -12,38 +12,41 @@ import (
 )
 
 //
-type User types.User
+type AUser struct {
+	MemberId   string
+	MemberName string
+	Email      string
+	Password   string
+}
 
-//*types.Userで"invalid receiver type *types.User (type not defined in this package)"
-func (u User) LoggedIn() bool {
+//*types.Userで"invalid receiver type *types.Member (type not defined in this package)"
+func (u AUser) LoggedIn() bool {
 	// return u.ID != 0 元々これ
 	return u.MemberId != ""
 }
 
 //*types.Userでもエラー出ない
-func Signup(user_id, password string) (*User, error) {
-	var user types.User
-	// user := types.User だとダメ　gorm公式はこの書き方
-	// user := types.User{}最初はこうだった
+func Signup(user_id, password, accname, mail string) (*AUser, error) {
+	var aUser AUser
+	// user := types.Member だとダメ　gorm公式はこの書き方
+	// user := types.Member{}最初はこうだった
 
-	fmt.Printf("Sinup関数の受け取った値:user_id=%v, password=%v \n", user_id, password)
+	fmt.Printf("Sinup関数の受け取った値:user_id=%v, password=%v, accname=%v, mail=%v \n", user_id, password, accname, mail)
 	// fmt.Printf("user=%v \n", user)
 
 	// user.MemberId = 2
 	// user.Password = "2"
 	// fmt.Printf("user=%v, user_id=%s \n", user, user_id)
 
-	utility.Db.Where("user_id = ?", user_id).First(&user.MemberId) //.Firts 1件だけ()内に格納→DBからEnmpty setが返ってきてるはず
+	utility.Db.Where("mail = ?", user_id).First(&aUser.Email) //.Firts 1件だけ()内に格納→DBからEnmpty setが返ってきてるはず
+	// .Select("user_id, member_name")
 
-	fmt.Printf("userId=%v, password=%v \n", user.MemberId, user.Password) //{0, }期待→ok
-
-	if user.MemberId != "" {
-		err := errors.New("登録済みのMemberIdです。")
+	if aUser.MemberId != "" {
+		err := errors.New("登録済みのメールアドレスです。")
 		fmt.Println(err)
 		return nil, err
 	}
-
-	fmt.Printf("user=%vです。 \n", user)
+	fmt.Printf("userId=%v, name=%v \n", aUser.MemberId, aUser.MemberName) //{0, }期待→ok
 
 	encryptPw, err := crypto.PasswordEncrypt(password)
 	if err != nil {
@@ -53,18 +56,20 @@ func Signup(user_id, password string) (*User, error) {
 	fmt.Printf("encryptPw=%v \n", encryptPw)
 
 	//user_idINT, _ := strconv.Atoi(user_id)
-	user = types.User{MemberId: user_id, Password: encryptPw}
-	fmt.Printf("user=%v \n", user)
-	utility.Db.Create(&user)
+	aUser = AUser{MemberId: user_id, MemberName: accname, Email: mail, Password: encryptPw}
+
+	fmt.Printf("user=%v \n", aUser)
+	utility.Db.Create(&aUser)
 	fmt.Printf("a \n")
-	return user, nil
+	return &aUser, err
 }
 
-func Login(userId, password string) (*types.User, error) {
-	user := types.User{}
-	utility.Db.Where("user_id = ?", userId).First(&user)
-	if user.MemberId == "" {
-		err := errors.New("MemberIdが一致するユーザーが存在しません。")
+func Login(MemberName, password string) (*types.Member, error) {
+	user := types.Member{}
+	utility.Db.Where(" member_name= ?", MemberName).First(&user)
+	fmt.Printf("取得したアカウント名=%v", user.MemberName)
+	if user.MemberName == "" {
+		err := errors.New("存在しないアカウント名です。")
 		fmt.Println(err)
 		return nil, err
 	}

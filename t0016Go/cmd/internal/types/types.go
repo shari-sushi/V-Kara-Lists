@@ -44,14 +44,6 @@ type KaraokeList struct {
 	SongInputerId string  //`json:"song_inputer_id"`
 }
 
-type Member struct {
-	MemberId   string `gorm:"primaryKey"` //`json:"member_id  "`
-	MemberName string //`json:"member_name "`
-	Email      string //`json:"email  "`
-	Password   string //`json:"password"`
-	CreatedAt  string //`json:"created_at "`
-}
-
 // コピペ用全カラム
 // ーーキャメル
 type AllColumns struct {
@@ -83,9 +75,10 @@ type AllColumns struct {
 // song
 // song_inputer_id
 
-type User struct { //dbに対してはtable名 小文字かつ複数形に自動変換
+//最初、シンボル変更できなかったので、どこかで変更残りがあるかも User→Member
+type Member struct { //dbに対してはtable名 小文字かつ複数形に自動変換
 	//gorm.Model CreatedAtは機能無し
-	MemberId   string
+	MemberId   string `gorm:"primaryKey"`
 	MemberName string
 	Email      string
 	Password   string
