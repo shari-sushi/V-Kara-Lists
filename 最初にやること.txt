@@ -42,9 +42,7 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
 
 
 6. 何かしら変更したら
-    git branch ~~ (branch作成)
-    +
-    git checkout ~~(~~を使用)
+    git checkout ~~(~~を使用) -bで新規作成しつつ使用
     git add .  ←そのディレクトリ以下全部の . 
     git commit -m "コメント"
     git push origin -u ~~
@@ -67,5 +65,14 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
 　git switch -c issue/11-hoge
     //新規ブランチを立てる
 
-　
+8.他ブランチＡから取得→(何か変更して)→元ブランチＢへ反映させる
+(ブランチＢでの変更を捨てる場合)
+・現在ブランチの確認 git branch --contains 
+  "HEAD detached ~" となったらブランチ名が無い状態
+
+・コード変更後（ブランチＡになっている状態）
+    git add .
+    git commit -m "～～"
+    git checkout (ブランチＢ)
+    git merge (ブランチＡ)
 

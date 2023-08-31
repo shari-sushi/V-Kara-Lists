@@ -1,5 +1,9 @@
 package crud
 
+//
+//DBからデータ取得してjsonデータをフロントへ送信する時の違い
+//
+
 import (
 	"net/http"
 
@@ -19,7 +23,7 @@ var m = "www.youtube.com/live/AlHRqSsF--8"
 // sing_start,
 // song
 
-//以下のコードのクエリは同じで、3つのtableをleft joinし、9つのcolumnをselect、whereで指定したデータを取得
+//以下のクエリは同じ：3つのtableをleft joinし、9つのcolumnをselect、whereで指定したデータを取得
 //.Find()の中身が異なる
 func A(c *gin.Context) {
 	// 最後が.Find(&alls)
