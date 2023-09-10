@@ -1,5 +1,7 @@
 import { useForm } from "react-hook-form";
 
+//こっちがlogin?
+
 const LogIn = () => {
   const { register, handleSubmit, errors } = useForm();
 

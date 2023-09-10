@@ -61,12 +61,12 @@ return (
     <input {...register("PassWord", { required: true })} placeholder="0000でもいいので他で使用していないものにしてね!!" /><br />
     {errors.PassWord && "password is required"}
 
-    <button type="submit" style={{ background: 'blue' }}>＜決定＞</button>
+    <button type="submit" style={{ background: 'skyblue' }}>＜決定＞</button>
 
     <br />
 
  &nbsp;  &nbsp;  &nbsp;  &nbsp;
-<button style={{ background: 'blue' }}><Link href={`/`}>一覧へ</Link></button>
+<button style={{ background: 'skyblue' }}><Link href={`/`}>一覧へ</Link></button>
 
 </form>
     // ,<DeleteButton Unique_id ={ Unique_id }/>
