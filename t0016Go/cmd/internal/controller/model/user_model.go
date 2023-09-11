@@ -66,8 +66,9 @@ func Signup(user_id, password, accname, mail string) (*AUser, error) {
 
 func Login(MemberName, password string) (*types.Member, error) {
 	user := types.Member{}
-	utility.Db.Where(" member_name= ?", MemberName).First(&user)
-	fmt.Printf("取得したアカウント名=%v", user.MemberName)
+	// fmt.Print("検索したmember名=?\n", MemberName)
+	utility.Db.Where("member_name= ?", MemberName).First(&user)
+	fmt.Printf("取得したアカウント名=%v \n", user.MemberName)
 	if user.MemberName == "" {
 		err := errors.New("存在しないアカウント名です。")
 		fmt.Println(err)
