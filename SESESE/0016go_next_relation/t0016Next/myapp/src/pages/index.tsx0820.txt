@@ -1,0 +1,59 @@
+
+      {/* 歌一覧 */}
+      <h2>★歌</h2>
+      <Link href={`/create`} ><u>歌と再生時間を登録</u></Link>
+    <h4>※鳴き声可</h4>
+      {/* <Link href={`/create`} ><u>歌登録</u></Link> */}
+      <table border={4} >
+        <thead> {/* ← tabeleのheadタグ */}
+          <tr>
+            <td>配信者名</td>
+            <td>動画id</td>
+            <td>動画url</td>
+            <td>動画タイトル</td>
+            <td>歌id</td>
+            <td>歌い出し</td>
+            <td>曲名</td>
+            <td>編集</td>    
+ 
+          </tr>
+        </thead>
+        <tbody>
+          {data3.map((item3, index3) => (
+            <tr key={index}>
+           
+              <td>{item3.streamer_name}</td>
+         
+              <td>{item3.movie_id}</td>
+              <td>{item3.movie_url}</td>
+              <td>{item3.movie_title}</td>
+              <td>{item3.song_id}</td>
+              <td>{item3.sing_start}</td>
+              <td>{item3.song}</td>
+      
+                       
+              
+              <td><Link href={`/show?Unique_id=${item3.streamer_id}`}>再生</Link></td>
+              {/* http://localhost:3000/show?Unique_id=1　になった */}
+              <td><Link href={`/edit?Unique_id=${item3.streamer_id}`}>編集</Link></td>
+              {/* <DeleteButton Unique_id={item.streamer_id} /> */}
+            </tr>
+            ))}
+        </tbody>
+      </table>
+        <div>
+        <YouTube videoId="olUzlbAEMyg" />
+        </div>
+    </div>
+  );
+}
+
+
+{"streamers":[
+{"StreamerId":1,"StreamerName":"妹望おいも","NameKana":"imomochi_oimo","SelfIntroUrl":"www.youtube.com/watch?v=olUzlbAEMyg","StreamInputerId":"L1"},
+{"StreamerId":2,"StreamerName":"ChumuNote","NameKana":"chumunote","SelfIntroUrl":"www.youtube.com/live/7QStB569mto?feature=share\u0026t=290","StreamInputerId":"L1"}
+]}
+
+{"streamers_and_moviesmovies":[
+{"StreamerName":"ChumuNote","NameKana":null,"SelfIntroUrl":null,"StreamInputerId":null,"MovieId":1,"MovieUrl":"www.youtube.com/watch?v=kPFzJtDYUwg","MovieTitle":"【ChumuNote】#第1期ちゅむ主総会 【2023年7月1日】"},
+{"StreamerName":"妹望おいも","NameKana":null,"SelfIntroUrl":null,"StreamInputerId":null,"MovieId":1,"MovieUrl":"www.youtube.com/live/AlHRqSsF--8","MovieTitle":"【歌枠リレー】歌う【妹望おいも】"}]}
