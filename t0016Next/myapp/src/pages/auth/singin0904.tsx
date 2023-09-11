@@ -2,6 +2,7 @@ import { User } from '../../types/usertype'
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import Link from 'next/link';
+import { signIn } from "next-auth/react";
 
 export default function EditForm() {
     var defaultValues:User = {
@@ -36,13 +37,13 @@ export default function EditForm() {
             },
             body: JSON.stringify(data) //dataをJSONに変換
             });
-        
-
+          
         
         if (response.ok) {
             const responseData = await response.json();
             if (responseData.authenticated) {
                 // ユーザー認証成功時の処理
+                signIn("credentials", { callbackUrl: "/", ...data });  // ここを追加
             } else {
                 // ユーザー認証失敗時の処理
             }
@@ -69,15 +70,19 @@ return (
     <input {...register("PassWord", { required: true })} placeholder="password" /><br />
     {errors.PassWord && "password is required"}
 
-    <button type="submit" style={{ background: 'blue' }}>＜決定＞</button>
+    <button type="submit" style={{ background: 'skyblue' }}>＜決定＞</button>
 
     <br />
 
  &nbsp;  &nbsp;  &nbsp;  &nbsp;
-<button style={{ background: 'blue' }}><Link href={`/`}>一覧へ</Link></button>
+<button style={{ background: 'skyblue' }}><Link href={`/`}>一覧へ</Link></button>
 
 </form>
     // ,<DeleteButton Unique_id ={ Unique_id }/>
 );
 
 }
+
+
+
+

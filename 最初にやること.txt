@@ -4,6 +4,9 @@
     cd ↑で作ったフォルダ(package-lock.jsonがある階層)
     npm install react-hook-form
     npm install react-youtube
+    npm install next-auth
+    (npm uninstall next-auth )
+
 
 2. githubでprodubt作成
    
@@ -73,6 +76,6 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
 ・コード変更後（ブランチＡになっている状態）
     git add .
     git commit -m "～～"
-    git checkout (ブランチＢ)
+    git checkout -c  (ブランチＢ)
     git merge (ブランチＡ)
 

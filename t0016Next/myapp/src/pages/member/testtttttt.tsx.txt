@@ -1,3 +1,6 @@
+//削除予定
+//Next使わずにログイン機能実装した名残？
+
 import { useState } from "react";
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';

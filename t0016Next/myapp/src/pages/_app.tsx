@@ -1,9 +1,41 @@
+// https://zenn.dev/junnuj/articles/fb0ca45967c6c2
 
-import { SessionProvider } from 'next-auth/react'; //セッションへアクセスするモジュール
-import { useState, useEffect } from 'react';
-import type { AllData, Streamer, StreamerMovie } from '../types/singdata'; //type{}で型情報のみインポート
-import type { User } from '../types/usertype'; //type{}で型情報のみインポート
+import type { AppProps } from "next/app";
+import { SessionProvider } from "next-auth/react";
 
+function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
+  return (
+    <SessionProvider session={session}> 
+      <Component {...pageProps} />
+    </SessionProvider>
+  );
+}
+
+{/* <SessionProvider session={session}> でsession情報を参照している */}
+
+export default MyApp;
+
+
+// ----------------
+// import { SessionProvider } from 'next-auth/react'; //セッションへアクセスするモジュール
+// import { useState, useEffect } from 'react';
+// import type { AllData, Streamer, StreamerMovie } from '../types/singdata'; //type{}で型情報のみインポート
+// import type { User } from '../types/usertype'; //type{}で型情報のみインポート
+
+
+
+// function MyApp({ Component, pageProps: { session, ...otherProps } }) {
+//     console.log(session);
+  
+//     return (
+//       <SessionProvider session={session}>
+//         <Component {...otherProps} />
+//       </SessionProvider>
+//     );
+//   }
+  
+//   export default MyApp;
+// ーーーーーーーー
 
 // function UserProfile({ User:MemberId }) {
 //   const [userData, setUserData] = useState(null);
@@ -33,28 +65,16 @@ import type { User } from '../types/usertype'; //type{}で型情報のみイン�
 // }
 
 
-
-function MyApp({
-   Component, 
-   pageProps: { session, ...pageProps } }) {
-  return (
-    <SessionProvider session={session}>
-      <Component {...pageProps} />
-    </SessionProvider>
-  );
-}
-
-
-
-
+// // 【Next.js・Typescript】NexAuthを使ってログイン認証をする
+// // 参考　https://zenn.dev/furai_mountain/articles/b54c83f3dd4558
 // function MyApp({
-//   Component,
-//   pageProps: { session, ...pageProps },
-//   router,
-// }: AppPropsWithLayout) {
-//   useEffect(() => {
-//     // ここに全ページ共通で行う処理
-//     router.push("/login");
-//   }, []);}
+//    Component, 
+//    pageProps: { session, ...pageProps } }) {
+//   return (
+//     <SessionProvider session={session}>
+//       <Component {...pageProps} />
+//     </SessionProvider>
+//   );
+// }
 
-export default MyApp;
+// export default MyApp;

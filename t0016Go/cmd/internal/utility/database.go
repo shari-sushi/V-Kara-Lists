@@ -39,7 +39,7 @@ func init() {
 
 	} //このif Db文消したい意味的に重複してる
 
-	fmt.Printf("%s\n%s\n", path, err)
+	fmt.Printf("path=%s\n, err=%s\n", path, err)
 
 	// checkConnect(1)
 
