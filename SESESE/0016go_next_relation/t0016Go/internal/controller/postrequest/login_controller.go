@@ -10,21 +10,23 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
-	"github.com/sharin-sushi/0016go_next_relation/internal/controller/model"
-	"github.com/sharin-sushi/0016go_next_relation/internal/types"
+	"github.com/sharin-sushi/0016go_next_relation/t0016Gointernal/internal/controller/model"
+	"github.com/sharin-sushi/0016go_next_relation/t0016Gointernal/internal/types"
 )
 
 // /signup
 func PostSignup(c *gin.Context) {
-	// var userinfo types.User
-	var json types.UserInfoFromFront
-	if err := c.ShouldBindJSON(&json); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	//r.BodyがHTTPリクエストのボディを参照し、&userinfoに格納
-	fmt.Printf("r.Bodyの処理完了し、userinfo=%v", userinfo)
-	c.JSON(http.StatusOK, gin.H{"str": json.FieldStr, "int": json.FieldInt, "bool": json.FieldBool})
+
+	// なにこれ
+	// // var userinfo types.User
+	// var json types.UserInfoFromFront
+	// if err := c.ShouldBindJSON(&json); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
+	// //r.BodyがHTTPリクエストのボディを参照し、&userinfoに格納
+	// fmt.Printf("r.Bodyの処理完了し、userinfo=%v", userinfo)
+	// c.JSON(http.StatusOK, gin.H{"str": json.FieldStr, "int": json.FieldInt, "bool": json.FieldBool})
 
 	// GPTより、
 	// func SomeHandler(c *gin.Context) {
