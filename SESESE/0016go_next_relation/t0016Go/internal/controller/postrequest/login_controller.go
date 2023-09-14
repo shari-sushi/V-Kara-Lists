@@ -10,8 +10,8 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 
-	"github.com/sharin-sushi/0016go_next_relation/t0016Gointernal/internal/controller/model"
-	"github.com/sharin-sushi/0016go_next_relation/t0016Gointernal/internal/types"
+	"github.com/sharin-sushi/0016go_next_relation/internal/controller/model"
+	"github.com/sharin-sushi/0016go_next_relation/internal/types"
 )
 
 // /signup
