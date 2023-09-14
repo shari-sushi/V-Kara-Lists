@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sharin-sushi/0016go_next_relation/t0016Gointernal/utility"
+	"github.com/sharin-sushi/0016go_next_relation/internal/utility"
 )
 
 var m = "www.youtube.com/live/AlHRqSsF--8"
