@@ -13,11 +13,10 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-jwt/jwt"
-
 	"github.com/sharin-sushi/0016go_next_relation/internal/controller/crypto"
 	"github.com/sharin-sushi/0016go_next_relation/internal/types"
 	"github.com/sharin-sushi/0016go_next_relation/internal/utility/token"
-	"github.com/sharin-sushi/0016go_next_relation/t0016Go/pkg/middleware"
+	"github.com/sharin-sushi/0016go_next_relation/pkg/middleware"
 
 	// "github.com/sharin-sushi/0022loginwithJWT/t0022Go/pkg/middleware"
 

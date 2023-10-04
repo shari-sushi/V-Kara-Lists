@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/sharin-sushi/0022loginwithJWT/t0022Go/internal/utility/token"
+	"github.com/sharin-sushi/0016go_next_relation/internal/utility/token"
 )
 
 func AuthMiddleware(c *gin.Context) {
