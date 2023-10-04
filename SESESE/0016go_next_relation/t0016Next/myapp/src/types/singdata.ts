@@ -6,12 +6,6 @@ export type SingData= {
     song		:	string;
   };
 
-<<<<<<< HEAD
-=======
-
->>>>>>> c5ee77985de8896546e595f87c1062a979d740b7
-//   import { SingData } from './types'
-
 export type AllData= {
 	StreamerId		:	number; 
 	StreamerName	:	string;
@@ -61,8 +55,4 @@ export type KaraokeList= {
 	SingStart		:	string | null;
 	Song			:	string | null;
 	SongInputerId	:	string | null;
-<<<<<<< HEAD
-};
-=======
-};
->>>>>>> c5ee77985de8896546e595f87c1062a979d740b7
+}

@@ -7,3 +7,9 @@ export type User= {
     PassWord	:	string;
     CreatedAt	:	Date |null;		
   };
+
+  
+export type LoginUser= {
+  Email		:	string|null;
+  Password	:	string;	
+};

@@ -1,16 +1,19 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	"github.com/rs/cors"
 
 	"github.com/sharin-sushi/0016go_next_relation/internal/controller/postrequest"
 	"github.com/sharin-sushi/0016go_next_relation/internal/crud"
+	"github.com/sharin-sushi/0016go_next_relation/internal/types"
+
 	"github.com/sharin-sushi/0016go_next_relation/internal/utility"
 )
 
@@ -18,6 +21,22 @@ import (
 
 func main() {
 	r := gin.Default()
+
+	r.Use(cors.New(cors.Config{
+		// アクセス許可するオリジン
+		AllowOrigins: []string{"https://localhost:3000"},
+		// AllowOrigins: []string{"*"}, //ワイルドカードだが、クライアント側がcredenrials incliudeでは許されてない。
+
+		// アクセス許可するHTTPメソッド
+		AllowMethods: []string{"POST", "GET", "PUT", "DELETE"},
+		// 許可するHTTPリクエストヘッダ
+		// AllowHeaders: []string{"Content-Type"},
+		AllowHeaders: []string{"Origin", "Content-Length", "Content-Type", "Cookie"},
+		// cookieなどの情報を許可するかどうか
+		AllowCredentials: true,
+		// // preflightリクエストの結果をキャッシュする時間
+		// MaxAge: 24 * time.Hour,
+	}))
 
 	//配信者
 	r.GET("/", crud.GetAllStreamers)
@@ -39,8 +58,12 @@ func main() {
 
 	//ログイン、サインナップ、ログアウト ※ブラウザでは"/"にリンク有り
 	r.POST("/signup", postrequest.PostSignup)
-	r.POST("/login", postrequest.PostLogin)
+	r.POST("/login", postrequest.PostLogIn)
 	r.POST("/logout", postrequest.PostLogout) //未作成
+
+	r.POST("/signup2", utility.CalltoSignUpHandler)
+	r.POST("/login2", utility.CalltoLogInHandler)
+	r.POST("/logout2", utility.LogoutHandler)
 
 	// 　　/mypage/~ をグループ化→/maypageとその下層へアクセスしたとき全てに適応　→１つなら要らか？
 	//　　 ("~")　にアクセスしたときにセッション確認し強制で{}のページへ遷移
@@ -57,20 +80,7 @@ func main() {
 	// //開発者用　パスワード照会（ リポジトリ0019で作り直した）
 	// r.GET("/envpass", postrequest.EnvPass)
 
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"},
-		AllowCredentials: true,
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
-	})
-	handler := c.Handler(r)
-
-	// handler := cors.Default().Handler(r)
-
-	if err := http.ListenAndServe(":8080", handler); err != nil {
-		log.Fatal("ListenAndServe:", err)
-	}
-
-	r.Run(":8080")
+	r.RunTLS(":8080", "../../key/server.pem", "../../key/server_unencrypted.key")
 }
 
 type SessionInfo struct {
@@ -98,3 +108,42 @@ func sessionCheck() gin.HandlerFunc {
 		log.Println("ログインチェック終わり")
 	}
 }
+
+var streamer types.Streamer
+var streamers []types.Streamer
+var stsmos []*types.StreamerMovie //Scan()するからポインタ？
+
+func GetAllStreamers(c *gin.Context) {
+	/////streamers 全件取得
+	resultSts := utility.Db.Find(&streamers)
+	if resultSts.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"resultStsのerror": resultSts.Error.Error()})
+		return
+	}
+
+	fmt.Printf("全件取得streamers=%v \n", streamers)
+
+	////streamers, movies joinして全件取 ReadMoviesに同じ
+	resultStsmo := utility.Db.Model(&streamers).Select("streamers.streamer_id, streamers.streamer_name, m.movie_id, m.movie_url, m.movie_title").Joins("LEFT JOIN movies m USING(streamer_id)").Scan(&stsmos)
+	// SELECT ~略~ FROM streamers LEFT JOIN movies m USING streamer_id
+	if resultStsmo.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"resultStsmoのerror": resultStsmo.Error.Error()})
+		return
+	}
+	// for resultStsmo.Next() {
+	// 	stsmos.Scan(&stsmo.Streamer.StreamerId, &stsmo.Streamer.StreamerName, &stsmo.Streamer.NameKana, &stsmo.Movie.MovieId, &stsmo.Movie.MovieUrl, &stsmo.Movie.MovieTitle)
+
+	// }
+	fmt.Printf("stsmos=%v, \n streamers=%v \n", stsmos, streamers)
+
+	for _, stsmo := range stsmos {
+		fmt.Printf("%+v\n", *stsmo)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"streamers":                  streamers,
+		"streamers_and_moviesmovies": stsmos,
+	})
+}
+
+// SELECT streamers.streamer_id, streamers.streamer_name, m.movie_id, m.movie_url, m.movie_title FROM streamers LEFT JOIN movies m USING(streamer_id)
