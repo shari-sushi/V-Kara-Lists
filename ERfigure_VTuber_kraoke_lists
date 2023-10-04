@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2023-10-04T07:59:53.586Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 OPR/102.0.0.0" etag="vwNM9xRtz7p3xzPmoXgf" version="22.0.2" type="github">
+<mxfile host="app.diagrams.net" modified="2023-10-04T08:02:12.572Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 OPR/102.0.0.0" etag="BIw3xkgZhEynX8ZnasA8" version="22.0.2" type="github">
   <diagram name="Page-1" id="EkkEaCrMnFjlFCqMtYy3">
-    <mxGraphModel dx="1064" dy="1630" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+    <mxGraphModel dx="507" dy="776" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -40,7 +40,7 @@
             <mxRectangle width="30" height="100" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="K46y1GgOCIeUEtpBjdzW-11" value="streamer_name           VARCHAR(20)&#xa;name_kana                  VARCHAR(20)&#xa;self_intro_url                VARCHAR(100)&#xa;streamer_inputer_id     VARCHAR(4)&#xa;&#xa;INDEX(streamer_id)" style="shape=partialRectangle;overflow=hidden;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;verticalAlign=top;" parent="K46y1GgOCIeUEtpBjdzW-9" vertex="1">
+        <mxCell id="K46y1GgOCIeUEtpBjdzW-11" value="streamer_name           VARCHAR(20)&#xa;name_kana                  VARCHAR(20)&#xa;self_intro_url                VARCHAR(100)&#xa;streamer_inputer_id     VARCHAR(4)" style="shape=partialRectangle;overflow=hidden;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;verticalAlign=top;" parent="K46y1GgOCIeUEtpBjdzW-9" vertex="1">
           <mxGeometry x="30" width="220" height="100" as="geometry">
             <mxRectangle width="220" height="100" as="alternateBounds" />
           </mxGeometry>
