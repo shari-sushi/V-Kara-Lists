@@ -1,3 +1,5 @@
+// 削除予定？
+
 import { User } from '../../types/usertype'
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";

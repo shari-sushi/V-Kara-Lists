@@ -19,8 +19,8 @@ var mos []types.Movie
 var ka types.KaraokeList
 var kas []types.KaraokeList
 
-var stsmo types.StremerMovie
-var stsmos []*types.StremerMovie //Scan()するからポインタ？
+var stsmo types.StreamerMovie
+var stsmos []*types.StreamerMovie //Scan()するからポインタ？
 
 var all types.AllColumns
 var alls []*types.AllColumns

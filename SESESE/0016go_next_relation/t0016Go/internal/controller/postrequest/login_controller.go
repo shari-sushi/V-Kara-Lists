@@ -1,8 +1,6 @@
 package postrequest
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	"fmt"
 	"log"
 	"net/http"
@@ -83,7 +81,7 @@ func PostSignup(c *gin.Context) {
 
 // "/login"
 
-func PostLogin(c *gin.Context) {
+func PostLogIn(c *gin.Context) {
 	type test struct {
 		csrfToken string
 		types.Member
@@ -100,21 +98,29 @@ func PostLogin(c *gin.Context) {
 	}
 	// fmt.Printf("bitしたform=%v \n", form)
 
-	sessionID := generateSessionID()
-	fmt.Printf("sessionID=%v \n", sessionID)
-	c.SetCookie("LoginCookie", sessionID, 3600, "/", "localhost", false, true) //最後のとこ　HttpOnly trueならフロントで読み取れない
-	// POSTMANでCookieにセットされていること確認ok
 	fmt.Printf("bind内容:crsfToken=%v \n", form.csrfToken)
 
 	fmt.Printf("bind内容:ID=%v, name=%v, mail=%v, pass=%v, crat%v \n", form.MemberId, form.MemberName, form.Email, form.Password, form.CreatedAt)
 	//ここまでは処理確認ok
-	member, err := model.Login(form.MemberName, form.Password)
+	member, err := model.InquireIntoMember(form.MemberName, form.Password)
 	if err != nil {
 		c.Redirect(301, "/login")
 		return
 	}
 	fmt.Printf("DBから取得した情報=%+v \n ", member) //%vでも%sでも L1[GIN]
-	sessionManage(c, *member)
+
+	jwtToken, err := GenerateToken(member.MemberId)
+	if err != nil {
+		fmt.Print("トークンの生成に失敗しました。")
+		c.Redirect(301, "/login")
+		return
+	}
+
+	// sessionID := generateSessionID() →代わりにJWTtokenを使用
+	// sessionManage(c, *member)
+
+	c.SetCookie("loginToken", jwtToken, 3600, "/", "localhost", false, true) //最後のとこ　HttpOnly trueならフロントで読み取れない
+	// POSTMANでCookieにセットされていること確認ok
 
 	// フロント側の仕様
 	//サーバーがJSON形式のレスポンスを返し、その中に
@@ -122,11 +128,9 @@ func PostLogin(c *gin.Context) {
 	// true であれば認証成功
 
 	responseData := gin.H{
-		"status":     "ok",
-		"logined":    "authenticated",
-		"message":    "Login successful",
 		"memberId":   member.MemberId,
 		"memberName": member.MemberName,
+		"message":    "Login successful",
 	}
 	fmt.Println(responseData)
 	c.JSON(200, responseData)
@@ -140,26 +144,26 @@ func PostLogout(c *gin.Context) {
 	session.Save()
 }
 
-//SessionManager.go　　セッション生成(alive, ID, 名前)
-func sessionManage(g *gin.Context, user types.Member) {
-	session := sessions.Default(g) //現在のセッションを取得
-	session.Set("alive", true)     //取得したセッションに値を設定
-	session.Set("memberID", user.MemberId)
-	session.Set("memberName", user.MemberName)
-	err := session.Save() //セッションの変更を保存
+// //SessionManager.go　　セッション生成(alive, ID, 名前)
+// func sessionManage(g *gin.Context, user types.Member) {
+// 	session := sessions.Default(g) //現在のセッションを取得
+// 	session.Set("alive", true)     //取得したセッションに値を設定
+// 	session.Set("memberID", user.MemberId)
+// 	session.Set("memberName", user.MemberName)
+// 	err := session.Save() //セッションの変更を保存
 
-	if err != nil {
-		log.Printf("Error saving session: %v", err)
-	}
-}
+// 	if err != nil {
+// 		log.Printf("Error saving session: %v", err)
+// 	}
+// }
 
-func generateSessionID() string {
-	b := make([]byte, 16) // 16バイトのランダムデータを生成
-	rand.Read(b)
+// func generateSessionID() string {
+// 	b := make([]byte, 16) // 16バイトのランダムデータを生成
+// 	rand.Read(b)
 
-	return hex.EncodeToString(b)
+// 	return hex.EncodeToString(b)
 
-}
+// }
 
 // sessionおくる…？　ChatGPTから教えてもらったけど、やってるこは現状とほぼ一緒なんだよな多分
 //  http.SetCookie(c.Writer, &cookie)は既現状にない？

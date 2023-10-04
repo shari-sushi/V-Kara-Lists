@@ -7,21 +7,6 @@
   min-height: 100vh;
 }
 
-/* editで使用 */
-.container {
-  padding: 6rem; 
-  /* ないと上に詰まる */
-  flex-direction: column;
-  display: flex;
-  align-items: center;
-  /* 横方向に中央に揃える、かつ長さを短くしている */
-}
-.item {
-  margin-top: 1rem;
-  min-height: 1.5rem;
-  font-size: 1rem;
-}
-
 .description {
   display: inherit;
   justify-content: inherit;

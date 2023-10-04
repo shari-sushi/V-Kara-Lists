@@ -1,80 +1,47 @@
-// https://zenn.dev/junnuj/articles/fb0ca45967c6c2
+import '@/styles/globals.css'
+import type { AppProps } from 'next/app'
+// import { useRouter } from 'next/router'
+// import { VFC, useEffect } from 'react'
+// import type { GetAccessControl } from '../index.d'
 
-import type { AppProps } from "next/app";
-import { SessionProvider } from "next-auth/react";
 
-function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
-  return (
-    <SessionProvider session={session}> 
-      <Component {...pageProps} />
-    </SessionProvider>
-  );
+
+// const useAccessControll = (getAccessControll: GetAccessControl) => {
+//   const router = useRouter()
+//   useEffect(() => {
+//     const controll = async () => {
+//       const accessControl = await getAccessControll()
+//       if (!accessControl) return
+//       router[accessControl.type](accessControl.destination)
+//     }
+//     controll()
+//   }, [router]) 
+// }
+
+// ↑により呼び出され、
+// アクセスしたページにaccessControlが定義さてていない場合にはこれが処理される
+// const accessControl = () => {
+//   // throw new Error('getAccessControl が定義されていません。');
+//   return console.log("getAccessControlが定義されていません。")
+// };
+
+// type Props = AppProps & {
+//   Component: {
+//     getAccessControl?: GetAccessControl
+//   }
+// }
+
+const App = ({ Component, pageProps }) => {
+  // const { getAccessControl = accessControl } = Component
+  // useAccessControll(getAccessControl)
+  return <Component {...pageProps} />
 }
 
-{/* <SessionProvider session={session}> でsession情報を参照している */}
+export default App
 
-export default MyApp;
-
-
-// ----------------
-// import { SessionProvider } from 'next-auth/react'; //セッションへアクセスするモジュール
-// import { useState, useEffect } from 'react';
-// import type { AllData, Streamer, StreamerMovie } from '../types/singdata'; //type{}で型情報のみインポート
-// import type { User } from '../types/usertype'; //type{}で型情報のみインポート
-
-
-
-// function MyApp({ Component, pageProps: { session, ...otherProps } }) {
-//     console.log(session);
-  
-//     return (
-//       <SessionProvider session={session}>
-//         <Component {...otherProps} />
-//       </SessionProvider>
-//     );
-//   }
-  
-//   export default MyApp;
-// ーーーーーーーー
-
-// function UserProfile({ User:MemberId }) {
-//   const [userData, setUserData] = useState(null);
-
-//   useEffect(() => {
-//     async function fetchUserData() {
-//       const response = await fetch(`/api/users/${MemberId}`);
-//       const data = await response.json();
-//       setUserData(data);
-//     }
-
-//     fetchUserData();
-//   }, [MemberId]); // userIdが変わるたびにデータを再フェッチ
-
-//   return (
-//     <div>
-//       {userData ? (
-//         <>
-//           <h1>{userData.name}</h1>
-//           <p>{userData.description}</p>
-//         </>
-//       ) : (
-//         <p>Loading...</p>
-//       )}
-//     </div>
-//   );
+// ***memo***
+// const App: VFC<Props> = ({ Component, pageProps }) => {
+//   const { getAccessControl = accessControl } = Component
+//   useAccessControll(getAccessControl)
+//   return <Component {...pageProps} />
 // }
-
-
-// // 【Next.js・Typescript】NexAuthを使ってログイン認証をする
-// // 参考　https://zenn.dev/furai_mountain/articles/b54c83f3dd4558
-// function MyApp({
-//    Component, 
-//    pageProps: { session, ...pageProps } }) {
-//   return (
-//     <SessionProvider session={session}>
-//       <Component {...pageProps} />
-//     </SessionProvider>
-//   );
-// }
-
-// export default MyApp;
