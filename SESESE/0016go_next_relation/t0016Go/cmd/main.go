@@ -56,6 +56,9 @@ func main() {
 	r.Use(sessions.Sessions("mainCookieSession", store))
 	//↑どうなってるのか謎。
 
+	// /cud/~, /users/~にアクセスした際にmiddlewareでアクセスに認証制限
+	utility.CallGetMemberProfile(r)
+
 	//ログイン、サインナップ、ログアウト ※ブラウザでは"/"にリンク有り
 	r.POST("/signup", postrequest.PostSignup)
 	r.POST("/login", postrequest.PostLogIn)
@@ -80,7 +83,7 @@ func main() {
 	// //開発者用　パスワード照会（ リポジトリ0019で作り直した）
 	// r.GET("/envpass", postrequest.EnvPass)
 
-	r.RunTLS(":8080", "../../key/server.pem", "../../key/server_unencrypted.key")
+	r.RunTLS(":8080", "../../key/server.pem", "../../key/server.key")
 }
 
 type SessionInfo struct {

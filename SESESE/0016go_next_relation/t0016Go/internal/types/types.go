@@ -8,7 +8,7 @@ import (
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/sharin-sushi/002216go_next_relation/t0022Go/internal/controller/crypto"
+	"github.com/sharin-sushi/0016go_next_relation/internal/controller/crypto"
 
 	"gorm.io/gorm"
 )

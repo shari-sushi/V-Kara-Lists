@@ -5,6 +5,8 @@
     npm install react-hook-form
     npm install react-youtube
     npm install next-auth
+
+    npm install js-cookie
     (npm uninstall next-auth )
 
 
