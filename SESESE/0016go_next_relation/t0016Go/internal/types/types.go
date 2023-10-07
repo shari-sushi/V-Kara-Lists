@@ -1,6 +1,7 @@
 package types
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -70,66 +71,48 @@ type AllColumns struct {
 	KaraokeListInputerId int
 }
 
-//ーーースネーク
-// streamer_id
-// streamer_name
-// name_kana
-// self_intro_url
-// stream_inputer_id
-// movie_id
-// movie_url
-// movie_title
-// song_id
-// sing_start
-// song
-// song_inputer_id
-
-// User
-
-//最初、シンボル変更できなかったので、どこかで変更残りがあるかも User→Listener
-type Listener struct { //dbに対してはtable名 小文字かつ複数形に自動変換
-	//gorm.Model CreatedAtは機能無し
+//// User
+type Listener struct {
 	ListenerId   int `gorm:"primaryKey"`
 	ListenerName string
 	Email        string
 	Password     string
 	CreatedAt    time.Time
-	UpdatedAt    time.Time //new
-	DeletedAt    time.Time //new
+	UpdatedAt    sql.NullTime //new time.Timeのままで良かったかも
+	DeletedAt    sql.NullTime //new
 }
 
-type EntryMember struct {
-	//gorm.Model CreatedAtは機能無し
-	// MemberId   string
+type EntryListener struct {
 	ListenerName string
 	Email        string
 	Password     string
 }
 
-type UserInfoFromFront struct { //dbに対してはtable名 小文字かつ複数形に自動変換
-	//gorm.Model CreatedAtは機能無し
+type UserInfoFromFront struct {
 	ListenerId   string
 	ListenerName string
 	Email        string
 	Password     string
 }
 
-func (m *Listener) CreateMember(db *gorm.DB) (Listener, error) { //Member構造体の型で新規発行したIDと共にユーザー情報を返す
+//listener構造体の型で新規発行したIDと共にユーザー情報を返す
+func (m *Listener) CreateMember(db *gorm.DB) (Listener, error) {
 	fmt.Printf("CreateMemberで使用されるm= %v \n", m)
 
 	user := Listener{
 		ListenerName: m.ListenerName,
 		Email:        m.Email,
-		Password:     crypto.PasswordEncryptNoBackErr(m.Password),
+		Password:     crypto.EncryptPasswordWithoutBackErr(m.Password),
 	}
 	// ここまで動作確認
 
-	// newId, err := CreateNewUserId(db) //最新ユーザーのidから新規ユーザーidを発行
+	//最新ユーザーのidから新規ユーザーidを発行 id = L01 (string)だったときのコード
+	// newId, err := CreateNewUserId(db)
 	// if err != nil {
 	// 	fmt.Printf("Failed create a new id")
 	// 	return user, err
 	// }
-	// fmt.Println(2.3)
+
 	// user.Id = newId
 	fmt.Printf("新規id込みでuser= %v \n", user)
 	result := db.Create(&user)
@@ -161,9 +144,27 @@ func (m *Listener) Validate() error {
 	return err
 }
 
+func (m *EntryListener) Validate() error {
+	err := validation.ValidateStruct(m,
+		validation.Field(&m.ListenerName,
+			validation.Required.Error("Name is requred"),
+			validation.Length(2, 20).Error("Name needs 2~20 cahrs"),
+		),
+		validation.Field(&m.Password,
+			validation.Required.Error("Password is required"),
+			validation.Length(4, 20).Error("Password needs 4 ~ 20 chars"),
+		),
+		validation.Field(&m.Email,
+			validation.Required.Error("Email is required"),
+			validation.Length(10, 100).Error("Email needs 4 ~ 20 chars"), //メアドは現状、これ以外の制限はしてない
+		),
+	)
+	return err
+}
+
 func FindUserByEmail(db *gorm.DB, email string) (Listener, error) {
 	var user Listener
-	result := db.Where("email = ?", email).First(&user)
+	result := db.Where("email = ?", email).Find(&user) //FirstからFindに変えた
 	fmt.Printf("Emailで取得したuser= %v \n", user)
 	return user, result.Error
 }

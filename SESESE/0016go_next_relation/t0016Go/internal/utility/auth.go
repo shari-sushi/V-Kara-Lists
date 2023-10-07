@@ -77,34 +77,18 @@ func CalltoSignUpHandler(c *gin.Context) {
 	h := Handler{DB: Db}
 	h.SignUpHandler(c)
 }
-
 func (h *Handler) SignUpHandler(c *gin.Context) {
-	var signUpInput types.EntryMember
-	err := c.ShouldBind(&signUpInput)
+	var user types.Listener
+	err := c.ShouldBind(&user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid request body",
 		})
 		return
 	}
-	fmt.Printf("bindしたsignUpInput = %v \n", signUpInput)
+	fmt.Printf("bindしたuser = %v \n", user)
 
-	existingUser, _ := types.FindUserByEmail(h.DB, signUpInput.Email) //メアドが未使用ならnil
-	if existingUser.ListenerId != 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error":   err.Error(),
-			"message": "the E-mail address already in use",
-		})
-		return
-	}
-
-	member := &types.Listener{
-		ListenerName: signUpInput.ListenerName,
-		Password:     signUpInput.Password,
-		Email:        signUpInput.Email,
-	}
-
-	err = member.Validate()
+	err = user.Validate()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -112,34 +96,37 @@ func (h *Handler) SignUpHandler(c *gin.Context) {
 		return
 	}
 
-	// member_id = L0001としてた頃の名残
-	newMember, err := member.CreateMember(h.DB) //Member構造体の型で新規発行したIDと共にユーザー情報を返す
-	if err != nil {
-		fmt.Printf("新規idのerr= %v \n", err)
+	existingUser, _ := types.FindUserByEmail(h.DB, user.Email) //メアドが未使用ならnil
+	fmt.Printf("existingUser= %v \n", existingUser)
+	// ↓既存アカがあった際に、処理停止してくれるけど、c.JSONとfmt.Printはしてくれない、、、。
+	if existingUser.ListenerId != 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Failed to create user or find user after it",
+			"error":   err.Error(),
+			"message": "the E-mail address already in use",
+		})
+		fmt.Printf("existingUser !=0 のエラーは感知できた\n")
+		return
+	}
+	fmt.Printf("existingUser !=0 のエラーを貫通してしまった \n")
+
+	//passwordを
+	user.Password = crypto.EncryptPasswordWithoutBackErr(user.Password)
+
+	result := Db.Select("listener_name", "email", "password").Create(&user)
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": result.Error,
 		})
 		return
 	}
-	fmt.Printf("新規id=%v \n", newMember)
 
-	// Token発行　＝　JWTでいいのかな？
-	token, err := token.GenerateToken(newMember.ListenerId)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Failed to sign up",
-		})
-		return
-	}
-
-	// Cookieにトークンをセット
-	cookieMaxAge := 60 * 60 * 12 //12h
-	c.SetCookie("token", token, cookieMaxAge, "/", "localhost", false, true)
+	// IdをJWT化しCookieにセット
+	trigerSetCookiebyUserAuth(c, user.ListenerId)
 
 	c.JSON(http.StatusOK, gin.H{
-		"memberId":   newMember.ListenerId,
-		"memberName": newMember.ListenerName,
-		"message":    "Successfully created user, and logined",
+		// "memberId":   newMember.ListenerId,
+		// "memberName": newMember.ListenerName,
+		"message": "Successfully created user, and logined",
 	})
 }
 
@@ -176,15 +163,26 @@ func (h *Handler) LoginHandler(c *gin.Context) {
 	}
 	fmt.Printf("ChechkPassErr=%v \n", CheckPassErr)
 
+	// IdをJWT化しCookieにセット
+	trigerSetCookiebyUserAuth(c, user.ListenerId)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":      "Successfully loggined",
+		"listenerId":   user.ListenerId,
+		"listenerName": user.ListenerName,
+	})
+}
+
+// IdをJWT化しCookieにセット。ログイン、サインイン時に呼び出される。
+func trigerSetCookiebyUserAuth(c *gin.Context, ListenerId int) {
 	// Token発行　＝　JWTでいいのかな？
-	token, err := token.GenerateToken(user.ListenerId)
+	token, err := token.GenerateToken(ListenerId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Failed to sign up",
 		})
 		return
 	}
-
 	// Cookieにトークンをセット
 	cookieMaxAge := 60 * 60 * 12
 	// c.SetCookie("token", token, cookieMaxAge, "/", "localhost", false, true)
@@ -205,12 +203,6 @@ func (h *Handler) LoginHandler(c *gin.Context) {
 	}
 	http.SetCookie(c.Writer, cookie)
 	fmt.Printf("発行したcookie= %v /n", cookie)
-
-	c.JSON(http.StatusOK, gin.H{
-		"message":      "Successfully loggined",
-		"listenerId":   user.ListenerId,
-		"listenerName": user.ListenerName,
-	})
 }
 
 // mainにてmiddleware管理

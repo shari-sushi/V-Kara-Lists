@@ -54,7 +54,7 @@ func main() {
 	r.DELETE("/delete", crud.ReadAllVtubers) //未
 
 	//ログイン、サインナップ、ログアウト ※ブラウザでは"/"にリンク有り
-	r.POST("/signup2", utility.CalltoSignUpHandler) //未確認
+	r.POST("/signup2", utility.CalltoSignUpHandler) //動作ほぼok　登録済みのメアドの時に、処理は止めてくれるけど、エラー内容を返してくれない…。
 	r.POST("/login2", utility.CalltoLogInHandler)   //動作ok
 	r.GET("/logout2", utility.LogoutHandler)        //動作ok
 
