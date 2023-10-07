@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/gin-contrib/cors"
@@ -10,7 +9,6 @@ import (
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 
-	"github.com/sharin-sushi/0016go_next_relation/internal/controller/postrequest"
 	"github.com/sharin-sushi/0016go_next_relation/internal/crud"
 	"github.com/sharin-sushi/0016go_next_relation/internal/types"
 
@@ -38,47 +36,46 @@ func main() {
 		// MaxAge: 24 * time.Hour,
 	}))
 
-	//配信者
-	r.GET("/", crud.GetAllStreamers)
-	r.POST("/", crud.PostStreamer)
-	r.PUT("/", crud.PutStreamer)
-	r.DELETE("/", crud.DeletetStreamer)
-
-	//動画
-	r.GET("/movie", crud.ReadMovies) //未作成
-
-	//歌
-	r.GET("/sing", crud.ReadSings)
-
+	// いらんくね
 	//https://qiita.com/koshi_an/items/12da955a1823b7f3e178より
 	store := cookie.NewStore([]byte("OimoMochiMochIimoMochiOimo20000530"), []byte("sora4mama1997087")) //byteのスライスに変換することで値を変更できるらしい
 	//Sesion()の第１引数がCookie名としてセットされ、以後自動で使用され、ブラウザに送信される）らしい
 	r.Use(sessions.Sessions("mainCookieSession", store))
 	//↑どうなってるのか謎。
 
-	// /cud/~, /users/~にアクセスした際にmiddlewareでアクセスに認証制限
-	utility.CallGetMemberProfile(r)
+	//topページ
+	r.GET("/", crud.ReadAllVtubers)                   //動作ok
+	r.GET("/vtuber=[id]", crud.ReadAllVtubers)        //未
+	r.GET("/vtuber=[id]/movies", crud.ReadAllVtubers) //未
+	r.GET("/sings", crud.ReadAllVtubers)              //未
+
+	r.GET("/edit", crud.ReadAllVtubers)      //未
+	r.POST("/edit", crud.ReadAllVtubers)     //未
+	r.DELETE("/delete", crud.ReadAllVtubers) //未
 
 	//ログイン、サインナップ、ログアウト ※ブラウザでは"/"にリンク有り
-	r.POST("/signup", postrequest.PostSignup)
-	r.POST("/login", postrequest.PostLogIn)
-	r.POST("/logout", postrequest.PostLogout) //未作成
+	r.POST("/signup2", utility.CalltoSignUpHandler) //未確認
+	r.POST("/login2", utility.CalltoLogInHandler)   //動作ok
+	r.GET("/logout2", utility.LogoutHandler)        //動作ok
 
-	r.POST("/signup2", utility.CalltoSignUpHandler)
-	r.POST("/login2", utility.CalltoLogInHandler)
-	r.POST("/logout2", utility.LogoutHandler)
+	// /cud/~, /users/~にアクセスした際にmiddlewareでアクセスに認証制限
+	utility.CallGetMemberProfile(r) //未
+
+	// r.POST("/signup", postrequest.PostSignup)
+	// r.POST("/login", postrequest.PostLogIn)
+	// r.POST("/logout", postrequest.PostLogout) //未作成
 
 	// 　　/mypage/~ をグループ化→/maypageとその下層へアクセスしたとき全てに適応　→１つなら要らか？
 	//　　 ("~")　にアクセスしたときにセッション確認し強制で{}のページへ遷移
 	//		↑違ったかも
 	//	/maypage/{}で指定したpath にアクションがあった際にUse(sessionChechk())を実行する。
-	r.Group("/mypage").Use(sessionCheck())
-	{
-		// r.GET("/", mypage.Mypage) //未作成　マイページにしたい
-	}
+	// r.Group("/mypage").Use(sessionCheck())
+	// {
+	// 	// r.GET("/", mypage.Mypage) //未作成　マイページにしたい
+	// }
 
-	//Cookie　削除予定
-	r.GET("/cookie", utility.GetCookie)
+	// //Cookie　別で処理してるから削除予定
+	// r.GET("/cookie", utility.GetCookie)
 
 	// //開発者用　パスワード照会（ リポジトリ0019で作り直した）
 	// r.GET("/envpass", postrequest.EnvPass)
@@ -86,37 +83,37 @@ func main() {
 	r.RunTLS(":8080", "../../key/server.pem", "../../key/server.key")
 }
 
-type SessionInfo struct {
-	MemberId interface{}
-	// MemberName interface{}
-}
+// type SessionInfo struct {
+// 	MemberId interface{}
+// 	// MemberName interface{}
+// }
 
 //https://qiita.com/koshi_an/items/12da955a1823b7f3e178より
 //ミドルウェア
-func sessionCheck() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var LoginInfo SessionInfo
-		session := sessions.Default(c)               //与えられたkeyの値が存在すればそれを返し、無ければpanic
-		LoginInfo.MemberId = session.Get("MemberId") //与えられたkeyに関連するsessionを返す
+// func sessionCheck() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		var LoginInfo SessionInfo
+// 		session := sessions.Default(c)               //与えられたkeyの値が存在すればそれを返し、無ければpanic
+// 		LoginInfo.MemberId = session.Get("MemberId") //与えられたkeyに関連するsessionを返す
 
-		// セッションがない場合、ログインフォームをだす
-		if LoginInfo.MemberId == nil {
-			log.Println("ログインしていません")
-			c.Redirect(http.StatusMovedPermanently, "/login")
-			c.Abort() // これがないと続けて処理されてしまう
-		} else {
-			c.Set("UserId", LoginInfo.MemberId) // ユーザidをセット
-			c.Next()
-		}
-		log.Println("ログインチェック終わり")
-	}
-}
+// 		// セッションがない場合、ログインフォームをだす
+// 		if LoginInfo.MemberId == nil {
+// 			log.Println("ログインしていません")
+// 			c.Redirect(http.StatusMovedPermanently, "/login")
+// 			c.Abort() // これがないと続けて処理されてしまう
+// 		} else {
+// 			c.Set("UserId", LoginInfo.MemberId) // ユーザidをセット
+// 			c.Next()
+// 		}
+// 		log.Println("ログインチェック終わり")
+// 	}
+// }
 
-var streamer types.Streamer
-var streamers []types.Streamer
-var stsmos []*types.StreamerMovie //Scan()するからポインタ？
+var streamer types.Vtuber
+var streamers []types.Vtuber
+var stsmos []*types.VtuberMovie //Scan()するからポインタ？
 
-func GetAllStreamers(c *gin.Context) {
+func FindAllStreamers(c *gin.Context) {
 	/////streamers 全件取得
 	resultSts := utility.Db.Find(&streamers)
 	if resultSts.Error != nil {

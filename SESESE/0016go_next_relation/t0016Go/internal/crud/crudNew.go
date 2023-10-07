@@ -12,15 +12,15 @@ import (
 
 // var all types.AllData
 // var alls []types.AllData
-var streamer types.Streamer
-var streamers []types.Streamer
+var vt types.Vtuber
+var vts []types.Vtuber
 var mo types.Movie
 var mos []types.Movie
 var ka types.KaraokeList
 var kas []types.KaraokeList
 
-var stsmo types.StreamerMovie
-var stsmos []*types.StreamerMovie //Scan()するからポインタ？
+var vtsmo types.VtuberMovie
+var vtsmos []*types.VtuberMovie //Scan()するからポインタ？
 
 var all types.AllColumns
 var alls []*types.AllColumns
@@ -30,42 +30,50 @@ var alls []*types.AllColumns
 // var karaokeList KaraokeList
 // var karaokelists []KaraokeList
 
-func GetAllStreamers(c *gin.Context) {
-	/////streamers 全件取得
-	resultSts := utility.Db.Find(&streamers)
-	if resultSts.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"resultStsのerror": resultSts.Error.Error()})
+// Vtuberを全件取得する共通処理
+func fetchVtubers() ([]types.Vtuber, error) {
+	var vts []types.Vtuber
+	resultVts := utility.Db.Find(&vts)
+	return vts, resultVts.Error
+}
+
+// Vtuberを全件取得する共通処理
+func fetchVtubersJoinMovies(vts []types.Vtuber) ([]*types.VtuberMovie, error) {
+	var vtsmos []*types.VtuberMovie
+	resultVtsmo := utility.Db.Model(&vts).Select("vtubers.vtuber_id, vtubers.vtuber_name, mo.movie_url, mo.movie_title").Joins("LEFT JOIN movies  mo USING(vtuber_id)").Scan(&vtsmos)
+	return vtsmos, resultVtsmo.Error
+}
+
+///　/top
+func ReadAllVtubers(c *gin.Context) {
+	vts, errV := fetchVtubers()
+	if errV != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"resultStsのerror": errV.Error()})
 		return
 	}
 
-	////streamers, movies joinして全件取 ReadMoviesに同じ
-	resultStsmo := utility.Db.Model(&streamers).Select("streamers.streamer_id, streamers.streamer_name, m.movie_id, m.movie_url, m.movie_title").Joins("LEFT JOIN movies m USING(streamer_id)").Scan(&stsmos)
-	// SELECT ~略~ FROM streamers LEFT JOIN movies m USING streamer_id
-	if resultStsmo.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"resultStsmoのerror": resultStsmo.Error.Error()})
+	vtsmos, errVM := fetchVtubersJoinMovies(vts)
+	if errVM != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"result VTsmoのerror": errVM.Error()})
 		return
 	}
-	// for resultStsmo.Next() {
-	// 	stsmos.Scan(&stsmo.Streamer.StreamerId, &stsmo.Streamer.StreamerName, &stsmo.Streamer.NameKana, &stsmo.Movie.MovieId, &stsmo.Movie.MovieUrl, &stsmo.Movie.MovieTitle)
-
-	// }
 
 	c.JSON(http.StatusOK, gin.H{
-		"streamers":                  streamers,
-		"streamers_and_moviesmovies": stsmos,
+		"vtubers":            vts,
+		"vtubers_and_movies": vtsmos,
 	})
 }
 
-func PostStreamer(c *gin.Context)    {}
-func PutStreamer(c *gin.Context)     {}
-func DeletetStreamer(c *gin.Context) {}
+func PostVtuber(c *gin.Context)    {}
+func PutVtuber(c *gin.Context)     {}
+func DeletetVtuber(c *gin.Context) {}
 
 func ReadMovies(c *gin.Context) {
 	////推しの全動画リストを取得
-	q := c.Query("streamer_id")
+	q := c.Query("vtuber_id")
 
-	resultStsmo := utility.Db.Model(&streamers).Select("streamers.streamer_id, streamers.streamer_name, m.movie_id, m.movie_url, m.movie_title").Where("streamer_id = ?", q).Joins("LEFT JOIN movies m USING(streamer_id)").Scan(&stsmos)
-	// SELECT ~略~ FROM streamers LEFT JOIN movies m USING streamer_id
+	resultStsmo := utility.Db.Model(&vts).Select("vtubers.vtuber_id, vtubers.vtuber_name,m.movie_url, m.movie_title").Where("vtuber_id = ?", q).Joins("LEFT JOIN movies m USING(vtuber_id)").Scan(&vtsmos)
+	// SELECT ~略~ FROM vtubers LEFT JOIN movies m USING vtuber_id
 	if resultStsmo.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"resultStsmoのerror": resultStsmo.Error.Error()})
 		return
@@ -76,7 +84,7 @@ func ReadMovies(c *gin.Context) {
 	// }
 
 	c.JSON(http.StatusOK, gin.H{
-		"streamers_and_moviesmovies": stsmos,
+		"vtubers_and_moviesmovies": vtsmos,
 	})
 }
 
@@ -84,37 +92,37 @@ func ReadSings(c *gin.Context) {
 	q := c.Query("movie_url")
 	// movie_url, _ := strconv.Atoi(m)
 	fmt.Printf("%v \n", q)
-	utility.Db.Model(&kas).Select("streamer_id, streamer_name, movie_id,  movie_url, movie_title, song_id, sing_start, song").Where("movie_url = ?", q).Joins("LEFT JOIN movies m USING(movie_url)").Joins("LEFT JOIN streamers s USING(streamer_id)").Find(&alls)
+	utility.Db.Model(&kas).Select("vtuber_id, vtuber_name, movie_id,  movie_url, movie_title, song_id, sing_start, song").Where("movie_url = ?", q).Joins("LEFT JOIN movies m USING(movie_url)").Joins("LEFT JOIN vtubers s USING(vtuber_id)").Find(&alls)
 
 	c.JSON(http.StatusOK, gin.H{
 		"karaoke_lists": alls,
 	})
 
 	// SELECT
-	// streamer_id, streamer_name,
+	// vtuber_id, vtuber_name,
 	// movie_id,  movie_url,  movie_title,
 	// song_id,  sing_start,  song
 	// FROM karaoke_lists k
 	// LEFT JOIN movies m USING(movie_url)
-	// LEFT JOIN streamers s USING(streamer_id)
+	// LEFT JOIN vtubers s USING(vtuber_id)
 	// WHERE movie_url = 'www.youtube.com/live/AlHRqSsF--8';
 }
 
 // func ReadAllData(c *gin.Context) {
-// 	/////streamers 全件取得
-// 	resultSts := utility.Db.Find(&streamers)
+// 	/////vtubers 全件取得
+// 	resultSts := utility.Db.Find(&vtubers)
 // 	if resultSts.Error != nil {
 // 		c.JSON(http.StatusInternalServerError, gin.H{"resultStsのerror": resultSts.Error.Error()})
 // 		return
 // 	}
 
 // 	c.JSON(http.StatusOK, gin.H{
-// 		"streamers": streamers,
+// 		"vtubers": vtubers,
 // 	})
 
-// 	////streamers, movies joinして全件取
-// 	resultStsmo := utility.Db.Model(&streamers).Select("streamers.streamer_id, streamers.streamer_name, m.movie_id, m.movie_url, m.movie_title").Joins("LEFT JOIN movies m USING streamer_id").Scan(&stsmos)
-// 	// SELECT ~略~ FROM streamers LEFT JOIN movies m USING streamer_id
+// 	////vtubers, movies joinして全件取
+// 	resultStsmo := utility.Db.Model(&vtubers).Select("vtubers.vtuber_id, vtubers.vtuber_name, m.movie_id, m.movie_url, m.movie_title").Joins("LEFT JOIN movies m USING vtuber_id").Scan(&stsmos)
+// 	// SELECT ~略~ FROM vtubers LEFT JOIN movies m USING vtuber_id
 // 	if resultStsmo.Error != nil {
 // 		c.JSON(http.StatusInternalServerError, gin.H{"resultStsmoのerror": resultSts.Error.Error()})
 // 		return
@@ -126,7 +134,7 @@ func ReadSings(c *gin.Context) {
 
 // 	c.JSON(http.StatusOK, gin.H{
 
-// 		"streamers_and_moviesmovies": stsmo,
+// 		"vtubers_and_moviesmovies": stsmo,
 // 	})
 // }
 
@@ -137,8 +145,8 @@ func CreateStreamer(c *gin.Context) {
 
 //―――パターン①　tableを個別に取得して2つのjsonを送付
 // func ReadAllData(c *gin.Context) {
-// 	/////streamers 全件取得
-// 	resultSts := utility.Db.Find(&streamers)
+// 	/////vtubers 全件取得
+// 	resultSts := utility.Db.Find(&vtubers)
 
 // 	if resultSts.Error != nil {
 // 		c.JSON(http.StatusInternalServerError, gin.H{"error": resultSts.Error.Error()})
@@ -152,7 +160,7 @@ func CreateStreamer(c *gin.Context) {
 // 		return
 // 	}
 // 	c.JSON(http.StatusOK, gin.H{
-// 		"streamers": streamers,
+// 		"vtubers": vtubers,
 // 		"movies":    mos,
 // 	})
 // }

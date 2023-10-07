@@ -40,11 +40,11 @@ func PostSignup(c *gin.Context) {
 	// 		// ログインしていない場合の処理
 	// 	}
 	// }
-	var form types.Member
+	var form types.Listener
 
 	//loginのやつコピペしたので、要修正
 	if c.ShouldBind(&form) == nil {
-		if form.MemberName == "user" && form.Password == "password" {
+		if form.ListenerName == "user" && form.Password == "password" {
 			c.JSON(200, gin.H{"status": "you are logged in"})
 		} else {
 			c.JSON(401, gin.H{"status": "unauthorized"})
@@ -84,7 +84,7 @@ func PostSignup(c *gin.Context) {
 func PostLogIn(c *gin.Context) {
 	type test struct {
 		csrfToken string
-		types.Member
+		types.Listener
 	}
 
 	var form test
@@ -100,16 +100,16 @@ func PostLogIn(c *gin.Context) {
 
 	fmt.Printf("bind内容:crsfToken=%v \n", form.csrfToken)
 
-	fmt.Printf("bind内容:ID=%v, name=%v, mail=%v, pass=%v, crat%v \n", form.MemberId, form.MemberName, form.Email, form.Password, form.CreatedAt)
+	fmt.Printf("bind内容:ID=%v, name=%v, mail=%v, pass=%v, crat%v \n", form.ListenerId, form.ListenerName, form.Email, form.Password, form.CreatedAt)
 	//ここまでは処理確認ok
-	member, err := model.InquireIntoMember(form.MemberName, form.Password)
+	member, err := model.InquireIntoMember(form.ListenerName, form.Password)
 	if err != nil {
 		c.Redirect(301, "/login")
 		return
 	}
 	fmt.Printf("DBから取得した情報=%+v \n ", member) //%vでも%sでも L1[GIN]
 
-	jwtToken, err := GenerateToken(member.MemberId)
+	jwtToken, err := GenerateToken(member.ListenerId)
 	if err != nil {
 		fmt.Print("トークンの生成に失敗しました。")
 		c.Redirect(301, "/login")
@@ -128,8 +128,8 @@ func PostLogIn(c *gin.Context) {
 	// true であれば認証成功
 
 	responseData := gin.H{
-		"memberId":   member.MemberId,
-		"memberName": member.MemberName,
+		"memberId":   member.ListenerId,
+		"memberName": member.ListenerName,
 		"message":    "Login successful",
 	}
 	fmt.Println(responseData)

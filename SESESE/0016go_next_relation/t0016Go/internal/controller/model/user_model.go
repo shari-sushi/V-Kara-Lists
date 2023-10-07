@@ -66,12 +66,12 @@ func Signup(user_id, password, accname, mail string) (*AUser, error) {
 	return &aUser, err
 }
 
-func InquireIntoMember(MemberName, password string) (*types.Member, error) {
-	user := types.Member{}
+func InquireIntoMember(MemberName, password string) (*types.Listener, error) {
+	user := types.Listener{}
 	// fmt.Print("検索したmember名=?\n", MemberName)
 	utility.Db.Where("member_name= ?", MemberName).First(&user)
-	fmt.Printf("取得したアカウント名=%v \n", user.MemberName)
-	if user.MemberName == "" {
+	fmt.Printf("取得したアカウント名=%v \n", user.ListenerName)
+	if user.ListenerName == "" {
 		err := errors.New("存在しないアカウント名です。")
 		fmt.Println(err)
 		return nil, err
