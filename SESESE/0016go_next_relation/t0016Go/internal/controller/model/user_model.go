@@ -50,7 +50,7 @@ func Signup(user_id, password, accname, mail string) (*AUser, error) {
 	}
 	fmt.Printf("userId=%v, name=%v \n", aUser.MemberId, aUser.MemberName) //{0, }期待→ok
 
-	encryptPw, err := crypto.PasswordEncrypt(password)
+	encryptPw, err := crypto.EncryptPassword(password)
 	if err != nil {
 		fmt.Println("パスワード暗号化処理でエラー発生：", err)
 		return nil, err
