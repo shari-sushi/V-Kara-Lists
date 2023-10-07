@@ -8,7 +8,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func GenerateToken(MemberId string) (string, error) {
+func GenerateToken(ListenerId int) (string, error) {
 	secretKey := os.Getenv("SECRET_KEY")
 	// tokenLifeTime, err := strconv.Atoi(os.Getenv("TOKEN_LIFETIME"))　//これ環境変数で設定するの？
 	// if err != nil {
@@ -17,8 +17,8 @@ func GenerateToken(MemberId string) (string, error) {
 	tokenLifeTime := 60 * 60 * 12 // 12hにする
 
 	claims := jwt.MapClaims{
-		"user_id": MemberId,
-		"exp":     time.Now().Add(time.Hour * time.Duration(tokenLifeTime)).Unix(),
+		"listener_id": ListenerId,
+		"exp":         time.Now().Add(time.Hour * time.Duration(tokenLifeTime)).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString([]byte(secretKey))
