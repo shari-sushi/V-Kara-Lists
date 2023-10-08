@@ -9,7 +9,6 @@ import https from 'https';
 import axios from 'axios';
 import { AxiosRequestConfig } from 'axios';
 
-
   type PostsAndCheckSignin= {
     posts: any; // anyは避けるべき？
     checkSignin: boolean;
@@ -138,12 +137,13 @@ const AllDatePage: React.FC<PostsAndCheckSignin> = ({ posts, checkSignin }) =>  
   export async function getServerSideProps(context: { req: { headers: { cookie: any; }; }; }) {
     //リクエストにCookieを入れる。    
     const httpsAgent = new https.Agent({
-        rejectUnauthorized: false
+        rejectUnauthorized: false //SSL証明書無視
+
     });
     let resData;
     try {
         const response = await axios.get('https://localhost:8080', {
-            httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
+            httpsAgent: process.env.NODE_ENV === "production" ? null : httpsAgent
         });
         resData = response.data;
     } catch (error) {

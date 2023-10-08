@@ -57,9 +57,12 @@ const Signin = () => {
         </form>
         <br />
         <div>
-            <button style={{ background: 'blue' }}><Link href={`/`}>ログインせずに閲覧する</Link></button><br />
-            <button style={{ background: 'blue' }}><Link href={`/mypage`}>mypageへ</Link></button>
-                </div>
+        <Link href={`/`}><button style={{ background: 'darkblue' }}>
+              ログインせずに閲覧する</button></Link><br />
+            <Link href={`/mypage`}><button style={{ background: 'darkblue' }}>
+              mypageへ</button></Link>
+            <Link href="/signup"><button style={{ background: 'darkblue' }}>
+              会員登録</button> </Link>    &nbsp;    </div>
         </div>
   
   );

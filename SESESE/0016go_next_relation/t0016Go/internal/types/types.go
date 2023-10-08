@@ -1,14 +1,12 @@
 package types
 
 import (
-	"errors"
+	"database/sql"
 	"fmt"
-	"strconv"
-	"strings"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/sharin-sushi/002216go_next_relation/t0022Go/internal/controller/crypto"
+	"github.com/sharin-sushi/0016go_next_relation/internal/controller/crypto"
 
 	"gorm.io/gorm"
 )
@@ -25,110 +23,110 @@ import (
 // var ka types.KaraokeList
 // var kas []types.KaraokeList
 
-type StreamerMovie struct {
-	Streamer
+// VTuber Contents
+type VtuberMovie struct {
+	Vtuber
 	Movie
+}
+
+type VtuberMovieKalaokeList struct {
+	Vtuber
+	Movie
+	KaraokeList
 }
 
 //GORMなのに何故か `json:"~~"`が無いとスネークにならない
 
-type Streamer struct {
-	StreamerId      int     `gorm:"primaryKey"` //`json:"streamer_id"` //
-	StreamerName    string  //`json:"streamer_name"`
-	NameKana        *string //`json:"name_kana"`
-	SelfIntroUrl    *string //`json:"self_intro_url"`
-	StreamInputerId *string //`json:"stream_inputer_id"`
+type Vtuber struct {
+	VtuberId        int     `gorm:"primaryKey"` //`json:"vtuber_id"` //
+	VtuberName      string  //`json:"vtuver_name"`
+	VtuberKana      *string //`json:"vtuber_kana"`
+	IntroMovieUrl   *string //`json:"vtuber_intro_movie_url"`
+	VtuberInputerId *int    //`json:"vtuber_inputer_id"`
+}
+
+type EntryVtuber struct {
+	VtuberName      string  //`json:"vtuver_name"`
+	VtuberKana      *string //`json:"vtuber_kana"`
+	IntroMovieUrl   *string //`json:"vtuber_intro_movie_url"`
+	VtuberInputerId *int    //`json:"vtuber_inputer_id"`
 }
 
 type Movie struct {
-	StreamerId *int    //`json:"streamer_id"`
-	MovieId    *int    //`json:"movie_id"`
-	MovieUrl   string  `gorm:"primaryKey"` //`json:"movie_url"`
-	MovieTitle *string //`json:"movie_title"`
+	MovieUrl       string  `gorm:"primaryKey"` //`json:"movie_url"`
+	MovieTitle     *string //`json:"movie_title"`
+	VtuberId       *int    //`json:"vtuber_id"`
+	MovieInputerId *int    //`json:"movie_inputer_id"` /new
 }
 
 type KaraokeList struct {
-	MovieUrl      string  `gorm:"primaryKey"` //
-	SongId        int     `gorm:"primaryKey"` //`json:"song_id"`
-	SingStart     *string //`json:"sing_start"` //nill可にするためのポインタ
-	Song          string  //`json:"song"`
-	SongInputerId string  //`json:"song_inputer_id"`
+	MovieUrl             string  `gorm:"primaryKey"` //`json:"movie_url"`
+	KaraokeListId        int     `gorm:"primaryKey"` //`json:"id"`
+	SingStart            *string //`json:"sing_start"` //nill可にするためのポインタ
+	SongName             string  //`json:"song_name"`
+	KaraokeListInputerId int     //`json:"inputer_id"`
 }
 
 // コピペ用全カラム
 // ーーキャメル
 type AllColumns struct {
-	StreamerId       int
-	StreamerName     string
-	NameKana         string
-	SelfIntro_url    string
-	StreamInputer_id string
-	MovieId          int
-	MovieUrl         string
-	MovieTitle       string
-	SongId           int
-	SingStart        *string
-	Song             string
-	SongInputerId    string
+	VtueberId            int
+	VtuberName           string
+	NameKana             string
+	IntroMovieUrl        string
+	VtuberInputerId      int
+	MovieId              int
+	MovieUrl             string
+	MovieTitle           string
+	SongId               int
+	SingStart            *string
+	Song                 string
+	KaraokeListInputerId int
 }
 
-//ーーースネーク
-// streamer_id
-// streamer_name
-// name_kana
-// self_intro_url
-// stream_inputer_id
-// movie_id
-// movie_url
-// movie_title
-// song_id
-// sing_start
-// song
-// song_inputer_id
-
-//最初、シンボル変更できなかったので、どこかで変更残りがあるかも User→Member
-type Member struct { //dbに対してはtable名 小文字かつ複数形に自動変換
-	//gorm.Model CreatedAtは機能無し
-	MemberId   string `gorm:"primaryKey"`
-	MemberName string
-	Email      string
-	Password   string
-	CreatedAt  time.Time
+//// User
+type Listener struct {
+	ListenerId   int `gorm:"primaryKey"`
+	ListenerName string
+	Email        string
+	Password     string
+	CreatedAt    time.Time
+	UpdatedAt    sql.NullTime //new time.Timeのままで良かったかも
+	DeletedAt    sql.NullTime //new
 }
 
-type EntryMember struct {
-	//gorm.Model CreatedAtは機能無し
-	// MemberId   string
-	MemberName string
-	Email      string
-	Password   string
+type EntryListener struct {
+	ListenerName string
+	Email        string
+	Password     string
 }
 
-type UserInfoFromFront struct { //dbに対してはtable名 小文字かつ複数形に自動変換
-	//gorm.Model CreatedAtは機能無し
-	MemberId   string
-	MemberName string
-	Email      string
-	Password   string
+type UserInfoFromFront struct {
+	ListenerId   string
+	ListenerName string
+	Email        string
+	Password     string
 }
 
-func (m *Member) CreateMember(db *gorm.DB) (Member, error) { //Member構造体の型で新規発行したIDと共にユーザー情報を返す
+//listener構造体の型で新規発行したIDと共にユーザー情報を返す
+func (m *Listener) CreateMember(db *gorm.DB) (Listener, error) {
 	fmt.Printf("CreateMemberで使用されるm= %v \n", m)
 
-	user := Member{
-		MemberName: m.MemberName,
-		Email:      m.Email,
-		Password:   crypto.PasswordEncryptNoBackErr(m.Password),
+	user := Listener{
+		ListenerName: m.ListenerName,
+		Email:        m.Email,
+		Password:     crypto.EncryptPasswordWithoutBackErr(m.Password),
 	}
 	// ここまで動作確認
 
-	newId, err := CreateNewUserId(db) //最新ユーザーのidから新規ユーザーidを発行
-	if err != nil {
-		fmt.Printf("Failed create a new id")
-		return user, err
-	}
-	fmt.Println(2.3)
-	user.MemberId = newId
+	//最新ユーザーのidから新規ユーザーidを発行 id = L01 (string)だったときのコード
+	// newId, err := CreateNewUserId(db)
+	// if err != nil {
+	// 	fmt.Printf("Failed create a new id")
+	// 	return user, err
+	// }
+
+	// user.Id = newId
 	fmt.Printf("新規id込みでuser= %v \n", user)
 	result := db.Create(&user)
 	if result != nil {
@@ -141,9 +139,9 @@ func (m *Member) CreateMember(db *gorm.DB) (Member, error) { //Member構造体�
 
 // 最低文字数の制限は今のところここでしかやってない、元々1, 255。8, 255だった。
 // import "validation "github.com/go-ozzo/ozzo-validation"
-func (m *Member) Validate() error {
+func (m *Listener) ValidateSignup() error {
 	err := validation.ValidateStruct(m,
-		validation.Field(&m.MemberName,
+		validation.Field(&m.ListenerName,
 			validation.Required.Error("Name is requred"),
 			validation.Length(2, 20).Error("Name needs 2~20 cahrs"),
 		),
@@ -159,60 +157,58 @@ func (m *Member) Validate() error {
 	return err
 }
 
-// members
-// +-------------+--------------+------+-----+-------------------+-------------------+
-// | Field       | Type         | Null | Key | Default           | Extra             |
-// +-------------+--------------+------+-----+-------------------+-------------------+
-// | member_id   | varchar(4)   | NO   | PRI | NULL              |                   |
-// | member_name | varchar(20)  | NO   | MUL | NULL              |                   |
-// | email       | varchar(100) | NO   | UNI | NULL              |                   |
-// | password    | varchar(100) | NO   |     | NULL              |                   |
-// | created_at  | datetime     | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
-// +-------------+--------------+------+-----+-------------------+-------------------+
+func (m *EntryListener) Validate() error {
+	err := validation.ValidateStruct(m,
+		validation.Field(&m.ListenerName,
+			validation.Required.Error("Name is requred"),
+			validation.Length(2, 20).Error("Name needs 2~20 cahrs"),
+		),
+		validation.Field(&m.Password,
+			validation.Required.Error("Password is required"),
+			validation.Length(4, 20).Error("Password needs 4 ~ 20 chars"),
+		),
+		validation.Field(&m.Email,
+			validation.Required.Error("Email is required"),
+			validation.Length(10, 100).Error("Email needs 4 ~ 20 chars"), //メアドは現状、これ以外の制限はしてない
+		),
+	)
+	return err
+}
 
-func FindUserByEmail(db *gorm.DB, email string) (Member, error) {
-	var user Member
-	result := db.Where("email = ?", email).First(&user)
+func FindUserByEmail(db *gorm.DB, email string) (Listener, error) {
+	var user Listener
+	result := db.Where("email = ?", email).Find(&user) //FirstからFindに変えた
 	fmt.Printf("Emailで取得したuser= %v \n", user)
 	return user, result.Error
 }
 
-func FindUserByMemberId(db *gorm.DB, memberId string) (Member, error) {
-	var user Member
-	fmt.Printf("FindUserByMemberIdで受け取ったmemberId= %v \n", memberId)
-	result := db.Where("member_id = ?", memberId).First(&user)
+func FindUserByListenerId(db *gorm.DB, listenerId int) (Listener, error) {
+	var user Listener
+	fmt.Printf("FindUserByListenerIdで受け取ったlistenerId= %v \n", listenerId)
+	result := db.Where("listener_id = ?", listenerId).First(&user)
 	fmt.Printf("Idで取得したuser= %v \n", user)
 	return user, result.Error
 }
 
-func CreateNewUserId(db *gorm.DB) (string, error) { //最新ユーザーのIDを取得し、+1して返す
-	var lastUser Member
-	result := db.Select("member_id ").Last(&lastUser)
-	// SELECT member_id From members  ORDER BY member_id DESC LIMIT 1;
-	if result.Error != nil {
-		fmt.Println("最新ユーザーのid取得に失敗しました。error:", result.Error)
-	}
-	fmt.Printf("lastUser= %v", lastUser)
+// like_reration
+type FavoritePosts struct {
+	ListenerId int    `gorm:"primaryKey"`
+	Movie_url  string `gorm:"primaryKey"`
+	KaraokeId  int    `gorm:"primaryKey"`
+}
 
-	fmt.Printf("lastUser.MemberId= %v", lastUser.MemberId)
+type Follow struct {
+	FollowId         int `gorm:"primaryKey"`
+	FollowListener   int
+	FollowedVtuber   int
+	FollowedListener int
+}
 
-	parts := strings.Split(lastUser.MemberId, "L") //　"", "1"に分ける(Lは消える)
-	fmt.Printf("parts= %v", parts)
-
-	if len(parts) != 2 { // Lで分割し\、要素数が2でなければエラー
-		return "", errors.New("invalid MemberId format")
-	}
-	fmt.Println(3.2)
-
-	lastUserIdNum := parts[1]
-	fmt.Println(3.3)
-	s, _ := strconv.Atoi(lastUserIdNum)
-	s++
-	fmt.Printf("newIdNum= %v \n", s)
-	i := strconv.Itoa(s)
-	fmt.Println(3.4)
-	newId := "L" + i
-	fmt.Printf("newId= %v \n", newId)
-
-	return newId, nil
+type OriginalSong struct {
+	SongID        int `gorm:"primaryKey"`
+	ArtistId      int
+	SongName      string
+	MovieUrl      string
+	ReleseData    time.Time
+	SongInputerId int
 }
