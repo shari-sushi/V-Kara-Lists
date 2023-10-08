@@ -22,6 +22,9 @@ var kas []types.KaraokeList
 var vtsmo types.VtuberMovie
 var vtsmos []*types.VtuberMovie //Scan()するからポインタ？
 
+var vtsmoskl types.VtuberMovieKalaokeList
+var vtsmoskls []*types.VtuberMovieKalaokeList
+
 var all types.AllColumns
 var alls []*types.AllColumns
 
@@ -42,6 +45,11 @@ func fetchVtubersJoinMovies(vts []types.Vtuber) ([]*types.VtuberMovie, error) {
 	var vtsmos []*types.VtuberMovie
 	resultVtsmo := utility.Db.Model(&vts).Select("vtubers.vtuber_id, vtubers.vtuber_name, mo.movie_url, mo.movie_title").Joins("LEFT JOIN movies  mo USING(vtuber_id)").Scan(&vtsmos)
 	return vtsmos, resultVtsmo.Error
+	// SELECT
+	// vtubers.vtuber_id, vtubers.vtuber_name,
+	// mo.movie_url, mo.movie_title
+	// FROM `vtubers`
+	// LEFT JOIN movies  mo USING(vtuber_id)
 }
 
 ///　/top
@@ -64,8 +72,94 @@ func ReadAllVtubers(c *gin.Context) {
 	})
 }
 
-func PostVtuber(c *gin.Context)    {}
-func PutVtuber(c *gin.Context)     {}
+//  /sings
+func ReadAllSings(c *gin.Context) {
+	var vtsmoskls []*types.VtuberMovieKalaokeList
+	resultVtsmo := utility.Db.Model(&kas).Select("vtubers.vtuber_id, vtubers.vtuber_name, mo.movie_url, mo.movie_title, karaoke_list_id, sing_start, song_name, karaoke_list_inputer_id").Joins("LEFT JOIN movies  mo USING(movie_url) LEFT JOIN vtubers  USING(vtuber_id)").Scan(&vtsmoskls)
+	if resultVtsmo.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"resultStsのerror": resultVtsmo.Error.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"vtubers_movies_karaokelists": vtsmoskls,
+	})
+	// SELECT
+	// vtuber_id, vtuber_name,
+	// movie_url,  movie_title,
+	// karaoke_list_id, sing_start, song_name, karaoke_list_inputer_id
+	// FROM karaoke_lists
+	// LEFT JOIN movies  USING(movie_url)
+	// LEFT JOIN vtubers  USING(vtuber_id);
+}
+func CreateVtuber(c *gin.Context) {
+	var vts types.Vtuber
+
+	err := c.ShouldBind(&vts)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid request body",
+		})
+		return
+	}
+	fmt.Printf("bindしたvts = %v \n", vts)
+	isRegisteredAsV := utility.Db.Where("vtuber_name = ?", vts.VtuberName).Find(&vts)
+	if isRegisteredAsV == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "そのVTuber名は登録済みです"})
+		return
+	}
+	fmt.Printf("Find後vts = %v \n", vts)
+
+	utility.Db.Omit("vtuber_id").Create(&vts) // pass pointer of data to Create
+	if vts.VtuberId == 0 {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "VTuberの登録に失敗しました。ただし、未登録のVTuber名でした。時間を空けてリトライするか、開発者へお問い合わせください。",
+			"開発者":     "X(旧twitter)ID : @sharin_prog",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "VTuberを登録しました",
+		// "countMessage": fmt.Sprintf("%d人目のVTuberです。", result.RowsAffected),
+	})
+}
+
+func CreateMovie(c *gin.Context) {
+	var mo types.Movie
+
+	err := c.ShouldBind(&mo)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid request body",
+		})
+		return
+	}
+	fmt.Printf("bindしたvts = %v \n", mo)
+	isRegisteredAsV := utility.Db.Where("movie_url = ?", mo.MovieUrl).Find(&mo)
+	if isRegisteredAsV == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "その動画urlは登録済みです"})
+		return
+	}
+	fmt.Printf("Find後vts = %v \n", mo)
+
+	utility.Db.Omit("vtuber_id").Create(&mo) // pass pointer of data to Create
+	if mo.MovieTitle == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "動画の登録に失敗しました。ただし、未登録のﾀｲﾄﾙでした。時間を空けてリトライするか、開発者へお問い合わせください。",
+			"開発者":     "X(旧twitter)ID : @sharin_prog",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "動画を登録しました",
+		// "countMessage": fmt.Sprintf("%d人目のVTuberです。", mo.),
+	})
+}
 func DeletetVtuber(c *gin.Context) {}
 
 func ReadMovies(c *gin.Context) {
@@ -97,16 +191,16 @@ func ReadSings(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"karaoke_lists": alls,
 	})
-
-	// SELECT
-	// vtuber_id, vtuber_name,
-	// movie_id,  movie_url,  movie_title,
-	// song_id,  sing_start,  song
-	// FROM karaoke_lists k
-	// LEFT JOIN movies m USING(movie_url)
-	// LEFT JOIN vtubers s USING(vtuber_id)
-	// WHERE movie_url = 'www.youtube.com/live/AlHRqSsF--8';
 }
+
+// SELECT
+// vtuber_id, vtuber_name,
+// movie_id,  movie_url,  movie_title,
+// song_id,  sing_start,  song
+// FROM karaoke_lists k
+// LEFT JOIN movies m USING(movie_url)
+// LEFT JOIN vtubers s USING(vtuber_id)
+// WHERE movie_url = 'www.youtube.com/live/AlHRqSsF--8';
 
 // func ReadAllData(c *gin.Context) {
 // 	/////vtubers 全件取得
@@ -120,104 +214,30 @@ func ReadSings(c *gin.Context) {
 // 		"vtubers": vtubers,
 // 	})
 
-// 	////vtubers, movies joinして全件取
-// 	resultStsmo := utility.Db.Model(&vtubers).Select("vtubers.vtuber_id, vtubers.vtuber_name, m.movie_id, m.movie_url, m.movie_title").Joins("LEFT JOIN movies m USING vtuber_id").Scan(&stsmos)
-// 	// SELECT ~略~ FROM vtubers LEFT JOIN movies m USING vtuber_id
-// 	if resultStsmo.Error != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"resultStsmoのerror": resultSts.Error.Error()})
-// 		return
-// 	}
-// 	// for stsmo.Next() {
-// 	// 	stsmos.Scan(&stsmo.Streamer.StreamerId, &stsmo.Streamer.StreamerName, &stsmo.Streamer.NameKana, &stsmo.Movie.MovieId, &stsmo.Movie.MovieUrl, &stsmo.Movie.MovieTitle)
-
-// 	// }
-
-// 	c.JSON(http.StatusOK, gin.H{
-
-// 		"vtubers_and_moviesmovies": stsmo,
-// 	})
-// }
-
-func CreateStreamer(c *gin.Context) {
-	// result := utility.Db.Find(&mos)
-
+func CreateKaraokeSing(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"message": "",
+	})
+}
+func CreateSong(c *gin.Context) {
 }
 
-//―――パターン①　tableを個別に取得して2つのjsonを送付
-// func ReadAllData(c *gin.Context) {
-// 	/////vtubers 全件取得
-// 	resultSts := utility.Db.Find(&vtubers)
+//データ編集
+func EditVtuber(c *gin.Context) {
+}
+func EditMovie(c *gin.Context) {
+}
+func EditKaraokeSing(c *gin.Context) {
+}
+func EditSong(c *gin.Context) {
+}
 
-// 	if resultSts.Error != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": resultSts.Error.Error()})
-// 		return
-// 	}
-
-// 	////movies 全件取
-// 	resultMos := utility.Db.Find(&mos)
-// 	if resultSts.Error != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": resultMos.Error.Error()})
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, gin.H{
-// 		"vtubers": vtubers,
-// 		"movies":    mos,
-// 	})
-// }
-
-// func CreateStreamer(c *gin.Context) {
-// 	// result := utility.Db.Find(&mos)
-
-// }
-
-// func Index2(w http.ResponseWriter, r *http.Request) {
-// 	rows, err := utility.Db.Query("SELECT * FROM karaokelist")
-// 	if err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-// 	defer rows.Close()
-
-// 	var items []karaokelist //長さと容量が0のスライス、karaokelist型
-// 	for rows.Next() {
-// 		var k karaokelist
-// 		fmt.Printf("k定義直後の中身%v\n", k) // k は 0および空(nil?)
-// 		if err := rows.Scan(&k.Unique_id, &k.Movie, &k.Url, &k.SingStart, &k.Song); err != nil {
-// 			http.Error(w, err.Error(), http.StatusInternalServerError)
-// 			return
-// 		}
-// 		items = append(items, k)           // itmemsスライスにkを追加する
-// 		fmt.Printf("append直後のkの中身%v\n", k) //kには全データが入ってる
-// 	}
-
-// 	if err := rows.Err(); err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	if err := json.NewEncoder(w).Encode(items); err != nil {
-// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-// 	}
-// }
-
-// func Show2(w http.ResponseWriter, r *http.Request) {
-// 	unique_id := r.URL.Query().Get("Unique_id")
-// 	row := utility.Db.QueryRow("SELECT * FROM karaokelist WHERE unique_id = ?", unique_id)
-// 	fmt.Printf("showにてQueryRowで取得したidは%s。rowデータは%s\n", unique_id, row) //この時点ではnill
-
-// 	kList := karaokelist{}
-// 	err := row.Scan(&kList.Unique_id, &kList.Movie, &kList.Url, &kList.SingStart, &kList.Song)
-
-// 	if err != nil {
-// 		if err == sql.ErrNoRows {
-// 			http.NotFound(w, r)
-// 			return
-// 		} else {
-// 			http.Error(w, http.StatusText(500), 500)
-// 			return
-// 		}
-// 	}
-
-// 	json.NewEncoder(w).Encode(kList)
-// 	fmt.Printf("Enode後showにて取得したidは%s。kListは%v\n※", unique_id, kList)
-// }
+// データ削除(論理)
+func DeleteVtuber(c *gin.Context) {
+}
+func DeleteMovie(c *gin.Context) {
+}
+func DeleteKaraokeSing(c *gin.Context) {
+}
+func DeleteSong(c *gin.Context) {
+}

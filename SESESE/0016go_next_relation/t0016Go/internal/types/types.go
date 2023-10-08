@@ -29,10 +29,23 @@ type VtuberMovie struct {
 	Movie
 }
 
+type VtuberMovieKalaokeList struct {
+	Vtuber
+	Movie
+	KaraokeList
+}
+
 //GORMなのに何故か `json:"~~"`が無いとスネークにならない
 
 type Vtuber struct {
 	VtuberId        int     `gorm:"primaryKey"` //`json:"vtuber_id"` //
+	VtuberName      string  //`json:"vtuver_name"`
+	VtuberKana      *string //`json:"vtuber_kana"`
+	IntroMovieUrl   *string //`json:"vtuber_intro_movie_url"`
+	VtuberInputerId *int    //`json:"vtuber_inputer_id"`
+}
+
+type EntryVtuber struct {
 	VtuberName      string  //`json:"vtuver_name"`
 	VtuberKana      *string //`json:"vtuber_kana"`
 	IntroMovieUrl   *string //`json:"vtuber_intro_movie_url"`
@@ -126,7 +139,7 @@ func (m *Listener) CreateMember(db *gorm.DB) (Listener, error) {
 
 // 最低文字数の制限は今のところここでしかやってない、元々1, 255。8, 255だった。
 // import "validation "github.com/go-ozzo/ozzo-validation"
-func (m *Listener) Validate() error {
+func (m *Listener) ValidateSignup() error {
 	err := validation.ValidateStruct(m,
 		validation.Field(&m.ListenerName,
 			validation.Required.Error("Name is requred"),
