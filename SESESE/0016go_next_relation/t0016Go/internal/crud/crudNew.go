@@ -293,6 +293,7 @@ func EditVtuber(c *gin.Context) {
 	}
 }
 func EditMovie(c *gin.Context) {
+	// test
 }
 func EditKaraokeSing(c *gin.Context) {
 }
