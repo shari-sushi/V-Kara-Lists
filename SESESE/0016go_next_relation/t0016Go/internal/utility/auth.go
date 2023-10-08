@@ -47,6 +47,7 @@ func init() {
 	// fmt.Printf("%s\n%s\n", path, err)
 
 	Db, err = gorm.Open(mysql.Open(path), &gorm.Config{})
+	Db = Db.Debug()
 	if err != nil {
 		panic("failed to connect database")
 
@@ -88,7 +89,7 @@ func (h *Handler) SignUpHandler(c *gin.Context) {
 	}
 	fmt.Printf("bindしたuser = %v \n", user)
 
-	err = user.Validate()
+	err = user.ValidateSignup()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": err.Error(),
@@ -104,12 +105,10 @@ func (h *Handler) SignUpHandler(c *gin.Context) {
 			"error":   err.Error(),
 			"message": "the E-mail address already in use",
 		})
-		fmt.Printf("existingUser !=0 のエラーは感知できた\n")
 		return
 	}
-	fmt.Printf("existingUser !=0 のエラーを貫通してしまった \n")
 
-	//passwordを
+	//passwordの照合
 	user.Password = crypto.EncryptPasswordWithoutBackErr(user.Password)
 
 	result := Db.Select("listener_name", "email", "password").Create(&user)
