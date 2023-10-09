@@ -1,99 +1,91 @@
 package main
 
 import (
-	"log"
-	"net/http"
-
+	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	"github.com/rs/cors"
-	"github.com/sharin-sushi/0016go_next_relation/cmd/internal/controller/postrequest"
-	"github.com/sharin-sushi/0016go_next_relation/cmd/internal/crud"
-	"github.com/sharin-sushi/0016go_next_relation/cmd/internal/utility"
-)
 
-//init at /internal/utility/database.go
+	"github.com/sharin-sushi/0016go_next_relation/internal/crud"
+
+	"github.com/sharin-sushi/0016go_next_relation/internal/utility"
+)
 
 func main() {
 	r := gin.Default()
 
-	//配信者
-	r.GET("/", crud.GetAllStreamers)
-	r.POST("/", crud.PostStreamer)
-	r.PUT("/", crud.PutStreamer)
-	r.DELETE("/", crud.DeletetStreamer)
+	r.Use(cors.New(cors.Config{
+		// アクセス許可するオリジン
+		AllowOrigins: []string{"https://localhost:3000"},
+		// AllowOrigins: []string{"*"}, //ワイルドカードだが、クライアント側がcredenrials incliudeでは許されてない。
 
-	//動画
-	r.GET("/movie", crud.ReadMovies) //未作成
+		// アクセス許可するHTTPメソッド
+		AllowMethods: []string{"POST", "GET", "PUT", "DELETE"},
+		// 許可するHTTPリクエストヘッダ
+		// AllowHeaders: []string{"Content-Type"},
+		AllowHeaders: []string{"Origin", "Content-Length", "Content-Type", "Cookie"},
+		// cookieなどの情報を許可するかどうか
+		AllowCredentials: true,
+		// // preflightリクエストの結果をキャッシュする時間
+		// MaxAge: 24 * time.Hour,
+	}))
 
-	//歌
-	r.GET("/sing", crud.ReadSings)
-
+	// いらんくね
 	//https://qiita.com/koshi_an/items/12da955a1823b7f3e178より
 	store := cookie.NewStore([]byte("OimoMochiMochIimoMochiOimo20000530"), []byte("sora4mama1997087")) //byteのスライスに変換することで値を変更できるらしい
 	//Sesion()の第１引数がCookie名としてセットされ、以後自動で使用され、ブラウザに送信される）らしい
 	r.Use(sessions.Sessions("mainCookieSession", store))
 	//↑どうなってるのか謎。
 
-	//ログイン、サインナップ、ログアウト ※ブラウザでは"/"にリンク有り
-	r.POST("/signup", postrequest.PostSignup)
-	r.POST("/login", postrequest.PostLogin)
-	r.POST("/logout", postrequest.PostLogout) //未作成
+	//topページ
+	r.GET("/", crud.ReadAllVtubers)                   //動作ok
+	r.GET("/vtuber=[id]", crud.ReadAllVtubers)        //未 ver. 1.0の最後
+	r.GET("/vtuber=[id]/movies", crud.ReadAllVtubers) //未 ver. 1.0の最後
+	r.GET("/sings", crud.ReadAllSings)                //動作ok
 
-	// 　　/mypage/~ をグループ化→/maypageとその下層へアクセスしたとき全てに適応　→１つなら要らか？
-	//　　 ("~")　にアクセスしたときにセッション確認し強制で{}のページへ遷移
-	//		↑違ったかも
-	//	/maypage/{}で指定したpath にアクションがあった際にUse(sessionChechk())を実行する。
-	r.Group("/mypage").Use(sessionCheck())
-	{
-		// r.GET("/", mypage.Mypage) //未作成　マイページにしたい
-	}
+	// データ新規登録
+	r.POST("/create/vtuber", crud.CreateVtuber)    //動作ok
+	r.POST("/create/movie", crud.CreateMovie)      //動作ok
+	r.POST("/create/sing", crud.CreateKaraokeSing) //動作ok
+	r.POST("/create/song", crud.CreateSong)        //未　ver1.5かな
 
-	//Cookie　削除予定
-	r.GET("/cookie", utility.GetCookie)
+	//データ編集
+	r.POST("/edit/vtuber", crud.EditVtuber)    //動作ok
+	r.POST("/edit/movie", crud.EditMovie)      //未
+	r.POST("/edit/sing", crud.EditKaraokeSing) //未
+	r.POST("/edit/song", crud.EditSong)        //未　ver1.5かな
+
+	// データ削除(論理)
+	r.DELETE("/delete/vtruber", crud.DeleteVtuber)   //未
+	r.DELETE("/delete/movie", crud.DeleteMovie)      //未
+	r.DELETE("/delete/sing", crud.DeleteKaraokeSing) //未
+	r.DELETE("/delete/song", crud.DeleteSong)        //未　ver1.5かな
+
+	//ユーザー認証 ※ブラウザでは"/"にリンク有り
+	r.POST("/signup2", utility.CalltoSignUpHandler) //動作ほぼok　登録済みのメアドの時に、処理は止めてくれるけど、エラー内容を返してくれない…。
+	r.POST("/login2", utility.CalltoLogInHandler)   //動作ok
+	r.GET("/logout2", utility.LogoutHandler)        //動作ok
+
+	// /cud/~, /users/~にアクセスした際にmiddlewareでアクセスに認証制限
+	utility.CallGetMemberProfile(r) //未
 
 	// //開発者用　パスワード照会（ リポジトリ0019で作り直した）
 	// r.GET("/envpass", postrequest.EnvPass)
 
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"},
-		AllowCredentials: true,
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
-	})
-	handler := c.Handler(r)
-
-	// handler := cors.Default().Handler(r)
-
-	if err := http.ListenAndServe(":8080", handler); err != nil {
-		log.Fatal("ListenAndServe:", err)
-	}
-
-	r.Run(":8080")
+	r.RunTLS(":8080", "../../key/server.pem", "../../key/server.key")
 }
 
-type SessionInfo struct {
-	MemberId interface{}
-	// MemberName interface{}
-}
+// 多分消して良い
 
-//https://qiita.com/koshi_an/items/12da955a1823b7f3e178より
-//ミドルウェア
-func sessionCheck() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var LoginInfo SessionInfo
-		session := sessions.Default(c)               //与えられたkeyの値が存在すればそれを返し、無ければpanic
-		LoginInfo.MemberId = session.Get("MemberId") //与えられたkeyに関連するsessionを返す
-
-		// セッションがない場合、ログインフォームをだす
-		if LoginInfo.MemberId == nil {
-			log.Println("ログインしていません")
-			c.Redirect(http.StatusMovedPermanently, "/login")
-			c.Abort() // これがないと続けて処理されてしまう
-		} else {
-			c.Set("UserId", LoginInfo.MemberId) // ユーザidをセット
-			c.Next()
-		}
-		log.Println("ログインチェック終わり")
-	}
-}
+// 		// セッションがない場合、ログインフォームをだす
+// 		if LoginInfo.MemberId == nil {
+// 			log.Println("ログインしていません")
+// 			c.Redirect(http.StatusMovedPermanently, "/login")
+// 			c.Abort() // これがないと続けて処理されてしまう
+// 		} else {
+// 			c.Set("UserId", LoginInfo.MemberId) // ユーザidをセット
+// 			c.Next()
+// 		}
+// 		log.Println("ログインチェック終わり")
+// 	}
+// }
