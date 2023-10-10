@@ -257,6 +257,30 @@ func TakeListenerIdFromJWT(c *gin.Context) (int, error) {
 		}
 	}
 	return listenerId, err
+	// tokenString, err := c.Cookie("auth-token")
+	// if err != nil {
+	// 	return 0, err
+	// }
+
+	// token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	// 	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+	// 		return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+	// 	}
+	// 	return []byte(os.Getenv("SECRET_KEY")), nil
+	// })
+	// if err != nil {
+	// 	return 0, err
+	// }
+
+	// if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+	// 	idValue := claims["id"] // ここはJWTのペイロード構造に応じて適切に変更する必要があります
+	// 	if id, ok := idValue.(int); ok {
+	// 		return id, nil
+	// 	}
+	// 	return 0, errors.New("ID is not an integer in the token")
+	// }
+
+	// return 0, errors.New("Invalid token")
 }
 
 // /users/profile
