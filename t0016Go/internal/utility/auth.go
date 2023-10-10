@@ -4,6 +4,7 @@ package utility
 
 import (
 	// "database/sql"
+
 	"fmt"
 	"net/http"
 	"os"
@@ -214,20 +215,20 @@ func CallGetMemberProfile(r *gin.Engine) {
 	users := r.Group("/users")
 	users.Use(middleware.AuthMiddleware) // middlewareを設定
 	{
-		users.GET("/profile", h.GetMemberProfile) // ログイン中のユーザー情報を取得 動作確認ok
+		users.GET("/profile", h.GetListenerProfile) // ログイン中のユーザー情報を取得 動作確認ok
 	}
 
 	cud := r.Group("/cud") //CRUDのread以外
 	cud.Use(middleware.AuthMiddleware)
 	{
-		users.POST("create", h.GetMemberProfile) // 未定
-		users.POST("delete", h.GetMemberProfile) // 未定
-		users.POST("update", h.GetMemberProfile) // 未定
+		users.POST("create", h.GetListenerProfile) // 未定
+		users.POST("delete", h.GetListenerProfile) // 未定
+		users.POST("update", h.GetListenerProfile) // 未定
 	}
 }
 
-// /users/profile
-func (h *Handler) GetMemberProfile(c *gin.Context) {
+// JWTからlistenerIdを取得。なお、コードの理解度低い。
+func TakeListenerIdFromJWT(c *gin.Context) (int, error) {
 	tokenString, _ := c.Cookie("auth-token")
 	// tokenString, _ := c.Cookie("next-auth.session-token")　不要
 
@@ -236,7 +237,7 @@ func (h *Handler) GetMemberProfile(c *gin.Context) {
 	})
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-		return
+		return 0, err
 	}
 	fmt.Printf("token= %v \n", token)
 
@@ -247,18 +248,48 @@ func (h *Handler) GetMemberProfile(c *gin.Context) {
 			listenerIdFloat, ok := val.(float64)
 			if !ok {
 				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid listener_id format in token"})
-				return
+				return 0, err
 			}
 			listenerId = int(listenerIdFloat)
 		} else {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "listener_id not found in token"})
-			return
+			return 0, err
 		}
 	}
+	return listenerId, err
+	// tokenString, err := c.Cookie("auth-token")
+	// if err != nil {
+	// 	return 0, err
+	// }
 
-	ListenerInfo, err := types.FindUserByListenerId(h.DB, listenerId)
+	// token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	// 	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+	// 		return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+	// 	}
+	// 	return []byte(os.Getenv("SECRET_KEY")), nil
+	// })
+	// if err != nil {
+	// 	return 0, err
+	// }
+
+	// if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+	// 	idValue := claims["id"] // ここはJWTのペイロード構造に応じて適切に変更する必要があります
+	// 	if id, ok := idValue.(int); ok {
+	// 		return id, nil
+	// 	}
+	// 	return 0, errors.New("ID is not an integer in the token")
+	// }
+
+	// return 0, errors.New("Invalid token")
+}
+
+// /users/profile
+func (h *Handler) GetListenerProfile(c *gin.Context) {
+	tokenLId, err := TakeListenerIdFromJWT(c)
+
+	ListenerInfo, err := types.FindUserByListenerId(h.DB, tokenLId)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching listener info"}) //これが表示された
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching listener info"})
 		return
 	}
 

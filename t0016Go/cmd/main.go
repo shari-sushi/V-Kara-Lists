@@ -51,8 +51,8 @@ func main() {
 
 	//データ編集
 	r.POST("/edit/vtuber", crud.EditVtuber)    //動作ok
-	r.POST("/edit/movie", crud.EditMovie)      //未
-	r.POST("/edit/sing", crud.EditKaraokeSing) //未
+	r.POST("/edit/movie", crud.EditMovie)      //動作ok
+	r.POST("/edit/sing", crud.EditKaraokeSing) //動作ok
 	r.POST("/edit/song", crud.EditSong)        //未　ver1.5かな
 
 	// データ削除(論理)
@@ -72,7 +72,7 @@ func main() {
 	// //開発者用　パスワード照会（ リポジトリ0019で作り直した）
 	// r.GET("/envpass", postrequest.EnvPass)
 
-	r.RunTLS(":8080", "../../key/server.pem", "../../key/server.key")
+	r.RunTLS(":8080", "../../key/server.pem", "../../key/server_unencrypted.key")
 }
 
 // 多分消して良い
