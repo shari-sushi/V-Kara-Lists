@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+<<<<<<< HEAD
+=======
+    "dev-https": "node server.js",
+>>>>>>> be514c5 (Initial commit)
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -12,13 +16,24 @@
     "@types/node": "20.4.4",
     "@types/react": "18.2.15",
     "@types/react-dom": "18.2.7",
+<<<<<<< HEAD
     "eslint": "8.45.0",
     "eslint-config-next": "13.4.12",
+=======
+    "axios": "^1.5.1",
+    "eslint": "8.45.0",
+    "eslint-config-next": "13.4.12",
+    "js-cookie": "^3.0.5",
+>>>>>>> be514c5 (Initial commit)
     "next": "^13.4.19",
     "next-auth": "^4.23.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+<<<<<<< HEAD
     "react-hook-form": "^7.45.2",
+=======
+    "react-hook-form": "^7.47.0",
+>>>>>>> be514c5 (Initial commit)
     "react-youtube": "^10.1.0",
     "typescript": "5.1.6"
   }
