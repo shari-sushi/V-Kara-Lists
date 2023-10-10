@@ -5,11 +5,8 @@
     npm install react-hook-form
     npm install react-youtube
     npm install next-auth
-<<<<<<< HEAD
-=======
 
     npm install js-cookie
->>>>>>> be514c5 (Initial commit)
     (npm uninstall next-auth )
 
 
@@ -20,20 +17,12 @@
         //メインのディレクトリ(ルートディレクトリ)
     go install github.com/99designs/gqlgen@latest
         //go の最新バージョンをインストール
-<<<<<<< HEAD
-    go mod init  "github.com/sharin-sushi/0016go_next_relation"
-　　    githubのproductのページ
-        //go.modを構築　※やり直す場合はgo.modを消してから
-    // go get -u github.com/gocolly/colly/v2
-    // go get -u github.com/gin-gonic/gin      //最新のginを入れる
-=======
     go mod init  "github.com/sharin-sushi/0018GoogleSearch.git"
 　　    githubのproductのページ
         //go.modを構築　※やり直す場合はgo.modを消してから
     // go get -u github.com/gocolly/colly/v2
     // go get -u github.com/gin-gonic/gin     ←済み 　※最新 -u 
     
->>>>>>> be514c5 (Initial commit)
 
     go mod tidy
 
@@ -59,15 +48,6 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
 
 
 6. 何かしら変更したら
-<<<<<<< HEAD
-    git checkout ~~(~~を使用) -bで新規作成しつつ使用
-    git add .  ←そのディレクトリ以下全部の . 
-    git commit -m "コメント"
-    git push origin -u ~~
-
-　　コメント修正
-    push前　git commit --amend してenter→テキスト編集
-=======
     git checkout ~~(~~を使用) -bで新規作成しつつ使用git 
     git add .  ←そのディレクトリ以下全部の . 
     git commit -m "コメント" ※issue駆動開発の例；コメント内に #{4}　※番号はissue番号
@@ -76,7 +56,6 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
 
 　　コメント修正
     push前　git commit --amend してenter→テキスト編集、保存して閉じる
->>>>>>> be514c5 (Initial commit)
     push後　↑やってから　git push --force-with-lease origin main
 
     commit取り消し
@@ -87,15 +66,12 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
     commit取り消しの取り消し
     git reflog　(略)
 
-<<<<<<< HEAD
-=======
     init取り消し
     rm -rf .git
 
     〇メモ
     git branch　--contains 現在のブランチ確認
 
->>>>>>> be514c5 (Initial commit)
 7. issue駆動開発
 　issues作成　→　#番号メモ(下は#11のとき)
 　 
