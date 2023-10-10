@@ -55,10 +55,10 @@ func main() {
 	r.POST("/edit/sing", crud.EditKaraokeSing) //動作ok
 	r.POST("/edit/song", crud.EditSong)        //未　ver1.5かな
 
-	// データ削除(論理)
-	r.DELETE("/delete/vtruber", crud.DeleteVtuber)   //未
-	r.DELETE("/delete/movie", crud.DeleteMovie)      //未
-	r.DELETE("/delete/sing", crud.DeleteKaraokeSing) //未
+	// データ削除(物理)
+	r.DELETE("/delete/vtuber", crud.DeleteVtuber)    //動作ok
+	r.DELETE("/delete/movie", crud.DeleteMovie)      //動作ok
+	r.DELETE("/delete/sing", crud.DeleteKaraokeSing) //動作ok
 	r.DELETE("/delete/song", crud.DeleteSong)        //未　ver1.5かな
 
 	//ユーザー認証 ※ブラウザでは"/"にリンク有り
