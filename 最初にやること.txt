@@ -74,8 +74,3 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
 
 　
 
-
-8. 現状を引き継いだまま別branchへ移動する
-    git stash
-    git checkout [別のブランチ名]
-    git stash apply
