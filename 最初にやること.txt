@@ -89,3 +89,8 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
     git checkout -c  (ブランチＢ)
     git merge (ブランチＡ)
 
+
+8. 別のブランチの最新の状態をもらう。
+    git checkout [新しいブランチ名]
+    git reset --hard [別のブランチ名]
+    git push -f origin [新しいブランチ名]

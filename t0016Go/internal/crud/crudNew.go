@@ -573,3 +573,5 @@ func DeleteKaraokeSing(c *gin.Context) {
 	})
 }
 func DeleteSong(c *gin.Context) {}
+
+// 20231011 3:27のメモ
