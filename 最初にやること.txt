@@ -98,3 +98,9 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
     git checkout [新しいブランチ名]
     git reset --hard [別のブランチ名]
     git push -f origin [新しいブランチ名]
+
+
+99. その他
+ファイル削除：　git rm -f  <ファイル名>
+ファイル名前変更：git mv <元のファイル名> <変えたいファイル名>
+ファイル移動：git mv ファイル名 移動先ディレクトリ名
