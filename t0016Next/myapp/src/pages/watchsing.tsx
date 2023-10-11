@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import YouTube from 'react-youtube';
 import DeleteButton from '../components/DeleteButton';
-import type { AllData, Streamer, StreamerMovie } from '../types/singdata'; //type{}で型情報のみインポート
+import type { AllData, Vtuber, VtuberMovie } from '../types/singdata'; //type{}で型情報のみインポート
 
 
 export default function ShowPage( posts : AllData ) {

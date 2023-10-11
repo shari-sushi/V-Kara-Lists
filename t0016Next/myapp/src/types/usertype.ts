@@ -1,9 +1,14 @@
 // import { User } from './types'
 
 export type User= {
-    MemberId    :   string|null;
-    MemberName	:	string;
-    Email		:	string|null;
-    PassWord	:	string;
-    CreatedAt	:	Date |null;		
-  };
+  ListenerId    :  number|null;
+  ListenerName	:	string;
+  Email		:	string|null;
+  Password	:	string;
+  CreatedAt	:	Date |null;		
+};
+
+export type LoginUser= {
+  Email		:	string|null;
+  Password	:	string;	
+};

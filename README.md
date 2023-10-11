@@ -65,13 +65,13 @@
  
 
 ER図
-https://user-images.githubusercontent.com/127638412/273976430-29856108-a613-493e-b024-bb9ad7ac88d9.png
+!(ER)https://user-images.githubusercontent.com/127638412/273976430-29856108-a613-493e-b024-bb9ad7ac88d9.png
 
 画面遷移図 main
-https://user-images.githubusercontent.com/127638412/273976533-1d5db155-c5a6-403c-95db-f05b6fefb3f0.png
+!(main)https://user-images.githubusercontent.com/127638412/273976533-1d5db155-c5a6-403c-95db-f05b6fefb3f0.png
 
 画面遷移図 header/footer
-https://user-images.githubusercontent.com/127638412/273976737-17eb88c9-dfb0-4a99-a5ba-bf909c268ada.png
+!(hf)https://user-images.githubusercontent.com/127638412/273976737-17eb88c9-dfb0-4a99-a5ba-bf909c268ada.png
 
 ◯要件
 --ver. 1--(デプロイし、自分で使用、バグ修正、微調整する)
