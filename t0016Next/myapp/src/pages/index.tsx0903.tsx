@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import YouTube from 'react-youtube';
 import style from '../Youtube.module.css';
-import type { AllData, Streamer, StreamerMovie } from '../types/singdata'; //type{}で型情報のみインポート
+import type { AllData, Vtuber, VtuberMovie } from '../types/singdata'; //type{}で型情報のみインポート
 import DeleteButton from '../components/DeleteButton';
 import { useRouter } from 'next/router';
 
@@ -25,8 +25,8 @@ function AllDatePage( posts : AllData )  {
 
   // const [data, setData] = useState<AllColumnsData[]>([]);
   // const [data, setData] = useState<AllColumnsData>({ streamers: [], movies: [] });
-  const [data1, setData1] = useState<Streamer[]>();
-  const [data2, setData2] = useState<StreamerMovie[]>();
+  const [data1, setData1] = useState<Vtuber[]>();
+  const [data2, setData2] = useState<VtuberMovie[]>();
 
   const router = useRouter();
 
@@ -91,18 +91,18 @@ function AllDatePage( posts : AllData )  {
         <tbody>
         {data1 && data1.map((item1, index) => (
        <tr key={index}>
-         <td>{item1.StreamerId}</td>
-         <td>{item1.StreamerName}</td>
-         <td>{item1.NameKana}</td>
+         <td>{item1.VtuberId}</td>
+         <td>{item1.VtuberName}</td>
+         <td>{item1.VtuberKana}</td>
        
-              {item1.SelfIntroUrl ? (
-          <td><Link href={item1.SelfIntroUrl}>youtubeへ</Link></td>
+              {item1.IntroMovieUrl ? (
+          <td><Link href={item1.IntroMovieUrl}>youtubeへ</Link></td>
         ) : (
           <td>未登録</td>
         )}
 
-          <td><Link href={`/movie?streamer_id=${item1.StreamerId}`}>歌枠</Link></td>
-          <td><Link href={`/sing?streamer_id=${item1.StreamerId}`}>歌</Link></td>
+          <td><Link href={`/movie?streamer_id=${item1.VtuberId}`}>歌枠</Link></td>
+          <td><Link href={`/sing?streamer_id=${item1.VtuberId}`}>歌</Link></td>
         
               {/* if (${item.self_intro_url} != undefined){
                 return(
@@ -113,7 +113,7 @@ function AllDatePage( posts : AllData )  {
               )
             } */}
               {/* http://localhost:3000/show?Unique_id=1　になった */}
-              <td><Link href={`/edit?Unique_id=${item1.StreamerId}`}>編集</Link></td>
+              <td><Link href={`/edit?Unique_id=${item1.VtuberId}`}>編集</Link></td>
               {/* <td><Link href={`/posts/${item.streamer_id}`}>編集</Link></td> */}
               {/* <DeleteButton Unique_id={item.streamer_id} /> */}
             </tr>
@@ -137,7 +137,7 @@ function AllDatePage( posts : AllData )  {
         <tbody>
           {data2 && data2.map((item2, index) => (
             <tr key={index}>
-              <td>{item2.StreamerName}</td>
+              <td>{item2.VtuberName}</td>
               <td>{item2.MovieId}</td>        
               <td><Link href={`/sing?movie_url=${item2.MovieUrl}`}>{item2.MovieTitle}</Link></td>
               <td>{item2.MovieUrl}</td>
@@ -151,7 +151,7 @@ function AllDatePage( posts : AllData )  {
               ) : (<td>-</td>            )} */}
  
               {/* http://localhost:3000/show?Unique_id=1　になった */}
-              <td><Link href={`/posts/${item2.StreamerId}`}>編集</Link></td>
+              <td><Link href={`/posts/${item2.VtuberId}`}>編集</Link></td>
               {/* <DeleteButton Unique_id={item.streamer_id} /> */}
             </tr>
             ))}

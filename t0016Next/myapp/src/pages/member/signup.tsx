@@ -5,8 +5,8 @@ import Link from 'next/link';
 
 export default function EditForm() {
     var defaultValues:User = {
-        MemberId    :null , //Goで自動入力　→未実装
-        MemberName	:""	, //入力必須
+        ListenerId    :null , //Goで自動入力　→未実装
+        ListenerName	:""	, //入力必須
         Email		:""	, //入力必須
         PassWord	:""	, //入力必須
         CreatedAt	:null, //DBで自動入力
@@ -52,7 +52,7 @@ return (
     会員ID: 新規番号が割り振られます <br />
     アカウント名：
     <input {...register("MemberName", { required: true })} placeholder="name" /><br />
-    {errors.MemberName && "name is required"}
+    {errors.ListenerName && "name is required"}
     {/* 条件付きレンダリング…左辺がtrueなら右辺を表示する */}
     メールアドレス:
     <input {...register("Email", { required: true })} placeholder="***@***.***" /><br />

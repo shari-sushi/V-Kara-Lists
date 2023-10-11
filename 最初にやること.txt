@@ -8,7 +8,11 @@
 
     npm install js-cookie
     (npm uninstall next-auth )
+    npm install axios　//オレオレ証明書絡みで試用。本番環境ではおそらく不要。
+    npm install --save-dev @types/axios
 
+
+    npm audit fix
 
 2. githubでprodubt作成
    
