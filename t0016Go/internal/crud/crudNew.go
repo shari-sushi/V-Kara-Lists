@@ -54,7 +54,7 @@ func fetchVtubersJoinMovies(vts []types.Vtuber) ([]*types.VtuberMovie, error) {
 // LEFT JOIN movies  mo USING(vtuber_id)
 
 ///　/top
-func ReadAllVtubers(c *gin.Context) {
+func ReadAllVtubersAndMovies(c *gin.Context) {
 	vts, errV := fetchVtubers()
 	if errV != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"resultStsのerror": errV.Error()})
@@ -573,5 +573,61 @@ func DeleteKaraokeSing(c *gin.Context) {
 	})
 }
 func DeleteSong(c *gin.Context) {}
+
+// プルダウンメニューに使用
+func ReadAllVtubersName(c *gin.Context) {
+	vts, errV := fetchVtubers()
+	if errV != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"resultStsのerror": errV.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"vtubers": vts,
+	})
+}
+func ReadMovieTitlesOfTheVTuber(c *gin.Context) {
+	var mo types.Movie
+	err := c.ShouldBind(&mo)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid request body",
+		})
+		return
+	}
+	fmt.Printf("bindしたmoの VtId=%d \n", *mo.VtuberId)
+
+	var returnMoOftheV []types.Movie
+	utility.Db.Where("vtuber_id = ?", mo.VtuberId).Find(&returnMoOftheV)
+
+	for _, mo := range returnMoOftheV {
+		fmt.Printf("returnMo = %v, %v\n", mo.MovieTitle, mo.MovieUrl)
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"movies": returnMoOftheV,
+	})
+}
+func ReadKaraokeListsOfTheMovie(c *gin.Context) {
+	var ka types.KaraokeList
+	err := c.ShouldBind(&ka)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid request body",
+		})
+		return
+	}
+	fmt.Printf("bindしたmoの VtId=%d \n", &ka.MovieUrl)
+
+	var returnKaOfTheMo []types.KaraokeList
+	utility.Db.Where("movie_url = ?", ka.MovieUrl).Find(&returnKaOfTheMo)
+	for _, ka := range returnKaOfTheMo {
+		fmt.Printf("returnMo = %v, %v\n", ka.SongName, ka.MovieUrl)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"karaoke_lists": returnKaOfTheMo,
+	})
+}
+func ReadAllSongs(c *gin.Context) {}
 
 // 20231011 3:27のメモ

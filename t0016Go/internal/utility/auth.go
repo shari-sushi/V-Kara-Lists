@@ -232,6 +232,7 @@ func TakeListenerIdFromJWT(c *gin.Context) (int, error) {
 	tokenString, _ := c.Cookie("auth-token")
 	// tokenString, _ := c.Cookie("next-auth.session-token")　不要
 
+	// token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("SECRET_KEY")), nil
 	})
@@ -245,10 +246,12 @@ func TakeListenerIdFromJWT(c *gin.Context) (int, error) {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
 		if val, exists := claims["listener_id"]; exists {
 			// JSON numbers are float64
+
 			listenerIdFloat, ok := val.(float64)
 			if !ok {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid listener_id format in token"})
-				return 0, err
+				// c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid listener_id format in token"})
+				// err == nil
+				return 0, fmt.Errorf("Invalid listener_id format in token")
 			}
 			listenerId = int(listenerIdFloat)
 		} else {

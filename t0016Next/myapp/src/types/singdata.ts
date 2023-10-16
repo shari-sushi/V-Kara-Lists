@@ -1,5 +1,5 @@
 export type SingData= {
-    unique_id	:	number;
+    vtuber_id	:	number;
     movie		:	string;
     url			:	string;
     singStart	:	string;
@@ -53,9 +53,9 @@ export type Movie= {
 };
 
 export type KaraokeList= {
-	MovieUrl		:	string | null;
-	SongId			:	number;
-	SingStart		:	string | null;
-	Song			:	string | null;
-	SongInputerId	:	string | null;
+	MovieUrl				:	string | null;
+	KaraokeListId			:	number;
+	SingStart				:	string | null;
+	SongName				:	string | null;
+	KaraokeListInputerId	:	number | null;
 };

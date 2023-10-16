@@ -29,7 +29,7 @@ const Signin = () => {
   const onSubmit = async (data:InputValues) => {
     try {
       console.log("data=", data);
-      const response = await fetch(`https://localhost:8080/login2`, { 
+      const response = await fetch(`https://localhost:8080/login`, { 
           method: 'POST',
           credentials: "include",
           headers: {
