@@ -38,10 +38,10 @@ func main() {
 	//↑どうなってるのか謎。
 
 	//topページ
-	r.GET("/", crud.ReadAllVtubers)                   //動作ok
-	r.GET("/vtuber=[id]", crud.ReadAllVtubers)        //未 ver. 1.0の最後
-	r.GET("/vtuber=[id]/movies", crud.ReadAllVtubers) //未 ver. 1.0の最後
-	r.GET("/sings", crud.ReadAllSings)                //動作ok
+	r.GET("/", crud.ReadAllVtubersAndMovies)                   //動作ok
+	r.GET("/vtuber=[id]", crud.ReadAllVtubersAndMovies)        //未 ver. 1.0の最後
+	r.GET("/vtuber=[id]/movies", crud.ReadAllVtubersAndMovies) //未 ver. 1.0の最後
+	r.GET("/sings", crud.ReadAllSings)                         //動作ok
 
 	// データ新規登録
 	r.POST("/create/vtuber", crud.CreateVtuber)    //動作ok
@@ -61,10 +61,16 @@ func main() {
 	r.DELETE("/delete/sing", crud.DeleteKaraokeSing) //動作ok
 	r.DELETE("/delete/song", crud.DeleteSong)        //未　ver1.5かな
 
+	//ドロップダウン用
+	r.GET("/getvtuber", crud.ReadAllVtubersName)               //未
+	r.POST("/getmovie", crud.ReadMovieTitlesOfTheVTuber)       //未
+	r.POST("/getkaraokelist", crud.ReadKaraokeListsOfTheMovie) //未
+	r.POST("/getsong", crud.ReadAllSongs)                      //未
+
 	//ユーザー認証 ※ブラウザでは"/"にリンク有り
-	r.POST("/signup2", utility.CalltoSignUpHandler) //動作ほぼok　登録済みのメアドの時に、処理は止めてくれるけど、エラー内容を返してくれない…。
-	r.POST("/login2", utility.CalltoLogInHandler)   //動作ok
-	r.GET("/logout2", utility.LogoutHandler)        //動作ok
+	r.POST("/signup", utility.CalltoSignUpHandler) //動作ほぼok　登録済みのメアドの時に、処理は止めてくれるけど、エラー内容を返してくれない…。
+	r.POST("/login", utility.CalltoLogInHandler)   //動作ok
+	r.GET("/logout", utility.LogoutHandler)        //動作ok
 
 	// /cud/~, /users/~にアクセスした際にmiddlewareでアクセスに認証制限
 	utility.CallGetMemberProfile(r) //未
