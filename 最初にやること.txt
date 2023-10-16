@@ -10,7 +10,9 @@
     (npm uninstall next-auth )
     npm install axios　//オレオレ証明書絡みで試用。本番環境ではおそらく不要。
     npm install --save-dev @types/axios
-
+    npm install @szhsin/react-menu //不要 react-selectの方が良い
+    npm install react-select  
+    npm i --save react-select  
 
     npm audit fix
 

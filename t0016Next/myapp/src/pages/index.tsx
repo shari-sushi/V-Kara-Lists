@@ -9,7 +9,6 @@ import https from 'https';
 import axios from 'axios';
 import { AxiosRequestConfig } from 'axios';
 
-
   type PostsAndCheckSignin= {
     posts: any; // anyは避けるべき？
     checkSignin: boolean;
@@ -20,10 +19,9 @@ import { AxiosRequestConfig } from 'axios';
 const AllDatePage: React.FC<PostsAndCheckSignin> = ({ posts, checkSignin }) =>  {
     // data1というステートを定義。streamerの配列を持つ。
     // setData1はステートを更新する関数。
-  const [vtubers, setData1] = useState<Vtuber[]>();
-  const [movies, setData2] = useState<VtuberMovie[]>();
+const [vtubers, setData1] = useState<Vtuber[]>();
+const [movies, setData2] = useState<VtuberMovie[]>();
 //   const [check, setData3] = useState<boolean>();
-
 //   const router = useRouter();
 
     useEffect(() => {
@@ -32,10 +30,8 @@ const AllDatePage: React.FC<PostsAndCheckSignin> = ({ posts, checkSignin }) =>  
             setData2(posts.vtubers_and_movies);
                 // setData3(checkSingin)
             console.log("checkSignin=", checkSignin)
-
         }
     }, [posts]);
-
 
   return (
     <div>
@@ -89,7 +85,7 @@ const AllDatePage: React.FC<PostsAndCheckSignin> = ({ posts, checkSignin }) =>  
         )}
           <td><Link href={`/movie?streamer_id=${vtubers.VtuberId}`}>歌枠</Link></td>
           <td><Link href={`/sing?streamer_id=${vtubers.VtuberId}`}>歌</Link></td>
-          {checkSignin && <td><Link href={`/edit?Unique_id=${vtubers.VtuberId}`}>編集</Link></td>}
+          {checkSignin && <td><Link href={`/karaokelist/edit?Unique_id=${vtubers.VtuberId}`}>編集</Link></td>}
             </tr>
             ))}
         </tbody>
@@ -103,19 +99,25 @@ const AllDatePage: React.FC<PostsAndCheckSignin> = ({ posts, checkSignin }) =>  
            <tr>
             <td>配信者名</td>
             <td>動画名(ｻｲﾄ内ﾘﾝｸ：歌リスト一覧へ)</td>
+            <td>外部ﾘﾝｸ</td>
             {checkSignin && <td>編集</td>}
           </tr>
         </thead>
         <tbody>
           {movies && movies.map((movies, index) => (
             <tr key={index}>
-              <td>{movies.VtuberName}</td>
-              {movies.MovieUrl ? (
-               <td><a href={`https://${movies.MovieUrl}`} target="_blank" rel="noopener noreferrer">{movies.MovieTitle}</a></td>
+          <td>{movies.VtuberName}</td>
+          {movies.MovieUrl ? (
+               <td><Link href={`/karaokelist/${movies.MovieUrl}`}>{movies.MovieTitle}</Link></td>
             ) : (
               <td>未登録</td>
             )}
-            {checkSignin && <td><Link href={`/edit?Unique_id=${vtubers.VtuberId}`}>編集</Link></td>}
+          {movies.MovieUrl ? (
+               <td><a href={`https://${movies.MovieUrl}`} target="_blank" rel="noopener noreferrer">YouTubeへ</a></td>
+            ) : (
+              <td>未登録</td>
+            )}
+          {checkSignin && <td><Link href={`/edit?Unique_id=${movies.VtuberId}`}>編集</Link></td>}
             </tr>
             ))}
         </tbody>
@@ -124,15 +126,12 @@ const AllDatePage: React.FC<PostsAndCheckSignin> = ({ posts, checkSignin }) =>  
           {/*動画一覧  */}
 
     <h2>★歌</h2>
-    実装予定：登録順に全件取得し、ページネーション、ページ番号をランダムに表示
+    <Link href={`/karaokerist/sings`} ><u>全歌一覧</u></Link> <br />
+    <a> 実装予定：登録順に全件取得し、ページネーション、ページ番号をランダムに表示</a>
 </div>
   )};
 
-
-
-
-
-//   オレオレ証明書対応のために、証明書を無視してる。
+// オレオレ証明書対応のために、証明書を無視してる。
 // 本番環境では変更が必要。
   export async function getServerSideProps(context: { req: { headers: { cookie: any; }; }; }) {
     //リクエストにCookieを入れる。    
