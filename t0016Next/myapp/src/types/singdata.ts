@@ -1,5 +1,5 @@
 export type SingData= {
-    unique_id	:	number;
+    vtuber_id	:	number;
     movie		:	string;
     url			:	string;
     singStart	:	string;
@@ -9,11 +9,11 @@ export type SingData= {
 //   import { SingData } from './types'
 
 export type AllData= {
-	StreamerId		:	number; 
-	StreamerName	:	string;
-	NameKana		:	string;
+	VtuberId		:	number; 
+	VtuberName	:	string;
+	VtuberKana		:	string;
 	SelfIntroUrl	:	string | null;
-	StreamInputerId	:	string;
+	VtuberInputerId	:	string;
 	MovieId			:	number;
 	MovieUrl		:	string | null;
 	MovieTitle		:	string | null;
@@ -23,12 +23,12 @@ export type AllData= {
 	SongInputerId	:	string | null;
 }
 
-export type StreamerMovie= {
-	StreamerID :Streamer['StreamerId'] //USING
-	StreamerName :Streamer['StreamerName']
+export type VtuberMovie= {
+	VtuberID :Vtuber['VtuberId'] //USING
+	VtuberName :Vtuber['VtuberName']
 
 	// Movies:Movie[] ではmapがうまくいかなかった
-	StreamerId		:	Movie['StreamerId']		; 
+	VtuberId		:	Movie['VtuberId']		; 
 	MovieId			:	Movie['MovieId'	];
 	MovieUrl		:	Movie['MovieUrl'];
 	MovieTitle		:	Movie['MovieTitle'];
@@ -36,25 +36,26 @@ export type StreamerMovie= {
 
 
 //以下、基礎の型３つ
-export type  Streamer= {
-	StreamerId		:	number; 
-	StreamerName	:	string;
-	NameKana		:	string;
-	SelfIntroUrl	:	string | null;
-	StreamInputerId	:	string;
+export type  Vtuber= {
+	VtuberId		:	number; 
+	VtuberName		:	string;
+	VtuberKana		:	string;
+	IntroMovieUrl	:	string | null;
+	VtuberInputerId	:	string;
 };
 
 export type Movie= {
-	StreamerId		:	number; 
+	VtuberId		:	number; 
 	MovieId			:	number;
 	MovieUrl		:	string | null;
 	MovieTitle		:	string | null;
+	MovieInputerId	: number|null;
 };
 
 export type KaraokeList= {
-	MovieUrl		:	string | null;
-	SongId			:	number;
-	SingStart		:	string | null;
-	Song			:	string | null;
-	SongInputerId	:	string | null;
+	MovieUrl				:	string | null;
+	KaraokeListId			:	number;
+	SingStart				:	string | null;
+	SongName				:	string | null;
+	KaraokeListInputerId	:	number | null;
 };

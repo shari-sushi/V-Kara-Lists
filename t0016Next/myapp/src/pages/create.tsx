@@ -6,7 +6,7 @@ import type { SingData } from '../types/singdata';
 
 export default function EditForm() {
     var defaultValues:SingData = {
-        unique_id:0,
+        vtuber_id:0,
         movie:"",
         url:"",
         singStart:"",
@@ -48,6 +48,8 @@ export default function EditForm() {
     };
 
     return (
+        <div>
+        <h1>DB登録</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
         登録ID: 新規番号が割り振られます <br />
         動画タイトル：
@@ -63,14 +65,16 @@ export default function EditForm() {
         曲名：
         <input {...register("song", { required: true })} placeholder="Song" /><br />
         {errors.song && "Song is required"}
-        <button type="submit" style={{ background: 'blue' }}>＜決定＞</button>
+        <button type="submit" style={{ background: 'brown' }}>＜決定＞</button>
 
         <br />
    
      &nbsp;  &nbsp;  &nbsp;  &nbsp;
-    <button style={{ background: 'blue' }}><Link href={`/`}>一覧へ</Link></button>
+    <button style={{ background: 'brown' }}><Link href={`/`}>一覧へ</Link></button>
 
     </form>
+    </div>
         // ,<DeleteButton Unique_id ={ Unique_id }/>
+        
     );
 }

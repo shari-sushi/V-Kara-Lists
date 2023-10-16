@@ -8,7 +8,13 @@
 
     npm install js-cookie
     (npm uninstall next-auth )
+    npm install axios　//オレオレ証明書絡みで試用。本番環境ではおそらく不要。
+    npm install --save-dev @types/axios
+    npm install @szhsin/react-menu //不要 react-selectの方が良い
+    npm install react-select  
+    npm i --save react-select  
 
+    npm audit fix
 
 2. githubでprodubt作成
    
@@ -89,3 +95,14 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
     git checkout -c  (ブランチＢ)
     git merge (ブランチＡ)
 
+
+8. 別のブランチの最新の状態をもらう。
+    git checkout [新しいブランチ名]
+    git reset --hard [別のブランチ名]
+    git push -f origin [新しいブランチ名]
+
+
+99. その他
+ファイル削除：　git rm -f  <ファイル名>
+ファイル名前変更：git mv <元のファイル名> <変えたいファイル名>
+ファイル移動：git mv ファイル名 移動先ディレクトリ名

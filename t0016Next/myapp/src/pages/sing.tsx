@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import YouTube from 'react-youtube';
 import style from '../Youtube.module.css';
-import type { AllData, Streamer, StreamerMovie } from '../types/singdata'; //type{}で型情報のみインポート
+import type { AllData, Vtuber, VtuberMovie } from '../types/singdata'; //type{}で型情報のみインポート
 import DeleteButton from '../components/DeleteButton';
 import { useRouter } from 'next/router';
 
@@ -59,9 +59,9 @@ function AllDatePage( posts : AllData )  {
         <tbody>
           {data && data.map((item, index) => (
           <tr key={index}>
-            <td>{item.StreamerId}</td>
-            <td>{item.StreamerName}</td>
-            <td>{item.NameKana}</td>
+            <td>{item.VtuberId}</td>
+            <td>{item.VtuberName}</td>
+            <td>{item.VtuberKana}</td>
        
               {item.SelfIntroUrl ? (
             <td><Link href={item.SelfIntroUrl}>youtube</Link></td>
@@ -78,7 +78,7 @@ function AllDatePage( posts : AllData )  {
               )
             } */}
               {/* http://localhost:3000/show?Unique_id=1　になった */}
-              <td><Link href={`/edit?Unique_id=${item.StreamerId}`}>編集</Link></td>
+              <td><Link href={`/edit?Unique_id=${item.VtuberId}`}>編集</Link></td>
               {/* <td><Link href={`/posts/${item.streamer_id}`}>編集</Link></td> */}
               {/* <DeleteButton Unique_id={item.streamer_id} /> */}
             </tr>
