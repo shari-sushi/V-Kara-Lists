@@ -1,4 +1,24 @@
-.youtube { position: relative; width: 100%; padding-top: 56.25%;
-}
-.iframe { position: absolute; top: 0; right: 0; width: 100%; height: 100%;
-}
+.youtube {
+    position: relative;
+    width: 10%;
+    padding-top: 56.25%;
+  }
+  /* .iframe {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+@media screen and (max-width:767px){
+    .iframe{
+        position: relative;
+        iframe{
+            width:100% !important;
+            height:100% !important;    
+        }
+    }
+} */
+
+/* 参考　https://blog.fundely.co.jp/tech/2023/02/08/react-youtubeライブラリの導入 */

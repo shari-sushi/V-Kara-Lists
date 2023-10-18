@@ -59,20 +59,19 @@ type Posts = {
 
 
  //onVtuberSelectはVtuberが選択されたときに親コンポーネントへ通知するためのコールバック関数
- export const DropDownVt = ({onVtuberSelect, onMovieClear, onKaraokeClear }) => {
+ export const DropDownVt2 = ({posts, onVtuberSelect, onMovieClear, onKaraokeClear }) => {
   const handleVtuberClear = () => {
     onVtuberSelect(null);   //nillになる
     onMovieClear();         //undefinedになる
     onKaraokeClear();
   };
   const [vtuberOptions, setVtuberOptions] = useState([]);
+
   useEffect(() => {
-    const fetchVtubers = async () => {
+    const fetchVtubers = () => { //そのうち名前変える
       try {
-        let response = await fetch("https://localhost:8080/getvtuber");
-        let data = await response.json();
-        console.log("API Response Vt:", data);
-        let havingVt = data.vtubers.map((vtuber:Vtuber) => ({
+        console.log("API Response Vt:", posts.vtubers);
+        let havingVt = posts.vtubers.map((vtuber:Vtuber) => ({
           value: vtuber.VtuberId,
           label: vtuber.VtuberName
         }));
@@ -92,15 +91,15 @@ type Posts = {
         isClearable={true}
         isSearchable={true}
         name="VTuber"  //何のためにあるかわからん
-        options={vtuberOptions}
+        options={vtuberOptions} //選択候補
         defaultMenuIsOpen={true}
         blurInputOnSelect={true}
         // isDisabled={false} isRtl={false} Value= //その他オプションのメモ
         styles={dropStyle}
     
-        onChange={option => {
+        onChange={option => { //ここでSelectで選んだものがoptionに格納されるのか？
           if (option) {
-            console.log("Selected Vtuber:", option);
+            console.log("Selected Vtuber value:", option.value);
             onVtuberSelect(option.value);
           } else {
             handleVtuberClear();
@@ -118,7 +117,7 @@ type Posts = {
 // export const DropDownMo: React.FC<DropDownMoProps> = ({ selectedVtuber ,onMovieSelect}) => {
  
 //  movie用
-export const DropDownMo = ({ selectedVtuber, onMovieSelect, onKaraokeClear }) => {
+export const DropDownMo2 = ({ posts, selectedVtuber, onMovieSelect, onKaraokeClear }) => {
 // export const DropDownMo = ({ selectedVtuber ,onMovieSelect}) => {  
   //const [selectedVtuber, setSelectedVtuber] = useState(null);
   const handleMovieClear = () => {
@@ -135,16 +134,10 @@ export const DropDownMo = ({ selectedVtuber, onMovieSelect, onKaraokeClear }) =>
     }
     const fetchMovies = async () => {
       try {
-        let response = await fetch("https://localhost:8080/getmovie",{
-          method: 'POSt',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ VtuberID: selectedVtuber })
-          })
-        let data = await response.json();
-        console.log("API Response Mo:", data);
-        let havingMovie = data.movies.map((movie:Movie) => ({
+        const choicesMovie = posts.movies.filter((movies:Movie) => movies.VtuberId === selectedVtuber);
+       
+        console.log("API Response Mo:", choicesMovie);
+        let havingMovie = choicesMovie.map((movie:Movie) => ({
           value: movie.MovieUrl,
           label: movie.MovieTitle
         }));
@@ -183,8 +176,15 @@ export const DropDownMo = ({ selectedVtuber, onMovieSelect, onKaraokeClear }) =>
   );
 };
 
+
+type DropDownKa2Props = {
+  posts: Posts;
+  selectedMovie: string;
+  onKaraokeSelect: number;
+};
+
 // karaoke_list用
-export const DropDownKa = ({ selectedMovie, onKaraokeSelect }) => {
+export const DropDownKa2: React.FC<DropDownKa2Props>  = ({ posts, selectedMovie, onKaraokeSelect }) => {
   // const [movies, setData2] = useState<KaraokeList[]>();
   const [karaokeListOptions, setMovieOptions] = useState([]);
   const [selectedKaraoke, setSelectedKaraoke] = useState(null);
@@ -198,19 +198,14 @@ export const DropDownKa = ({ selectedMovie, onKaraokeSelect }) => {
     //   setSelectedKaraoke(null);
     //   return;
     // }
-    const fetchMovies = async () => {
+    const fetchKaraokes = async () => {
       try {
-        console.log("selectedMovie=",selectedMovie)
-        let response = await fetch("https://localhost:8080/getkaraokelist",{
-          method: 'POSt',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ MovieUrl: selectedMovie.value })
-          // body: JSON.stringify({ MovieId: selectedMovie ? selectedMovie.value : null })
-          })
-        let data = await response.json();
-        console.log("API Response ka:", data);
+        console.log("selectedMovie=",selectedMovie.MovieUrl)
+        const movieUrl = {selectedMovie}
+        const moviesForSelectedVtuber = posts.karaokes.filter((karaokes:Karaoke) => karaokes.MovieUrl === selectedMovie);
+       
+
+        console.log("API Response ka:", Posts.karaokes );
         let havingkaraokeList = data.karaoke_lists.map((karaoke:KaraokeList) => ({
           value: karaoke.KaraokeListId,
           label: karaoke.SongName
@@ -221,7 +216,7 @@ export const DropDownKa = ({ selectedMovie, onKaraokeSelect }) => {
       }
       setSelectedKaraoke(null);
     };
-    fetchMovies();
+    fetchKaraokes();
   }, [selectedMovie]);
   return (
     <>

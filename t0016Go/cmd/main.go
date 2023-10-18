@@ -66,11 +66,12 @@ func main() {
 	r.POST("/getmovie", crud.ReadMovieTitlesOfTheVTuber)       //未
 	r.POST("/getkaraokelist", crud.ReadKaraokeListsOfTheMovie) //未
 	r.POST("/getsong", crud.ReadAllSongs)                      //未
+	r.GET("/getalldate", crud.ReadAllDate)                     //未
 
 	//ユーザー認証 ※ブラウザでは"/"にリンク有り
 	r.POST("/signup", utility.CalltoSignUpHandler) //動作ほぼok　登録済みのメアドの時に、処理は止めてくれるけど、エラー内容を返してくれない…。
 	r.POST("/login", utility.CalltoLogInHandler)   //動作ok
-	r.GET("/logout", utility.LogoutHandler)        //動作ok
+	r.GET("/logout", utility.LogoutHandler)        //動作ok だけどフロントで完結し　ない？
 
 	// /cud/~, /users/~にアクセスした際にmiddlewareでアクセスに認証制限
 	utility.CallGetMemberProfile(r) //未
