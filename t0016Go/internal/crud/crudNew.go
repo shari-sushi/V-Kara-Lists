@@ -28,6 +28,12 @@ var vtsmoskls []*types.VtuberMovieKalaokeList
 var all types.AllColumns
 var alls []*types.AllColumns
 
+type AllDate struct {
+	vts types.Vtuber
+	mos types.Movie
+	kar types.KaraokeList
+}
+
 // var movie Movie
 // var movies []Movie
 // var karaokeList KaraokeList
@@ -630,4 +636,38 @@ func ReadKaraokeListsOfTheMovie(c *gin.Context) {
 }
 func ReadAllSongs(c *gin.Context) {}
 
-// 20231011 3:27のメモ
+// vtuber, mobie, karaokeをjoinせずに取得
+func ReadAllDate(c *gin.Context) {
+	var vts []types.Vtuber
+	var mos []types.Movie
+	var kas []types.KaraokeList
+	var err error
+	resultVts := utility.Db.Find(&vts)
+	if resultVts.Error != nil {
+		// return nil, resultVts.Error
+		err = resultVts.Error
+	}
+	resultMos := utility.Db.Find(&mos)
+	if resultMos.Error != nil {
+		// return "", resultMos.Error
+		err = resultMos.Error
+	}
+	resultKas := utility.Db.Find(&kas)
+	if resultKas != nil {
+		// return "", resultKas
+		err = resultVts.Error
+	}
+
+	// var alldate []AllDate
+	// alldate = vts, mos, kas
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":  "メインコンテンツの全データをjoinせずに取得。の結果",
+		"err":      err,
+		"vtubers":  vts,
+		"movies":   mos,
+		"karaokes": kas,
+	})
+}
+
+// 20231017 3:40のメモ

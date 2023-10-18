@@ -55,16 +55,7 @@ import type { AllData, Vtuber, Movie, KaraokeList } from '../types/singdata';
         blurInputOnSelect={true}
  
         // isDisabled={false} isRtl={false} Value= //その他オプションのメモ
-        styles={{
-          container: (base) => ({
-            ...base,
-            width: '300px'
-          }),
-          control: (base) => ({ //controlでholder、optionで選択肢の文字サイズを指定
-            ...base,
-            fontSize: '12px'  // ここで文字サイズを指定
-          }),
-        }}
+
         onChange={option => {
           if (option) {
             console.log("Selected Vtuber:", option);
@@ -78,19 +69,6 @@ import type { AllData, Vtuber, Movie, KaraokeList } from '../types/singdata';
   );
 };
 
-// onChange={option => {
-//   console.log("Selected Karaoke:", option);
-//   if (typeof onKaraokeSelect === 'function') {
-//       onKaraokeSelect(option);
-//   }
-
-
-// type DropDownMoProps = {
-//   selectedVtuber: Vtuber;
-//   onMovieSelect:Movie;
-// };
-// export const DropDownMo: React.FC<DropDownMoProps> = ({ selectedVtuber ,onMovieSelect}) => {
- 
 //  movie用
 export const DropDownMo = ({ selectedVtuber, onMovieSelect, onKaraokeClear }) => {
 // export const DropDownMo = ({ selectedVtuber ,onMovieSelect}) => {  
