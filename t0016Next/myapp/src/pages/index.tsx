@@ -1,14 +1,10 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-// import YouTube from 'react-youtube';
 import style from '../Youtube.module.css';
 import type { AllData, Vtuber, VtuberMovie } from '../types/singdata'; //type{}で型情報のみインポート
-// import DeleteButton from '../components/DeleteButton';
-import { useRouter } from 'next/router';
 import https from 'https';
 import axios from 'axios';
-import { AxiosRequestConfig } from 'axios';
-
+import YoutubePlayer from '../components/YoutubePlayer'
   type PostsAndCheckSignin= {
     posts: any; // anyは避けるべき？
     checkSignin: boolean;
@@ -23,6 +19,22 @@ const [vtubers, setData1] = useState<Vtuber[]>();
 const [movies, setData2] = useState<VtuberMovie[]>();
 //   const [check, setData3] = useState<boolean>();
 //   const router = useRouter();
+
+const extractVideoId = (url: string): string => {
+  const match = url.match(/v=([^&]+)/);
+  if (match && match[1]) {
+      return match[1];
+  }
+  return ''; 
+};
+
+const start = (60*6 + 29);
+
+const [currentMovieId, setCurrentMovieId] = useState<string>("kORHSmXcYNc");
+const handleMovieClick = (movieId: string) => {
+  setCurrentMovieId(movieId);
+};
+
 
     useEffect(() => {
         if (posts) {
@@ -39,7 +51,6 @@ const [movies, setData2] = useState<VtuberMovie[]>();
         <h3>"推し"の"歌枠"の聴きたい"歌"を再生しよう。 <br />
         推しが歌った"歌"を一目で把握、布教しよう。
         </h3>
-
            {/*  ログイン機能のリンクボタン */}
             <Link href="/signup"><button style={{ background: 'brown' }}>
              会員登録</button>
@@ -52,6 +63,8 @@ const [movies, setData2] = useState<VtuberMovie[]>();
             </Link>
             <br />　　　　　↑ゲストログイン可能です <br />
 
+            <YoutubePlayer videoId={currentMovieId}  start={start} />
+            
         {/* 一覧表示 */}
 
         {/* 配信者一覧 */}
@@ -108,7 +121,10 @@ const [movies, setData2] = useState<VtuberMovie[]>();
             <tr key={index}>
           <td>{movies.VtuberName}</td>
           {movies.MovieUrl ? (
-               <td><Link href={`/karaokelist/${movies.MovieUrl}`}>{movies.MovieTitle}</Link></td>
+               <td><a href="#" onClick={(e) => {
+                e.preventDefault();
+                handleMovieClick(extractVideoId(movies.MovieUrl));
+              }}>{movies.MovieTitle}</a></td>
             ) : (
               <td>未登録</td>
             )}

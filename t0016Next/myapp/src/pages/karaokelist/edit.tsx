@@ -13,6 +13,8 @@ import {  Menu, MenuItem,  MenuButton, SubMenu} from '@szhsin/react-menu';
 import '@szhsin/react-menu/dist/index.css';
 
 import {DropDownVt, DropDownMo, DropDownKa} from '../../components/Dropdown';
+import {DropDownVt2, DropDownMo2, DropDownKa2} from '../../components/TestDropdown';
+import YouTube, { YouTubeProps } from 'react-youtube';
 
   type PostsAndCheckSignin= {
     posts: any; // anyは避けるべき？
@@ -30,8 +32,10 @@ const [selectedVtuber, setSelectedVtuber] = useState(null);
 const [selectedMovie, setSelectedMovie] = useState(null);
 // const [setSelectedKaraoke, SetSelectedKaraoke] = useState(null);
 const [selectedKaraoke, setSelectedKaraoke] = useState(null);
-
 console.log("selectedKaraoke",selectedKaraoke)
+// console.log("posts.vtubers",posts.vtubers)
+// console.log("posts.movies",posts.movies)
+// console.log("posts.karaokes",posts.karaokes)
 
 const handleMovieClear = () => {
   setSelectedMovie(null);
@@ -42,6 +46,20 @@ const handleVtuberClear = () => {
   setSelectedVtuber(null);
   handleMovieClear();
 };
+
+// const onPlayerReady: YouTubeProps['onReady'] = (event) => {
+//   // access to player in all event handlers via event.target
+//   event.target.pauseVideo();
+// }
+// const opts: YouTubeProps['opts'] = {
+//     height: '390',
+//     width: '640',
+//     playerVars: {
+//       // https://developers.google.com/youtube/player_parameters
+//       https://www.youtube.com/watch?v=FA92lnCyujA
+//       autoplay: 1,
+//     },
+//   };
 
 //   const [check, setData3] = useState<boolean>();
 //   const router = useRouter();
@@ -64,7 +82,9 @@ const handleVtuberClear = () => {
        <DropDownKa
         selectedMovie={selectedMovie}
         onKaraokeSelect={setSelectedKaraoke}/> */}
-       <DropDownVt
+
+        {/* 子へ 〇〇={}を渡している。子は引数に〇〇を分割代入することで受け取れる。 */}
+      {/* <DropDownVt
         onVtuberSelect={setSelectedVtuber}
         onMovieClear={handleMovieClear}
         onKaraokeClear={handleVtuberClear} />
@@ -74,8 +94,28 @@ const handleVtuberClear = () => {
         onKaraokeClear={handleMovieClear} />
        <DropDownKa
         selectedMovie={selectedMovie}
-        onKaraokeSelect={setSelectedKaraoke} />
+        onKaraokeSelect={setSelectedKaraoke} /> */}
 
+  {/* //// TestDropdown */}
+      <DropDownVt2
+       posts={posts}
+        onVtuberSelect={setSelectedVtuber}
+          //onChangeにより、onVtuber~にoptiobn.valueが渡され、=setSelectedVtuberに。
+          //setSe~V~はuseStateでselectedVtuberに値を渡す→DropDownMo2に渡る。
+        onMovieClear={handleMovieClear}
+        onKaraokeClear={handleVtuberClear} />
+       <DropDownMo2
+       posts={posts}
+        selectedVtuber={selectedVtuber}
+        onMovieSelect={setSelectedMovie}
+        onKaraokeClear={handleMovieClear} />
+       <DropDownKa2
+       posts={posts}
+        selectedMovie={selectedMovie}
+        onKaraokeSelect={setSelectedKaraoke} />
+    
+    {/* <YouTube videoId={setSelectedMovie} opts={opts} onReady={this._onReady} />; */}
+    {/* <YouTube videoId="2g811Eo7K8U" opts={opts} onReady={onPlayerReady} />; */}
        {/* <Menu menuButton={<MenuButton>Open menu</MenuButton>}>
         <MenuItem>New File</MenuItem>
         <SubMenu label="Open">
@@ -98,7 +138,7 @@ const handleVtuberClear = () => {
     });
     let resData;
     try {
-        const response = await axios.get('https://localhost:8080', {
+        const response = await axios.get('https://localhost:8080/getalldate', {
           // 0019だとnullじゃないとサーバーが起動しない。undefinedはダメだとエラーが出る。
             httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
         });
