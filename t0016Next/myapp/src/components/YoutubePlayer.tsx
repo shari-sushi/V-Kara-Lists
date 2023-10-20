@@ -16,14 +16,15 @@ const onPlayerReady = (event: { target: YT.Player }) => {
 }
 
 const YoutubePlayer: React.FC<YoutubePlayerProps> = ({ videoId, start, opts = {
-    height: 254,
+    height: 253,
     width: 450,
     playerVars: {
       autoplay: 1,
       start: start,
       playsinline: 1,       
-      mute: 1,              
+      // mute: 1,             
       loop: 1, 
+      // end:,
     },
   },
   onReady = onPlayerReady }) => {
@@ -31,3 +32,4 @@ const YoutubePlayer: React.FC<YoutubePlayerProps> = ({ videoId, start, opts = {
 };
 
 export default YoutubePlayer;
+

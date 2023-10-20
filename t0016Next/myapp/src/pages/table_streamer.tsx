@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import YouTube from 'react-youtube';
 import style from '../Youtube.module.css';
-import type { AllData } from '../types/singdata'; //type{}で型情報のみインポート 今回は実は不要多分
+import type { AllJoinData } from '../types/singdata'; //type{}で型情報のみインポート 今回は実は不要多分
 import DeleteButton from '../components/DeleteButton';
 
 // const Example = () => {
@@ -17,9 +17,9 @@ import DeleteButton from '../components/DeleteButton';
 
 //分割代入？
 // 型注釈IndexPage(posts: Post)
-function AllDatePage( posts : AllData )  {
+function AllDatePage( posts : AllJoinData )  {
   // const [data, setData] = useState([]);
-  const [data, setData] = useState<AllData[]>([]);
+  const [data, setData] = useState<AllJoinData[]>([]);
 
   useEffect(() => {
     //useEffect:関数の実行タイミングをReactのレンダリング後まで遅らせるhook

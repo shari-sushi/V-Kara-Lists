@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo  } from 'react';
 import Select from 'react-select';
-import type { AllData, Vtuber, Movie, KaraokeList } from '../types/singdata';
+import type { AllJoinData, Vtuber, Movie, KaraokeList } from '../types/singdata';
 // import Creatable from 'react-select/creatable' 後々の更新で歌検索として実装したい
 
 // import { colourOptions } from '../data';
