@@ -53,6 +53,15 @@ func fetchVtubersJoinMovies(vts []types.Vtuber) ([]*types.VtuberMovie, error) {
 	return vtsmos, resultVtsmo.Error
 }
 
+// メイン3種をjoinして全件取得
+func fetchAllJoinData() ([]*types.AllColumns, error) {
+	var kas []*types.KaraokeList
+	var alls []*types.AllColumns
+	selectAll := "vtuber_id, vtuber_name, vtuber_kana, intro_movie_url, movie_url, movie_title, karaoke_list_id, sing_start, song_name, karaoke_list_inputer_id "
+	resultAll := utility.Db.Model(&kas).Select(selectAll).Joins("LEFT JOIN movies mo USING(movie_url) LEFT JOIN vtubers vt USING(vtuber_id)").Scan(&alls)
+	return alls, resultAll.Error
+}
+
 // SELECT
 // vtubers.vtuber_id, vtubers.vtuber_name,
 // mo.movie_url, mo.movie_title
@@ -73,9 +82,16 @@ func ReadAllVtubersAndMovies(c *gin.Context) {
 		return
 	}
 
+	alljoin, errA := fetchAllJoinData()
+	if errA != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"result VTsmoのerror": errA.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"vtubers":            vts,
 		"vtubers_and_movies": vtsmos,
+		"alljoindata":        alljoin,
 	})
 }
 

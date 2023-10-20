@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import style from '../Youtube.module.css';
-import type { AllData, Vtuber, VtuberMovie } from '../types/singdata'; //type{}で型情報のみインポート
+import type { AllJoinData, Vtuber, VtuberMovie } from '../types/singdata'; //type{}で型情報のみインポート
 import https from 'https';
 import axios from 'axios';
 import YoutubePlayer from '../components/YoutubePlayer'
+import {ConversionTime, ExtractVideoId} from '../components/Conversion'
+import App, {DataTableRandamPagenation, DataTableRandam} from '../components/Table'
+
+
   type PostsAndCheckSignin= {
     posts: any; // anyは避けるべき？
     checkSignin: boolean;
@@ -17,36 +21,29 @@ const AllDatePage: React.FC<PostsAndCheckSignin> = ({ posts, checkSignin }) =>  
     // setData1はステートを更新する関数。
 const [vtubers, setData1] = useState<Vtuber[]>();
 const [movies, setData2] = useState<VtuberMovie[]>();
-//   const [check, setData3] = useState<boolean>();
-//   const router = useRouter();
-
-const extractVideoId = (url: string): string => {
-  const match = url.match(/v=([^&]+)/);
-  if (match && match[1]) {
-      return match[1];
-  }
-  return ''; 
-};
-
-const start = (60*6 + 29);
+const [start,setStart]=useState<number>(60*8+29) //60*25か60*47かなー, 60*7+59, 60*8+29
+const [allJoinData, setAllJoinData]=useState<AllJoinData>();
 
 const [currentMovieId, setCurrentMovieId] = useState<string>("kORHSmXcYNc");
 const handleMovieClick = (movieId: string) => {
   setCurrentMovieId(movieId);
 };
 
-
-    useEffect(() => {
-        if (posts) {
-            setData1(posts.vtubers); //上のsetData1の左の変数にposts.vtuberを代入(更新)
-            setData2(posts.vtubers_and_movies);
-                // setData3(checkSingin)
-            console.log("checkSignin=", checkSignin)
-        }
-    }, [posts]);
+  useEffect(() => {
+      if (posts) {
+          setData1(posts.vtubers); //上のsetData1の左の変数にposts.vtuberを代入(更新)
+          setData2(posts.vtubers_and_movies);
+          setAllJoinData(posts.alljoindata);
+              // setData3(checkSingin)
+          console.log("checkSignin=", checkSignin)
+      }
+  }, [posts]);
 
   return (
     <div>
+      <Link href="/test"><button style={{ background: 'brown' }}>
+             テスト</button>
+            </Link>
       <h1>TOP画面</h1>
         <h3>"推し"の"歌枠"の聴きたい"歌"を再生しよう。 <br />
         推しが歌った"歌"を一目で把握、布教しよう。
@@ -61,7 +58,8 @@ const handleMovieClick = (movieId: string) => {
             <Link href="/mypage"><button style={{ background: 'brown' }}>
                 マイページ</button>
             </Link>
-            <br />　　　　　↑ゲストログイン可能です <br />
+            <Link href="/guestlogin"><button style={{ background: 'brown' }}>
+                ゲストログイン</button></Link>
 
             <YoutubePlayer videoId={currentMovieId}  start={start} />
             
@@ -123,7 +121,9 @@ const handleMovieClick = (movieId: string) => {
           {movies.MovieUrl ? (
                <td><a href="#" onClick={(e) => {
                 e.preventDefault();
-                handleMovieClick(extractVideoId(movies.MovieUrl));
+                handleMovieClick(ExtractVideoId(movies.MovieUrl));
+                setStart(1);
+                console.log("start:",start)
               }}>{movies.MovieTitle}</a></td>
             ) : (
               <td>未登録</td>
@@ -139,11 +139,15 @@ const handleMovieClick = (movieId: string) => {
         </tbody>
       </table><br />
 
-          {/*動画一覧  */}
+          {/*歌一覧  */}
 
     <h2>★歌</h2>
-    <Link href={`/karaokerist/sings`} ><u>全歌一覧</u></Link> <br />
-    <a> 実装予定：登録順に全件取得し、ページネーション、ページ番号をランダムに表示</a>
+    <Link href={`/karaokelist/sings`} ><u>全歌一覧</u></Link>     <Link href={`/create`} ><u>歌を登録</u></Link> <br />
+    <DataTableRandam
+      data={posts.alljoindata}
+      handleMovieClick={handleMovieClick} 
+      setStart={setStart} 
+    />
 </div>
   )};
 

@@ -28,35 +28,10 @@ const dropStyle =({
 }
 )
 
-type Karaoke = {
-  MovieUrl: string;
-  KaraokeListId: number;
-  SingStart: string;
-  SongName: string;
-  KaraokeListInputerId: number;
-};
-
-type Movie = {
-  MovieUrl: string;
-  MovieTitle: string;
-  VtuberId: number;
-  MovieInputerId: number;
-};
-
-type Vtuber = {
-  VtuberId: number;
-  VtuberName: string;
-  VtuberKana: string;
-  IntroMovieUrl: string | null;
-  VtuberInputerId: number;
-};
-
-type Posts = {
-  karaokes: Karaoke[];
-  movies: Movie[];
-  vtubers: Vtuber[];
-};
-
+type vtuberOptions = {
+  label: string
+  value: string
+}
 
  //onVtuberSelectはVtuberが選択されたときに親コンポーネントへ通知するためのコールバック関数
  export const DropDownVt2 = ({posts, onVtuberSelect, onMovieClear, onKaraokeClear }) => {
@@ -65,10 +40,10 @@ type Posts = {
     onMovieClear();         //undefinedになる
     onKaraokeClear();
   };
-  const [vtuberOptions, setVtuberOptions] = useState([]);
+  const [vtuberOptions, setVtuberOptions] = useState<vtuberOptions[]>([]);
 
   useEffect(() => {
-    const fetchVtubers = () => { //そのうち名前変える
+    const fetchVtubers = () => { //適切な名前が思いつけば変える
       try {
         console.log("API Response Vt:", posts.vtubers);
         let havingVt = posts.vtubers.map((vtuber:Vtuber) => ({
@@ -96,8 +71,9 @@ type Posts = {
         blurInputOnSelect={true}
         // isDisabled={false} isRtl={false} Value= //その他オプションのメモ
         styles={dropStyle}
-    
+        // value={onVtuberSelect}
         onChange={option => { //ここでSelectで選んだものがoptionに格納されるのか？
+            // 要：選択中のmovieをクリアする関数
           if (option) {
             console.log("Selected Vtuber value:", option.value);
             onVtuberSelect(option.value);
@@ -116,6 +92,8 @@ type Posts = {
 // };
 // export const DropDownMo: React.FC<DropDownMoProps> = ({ selectedVtuber ,onMovieSelect}) => {
  
+// 
+// 
 //  movie用
 export const DropDownMo2 = ({ posts, selectedVtuber, onMovieSelect, onKaraokeClear }) => {
 // export const DropDownMo = ({ selectedVtuber ,onMovieSelect}) => {  
@@ -134,8 +112,9 @@ export const DropDownMo2 = ({ posts, selectedVtuber, onMovieSelect, onKaraokeCle
     }
     const fetchMovies = async () => {
       try {
-        const choicesMovie = posts.movies.filter((movies:Movie) => movies.VtuberId === selectedVtuber);
-       
+        console.log("selectedV=",selectedVtuber)
+        console.log("posts.movies=",posts.movies)
+        const choicesMovie = posts.movies.filter((movies:Movie) => movies.VtuberId === selectedVtuber);   
         console.log("API Response Mo:", choicesMovie);
         let havingMovie = choicesMovie.map((movie:Movie) => ({
           value: movie.MovieUrl,
@@ -165,12 +144,21 @@ export const DropDownMo2 = ({ posts, selectedVtuber, onMovieSelect, onKaraokeCle
         // value={vtuberOptions.find(opt => opt.value === selectedVtuber)}
         // loadingMessage="loading" 
         styles={dropStyle}
+        // value={selectedMovie}
         onChange={option => {
+          console.log("movieのvalue 前", selectedMovie, "optin=", option?.value)
+            // 要：選択中のkaraokeをクリアする関数
           if (option) {
-            onMovieSelect(option);
+            onMovieSelect(option.value);
+            setSelectedMovie(option);
+          console.log("movieのvalue 中", selectedMovie)
           } else {
             handleMovieClear();
-          }}}
+            setMovieOptions([]);
+          }
+          console.log("movieのvalue 後", selectedMovie)
+
+        }}
       />
     </>
   );
@@ -178,7 +166,7 @@ export const DropDownMo2 = ({ posts, selectedVtuber, onMovieSelect, onKaraokeCle
 
 
 type DropDownKa2Props = {
-  posts: Posts;
+  posts: AllData;
   selectedMovie: string;
   onKaraokeSelect: number;
 };
@@ -187,7 +175,7 @@ type DropDownKa2Props = {
 export const DropDownKa2: React.FC<DropDownKa2Props>  = ({ posts, selectedMovie, onKaraokeSelect }) => {
   // const [movies, setData2] = useState<KaraokeList[]>();
   const [karaokeListOptions, setMovieOptions] = useState([]);
-  const [selectedKaraoke, setSelectedKaraoke] = useState(null);
+  const [selectedKaraoke, setSelectedKaraoke] = useState<number>(0);
 
   useEffect(() => {
     if (!selectedMovie) {
@@ -200,13 +188,13 @@ export const DropDownKa2: React.FC<DropDownKa2Props>  = ({ posts, selectedMovie,
     // }
     const fetchKaraokes = async () => {
       try {
-        console.log("selectedMovie=",selectedMovie.MovieUrl)
-        const movieUrl = {selectedMovie}
-        const moviesForSelectedVtuber = posts.karaokes.filter((karaokes:Karaoke) => karaokes.MovieUrl === selectedMovie);
-       
-
-        console.log("API Response ka:", Posts.karaokes );
-        let havingkaraokeList = data.karaoke_lists.map((karaoke:KaraokeList) => ({
+        console.log("191 selectedMovie=",selectedMovie)
+        console.log("karaokes=",posts.karaokes)
+        console.log("karaokes.MovieUrl=",posts.karaokes[0].MovieUrl)
+        // const movieUrl = {selectedMovie}
+        const choiceKaraoke = posts.karaokes.filter((karaokes:KaraokeList) => karaokes.MovieUrl === selectedMovie);
+        console.log("API Response ka:", choiceKaraoke );
+        let havingkaraokeList = choiceKaraoke.map((karaoke:KaraokeList) => ({
           value: karaoke.KaraokeListId,
           label: karaoke.SongName
         }));
@@ -214,7 +202,7 @@ export const DropDownKa2: React.FC<DropDownKa2Props>  = ({ posts, selectedMovie,
       } catch (error) {
         console.error("Error fetching vtubers:", error);
       }
-      setSelectedKaraoke(null);
+      setSelectedKaraoke(0);
     };
     fetchKaraokes();
   }, [selectedMovie]);
@@ -227,7 +215,7 @@ export const DropDownKa2: React.FC<DropDownKa2Props>  = ({ posts, selectedMovie,
         isClearable={true}
         isSearchable={true}
         options={karaokeListOptions}
-        value={selectedKaraoke}
+        // value={selectedKaraoke}
         isMulti={true} 
         backspaceRemovesValue={false}
         blurInputOnSelect={true}
@@ -236,7 +224,6 @@ export const DropDownKa2: React.FC<DropDownKa2Props>  = ({ posts, selectedMovie,
         // if (option){ //選んだ時にエラー吐く
         console.log("Selected Karaoke1:", option); 
         if (typeof onKaraokeSelect === 'function') {
-          console.log("Selected Karaoke2:", option); 
           onKaraokeSelect(option);
         }    
             // }  

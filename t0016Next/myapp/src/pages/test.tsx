@@ -1,12 +1,14 @@
-import { useEffect, useState, StrictMode } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import style from '../Youtube.module.css';
-import type { AllJoinData, Vtuber, VtuberMovie } from '../../types/singdata'; //type{}で型情報のみインポート
+import type { AllJoinData, Vtuber, VtuberMovie } from '../types/singdata'; //type{}で型情報のみインポート
 import https from 'https';
 import axios from 'axios';
-import YoutubePlayer from '../../components/YoutubePlayer'
-import {ConversionTime, ExtractVideoId} from '../../components/Conversion'
-import { DataTablePageNation } from '../../components/Table'
+import YoutubePlayer from '../components/YoutubePlayer'
+import {ConversionTime, ExtractVideoId} from '../components/Conversion'
+
+import App, {DataTable} from '../components/Table'
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 
@@ -33,7 +35,6 @@ import { createRoot } from "react-dom/client";
 const AllDatePage: React.FC<PostsAndCheckSignin> = ({ posts, checkSignin }) =>  {
 const [start,setStart]=useState<number>(60*8+29) //60*25か60*47かなー, 60*7+59, 60*8+29
 const [allJoinData, setAllJoinData]=useState<AllJoinData>();
-
 const extractVideoId = (url: string): string => { //(変数:型):返値の型
   const match = url.match(/v=([^&]+)/);
   if (match && match[1]) {
@@ -56,22 +57,30 @@ const handleMovieClick = (movieId: string) => {
       }
   }, [posts]);
 
-  console.log("data:", posts.alljoindata)
-
   return (
     <div>
       <Link href={`/`} ><u>TOP</u></Link>
+      {/* <App
+        data={posts.alljoindata}
+        columns={columns}
+        handleMovieClick={handleMovieClick}
+        ExtractVideoId={ExtractVideoId}
+        setStart={setStart}
+        start={start}/> */}
+          {/*歌一覧  */}
+
     <h2>★歌</h2>
-
+    {/* <h3>{posts}</h3> */}
     <Link href={`/karaokerist/sings`} ><u>全歌一覧</u></Link> <br />
+    <br />
     <Link href={`/create`} ><u>歌を登録</u></Link>
+    <DataTable
+        data={posts.alljoindata}
+        handleMovieClick={handleMovieClick} 
+        ExtractVideoId={ExtractVideoId}
+        ConversionTime={ConversionTime}
+        setStart={setStart}    />
       <YoutubePlayer videoId={currentMovieId}  start={start} />
-
-      <DataTablePageNation
-      columns={columns}
-      data={posts.alljoindata}
-      handleMovieClick={handleMovieClick} 
-      setStart={setStart} />
       <table border={4}>
         <thead>
            <tr>
@@ -94,6 +103,7 @@ const handleMovieClick = (movieId: string) => {
             ) : (
               <td>未登録</td>
             )}
+          
           {allJoinData.MovieUrl ? (
                <td><a href={`https://${allJoinData.MovieUrl}`} target="_blank" rel="noopener noreferrer">YouTubeへ</a></td>
             ) : (
