@@ -79,6 +79,7 @@ func CalltoSignUpHandler(c *gin.Context) {
 	h := Handler{DB: Db}
 	h.SignUpHandler(c)
 }
+
 func (h *Handler) SignUpHandler(c *gin.Context) {
 	var user types.Listener
 	err := c.ShouldBind(&user)

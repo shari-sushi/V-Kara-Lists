@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import YouTube from 'react-youtube';
 import style from '../Youtube.module.css';
-import type { AllData, Vtuber, VtuberMovie } from '../types/singdata'; //type{}で型情報のみインポート
+import type { AllJoinData, Vtuber, VtuberMovie } from '../types/singdata'; //type{}で型情報のみインポート
 import DeleteButton from '../components/DeleteButton';
 import { useRouter } from 'next/router';
 
@@ -18,10 +18,10 @@ import { useRouter } from 'next/router';
 
 //分割代入？
 // 型注釈IndexPage(posts: Post) またはusestateに型注釈するぽい
-function AllDatePage( posts : AllData )  {
+function AllDatePage( posts : AllJoinData )  {
   // const [data, setData] = useState<AllColumnsData[]>([]);
   // const [data, setData] = useState<AllColumnsData>({ streamers: [], movies: [] });
-  const [data, setData] = useState<AllData[]>();
+  const [data, setData] = useState<AllJoinData[]>();
 
   const router = useRouter();
   const { streamer_id } = router.query;

@@ -10,7 +10,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.14",
+    "@mui/material": "^5.14.14",
     "@szhsin/react-menu": "^4.1.0",
+    "@tanstack/react-table": "^8.10.7",
     "@types/node": "20.4.4",
     "@types/react": "18.2.15",
     "@types/react-dom": "18.2.7",
@@ -24,10 +29,12 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.47.0",
     "react-select": "^5.7.7",
+    "react-table": "^7.8.0",
     "react-youtube": "^10.1.0",
     "typescript": "5.1.6"
   },
   "devDependencies": {
-    "@types/axios": "^0.14.0"
+    "@types/axios": "^0.14.0",
+    "@types/react-table": "^7.7.17"
   }
 }

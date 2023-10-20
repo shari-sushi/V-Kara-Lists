@@ -49,11 +49,11 @@ const Signin = () => {
     <div>
         <form onSubmit={handleSubmit(onSubmit)}>
             ログインしてください<br />
-            Email: <input {...register("Email", { required: true })} placeholder="Email" /><br />
-            {errors.Email && "Email is required"}
-            Password: <input {...register("Password", { required: true })} placeholder="Password" /><br />
+            Email: <input {...register("Email", { required: true })} placeholder="Email" />
+            {errors.Email && "Email is required "} <br />
+            Password: <input {...register("Password", { required: true })} placeholder="Password" />
             {errors.Password && "Password is required"}<br />
-            <button type="submit" style={{ background: 'brown' }}>ログイン</button>
+            <button type="submit" style={{ background: 'brown' }}>ログイン</button><br />
         </form>
         <br />
         <div>
