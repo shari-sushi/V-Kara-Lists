@@ -6,7 +6,7 @@ import https from 'https';
 import axios from 'axios';
 import YoutubePlayer from '../components/YoutubePlayer'
 import {ConversionTime, ExtractVideoId} from '../components/Conversion'
-import App, {DataTableRandamPagenation, DataTableRandam} from '../components/Table'
+import {DataTableRandamPagenation, DataTableRandam} from '../components/Table'
 
 
   type PostsAndCheckSignin= {
@@ -41,12 +41,14 @@ const handleMovieClick = (movieId: string) => {
 
   return (
     <div>
+   
       <Link href="/test"><button style={{ background: 'brown' }}>
              テスト</button>
             </Link>
       <h1>TOP画面</h1>
         <h3>"推し"の"歌枠"の聴きたい"歌"を再生しよう。 <br />
-        推しが歌った"歌"を一目で把握、布教しよう。
+        推しが歌った"歌"を一目で把握、布教しよう。<br /><br />
+        ※ご本人様にはご自身の歌った歌の把握にお使いいただければ幸いです。
         </h3>
            {/*  ログイン機能のリンクボタン */}
             <Link href="/signup"><button style={{ background: 'brown' }}>

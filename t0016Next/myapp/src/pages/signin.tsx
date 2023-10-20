@@ -5,11 +5,13 @@
 //     return isLoggedIn() ? { type: 'replace', destination: '/mypage' } : null
 //   }
 
-import React from "react";
+import React,{ useState } from "react";
 import { useForm } from 'react-hook-form';
 import { useRouter } from "next/router";
 import type { LoginUser } from "../types/usertype";
 import Link from 'next/link';
+import {Checkbox} from '../components/SomeFunction';
+
 
 const Signin = () => {
   const defaultValues: LoginUser = {
@@ -21,6 +23,8 @@ const Signin = () => {
 
      
   const { register, handleSubmit, formState: { errors } } = useForm<LoginUser>({defaultValues});
+  const [isRevealPassword, setIsRevealPassword] = useState(false);
+ 
   type InputValues = LoginUser
   // register：フォームフィールドを登録する関数
   // handleSubmit：フォームの送信を処理する関数
@@ -51,10 +55,13 @@ const Signin = () => {
             ログインしてください<br />
             Email: <input {...register("Email", { required: true })} placeholder="Email" /><br />
             {errors.Email && "Email is required"}
-            Password: <input {...register("Password", { required: true })} placeholder="Password" /><br />
-            {errors.Password && "Password is required"}<br />
+            Password: <input {...register("Password", { required: true })} placeholder="Password" type={isRevealPassword ? 'text' : 'password'}/><br />
+            {errors.Password && "Password is required"}
+            <Checkbox checked={isRevealPassword }
+    onChange={() => setIsRevealPassword((state) => !state)} >パスワード表示⇔非表示</Checkbox><br />
             <button type="submit" style={{ background: 'brown' }}>ログイン</button>
         </form>
+
         <br />
         <div>
             <Link href={`/`}><button style={{ background: 'brown' }}>

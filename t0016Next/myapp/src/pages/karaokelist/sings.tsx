@@ -7,7 +7,8 @@ import axios from 'axios';
 import YoutubePlayer from '../../components/YoutubePlayer'
 import {ConversionTime, ExtractVideoId} from '../../components/Conversion'
 import { DataTablePageNation } from '../../components/Table'
-import { createRoot } from "react-dom/client";
+import { createRoot } from 'react-dom/client';
+import {Checkbox} from '../../components/SomeFunction';
 
 
   type PostsAndCheckSignin= {
@@ -15,21 +16,14 @@ import { createRoot } from "react-dom/client";
     checkSignin: boolean;
   }
 
-  const columns = [
-    {
-      Header: "VTuber",
-      accessor: "VtuberName"
-    },
-    {
-      Header: "歌",
-      accessor: "SongName"
-    },
-    {
-      Header: "ページ内再生",
-      accessor: "MovieUrl",
-    }
-  ];
+  
 
+
+  // <a href="#" onClick={(e) => {
+  //   e.preventDefault();
+  //   handleMovieClick(ExtractVideoId(item.MovieUrl));
+  //   setStart(ConversionTime(item.SingStart));
+  
 const AllDatePage: React.FC<PostsAndCheckSignin> = ({ posts, checkSignin }) =>  {
 const [start,setStart]=useState<number>(60*8+29) //60*25か60*47かなー, 60*7+59, 60*8+29
 const [allJoinData, setAllJoinData]=useState<AllJoinData>();
@@ -46,13 +40,34 @@ const [currentMovieId, setCurrentMovieId] = useState<string>("kORHSmXcYNc");
 const handleMovieClick = (movieId: string) => {
   setCurrentMovieId(movieId);
 };
+const [isRandomOrAll, setIsRandomOrAll] = useState(true);
+const item = posts.rows
+
+const columns = [
+  {Header: "VTuber",    accessor: "VtuberName"},
+  {Header: "歌"  ,      accessor: "SongName",
+  },
+  // Cell: posts => <a href="#" onClick={(e) => {
+  //   console.log("posts.rows.MovieUrl",  posts.alljoindata.MovieUrl) //undefined
+  //   console.log("posts.rows",  posts.alljoindata.rows) //いろいろ出てくる
+  //     e.preventDefault();
+  //     handleMovieClick(ExtractVideoId(posts.rows.MovieUrl));
+  //     setStart(ConversionTime(posts.SingStart));}}></a>},
+
+  {Header: "YouTubeへ", accessor: "MovieUrl",
+  // Cell: posts => <a href={`https://${allJoinData.MovieUrl}`} onClick={(e) => {
+  //     e.preventDefault();
+  //     handleMovieClick(ExtractVideoId(posts.alljoindataMovieUrl));
+  //     setStart(ConversionTime(posts.alljoindata.SingStart));}}>YouTubeへ</a>
+  }
+];
 
   useEffect(() => {
       if (posts) {
           setAllJoinData(posts.alljoindata);
               // setData3(checkSingin)
-          console.log("checkSignin=", checkSignin)
-          console.log("posts.alljoindata=", posts.alljoindata)
+          console.log("checkSignin= 62", checkSignin)
+          console.log("posts.alljoindata= 63", posts.alljoindata)
       }
   }, [posts]);
 
@@ -66,12 +81,17 @@ const handleMovieClick = (movieId: string) => {
     <Link href={`/karaokerist/sings`} ><u>全歌一覧</u></Link> <br />
     <Link href={`/create`} ><u>歌を登録</u></Link>
       <YoutubePlayer videoId={currentMovieId}  start={start} />
+    <Checkbox checked={isRandomOrAll}
+    onChange={() => setIsRandomOrAll((state) => !state)} >：10件ずつ表示⇔全件表示</Checkbox>
 
+    {isRandomOrAll &&
       <DataTablePageNation
       columns={columns}
       data={posts.alljoindata}
       handleMovieClick={handleMovieClick} 
       setStart={setStart} />
+    }
+    {!isRandomOrAll &&
       <table border={4}>
         <thead>
            <tr>
@@ -102,7 +122,8 @@ const handleMovieClick = (movieId: string) => {
             </tr>
             ))}
         </tbody>
-      </table><br />
+      </table>
+    }<br />
 </div>
   )};
 
@@ -122,7 +143,7 @@ const handleMovieClick = (movieId: string) => {
 
     console.log("resData=", resData) //この時点では動画情報持ってる
     const rawCookie = context.req.headers.cookie;
-    const sessionToken = rawCookie?.split(';').find(cookie => cookie.trim().startsWith('auth-token='))?.split('=')[1];
+    const sessionToken = rawCookie?.split(';').find((cookie:string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];
     var CheckSignin = false
     if(sessionToken){CheckSignin = true}
     console.log("checkSingin=", CheckSignin)

@@ -16,6 +16,7 @@ import {
   useReactTable
 } from "@tanstack/react-table";
 
+// react-table
 const Table = ({ columns, data }) => {
   const {
     getTableProps,
@@ -126,6 +127,7 @@ function shuffleArray(array:[]) {
 
 // 全件からランダムで表示、ページネーションも→実用性無しかな
 export function DataTableRandamPagenation({ data, handleMovieClick, setStart}) {
+  
   const shuffledData = shuffleArray(data);
   const [currentPage, setCurrentPage] = useState(1);
     // ページネーションのためのデータの切り出し
@@ -235,7 +237,7 @@ export function DataTableRandamPagenation({ data, handleMovieClick, setStart}) {
 
 
 //react-table
-// 全件表示をページネーション
+// 全件をページネーション
 
 // type TableProps = {
 //   columns: ColumnType[],
@@ -249,7 +251,7 @@ const Checkbox = ({ children, ...props }: JSX.IntrinsicElements['input']) => (
 );
 
 export const DataTablePageNation = ({ columns=[], data = [], handleMovieClick, setStart }) => {
-  console.log("data:", data)
+  console.log("data:", data)  
   
     const {
       getTableProps,
@@ -296,12 +298,12 @@ export const DataTablePageNation = ({ columns=[], data = [], handleMovieClick, s
             Page {pageIndex + 1} of {pageOptions.length}
           </span>
         </div>
-        <table {...getTableProps()}>
-      <thead>
+        <table {...getTableProps()} className={styles.tableStyle}>
+      <thead >
         {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
-              <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+              <th {...column.getHeaderProps()} className={styles.header}>{column.render("Header")}</th>
             ))}
           </tr>
         ))}
@@ -312,7 +314,7 @@ export const DataTablePageNation = ({ columns=[], data = [], handleMovieClick, s
           return (
             <tr {...row.getRowProps()}>
               {row.cells.map((cell) => (
-                <td {...cell.getCellProps()}>
+                <td {...cell.getCellProps()} className={styles.cell}>
                   {cell.render("Cell")}
                 </td>
               ))}
@@ -321,20 +323,8 @@ export const DataTablePageNation = ({ columns=[], data = [], handleMovieClick, s
         })}
       </tbody>
     </table>
-        <table border={4}>
-                <thead>
-                  <tr>
-                    <th>VTuber</th>
-                    <th>動画</th>
-                    <th>歌(クリックで再生)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.map(item => (
-                    <tr key={item.MovieId}>
-                      <td>{item.VtuberName}</td>
-                      <td>{item.MovieTitle}</td>
-                      <td>
+       
+                      {/* <td>
                         <a href="#" onClick={(e) => {
                           e.preventDefault();
                           handleMovieClick(ExtractVideoId(item.MovieUrl));
@@ -344,10 +334,7 @@ export const DataTablePageNation = ({ columns=[], data = [], handleMovieClick, s
                         </a>
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-            </table>
-
+                  ))} */}
       </div>
     );
   };
