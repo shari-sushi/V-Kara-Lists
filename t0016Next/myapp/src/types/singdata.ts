@@ -8,7 +8,7 @@ export type SingData= {
 
 //   import { SingData } from './types'
 
-export type AllData= {
+export type AllJoinData= {
 	VtuberId		:	number; 
 	VtuberName	:	string;
 	VtuberKana		:	string;
@@ -19,9 +19,15 @@ export type AllData= {
 	MovieTitle		:	string | null;
 	SongId			:	number;
 	SingStart		:	string | null;
-	Song			:	string | null;
+	SongName		:	string | null;
 	SongInputerId	:	string | null;
 }
+
+export type AllData = {
+	karaokes: KaraokeList[];
+	movies: Movie[];
+	vtubers: Vtuber[];
+ };
 
 export type VtuberMovie= {
 	VtuberID :Vtuber['VtuberId'] //USING

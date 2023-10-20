@@ -78,9 +78,9 @@ type AllColumns struct {
 	MovieId              int
 	MovieUrl             string
 	MovieTitle           string
-	SongId               int
+	KaraokeListId        int
 	SingStart            *string
-	Song                 string
+	SongName             string
 	KaraokeListInputerId int
 }
 
