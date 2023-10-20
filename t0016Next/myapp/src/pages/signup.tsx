@@ -8,28 +8,29 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
-import type { LoginUser } from "../types/usertype";
+import type { SignupListener } from "../types/usertype";
 import Link from 'next/link';
 
 
 
-const Signin = () => {
-  const defaultValues: LoginUser = {
+const Signup = () => {
+  const defaultValues: SignupListener = {
+    ListenerName: "",
     Email: "",
     Password: "",
     // Email: "exsample@exam.com",
     // Password: "oimomochimochiimomochioimo",
   };
      
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginUser>({defaultValues});
-  type InputValues = LoginUser
+  const { register, handleSubmit, formState: { errors } } = useForm<SignupListener>({defaultValues});
+  type InputValues = SignupListener
   // register：フォームフィールドを登録する関数
   // handleSubmit：フォームの送信を処理する関数
   // errors：フォームフィールドのエラー情報を含むオブジェクト　　の３つを取得
   const onSubmit = async (data:InputValues) => {
     try {
       console.log("data=", data);
-      const response = await fetch(`https://localhost:8080/login`, { 
+      const response = await fetch(`https://localhost:8080/signup`, { 
           method: 'POST',
           credentials: "include",
           headers: {
@@ -49,24 +50,27 @@ const Signin = () => {
   return (
     <div>
         <form onSubmit={handleSubmit(onSubmit)}>
-            ログインしてください<br />
+            会員登録してください<br />
+            name: <input {...register("ListenerName", { required: true })} placeholder="Email" /><br />
+            {errors.Email && "Email is required"}
             Email: <input {...register("Email", { required: true })} placeholder="Email" /><br />
             {errors.Email && "Email is required"}
             Password: <input {...register("Password", { required: true })} placeholder="Password" /><br />
             {errors.Password && "Password is required"}<br />
-            <button type="submit" style={{ background: 'blue' }}>ログイン</button>
+            <button type="submit" style={{ background: 'brown' }}>会員情報確定</button>
         </form>
         <br />
         <div>
-            <button style={{ background: 'blue' }}><Link href={`/`}>ログインせずに閲覧する</Link></button><br />
-            <button style={{ background: 'blue' }}><Link href={`/mypage`}>mypageへ</Link></button>
+            <button style={{ background: 'brown' }}><Link href={`/`}>会員登録せずに閲覧する</Link></button><br />
+            <button style={{ background: 'brown' }}><Link href={`/signin`}>ログインフォームへ</Link></button><br />
+            <button style={{ background: 'brown' }}><Link href={`/mypage`}>mypageへ</Link></button>
                 </div>
         </div>
   
   );
 }
 
-export default Signin;
+export default Signup;
 
 
 
