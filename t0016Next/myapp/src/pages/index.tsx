@@ -6,7 +6,7 @@ import https from 'https';
 import axios from 'axios';
 import YoutubePlayer from '../components/YoutubePlayer'
 import {ConversionTime, ExtractVideoId} from '../components/Conversion'
-import {DataTableRandamPagenation, DataTableRandam} from '../components/Table'
+import { DataTableRandam} from '../components/Table'
 
 
   type PostsAndCheckSignin= {
@@ -176,7 +176,7 @@ const handleMovieClick = (movieId: string) => {
     
     // Signinしていればtrueを返す
     const rawCookie = context.req.headers.cookie;
-    const sessionToken = rawCookie?.split(';').find(cookie => cookie.trim().startsWith('auth-token='))?.split('=')[1];
+    const sessionToken = rawCookie?.split(';').find((cookie:string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];
     var CheckSignin = false
     if(sessionToken){CheckSignin = true}
 
