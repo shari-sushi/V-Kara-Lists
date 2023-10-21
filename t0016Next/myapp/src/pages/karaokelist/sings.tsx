@@ -9,6 +9,7 @@ import {ConversionTime, ExtractVideoId} from '../../components/Conversion'
 import { DataTablePageNation } from '../../components/Table'
 import { createRoot } from 'react-dom/client';
 import {Checkbox} from '../../components/SomeFunction';
+import { CellProps } from 'react-table';
 
 
   type PostsAndCheckSignin= {
@@ -16,18 +17,10 @@ import {Checkbox} from '../../components/SomeFunction';
     checkSignin: boolean;
   }
 
-  
-
-
-  // <a href="#" onClick={(e) => {
-  //   e.preventDefault();
-  //   handleMovieClick(ExtractVideoId(item.MovieUrl));
-  //   setStart(ConversionTime(item.SingStart));
-  
-const AllDatePage: React.FC<PostsAndCheckSignin> = ({ posts, checkSignin }) =>  {
+// const AllDatePage: React.FC<PostsAndCheckSignin> = ({ posts, checkSignin }) =>  {　//どっちが良いんだ
+const AllDatePage = ({ posts, checkSignin }:PostsAndCheckSignin) =>  {
 const [start,setStart]=useState<number>(60*8+29) //60*25か60*47かなー, 60*7+59, 60*8+29
 const [allJoinData, setAllJoinData]=useState<AllJoinData>();
-
 const extractVideoId = (url: string): string => { //(変数:型):返値の型
   const match = url.match(/v=([^&]+)/);
   if (match && match[1]) {
@@ -41,32 +34,55 @@ const handleMovieClick = (movieId: string) => {
   setCurrentMovieId(movieId);
 };
 const [isRandomOrAll, setIsRandomOrAll] = useState(true);
-const item = posts.rows
+const pageSize = 6
 
-const columns = [
-  {Header: "VTuber",    accessor: "VtuberName"},
-  {Header: "歌"  ,      accessor: "SongName",
+type Column = {
+  Header: string;
+  accessor: string;
+  Cell?: (cell: CellProps<any, any>) => React.ReactElement;
+};
+const columns:Column = [
+  {Header: "VTuber", accessor: "VtuberName"},
+  {Header: "歌",     accessor: "SongName",
+    Cell: (cell: { row: { original: any; }; }) => { //どっちが良いんだ…
+    // Cell: (cell: CellProps<any,any>) => { 
+      const item = cell.row.original;
+      return (
+        <a href="#" onClick={(e) => {
+          e.preventDefault();
+          console.log("item.MovieUrl", item.MovieUrl);
+          handleMovieClick(ExtractVideoId(item.MovieUrl));
+          setStart(ConversionTime(item.SingStart));
+        }}>
+          {item.SongName}
+        </a>
+      )
+    }
   },
-  // Cell: posts => <a href="#" onClick={(e) => {
-  //   console.log("posts.rows.MovieUrl",  posts.alljoindata.MovieUrl) //undefined
-  //   console.log("posts.rows",  posts.alljoindata.rows) //いろいろ出てくる
-  //     e.preventDefault();
-  //     handleMovieClick(ExtractVideoId(posts.rows.MovieUrl));
-  //     setStart(ConversionTime(posts.SingStart));}}></a>},
+  {Header: "外部リンク", accessor: "MovieUrl",
+  Cell: (cell: CellProps<any,any>) => {
+    const item = cell.row.original;
+    return (
+      <a href="#" onClick={(e) => {
+        e.preventDefault();
+        console.log("item.MovieUrl", item.MovieUrl);
+        handleMovieClick(ExtractVideoId(item.MovieUrl));
+        setStart(ConversionTime(item.SingStart));
+      }}>
+        YouYubeへ
+      </a>
+    )
+  }
 
-  {Header: "YouTubeへ", accessor: "MovieUrl",
-  // Cell: posts => <a href={`https://${allJoinData.MovieUrl}`} onClick={(e) => {
-  //     e.preventDefault();
-  //     handleMovieClick(ExtractVideoId(posts.alljoindataMovieUrl));
-  //     setStart(ConversionTime(posts.alljoindata.SingStart));}}>YouTubeへ</a>
   }
 ];
+
 
   useEffect(() => {
       if (posts) {
           setAllJoinData(posts.alljoindata);
               // setData3(checkSingin)
-          console.log("checkSignin= 62", checkSignin)
+          // console.log("checkSignin= 62", checkSignin)
           console.log("posts.alljoindata= 63", posts.alljoindata)
       }
   }, [posts]);
@@ -77,8 +93,6 @@ const columns = [
     <div>
       <Link href={`/`} ><u>TOP</u></Link>
     <h2>★歌</h2>
-
-    <Link href={`/karaokerist/sings`} ><u>全歌一覧</u></Link> <br />
     <Link href={`/create`} ><u>歌を登録</u></Link>
       <YoutubePlayer videoId={currentMovieId}  start={start} />
     <Checkbox checked={isRandomOrAll}
@@ -88,8 +102,7 @@ const columns = [
       <DataTablePageNation
       columns={columns}
       data={posts.alljoindata}
-      handleMovieClick={handleMovieClick} 
-      setStart={setStart} />
+      pageSize={pageSize}/>
     }
     {!isRandomOrAll &&
       <table border={4}>
@@ -101,7 +114,7 @@ const columns = [
           </tr>
         </thead>
         <tbody>
-          {allJoinData && allJoinData.map((allJoinData, index) => (
+          {allJoinData && allJoinData.map((allJoinData:AllJoinData, index) => (
             <tr key={index}>
           <td>{allJoinData.VtuberName}</td>
             {allJoinData.SongName ? (

@@ -28,37 +28,19 @@ const dropStyle =({
 }
 )
 
-type Karaoke = {
-  MovieUrl: string;
-  KaraokeListId: number;
-  SingStart: string;
-  SongName: string;
-  KaraokeListInputerId: number;
-};
-
-type Movie = {
-  MovieUrl: string;
-  MovieTitle: string;
-  VtuberId: number;
-  MovieInputerId: number;
-};
-
-type Vtuber = {
-  VtuberId: number;
-  VtuberName: string;
-  VtuberKana: string;
-  IntroMovieUrl: string | null;
-  VtuberInputerId: number;
-};
-
 type Posts = {
-  karaokes: Karaoke[];
+  karaokes: KaraokeList[];
   movies: Movie[];
   vtubers: Vtuber[];
 };
 
 
  //onVtuberSelectはVtuberが選択されたときに親コンポーネントへ通知するためのコールバック関数
+//  type DropDownVt={
+//   onVtuberSelect:;
+//   onMovieClear:;
+//   onKaraokeClear:; 
+//  }
  export const DropDownVt = ({onVtuberSelect, onMovieClear, onKaraokeClear }) => {
   const handleVtuberClear = () => {
     onVtuberSelect(null);   //nillになる
