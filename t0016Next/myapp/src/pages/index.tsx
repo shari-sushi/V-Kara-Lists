@@ -180,8 +180,6 @@ const handleMovieClick = (movieId: string) => {
     var CheckSignin = false
     if(sessionToken){CheckSignin = true}
 
-    console.log("checkSingin=", CheckSignin)
-
 //    var Posts: PostsAndCheckSignin ;
 //    Posts.checkSignin = CheckSignin ;
 //    Posts. = resData ;

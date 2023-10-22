@@ -1,6 +1,7 @@
+// test中：testに必要な可読性向上のためコード改行等めちゃくちゃ
 import React, { useState, useEffect, useMemo  } from 'react';
 import Select from 'react-select';
-import type { AllData, Vtuber, Movie, KaraokeList } from '../types/singdata';
+import type { AllData, Vtuber, Movie, KaraokeList, AllJoinData, VtuberMovie } from '../types/singdata';
 // import Creatable from 'react-select/creatable' 後々の更新で歌検索として実装したい
 
 // import { colourOptions } from '../data';
@@ -28,19 +29,37 @@ const dropStyle =({
 }
 )
 
-type vtuberOptions = {
+type Options = {
   label: string
   value: string
 }
 
+// type TopPagePosts = {
+//   alljoindata: AllJoinData[];
+//   vtubers: Vtuber[];
+//   vtubers_and_movies: VtuberMovie[];
+// };
+type TopPagePosts = {
+  vtubers: Vtuber[];
+  movies: Movie[];
+  karaokes:KaraokeList[];
+};
+type DropDownVt2={
+  posts:TopPagePosts;
+  onVtuberSelect: (value: number) => void;  
+  onMovieClear: () => void;                 
+  onKaraokeClear: () => void;               
+}
+
  //onVtuberSelectはVtuberが選択されたときに親コンポーネントへ通知するためのコールバック関数
- export const DropDownVt2 = ({posts, onVtuberSelect, onMovieClear, onKaraokeClear }) => {
+ export const DropDownVt2 = ({posts, onVtuberSelect, onMovieClear, onKaraokeClear }:DropDownVt2) => {
+  // console.log("DropDownVt2のposts", posts)
   const handleVtuberClear = () => {
-    onVtuberSelect(null);   //nillになる
+    onVtuberSelect(0);   //nillになる
     onMovieClear();         //undefinedになる
     onKaraokeClear();
   };
-  const [vtuberOptions, setVtuberOptions] = useState<vtuberOptions[]>([]);
+  const [vtuberOptions, setVtuberOptions] = useState<Options[]>([]);
 
   useEffect(() => {
     const fetchVtubers = () => { //適切な名前が思いつけば変える
@@ -58,33 +77,23 @@ type vtuberOptions = {
     fetchVtubers();
   }, []);
   return (
-    <>
-      <Select
-        placeholder="Vtuber名を検索/選択"  //  defaultValue= で何か変わる
-        className="basic-single"
-        classNamePrefix="select"
-        isClearable={true}
-        isSearchable={true}
-        name="VTuber"  //何のためにあるかわからん
+    <><Select  placeholder="Vtuber名を検索/選択"  //  defaultValue= で何か変わる
+        className="basic-single"  classNamePrefix="select"
+        isClearable={true} isSearchable={true} name="VTuber"  //何のためにあるかわからん
         options={vtuberOptions} //選択候補
-        defaultMenuIsOpen={true}
-        blurInputOnSelect={true}
-        // isDisabled={false} isRtl={false} Value= //その他オプションのメモ
-        styles={dropStyle}
+        defaultMenuIsOpen={true}   blurInputOnSelect={true}    styles={dropStyle}
         // value={onVtuberSelect}
-        onChange={option => { //ここでSelectで選んだものがoptionに格納されるのか？
+        onChange={option => { //ここでSelectで選んだものがoptionに格納されるのか？←挙動的に多分違う
             // 要：選択中のmovieをクリアする関数
+            onMovieClear(null),
+            onKaraokeClear(0)
           if (option) {
-            console.log("Selected Vtuber value:", option.value);
+            console.log("Selected Vtuber value:", option.value); //1 になる(おいもの場合)
             onVtuberSelect(option.value);
           } else {
             handleVtuberClear();
           }
-        }}
-      />
-    </>
-  );
-};
+        }}  />   </>  );};
 
 // type DropDownMoProps = {
 //   selectedVtuber: Vtuber;
@@ -112,52 +121,40 @@ export const DropDownMo2 = ({ posts, selectedVtuber, onMovieSelect, onKaraokeCle
     }
     const fetchMovies = async () => {
       try {
-        console.log("selectedV=",selectedVtuber)
-        console.log("posts.movies=",posts.movies)
-        const choicesMovie = posts.movies.filter((movies:Movie) => movies.VtuberId === selectedVtuber);   
-        console.log("API Response Mo:", choicesMovie);
-        let havingMovie = choicesMovie.map((movie:Movie) => ({
-          value: movie.MovieUrl,
-          label: movie.MovieTitle
-        }));
-        setMovieOptions(havingMovie);
-      } catch (error) {
-        console.error("Error fetching vtubers:", error);
-      }
-        setSelectedMovie(null);
+          console.log("selectedV=",selectedVtuber)
+          const choicesMovie = posts.movies.filter((movies:Movie) => movies.VtuberId === selectedVtuber);   
+          console.log("API Response Mo:", choicesMovie);
+          let havingMovie = choicesMovie.map((movie:Movie) => ({
+            value: movie.MovieUrl,
+            label: movie.MovieTitle
+          }));
+          setMovieOptions(havingMovie);
+        } catch (error) {
+          console.error("Error fetching movies:", error);
+      };
+      setSelectedMovie(null);
     };
     fetchMovies();
   }, [selectedVtuber]);
   return (
-    <>
-      <Select
-      placeholder="動画タイトルを検索/選択"
-        className="basic-single"
-        classNamePrefix="select"
-        // value={changeValue}
-        isClearable={true}
-        isSearchable={true}
-        name="movie"
-        options={movieOptions}
+    <><Select placeholder="動画タイトルを検索/選択" className="basic-single"  classNamePrefix="select"
+        // value={selectedMovie}
+        isClearable={true}  isSearchable={true} name="movie" options={movieOptions}
         blurInputOnSelect={true}  //defaultでtrueなら不要。スマホでアクセスしないと確認できないと思う。
         captureMenuScroll={true} //スマホ用、タブレット用。使ってみてからt/f判断。
-        // value={vtuberOptions.find(opt => opt.value === selectedVtuber)}
-        // loadingMessage="loading" 
         styles={dropStyle}
-        // value={selectedMovie}
         onChange={option => {
-          console.log("movieのvalue 前", selectedMovie, "optin=", option?.value)
+        console.log("movieのvalue 前", selectedMovie, "optin=", option?.value)
             // 要：選択中のkaraokeをクリアする関数
           if (option) {
             onMovieSelect(option.value);
             setSelectedMovie(option);
-          console.log("movieのvalue 中", selectedMovie)
+          console.log("movieのvalue if(option)", selectedMovie)
           } else {
             handleMovieClear();
             setMovieOptions([]);
           }
-          console.log("movieのvalue 後", selectedMovie)
-
+          console.log("movieのvalue else", selectedMovie)
         }}
       />
     </>
@@ -200,7 +197,7 @@ export const DropDownKa2: React.FC<DropDownKa2Props>  = ({ posts, selectedMovie,
         }));
         setMovieOptions(havingkaraokeList);
       } catch (error) {
-        console.error("Error fetching vtubers:", error);
+        console.error("Error fetching KaraokeLists:", error);
       }
       setSelectedKaraoke(0);
     };
@@ -209,27 +206,20 @@ export const DropDownKa2: React.FC<DropDownKa2Props>  = ({ posts, selectedMovie,
   return (
     <>
       <Select
-      placeholder="歌を検索/選択"
-        className="basic-single"
-        classNamePrefix="select"
-        isClearable={true}
-        isSearchable={true}
-        options={karaokeListOptions}
-        // value={selectedKaraoke}
-        isMulti={true} 
-        backspaceRemovesValue={false}
-        blurInputOnSelect={true}
-        styles={dropStyle}
+      placeholder="歌を検索/選択"  className="basic-single"  classNamePrefix="select"
+        isClearable={true}  isSearchable={true}   options={karaokeListOptions}
+        // value={selectedKaraoke} 
+        // isMulti={true}  backspaceRemovesValue={false}
+        blurInputOnSelect={true} styles={dropStyle}
       onChange={option => {
-        // if (option){ //選んだ時にエラー吐く
-        console.log("Selected Karaoke1:", option); 
-        if (typeof onKaraokeSelect === 'function') {
+        if (option){ //選んだ時にエラー吐く
           onKaraokeSelect(option);
+          // setSelectedKaraoke(option);
+        // } else {
+        //   handleKaraokeClear();
+        //   setMovieOptions([]);
         }    
-            // }  
-      }}        
-      />
-    </>
+      }}     />    </>
   );
 };
 
