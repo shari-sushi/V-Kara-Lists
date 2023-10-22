@@ -42,6 +42,9 @@ function AllDatePage( posts : AllJoinData )  {
       <h4>ここに選択した1つの動画の名前とyoutube埋め込みを掲載</h4>
       <h4>下表の歌をクリックするか、前へ次へボタンで表示動画を切り替える</h4>
 
+      [streamer].tsxにて<br /><br />
+
+
         <Link href={`/create`} ><u>歌登録</u></Link>
       <table border={4} >
         <thead> {/* ← tabeleのhead */}

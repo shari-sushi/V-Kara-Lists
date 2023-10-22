@@ -35,6 +35,7 @@ import type { AllJoinData, Vtuber, Movie, KaraokeList } from '../types/singdata'
           label: vtuber.VtuberName
         }));
         setVtuberOptions(havingVt);
+        
       } catch (error) {
         console.error("Error fetching vtubers:", error);
       }

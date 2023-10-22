@@ -15,11 +15,11 @@ export type AllJoinData= {
 	SelfIntroUrl	:	string | null;
 	VtuberInputerId	:	string;
 	MovieId			:	number;
-	MovieUrl		:	string | null;
-	MovieTitle		:	string | null;
+	MovieUrl		:	string;
+	MovieTitle		:	string;
 	SongId			:	number;
-	SingStart		:	string | null;
-	SongName		:	string | null;
+	SingStart		:	string ;
+	SongName		:	string;
 	SongInputerId	:	string | null;
 }
 
@@ -53,7 +53,7 @@ export type  Vtuber= {
 export type Movie= {
 	VtuberId		:	number; 
 	MovieId			:	number;
-	MovieUrl		:	string | null;
+	MovieUrl		:	string ;	//ExtraVideoIdのために| null削除。他で不整合発生したら再検討
 	MovieTitle		:	string | null;
 	MovieInputerId	: number|null;
 };
@@ -61,7 +61,7 @@ export type Movie= {
 export type KaraokeList= {
 	MovieUrl				:	string | null;
 	KaraokeListId			:	number;
-	SingStart				:	string | null;
+	SingStart				:	string;
 	SongName				:	string | null;
 	KaraokeListInputerId	:	number | null;
 };

@@ -46,7 +46,8 @@ type WithGetAccessControl<P> = {
               ログイン</button>
         </Link>
       ):(
-      <Link href="/"><button>ログアウト(開発中)</button>     
+      <Link href="/"><button>ログアウト(開発中)</button>
+          {/* https://localhost:8080/logout */}
       </Link> //コンポーネント？でボタン化したいわね。
       )}
       <Link href="/"><button>TOPへ</button>     

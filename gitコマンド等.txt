@@ -106,3 +106,12 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
 フォルダ/ファイル削除：　git rm -r  <フォルダ名>　※オプション無しでファイル削除
 ファイル名前変更：git mv <元のファイル名> <変えたいファイル名>
 ファイル移動：git mv ファイル名 移動先ディレクトリ名
+
+git log → qで終了
+git rebase
+
+pick d9a1f0e コミットA
+squash 400f340 コミットB
+squash f35185d コミットC
+squash 8dfc486 コミットB
+※やるまえに、git pushか、git stashすること。git stashした場合はgit rebase後にgit stash pop
