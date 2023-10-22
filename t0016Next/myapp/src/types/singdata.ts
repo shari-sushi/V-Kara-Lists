@@ -61,7 +61,7 @@ export type Movie= {
 export type KaraokeList= {
 	MovieUrl				:	string | null;
 	KaraokeListId			:	number;
-	SingStart				:	string | null;
+	SingStart				:	string;
 	SongName				:	string | null;
 	KaraokeListInputerId	:	number | null;
 };

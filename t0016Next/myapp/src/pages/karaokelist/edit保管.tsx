@@ -51,7 +51,6 @@ const handleVtuberClear = () => {
 
   useEffect(() => {
     if (posts) {
-      
       // setData1(posts.vtubers);
       // setData2(posts.vtubers_and_movies);
       // setData3(checkSingin)

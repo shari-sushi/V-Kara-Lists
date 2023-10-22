@@ -3,20 +3,9 @@ import { useTable, usePagination } from "react-table";
 import styles from './components.module.css';
 import {ConversionTime, ExtractVideoId} from '../components/Conversion'
 import {generateRandomNumber, shuffleArray} from '../components/SomeFunction'
-
-import {
-  CellContext,
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  HeaderContext,
-  Row,
-  SortingState,
-  useReactTable
-} from "@tanstack/react-table";
+// import {  CellContext,  ColumnDef,  flexRender,  getCoreRowModel, 
+//   getFilteredRowModel,  getPaginationRowModel, getSortedRowModel,
+// HeaderContext, Row, SortingState, useReactTable } from "@tanstack/react-table";
 import { AllJoinData } from "@/types/singdata";
 
 
@@ -253,7 +242,6 @@ type DataTablePageNation = {
 }
 
 export const DataTablePageNation = ({ columns=[], data = [], pageSize }:DataTablePageNation) => {
-  console.log("data:", data)  
     const {
       getTableProps,
       getTableBodyProps,

@@ -77,17 +77,11 @@ const columns:Column = [
   }
 ];
 
-
   useEffect(() => {
       if (posts) {
           setAllJoinData(posts.alljoindata);
-              // setData3(checkSingin)
-          // console.log("checkSignin= 62", checkSignin)
-          console.log("posts.alljoindata= 63", posts.alljoindata)
       }
   }, [posts]);
-
-  console.log("data:", posts.alljoindata)
 
   return (
     <div>
