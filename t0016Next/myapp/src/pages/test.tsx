@@ -7,7 +7,6 @@ import axios from 'axios';
 import YoutubePlayer from '../components/YoutubePlayer'
 import {ConversionTime, ExtractVideoId} from '../components/Conversion'
 
-import App, {DataTable} from '../components/Table'
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
@@ -74,12 +73,7 @@ const handleMovieClick = (movieId: string) => {
     <Link href={`/karaokerist/sings`} ><u>全歌一覧</u></Link> <br />
     <br />
     <Link href={`/create`} ><u>歌を登録</u></Link>
-    <DataTable
-        data={posts.alljoindata}
-        handleMovieClick={handleMovieClick} 
-        ExtractVideoId={ExtractVideoId}
-        ConversionTime={ConversionTime}
-        setStart={setStart}    />
+
       <YoutubePlayer videoId={currentMovieId}  start={start} />
       <table border={4}>
         <thead>
