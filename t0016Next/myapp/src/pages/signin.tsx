@@ -1,35 +1,20 @@
-// const Signin: WithGetAccessControl<VFC> = (props) => {
-//     return
-//   }
-//   Signin.getAccessControl = () => {
-//     return isLoggedIn() ? { type: 'replace', destination: '/mypage' } : null
-//   }
-
 import React,{ useState } from "react";
 import { useForm } from 'react-hook-form';
 import { useRouter } from "next/router";
-import type { LoginUser } from "../types/usertype";
+import type { LoginUser as LoginListener } from "../types/usertype";
 import Link from 'next/link';
 import {Checkbox} from '../components/SomeFunction';
 
-
-const Signin = () => {
-  const defaultValues: LoginUser = {
+const SigninPage = () => {
+  const defaultValues: LoginListener = {
     Email: "",
     Password: "",
-    // Email: "exsample@exam.com",
-    // Password: "oimomochimochiimomochioimo",
   };
-
-     
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginUser>({defaultValues});
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginListener>({defaultValues});
   const [isRevealPassword, setIsRevealPassword] = useState(false);
   const router = useRouter();
  
-  type InputValues = LoginUser
-  // register：フォームフィールドを登録する関数
-  // handleSubmit：フォームの送信を処理する関数
-  // errors：フォームフィールドのエラー情報を含むオブジェクト　　の３つを取得
+  type InputValues = LoginListener
   const onSubmit = async (data:InputValues) => {
     try {
       console.log("data=", data);
@@ -48,40 +33,51 @@ const Signin = () => {
       console.error(error);
     }
     router.push(`/`)
-
   };
 
   return (
     <div>
-        <form onSubmit={handleSubmit(onSubmit)}>
-            ログインしてください<br />
-            Email: <input {...register("Email", { required: true })} placeholder="Email" /><br />
-            {errors.Email && "Email is required"}
-            Password: <input {...register("Password", { required: true })} placeholder="Password" type={isRevealPassword ? 'text' : 'password'}/><br />
-            {errors.Password && "Password is required"}
-            <Checkbox checked={isRevealPassword }
-    onChange={() => setIsRevealPassword((state) => !state)} >パスワード表示⇔非表示</Checkbox><br />
-            <button type="submit" style={{ background: 'brown' }}>ログイン</button>
-        </form>
-
-        <br />
-        <div>
-            <Link href={`/`}><button style={{ background: 'brown' }}>
-              ログインせずに閲覧する</button></Link><br />
-            <Link href={`/mypage`}><button style={{ background: 'brown' }}>
-              mypageへ</button></Link>
-            <Link href="/signup"><button style={{ background: 'brown' }}>
-             会員登録</button>  
-            </Link>
-            &nbsp;
-                </div>
-        </div>
-  
+      <form onSubmit={handleSubmit(onSubmit)}>
+        ログイン画面<br />
+        Email:
+          <input {...register("Email", { required: true,
+            pattern: {
+              value: /[\w+\-]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]*/i,
+              message: "emailの形式で入力してください。" 
+            } 
+          })}
+          placeholder="Email"
+          /><br />
+          {errors.Email && "Email is required"} <br />
+        Password:
+          <input {...register("Password", { required: true,
+           pattern: {
+            value: /[a-z\d\-]{4,255}/i,
+            message: "パスワードは4文字以上必要です" 
+          } 
+        })}
+            placeholder="Password" type={isRevealPassword ? 'text' : 'password'}
+          /><br />
+          {errors.Password && "Password is required"}<br />
+        <Checkbox checked={isRevealPassword }
+          onChange={() => setIsRevealPassword((state) => !state)} >パスワード表示⇔非表示</Checkbox><br />
+        <button type="submit" style={{ background: 'brown' }}>ログイン</button>
+      </form>  <br />
+      <div>
+        <Link href={`/`}><button style={{ background: 'brown' }}>
+          ログインせずに閲覧する</button></Link><br />
+        <Link href={`/mypage`}><button style={{ background: 'brown' }}>
+          mypageへ</button></Link>
+        <Link href="/signup"><button style={{ background: 'brown' }}>
+          会員登録</button>  
+        </Link>
+        &nbsp;
+      </div>
+    </div>
   );
 }
 
-export default Signin;
-
+export default SigninPage;
 
 
 // ****memo****
