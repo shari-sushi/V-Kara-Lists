@@ -24,6 +24,7 @@ const Signin = () => {
      
   const { register, handleSubmit, formState: { errors } } = useForm<LoginUser>({defaultValues});
   const [isRevealPassword, setIsRevealPassword] = useState(false);
+  const router = useRouter();
  
   type InputValues = LoginUser
   // register：フォームフィールドを登録する関数
@@ -46,7 +47,8 @@ const Signin = () => {
     } catch (error) {
       console.error(error);
     }
-    console.log(data)
+    router.push(`/`)
+
   };
 
   return (
