@@ -168,7 +168,7 @@ func (h *Handler) LoginHandler(c *gin.Context) {
 	trigerSetCookiebyUserAuth(c, user.ListenerId)
 
 	c.JSON(http.StatusOK, gin.H{
-		"message":      "Successfully loggined",
+		"message":      "Successfully Logged In",
 		"listenerId":   user.ListenerId,
 		"listenerName": user.ListenerName,
 	})
@@ -292,7 +292,34 @@ func LogoutHandler(c *gin.Context) {
 	c.SetCookie("auth-token", "none", -1, "/", "localhost", false, true)
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Successfully Logout",
+		"message": "Successfully Logged Out",
+	})
+}
+
+// 退会 論理削除。その期限後削除、途中復活はまだ記述してない。
+func Withdrawal(c *gin.Context) {
+	tokenLId, err := TakeListenerIdFromJWT(c)
+	fmt.Printf("tokenLId = %v \n", tokenLId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid ListenerId of token",
+			"err":     err,
+		})
+		return
+	}
+	var dummyLi types.Listener
+	result := Db.Model(&dummyLi).Where("Listener_id = ? ", tokenLId).Delete(dummyLi)
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid Withdrawn",
+			"err":     result.Error,
+		})
+		return
+	}
+	c.SetCookie("auth-token", "none", -1, "/", "localhost", false, true)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Successfully Withdrawn",
 	})
 }
 

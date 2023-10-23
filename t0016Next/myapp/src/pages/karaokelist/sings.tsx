@@ -20,21 +20,13 @@ import { CellProps } from 'react-table';
 // const AllDatePage: React.FC<PostsAndCheckSignin> = ({ posts, checkSignin }) =>  {　//どっちが良いんだ
 const AllDatePage = ({ posts, checkSignin }:PostsAndCheckSignin) =>  {
 const [start,setStart]=useState<number>(60*8+29) //60*25か60*47かなー, 60*7+59, 60*8+29
-const [allJoinData, setAllJoinData]=useState<AllJoinData>();
-const extractVideoId = (url: string): string => { //(変数:型):返値の型
-  const match = url.match(/v=([^&]+)/);
-  if (match && match[1]) {
-      return match[1];
-  }
-  return ''; 
-};
-
+const [allJoinData, setAllJoinData]=useState<AllJoinData[]>();
 const [currentMovieId, setCurrentMovieId] = useState<string>("kORHSmXcYNc");
 const handleMovieClick = (movieId: string) => {
   setCurrentMovieId(movieId);
 };
 const [isRandomOrAll, setIsRandomOrAll] = useState(true);
-const pageSize = 6
+const pageSize = 15
 
 type Column = {
   Header: string;
@@ -45,7 +37,7 @@ const columns:Column = [
   {Header: "VTuber", accessor: "VtuberName"},
   {Header: "歌",     accessor: "SongName",
     Cell: (cell: { row: { original: any; }; }) => { //どっちが良いんだ…
-    // Cell: (cell: CellProps<any,any>) => { 
+    // Cell: (cell: CellProps<any,any>) => {
       const item = cell.row.original;
       return (
         <a href="#" onClick={(e) => {
@@ -73,7 +65,6 @@ const columns:Column = [
       </a>
     )
   }
-
   }
 ];
 
@@ -90,7 +81,7 @@ const columns:Column = [
     <Link href={`/create`} ><u>歌を登録</u></Link>
       <YoutubePlayer videoId={currentMovieId}  start={start} />
     <Checkbox checked={isRandomOrAll}
-    onChange={() => setIsRandomOrAll((state) => !state)} >：10件ずつ表示⇔全件表示</Checkbox>
+    onChange={() => setIsRandomOrAll((state) => !state)} >：{pageSize}件ずつ表示⇔全件表示(全{allJoinData?.length}歌)</Checkbox>
 
     {isRandomOrAll &&
       <DataTablePageNation

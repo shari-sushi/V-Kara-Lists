@@ -30,15 +30,14 @@ const dropStyle =({
 )
 
 type Options = {
-  label: string
-  value: string
+  value: number;
+  label: string;
+}
+type MovieOptions = {
+  value: string;
+  label: string;
 }
 
-// type TopPagePosts = {
-//   alljoindata: AllJoinData[];
-//   vtubers: Vtuber[];
-//   vtubers_and_movies: VtuberMovie[];
-// };
 type TopPagePosts = {
   vtubers: Vtuber[];
   movies: Movie[];
@@ -69,6 +68,7 @@ type DropDownVt2={
           value: vtuber.VtuberId,
           label: vtuber.VtuberName
         }));
+        console.log("havingVt", havingVt)
         setVtuberOptions(havingVt);
       } catch (error) {
         console.error("Error fetching vtubers:", error);
@@ -85,8 +85,8 @@ type DropDownVt2={
         // value={onVtuberSelect}
         onChange={option => { //ここでSelectで選んだものがoptionに格納されるのか？←挙動的に多分違う
             // 要：選択中のmovieをクリアする関数
-            onMovieClear(null),
-            onKaraokeClear(0)
+            onMovieClear(),
+            onKaraokeClear()
           if (option) {
             console.log("Selected Vtuber value:", option.value); //1 になる(おいもの場合)
             onVtuberSelect(option.value);
@@ -95,23 +95,23 @@ type DropDownVt2={
           }
         }}  />   </>  );};
 
-// type DropDownMoProps = {
-//   selectedVtuber: Vtuber;
-//   onMovieSelect:Movie;
-// };
-// export const DropDownMo: React.FC<DropDownMoProps> = ({ selectedVtuber ,onMovieSelect}) => {
- 
-// 
+type DropDownMo2 = {
+  posts:TopPagePosts;
+  selectedVtuber: number;
+  onMovieSelect:(value: string|null) => void; 
+  onKaraokeClear:(value: number|null) => void;  
+};
+
 // 
 //  movie用
-export const DropDownMo2 = ({ posts, selectedVtuber, onMovieSelect, onKaraokeClear }) => {
+export const DropDownMo2 = ({ posts, selectedVtuber, onMovieSelect, onKaraokeClear }:DropDownMo2) => {
 // export const DropDownMo = ({ selectedVtuber ,onMovieSelect}) => {  
   //const [selectedVtuber, setSelectedVtuber] = useState(null);
   const handleMovieClear = () => {
-    onMovieSelect(null);
-    onKaraokeClear();
+    onMovieSelect("");
+    onKaraokeClear(0);
   };
-  const [movieOptions, setMovieOptions] = useState([]);
+  const [movieOptions, setMovieOptions] = useState<MovieOptions[]>();
   const [selectedMovie, setSelectedMovie] = useState(null);
 
   useEffect(() => {
@@ -161,22 +161,21 @@ export const DropDownMo2 = ({ posts, selectedVtuber, onMovieSelect, onKaraokeCle
   );
 };
 
-
 type DropDownKa2Props = {
   posts: AllData;
   selectedMovie: string;
-  onKaraokeSelect: number;
+  onKaraokeSelect:(value:number) => void;
 };
 
 // karaoke_list用
 export const DropDownKa2: React.FC<DropDownKa2Props>  = ({ posts, selectedMovie, onKaraokeSelect }) => {
   // const [movies, setData2] = useState<KaraokeList[]>();
-  const [karaokeListOptions, setMovieOptions] = useState([]);
+  const [karaokeListOptions, setKaraokeOptions] = useState<Options[]>([]);
   const [selectedKaraoke, setSelectedKaraoke] = useState<number>(0);
 
   useEffect(() => {
     if (!selectedMovie) {
-      setMovieOptions([]); // Movieが選択解除された場合、karaokeの選択肢を空にする
+      setKaraokeOptions([]); // Movieが選択解除された場合、karaokeの選択肢を空にする
       return;
     }
     // if (!selectedKaraoke){
@@ -185,7 +184,7 @@ export const DropDownKa2: React.FC<DropDownKa2Props>  = ({ posts, selectedMovie,
     // }
     const fetchKaraokes = async () => {
       try {
-        console.log("191 selectedMovie=",selectedMovie)
+        console.log("selectedMovie=",selectedMovie)
         console.log("karaokes=",posts.karaokes)
         console.log("karaokes.MovieUrl=",posts.karaokes[0].MovieUrl)
         // const movieUrl = {selectedMovie}
@@ -195,7 +194,8 @@ export const DropDownKa2: React.FC<DropDownKa2Props>  = ({ posts, selectedMovie,
           value: karaoke.KaraokeListId,
           label: karaoke.SongName
         }));
-        setMovieOptions(havingkaraokeList);
+        if (havingkaraokeList){
+        setKaraokeOptions(havingkaraokeList);}
       } catch (error) {
         console.error("Error fetching KaraokeLists:", error);
       }
