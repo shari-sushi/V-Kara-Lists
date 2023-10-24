@@ -5,24 +5,22 @@
 //     return isLoggedIn() ? { type: 'replace', destination: '/mypage' } : null
 //   }
 
-import React from "react";
+import React, {useState} from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import type { SignupListener } from "../types/usertype";
 import Link from 'next/link';
-
-
+import {Checkbox} from '../components/SomeFunction';
 
 const Signup = () => {
   const defaultValues: SignupListener = {
     ListenerName: "",
     Email: "",
     Password: "",
-    // Email: "exsample@exam.com",
-    // Password: "oimomochimochiimomochioimo",
   };
-     
+
   const { register, handleSubmit, formState: { errors } } = useForm<SignupListener>({defaultValues});
+  const [isRevealPassword, setIsRevealPassword] = useState(false);
   type InputValues = SignupListener
   // register：フォームフィールドを登録する関数
   // handleSubmit：フォームの送信を処理する関数
@@ -51,19 +49,42 @@ const Signup = () => {
     <div>
         <form onSubmit={handleSubmit(onSubmit)}>
             会員登録してください<br />
-            name: <input {...register("ListenerName", { required: true })} placeholder="Email" /><br />
-            {errors.Email && "Email is required"}
-            Email: <input {...register("Email", { required: true })} placeholder="Email" /><br />
-            {errors.Email && "Email is required"}
-            Password: <input {...register("Password", { required: true })} placeholder="Password" /><br />
-            {errors.Password && "Password is required"}<br />
-            <button type="submit" style={{ background: 'brown' }}>会員情報確定</button>
+          name: <input {...register("ListenerName", { required: true,
+            pattern: {
+              value: /[a-z\d\-]{3,255}/i,
+              message: "nameは3文字以上必要です。大文字、小文字、数字、-+を使えます。" 
+            } 
+            })} 
+            placeholder="Listener Name"
+            />
+            {errors.ListenerName && errors.ListenerName.message }<br />
+          Email:
+            <input {...register("Email", { required: true,
+              pattern: {
+              value: /[\w+\-]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]*/i,
+                message: "emailの形式で入力してください。" 
+              }
+            })}
+            placeholder="Email"
+            />
+            {errors.Email && errors.Email.message}<br />
+          Password:
+            <input {...register("Password", { required: true,
+              pattern: {
+                value: /[a-z\d\-]{4,255}/i,
+                message: "Passwordは4文字以上必要です" 
+            }
+            })} />
+              {errors.Password && errors.Password.message} <br />
+            <Checkbox checked={isRevealPassword }
+              onChange={() => setIsRevealPassword((state) => !state)} >パスワード表示⇔非表示</Checkbox><br />
+            <button type="submit" style={{ background: '' }} >会員情報確定</button>
         </form>
         <br />
         <div>
-            <button style={{ background: 'brown' }}><Link href={`/`}>会員登録せずに閲覧する</Link></button><br />
-            <button style={{ background: 'brown' }}><Link href={`/signin`}>ログインフォームへ</Link></button><br />
-            <button style={{ background: 'brown' }}><Link href={`/mypage`}>mypageへ</Link></button>
+            <button style={{ background: '' }}><Link href={`/`}>会員登録せずに閲覧する</Link></button><br />
+            <button style={{ background: '' }}><Link href={`/signin`}>ログインフォームへ</Link></button><br />
+            <button style={{ background: '' }}><Link href={`/mypage`}>mypageへ</Link></button>
                 </div>
         </div>
   
