@@ -4,7 +4,7 @@ import style from '../Youtube.module.css';
 import type { AllJoinData, Vtuber, VtuberMovie } from '../types/singdata'; //type{}で型情報のみインポート
 import https from 'https';
 import axios from 'axios';
-import YoutubePlayer from '../components/YoutubePlayer'
+import {YoutubePlayer, YoutubePlayListPlayer} from '../components/YoutubePlayer'
 import {ConversionTime, ExtractVideoId} from '../components/Conversion'
 import { DataTableRandam} from '../components/Table'
 
@@ -64,7 +64,8 @@ const handleMovieClick = (movieId: string) => {
                 ゲストログイン</button></Link>
 
             <YoutubePlayer videoId={currentMovieId}  start={start} />
-            
+
+
         {/* 一覧表示 */}
 
         {/* 配信者一覧 */}

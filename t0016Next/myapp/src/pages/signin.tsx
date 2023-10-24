@@ -26,13 +26,15 @@ const SigninPage = () => {
           },
           body: JSON.stringify(data)
       });
-      if (!response.ok) {
+      if (response.ok) {
+        router.push(`/`)
+      }else{
           throw new Error(response.statusText);
-      }  
+      }
     } catch (error) {
       console.error(error);
     }
-    router.push(`/`)
+    
   };
 
   return (
@@ -48,7 +50,7 @@ const SigninPage = () => {
           })}
           placeholder="Email"
           /><br />
-          {errors.Email && "Email is required"} <br />
+          {errors.Email && errors.Email.message} <br />
         Password:
           <input {...register("Password", { required: true,
            pattern: {
@@ -58,7 +60,7 @@ const SigninPage = () => {
         })}
             placeholder="Password" type={isRevealPassword ? 'text' : 'password'}
           /><br />
-          {errors.Password && "Password is required"}<br />
+          {errors.Password && errors.Password.message}<br />
         <Checkbox checked={isRevealPassword }
           onChange={() => setIsRevealPassword((state) => !state)} >パスワード表示⇔非表示</Checkbox><br />
         <button type="submit" style={{ background: 'brown' }}>ログイン</button>
