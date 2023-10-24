@@ -69,6 +69,9 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
     push後  git reset --soft    //commitのみ取り消し
             git reset --mixed   //commitとaddの取り消し
             git reset --hard    //全部を取り消
+            git reset --soft HEAD^ //commitのみ取り消し
+            git reset --hard HEAD^ //1つ前のpushに履歴を残さず戻す。→取り消しgit reflog、git reset --hard 　[ログ]
+
     commit取り消しの取り消し
     git reflog　(略)
 
