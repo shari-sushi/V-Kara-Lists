@@ -58,20 +58,21 @@ export const Withdraw = () => {
   };
   return(
     <div>
-      {!isToDecision && <div>
+      {!isToDecision &&
+      <div>
         <button onClick={()=> setIsTpoDecision(!isToDecision)} >
-     退会手続きへ</button>
-     </div>}
-     {isToDecision}
+          退会手続きへ</button>
+      </div>}
      {isToDecision && <div> <br/>
-    <button onClick={fetchLogout}>！！！退会確定！！！</button>
-  <h2>退会について</h2>
-  <li>あなたのメールアドレス、パスワードが本サイトから削除されます。</li>
-  <li>それらは一時的に保管されますが、３０日後に機械的に自動で完全にされます。</li>
-  <li>あなたが登録したVTuber, Movie, Sing等のデータは削除されません。</li>
-  <button onClick={()=> setIsTpoDecision(!isToDecision)} >
-     キャンセル</button>
-   </div>}</div>
+      <button onClick={()=> setIsTpoDecision(!isToDecision)} >
+         キャンセル</button>
+      <h2>退会について</h2>
+        <li>あなたのメールアドレス、パスワードが本サイトから削除されます。</li>
+        <li>それらは一時的に保管されますが、３０日後に機械的に自動で完全にされます。</li>
+        <li>あなたが登録したVTuber, Movie, Sing等のデータは削除されません。</li>
+      <button onClick={fetchLogout}>！！！退会確定！！！</button>
+      </div>}
+    </div>
     )
 };
 
