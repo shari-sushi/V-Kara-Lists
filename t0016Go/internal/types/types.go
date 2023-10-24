@@ -91,8 +91,9 @@ type Listener struct {
 	Email        string
 	Password     string
 	CreatedAt    time.Time
-	UpdatedAt    sql.NullTime //new time.Timeのままで良かったかも
-	DeletedAt    sql.NullTime //new
+	UpdatedAt    sql.NullTime   //new time.Timeのままで良かったかも
+	DeletedAt    gorm.DeletedAt `gorm:"index"` //new
+	// DeletedAt    sql.NullTime //new これだと物理削除になってまう
 }
 
 type EntryListener struct {
