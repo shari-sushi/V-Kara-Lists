@@ -12,7 +12,7 @@ import '@szhsin/react-menu/dist/index.css';
 // import {DropDownVt, DropDownMo, DropDownKa} from '../../components/Dropdown';
 import {DropDownVt2, DropDownMo2, DropDownKa2} from '../../components/TestDropdown';
 // import YouTube, { YouTubeProps } from 'react-youtube';
-import YoutubePlayer from '../../components/YoutubePlayer'
+import {YoutubePlaye} from '../../components/YoutubePlayer'
 import {ConversionTime, ExtractVideoId} from '../../components/Conversion'
 
 

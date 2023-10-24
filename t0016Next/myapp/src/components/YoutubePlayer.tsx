@@ -1,4 +1,4 @@
-import YouTube from 'react-youtube';
+import YouTube, { YouTubeProps }  from 'react-youtube';
 // import '../Youtube.module.css';
 
 type Options = React.ComponentProps<typeof YouTube>['opts'];
@@ -15,7 +15,7 @@ const onPlayerReady = (event: { target: YT.Player }) => {
   event.target.pauseVideo();
 }
 
-const YoutubePlayer: React.FC<YoutubePlayerProps> = ({ videoId, start, opts = {
+export const YoutubePlayer: React.FC<YoutubePlayerProps> = ({ videoId, start, opts = {
     height: 253,
     width: 450,
     playerVars: {
@@ -31,5 +31,37 @@ const YoutubePlayer: React.FC<YoutubePlayerProps> = ({ videoId, start, opts = {
   return <YouTube videoId={videoId} opts={opts} onReady={onReady} />;
 };
 
-export default YoutubePlayer;
+// 今のところ使ってない
+export function YoutubePlayListPlayer() {
+  const opts = {
+    height: '390',
+    width: '640',
+    playerVars: {
+      listType: 'playlist',
+      list: 'PLeeZByIMvayf2oJoWXA_4YHzBC6DCDyx5',
+      start:10,
+      // end:20,
+    },
+  };
 
+  return <YouTube opts={opts} />;
+}
+
+// // 今のところ使ってない。というか動いてない。
+// export function YoutubePlayListPlayer2() {
+//   const onPlayerReady: YouTubeProps['onReady'] = (event) => {
+//     // access to player in all event handlers via event.target
+//     event.target.pauseVideo();
+//   }
+
+//   const opts: YouTubeProps['opts'] = {
+//     height: '390',
+//     width: '640',
+//     playerVars: {
+//       // https://developers.google.com/youtube/player_parameters
+//       autoplay: 1,
+//     },
+//   };
+
+//   return <YouTube videoId="2g811Eo7K8U" opts={opts} onReady={onPlayerReady} />;
+// }

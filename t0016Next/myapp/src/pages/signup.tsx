@@ -18,7 +18,7 @@ const Signup = () => {
     Email: "",
     Password: "",
   };
-
+  const router = useRouter();
   const { register, handleSubmit, formState: { errors } } = useForm<SignupListener>({defaultValues});
   const [isRevealPassword, setIsRevealPassword] = useState(false);
   type InputValues = SignupListener
@@ -36,14 +36,14 @@ const Signup = () => {
           },
           body: JSON.stringify(data)
       });
-      if (!response.ok) {
+      if (response.ok) {
+        router.push(`/`)
+      }else{
           throw new Error(response.statusText);
-      }  
+      }
     } catch (error) {
       console.error(error);
-    }
-    console.log(data)
-  };
+    };}
 
   return (
     <div>
@@ -62,7 +62,7 @@ const Signup = () => {
             <input {...register("Email", { required: true,
               pattern: {
               value: /[\w+\-]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]*/i,
-                message: "emailの形式で入力してください。" 
+              message: "emailの形式で入力してください。" 
               }
             })}
             placeholder="Email"
