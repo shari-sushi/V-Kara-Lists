@@ -297,6 +297,32 @@ func LogoutHandler(c *gin.Context) {
 }
 
 // 退会 論理削除。その期限後削除、途中復活はまだ記述してない。
+// ******稼働確認したら物理削除になった********
+// func Withdrawal(c *gin.Context) {
+// 	tokenLId, err := TakeListenerIdFromJWT(c)
+// 	fmt.Printf("tokenLId = %v \n", tokenLId)
+// 	if err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{
+// 			"message": "Invalid ListenerId of token",
+// 			"err":     err,
+// 		})
+// 		return
+// 	}
+// 	var dummyLi types.Listener
+// 	result := Db.Model(&dummyLi).Where("Listener_id = ? ", tokenLId).Delete(dummyLi)
+// 	if result.Error != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{
+// 			"message": "Invalid Withdrawn",
+// 			"err":     result.Error,
+// 		})
+// 		return
+// 	}
+// 	c.SetCookie("auth-token", "none", -1, "/", "localhost", false, true)
+
+// 	c.JSON(http.StatusOK, gin.H{
+// 		"message": "Successfully Withdrawn",
+// 	})
+// }
 func Withdrawal(c *gin.Context) {
 	tokenLId, err := TakeListenerIdFromJWT(c)
 	fmt.Printf("tokenLId = %v \n", tokenLId)
@@ -308,7 +334,8 @@ func Withdrawal(c *gin.Context) {
 		return
 	}
 	var dummyLi types.Listener
-	result := Db.Model(&dummyLi).Where("Listener_id = ? ", tokenLId).Delete(dummyLi)
+	dummyLi.ListenerId = tokenLId
+	result := Db.Delete(&dummyLi)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid Withdrawn",
@@ -317,7 +344,6 @@ func Withdrawal(c *gin.Context) {
 		return
 	}
 	c.SetCookie("auth-token", "none", -1, "/", "localhost", false, true)
-
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully Withdrawn",
 	})
