@@ -21,10 +21,10 @@ const AllDatePage: React.FC<PostsAndCheckSignin> = ({ posts, checkSignin }) =>  
     // setData1はステートを更新する関数。
 const [vtubers, setData1] = useState<Vtuber[]>();
 const [movies, setData2] = useState<VtuberMovie[]>();
-const [start,setStart]=useState<number>(60*8+29) //60*25か60*47かなー, 60*7+59, 60*8+29
+const [start,setStart]=useState<number>((60*8+29)) //60*25か60*47かなー, 60*7+59, 60*8+29
 const [allJoinData, setAllJoinData]=useState<AllJoinData>();
 
-const [currentMovieId, setCurrentMovieId] = useState<string>("kORHSmXcYNc");
+const [currentMovieId, setCurrentMovieId] = useState<string>("qFVhnuIBGiQ");
 const handleMovieClick = (movieId: string) => {
   setCurrentMovieId(movieId);
 };
@@ -41,10 +41,10 @@ const handleMovieClick = (movieId: string) => {
 
   return (
     <div>
-   
-      <Link href="/test"><button style={{ background: 'brown' }}>
-             テスト</button>
-            </Link>
+      <Link href="/test"><button >テスト</button></Link>
+      <Link href="/create"><button >　CREATE　</button></Link>
+      <Link href="CrudAlmighty"><button>CrudAlmightyへ</button></Link>   
+            
       <h1>TOP画面</h1>
         <h3>"推し"の"歌枠"の聴きたい"歌"を再生しよう。 <br />
         推しが歌った"歌"を一目で把握、布教しよう。<br /><br />
@@ -62,9 +62,9 @@ const handleMovieClick = (movieId: string) => {
             </Link>
             <Link href="/guestlogin"><button style={{ background: 'brown' }}>
                 ゲストログイン</button></Link>
-
             <YoutubePlayer videoId={currentMovieId}  start={start} />
-            
+            ！注意！Vtuber様や動画により音量差があります。 <br/>
+            ！注意！特に、個人→大手の切り替え時に爆音となる傾向があります。
         {/* 一覧表示 */}
 
         {/* 配信者一覧 */}
@@ -95,7 +95,7 @@ const handleMovieClick = (movieId: string) => {
             <td><a href={`https://${vtubers.IntroMovieUrl}`} target="_blank" rel="noopener noreferrer">youtubeへ</a></td>
           ) : (
           <td>未登録</td>
-        )}
+          )}
           <td><Link href={`/movie?streamer_id=${vtubers.VtuberId}`}>歌枠</Link></td>
           <td><Link href={`/sing?streamer_id=${vtubers.VtuberId}`}>歌</Link></td>
           {checkSignin && <td><Link href={`/karaokelist/edit?Unique_id=${vtubers.VtuberId}`}>編集</Link></td>}
@@ -144,7 +144,8 @@ const handleMovieClick = (movieId: string) => {
           {/*歌一覧  */}
 
     <h2>★歌</h2>
-    <Link href={`/karaokelist/sings`} ><u>全歌一覧</u></Link>     <Link href={`/create`} ><u>歌を登録</u></Link> <br />
+    <Link href={`/karaokelist/sings`} ><u>全歌一覧</u></Link>
+    <Link href={`/create`} ><u>歌を登録</u></Link> <br />
     <DataTableRandam
       data={posts.alljoindata}
       handleMovieClick={handleMovieClick} 

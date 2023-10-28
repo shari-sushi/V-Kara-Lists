@@ -118,3 +118,6 @@ squash 400f340 コミットB
 squash f35185d コミットC
 squash 8dfc486 コミットB
 ※やるまえに、git pushか、git stashすること。git stashした場合はgit rebase後にgit stash pop
+
+
+git branch -m [new] //現在のbranchの名称変更

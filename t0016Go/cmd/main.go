@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -13,7 +15,7 @@ import (
 
 func main() {
 	r := gin.Default()
-
+	r.Use(RequestLogger())
 	r.Use(cors.New(cors.Config{
 		// アクセス許可するオリジン
 		AllowOrigins: []string{"https://localhost:3000"},
@@ -43,23 +45,24 @@ func main() {
 	r.GET("/vtuber=[id]/movies", crud.ReadAllVtubersAndMovies) //未 ver. 1.0の最後
 	r.GET("/sings", crud.ReadAllSings)                         //動作ok
 
+	// メインコンテンツのCRUD　/vtuber, /movie, /karaokeはフロント側で比較演算に使われてる
 	// データ新規登録
-	r.POST("/create/vtuber", crud.CreateVtuber)    //動作ok
-	r.POST("/create/movie", crud.CreateMovie)      //動作ok
-	r.POST("/create/sing", crud.CreateKaraokeSing) //動作ok
-	r.POST("/create/song", crud.CreateSong)        //未　ver1.5かな
+	r.POST("/create/vtuber", crud.CreateVtuber)       //動作ok
+	r.POST("/create/movie", crud.CreateMovie)         //動作ok
+	r.POST("/create/karaoke", crud.CreateKaraokeSing) //動作ok
+	r.POST("/create/song", crud.CreateSong)           //未　ver1.5かな
 
 	//データ編集
-	r.POST("/edit/vtuber", crud.EditVtuber)    //動作ok
-	r.POST("/edit/movie", crud.EditMovie)      //動作ok
-	r.POST("/edit/sing", crud.EditKaraokeSing) //動作ok
-	r.POST("/edit/song", crud.EditSong)        //未　ver1.5かな
+	r.POST("/edit/vtuber", crud.EditVtuber)       //動作ok
+	r.POST("/edit/movie", crud.EditMovie)         //動作ok
+	r.POST("/edit/karaoke", crud.EditKaraokeSing) //動作ok
+	r.POST("/edit/song", crud.EditSong)           //未　ver1.5かな
 
 	// データ削除(物理)
-	r.DELETE("/delete/vtuber", crud.DeleteVtuber)    //動作ok
-	r.DELETE("/delete/movie", crud.DeleteMovie)      //動作ok
-	r.DELETE("/delete/sing", crud.DeleteKaraokeSing) //動作ok
-	r.DELETE("/delete/song", crud.DeleteSong)        //未　ver1.5かな
+	r.DELETE("/delete/vtuber", crud.DeleteVtuber)       //動作ok
+	r.DELETE("/delete/movie", crud.DeleteMovie)         //動作ok
+	r.DELETE("/delete/karaoke", crud.DeleteKaraokeSing) //動作ok
+	r.DELETE("/delete/song", crud.DeleteSong)           //未　ver1.5かな
 
 	//ドロップダウン用
 	r.GET("/getvtuber", crud.ReadAllVtubersName)               //動ok
@@ -83,6 +86,13 @@ func main() {
 	// r.GET("/envpass", postrequest.EnvPass)
 
 	r.RunTLS(":8080", "../../key/server.pem", "../../key/server_unencrypted.key")
+}
+
+func RequestLogger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		fmt.Printf("Method: %s, Path: %s, Header: %v\n, , Body: %v\n", c.Request.Method, c.Request.URL.Path, c.Request.Header, c.Request.Body)
+		c.Next()
+	}
 }
 
 // 多分消して良い

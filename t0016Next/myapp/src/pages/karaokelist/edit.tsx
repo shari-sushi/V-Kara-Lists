@@ -10,7 +10,7 @@ import axios from 'axios';
 // import {  Menu, MenuItem,  MenuButton, SubMenu} from '@szhsin/react-menu';
 import '@szhsin/react-menu/dist/index.css';
 // import {DropDownVt, DropDownMo, DropDownKa} from '../../components/Dropdown';
-import {DropDownVt2, DropDownMo2, DropDownKa2} from '../../components/TestDropdown';
+import {DropDownVt, DropDownMo, DropDownKa} from '../../components/Dropdown';
 // import YouTube, { YouTubeProps } from 'react-youtube';
 import YoutubePlayer from '../../components/YoutubePlayer'
 import {ConversionTime, ExtractVideoId} from '../../components/Conversion'
@@ -104,19 +104,19 @@ const handleVtuberClear = () => {
 
   return ( 
     <div>
-       <DropDownVt2
+       <DropDownVt
        posts={posts}
         onVtuberSelect={setSelectedVtuber}
           //onChangeにより、onVtuber~にoptiobn.valueが渡され、=setSelectedVtuberに。
           //setSe~V~はuseStateでselectedVtuberに値を渡す→DropDownMo2に渡る。
         onMovieClear={handleMovieClear}
         onKaraokeClear={handleVtuberClear} />
-       <DropDownMo2
+       <DropDownMo
        posts={posts}
         selectedVtuber={selectedVtuber}
         onMovieSelect={setSelectedMovie}
         onKaraokeClear={handleMovieClear} />
-       <DropDownKa2
+       <DropDownKa
        posts={posts}
         selectedMovie={selectedMovie}
         onKaraokeSelect={setSelectedKaraoke}

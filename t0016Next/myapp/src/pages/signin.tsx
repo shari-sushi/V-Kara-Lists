@@ -5,6 +5,11 @@ import type { LoginUser as LoginListener } from "../types/usertype";
 import Link from 'next/link';
 import {Checkbox} from '../components/SomeFunction';
 
+
+// var1.5~2.0でやりたい
+// 送信する前にバリデーションチェック　
+// https://yutaro-blog.net/2021/10/22/react-state-tips/
+
 const SigninPage = () => {
   const defaultValues: LoginListener = {
     Email: "",
@@ -51,6 +56,7 @@ const SigninPage = () => {
           {errors.Email && "Email is required"} <br />
         Password:
           <input {...register("Password", { required: true,
+          //  value:"aa",
            pattern: {
             value: /[a-z\d\-]{4,255}/i,
             message: "パスワードは4文字以上必要です" 

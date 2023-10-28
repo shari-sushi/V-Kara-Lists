@@ -150,19 +150,32 @@ func CreateVtuber(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Printf("bindしたvts = %v \n", vts)
-	// isRegisteredAsV := utility.Db.Where("vtuber_name = ?", vts.VtuberName).Find(&vts)
-	utility.Db.Where("vtuber_name = ?", vts.VtuberName).Find(&vts)
+	fmt.Printf("bindしたvts = %v \n", &vts)
 
-	fmt.Printf("既存登録確認　isRegisteredAsV = %d \n", *&vts.VtuberId)
+	tokenLId, err := utility.TakeListenerIdFromJWT(c)
+	fmt.Printf("tokenLId=%v", tokenLId)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "会員登録・ログインしてませんね？"})
+		return
+	}
+	fmt.Printf("tokenLId=%v", tokenLId)
+	//JWTの認証情報、最初の登録者が一致していればupdateへ進む
+
+	vts.VtuberInputerId = &tokenLId
+
+	var anotherVts types.Vtuber
+	anotherVts.VtuberInputerId = &tokenLId //vtuber_idが空のものを用意→あるとand検索になってしまう。
+	utility.Db.Where("vtuber_name = ?", vts.VtuberName).Find(&anotherVts)
+	fmt.Printf(" vtuber_id= %d に登録されています\n", *&anotherVts.VtuberId)
 	if *&vts.VtuberId != 0 {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "そのVTuber名は登録済みです"})
 		return
 	}
-	fmt.Printf("Find後vts = %v \n", vts)
 
-	utility.Db.Omit("vtuber_id").Create(&vts)
+	utility.Db.Omit("vtuber_id").Create(&vts) //vtuber_idのみAUTO INCREMENT
 	if vts.VtuberId == 0 {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "VTuberの登録に失敗しました。ただし、未登録のVTuber名でした。時間を空けてリトライするか、開発者へお問い合わせください。",
@@ -182,18 +195,27 @@ func CreateMovie(c *gin.Context) {
 	var mo types.Movie
 	var vt types.Vtuber
 
-	err := c.ShouldBind(&mo)
+	tokenLId, err := utility.TakeListenerIdFromJWT(c)
+	fmt.Printf("tokenLId=%v", tokenLId)
 	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "会員登録・ログインしてませんね？"})
+		return
+	}
+
+	errBind := c.ShouldBind(&mo)
+	if errBind != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid request body",
 		})
 		return
 	}
-	fmt.Printf("bindしたvts = %v \n", mo)
+	fmt.Printf("bindしたmo = %v \n", &mo)
 
 	// _idのvtuberがいるか確認
-	vt.VtuberId = *mo.VtuberId
-	utility.Db.Find(&vt)
+	// vt.VtuberId = *mo.VtuberId
+	// utility.Db.Find(&vt)
+	utility.Db.Model(&vt).Where("vtuber_id = ?", mo.VtuberId).First(&vt)
 	if vt.VtuberName == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "未登録のVTuberIdです",
@@ -201,7 +223,7 @@ func CreateMovie(c *gin.Context) {
 		return
 	}
 
-	// 既存チェック(movieにmovie_urlが登録済みならエラーを返す)だけど、不要な気がする
+	// 既存チェック(movieにmovie_urlが登録済みならエラーを返す)だけど、不要な気がする。PKだから。
 	// var dummy types.Movie
 	// result := utility.Db.Where("movie_url = ?", mo.MovieUrl).Find(&dummy)
 	// if result.Error != nil {
@@ -230,17 +252,26 @@ func CreateMovie(c *gin.Context) {
 
 //	/create/songs
 func CreateKaraokeSing(c *gin.Context) {
-	var ka types.KaraokeList
-	err := c.ShouldBind(&ka)
+	tokenLId, err := utility.TakeListenerIdFromJWT(c)
+	fmt.Printf("tokenLId=%v", tokenLId)
 	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "会員登録・ログインしてませんね？"})
+		return
+	}
+
+	var ka types.KaraokeList
+	errBind := c.ShouldBind(&ka)
+	if errBind != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid request body",
 		})
 		return
 	}
+	ka.KaraokeListInputerId = tokenLId
 	fmt.Printf("bindしたka = %v \n", ka)
 
-	//申請(movie_url)がmoviesに未登録であれば処理停止
+	// 申請(movie_url)がmoviesに未登録であれば処理停止
 	// mo.MovieUrl = ka.MovieUrl
 	utility.Db.Model(&mo).Where("movie_url = ?", ka.MovieUrl).First(&mo)
 	if mo.VtuberId == nil {
@@ -258,8 +289,6 @@ func CreateKaraokeSing(c *gin.Context) {
 		})
 		return
 	}
-	//SELECT `karaoke_list_id` FROM `karaoke_lists` WHERE movie_url = 'www.youtube.com/watch?v=5WzeYsoGCZc' and sing_start = '00:58:19' ORDER BY karaoke_list_id desc LIMIT 1 ;
-	//SELECT `karaoke_list_id` FROM `karaoke_lists` WHERE movie_url = 'www.youtube.com/watch?v=5WzeYsoGCZc' AND sing_start '00:58:19' ORDER BY karaoke_list_id desc LIMIT 1
 	fmt.Printf("url-sing_startの重複チェックで取得したka.KaraokeListId= %v \n", ka.KaraokeListId)
 
 	// karaoke_listsに登録されてるwher movie_url=における最大idを取得。次の行で+1する
@@ -276,7 +305,6 @@ func CreateKaraokeSing(c *gin.Context) {
 		})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{
 		"message": "歌枠の曲を登録しました。",
 	})
@@ -295,7 +323,7 @@ func EditVtuber(c *gin.Context) {
 	}
 	fmt.Printf("bindしたvts = %v \n", vt)
 
-	//JWTの認証情報、今回の申請者、最初の登録者が一致していればupdateへ進む
+	//JWTの認証情報とデータ登録者が一致していること
 	tokenLId, err := utility.TakeListenerIdFromJWT(c)
 	fmt.Printf("tokenLId = %v \n", tokenLId)
 	if err != nil {
@@ -406,11 +434,12 @@ func EditKaraokeSing(c *gin.Context) {
 			"err":     err,
 		})
 		return
-	} else if tokenLId != *&ka.KaraokeListInputerId {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "入力者の認証情報が不正です",
-		})
-		return
+		// 稼働確認後削除予定
+		// } else if tokenLId != *&ka.KaraokeListInputerId {
+		// 	c.JSON(http.StatusBadRequest, gin.H{
+		// 		"message": "入力者の認証情報が不正です",
+		// 	})
+		// 	return
 	}
 
 	var dummyKa types.KaraokeList
@@ -453,7 +482,7 @@ func DeleteVtuber(c *gin.Context) {
 	}
 	fmt.Printf("bindしたvt = %v \n", vt)
 
-	//JWTの認証情報、今回の申請者、最初の登録者が一致していればdeleteへ進む
+	//JWTの認証情報と、DBへの最初の登録者が一致していればdeleteへ進む
 	tokenLId, err := utility.TakeListenerIdFromJWT(c)
 	fmt.Printf("tokenLId = %v \n", tokenLId)
 	if err != nil {
@@ -473,7 +502,7 @@ func DeleteVtuber(c *gin.Context) {
 	fmt.Printf("dummyVt.VtuberInputerId = %v,\n   vt.VtuberInputerId= %d \n", *dummyVt.VtuberInputerId, *vt.VtuberInputerId)
 	if *dummyVt.VtuberInputerId != *vt.VtuberInputerId {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "データを登録した人しか編集・削除は許可されていません。データ信頼性性の向上のための他者から申請できるシステムも開発中です。",
+			"message": "データを登録した人しか編集・削除は許可されていません。データ信頼性の向上のための他者から申請できるシステムも開発中です。",
 		})
 		return
 	}
