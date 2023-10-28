@@ -26,13 +26,8 @@ const MyPage = ({ listener, checkAuth}:Mypage) => {
         <li>パスワード: {listener?.Password}</li>
         <li>メアド  : {listener?.Email}</li>
         <li>登録日  : {listener.CreatedAt?.toString()}</li>
-      <GetLogout/>
-
-      {/* <button checked={isShow}
-    onChange={() => setIsRandomOrAll((state) => !state)} > {pageSize}退会</button> */}
-      {/* <Withdraw/> */}
-      <Withdraw/>
-
+        <GetLogout/>
+        <Withdraw/>
       </ul>
       ):(
         <div>
