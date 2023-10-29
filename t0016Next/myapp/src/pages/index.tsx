@@ -42,7 +42,10 @@ const handleMovieClick = (movieId: string) => {
   return (
     <div>
       <Link href="/test"><button >テスト</button></Link>
-      <Link href="/create"><button >　CREATE　</button></Link>
+      <Link href="/create"><button >　CREATE　完成</button></Link>
+      <Link href="/edit"><button >　EDIT　未完成</button></Link>
+      <Link href="/delete"><button >　DALETE　未完成</button></Link>
+
       <Link href="CrudAlmighty"><button>CrudAlmightyへ</button></Link>   
             
       <h1>TOP画面</h1>

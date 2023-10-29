@@ -195,7 +195,6 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
     const [SingStartInput, setSingStartInput] = useState(foundKaraoke?.SingStart);
     const [SongNameInput, setSongNameInput] = useState(foundKaraoke?.SongName);
 
-    const [isToDecision, setIsTpoDecision]=useState<boolean>(false)
     const [choiceCrudType, setIsCrud] = useState<string>("")
 
     type CreateVtuber = {
