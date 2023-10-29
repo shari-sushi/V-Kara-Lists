@@ -89,6 +89,7 @@ const handleVtuberClear = () => {
 
   return ( 
     <div>
+        <h1>DB編集</h1>
         <DropDownVt
             posts={posts}
             onVtuberSelect={setSelectedVtuber}
@@ -253,7 +254,7 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
                 console.log("selectedMovie=", selectedMovie)
 
             } else {
-                console.log("登録するデータの種類(vtuber, movie, karaoke)選択にて想定外のエラーが発生しました。")
+                console.log("編集するデータの種類(vtuber, movie, karaoke)選択にて想定外のエラーが発生しました。")
             };
             const httpsAgent = new https.Agent({
                 rejectUnauthorized: false
@@ -284,29 +285,28 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
 
     return (
         <div>
-            ***CrudAlmighty***CrudAlmighty***CrudAlmighty***CrudAlmighty***CrudAlmighty*** <br/>
             <button type="button" onClick={()=> setIsCrud("vtuber")} >
-                ＜VTuberを登録＞</button>
+                ＜VTuberを編集＞</button>
             <button type="button" onClick={()=> setIsCrud("movie")}>
-                ＜歌枠動画を登録＞</button>
+                ＜歌枠動画を編集＞</button>
             <button type="button" onClick={()=> setIsCrud("karaoke")}>
-                ＜歌を登録＞</button>
+                ＜歌を編集＞</button>
             <br/><br/>
             {choiceCrudType === "vtuber" &&
                 <div>
-                新規でVTuberを登録します。<br/>
+                新規でVTuberを編集します。<br/>
                 </div>}
             {choiceCrudType === "movie" && 
                 <div>
                 VTuber：{foundVtuber?.VtuberName}<br />
-                &nbsp;&nbsp; の歌枠動画を登録します。
+                &nbsp;&nbsp; の歌枠動画を編集します。
                 </div>}
             {choiceCrudType === "karaoke" &&
                 <div>
                 VTuber：{foundVtuber?.VtuberName && foundVtuber?.VtuberName}<br />
                 歌枠動画：{foundMovie?.MovieTitle}
                 {foundKaraoke?.SongName && foundMovie?.MovieTitle}<br/>
-                &nbsp;&nbsp; の歌と開始時間を登録します。
+                &nbsp;&nbsp; の歌と開始時間を編集します。
                 </div>}<br/>
             <form onSubmit={handleSubmit(onSubmit)}>
                 {choiceCrudType === "vtuber" &&
