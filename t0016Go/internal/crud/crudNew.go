@@ -202,6 +202,7 @@ func CreateMovie(c *gin.Context) {
 			"message": "会員登録・ログインしてませんね？"})
 		return
 	}
+	mo.MovieInputerId = &tokenLId
 
 	errBind := c.ShouldBind(&mo)
 	if errBind != nil {
@@ -482,7 +483,6 @@ func DeleteVtuber(c *gin.Context) {
 	}
 	fmt.Printf("bindしたvt = %v \n", vt)
 
-	//JWTの認証情報と、DBへの最初の登録者が一致していればdeleteへ進む
 	tokenLId, err := utility.TakeListenerIdFromJWT(c)
 	fmt.Printf("tokenLId = %v \n", tokenLId)
 	if err != nil {
@@ -491,23 +491,19 @@ func DeleteVtuber(c *gin.Context) {
 			"err":     err,
 		})
 		return
-	} else if tokenLId != *vt.VtuberInputerId {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "入力者の認証情報が不正です",
-		})
-		return
 	}
+	vt.VtuberInputerId = &tokenLId
+
 	var dummyVt types.Vtuber
-	utility.Db.Select("vtuber_inputer_id").Where("vtuber_id = ?", vt.VtuberId).First(&dummyVt)
-	fmt.Printf("dummyVt.VtuberInputerId = %v,\n   vt.VtuberInputerId= %d \n", *dummyVt.VtuberInputerId, *vt.VtuberInputerId)
-	if *dummyVt.VtuberInputerId != *vt.VtuberInputerId {
+	//JWTの認証情報と、Vtuberの登録者が一致していればdeleteへ進む
+	inquiryResult := utility.Db.Select("vtuber_inputer_id").Where("vtuber_id = ? AND vtuber_inputer_id = ?", vt.VtuberId, &tokenLId).First(&dummyVt)
+	fmt.Printf("inquiryResult = %v\n", inquiryResult)
+	if inquiryResult.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "データを登録した人しか編集・削除は許可されていません。データ信頼性の向上のための他者から申請できるシステムも開発中です。",
 		})
 		return
 	}
-
-	fmt.Printf("bindしたvtのvt.VtuberName= %v, *vt.VtuberInputerId = %d, vt.VtuberId =%d \n ", vt.VtuberName, *vt.VtuberInputerId, vt.VtuberId)
 
 	result := utility.Db.Model(&vt).Where("vtuber_id = ? AND vtuber_name = ?", vt.VtuberId, vt.VtuberName).Delete(vt)
 	// utility.Db.Where("vtuber_id = ?", vt.VtuberId).Delete(vt)
@@ -522,6 +518,8 @@ func DeleteVtuber(c *gin.Context) {
 		"message": "VTuberの情報を削除しました。",
 	})
 }
+
+//httpリクエストbodyでVtuberId, MovieUrlが渡される
 func DeleteMovie(c *gin.Context) {
 	var mo types.Movie
 	err := c.ShouldBind(&mo)
@@ -531,10 +529,8 @@ func DeleteMovie(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Printf("bindしたmoの url=%v, inputerId=%d, VtId=%d \n", mo.MovieUrl, *mo.MovieInputerId, *mo.VtuberId)
+	fmt.Printf("bindしたmoの url=%v, VtId=%d \n", mo.MovieUrl, *mo.VtuberId)
 
-	// JWTの認証情報、今回の申請者(httpリクエストの情報)、最初の登録者
-	// の３つの情報が全て一致していればdeleteへ進む
 	tokenLId, err := utility.TakeListenerIdFromJWT(c)
 	fmt.Printf("tokenLId = %v \n", tokenLId)
 	if err != nil {
@@ -543,24 +539,20 @@ func DeleteMovie(c *gin.Context) {
 			"err":     err,
 		})
 		return
-	} else if tokenLId != *mo.MovieInputerId {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "入力者の認証情報が不正です",
-		})
-		return
 	}
+
 	var dummyMo types.Movie
-	utility.Db.Select("movie_inputer_id").Where("movie_url = ?", mo.MovieUrl).First(&dummyMo)
+	//JWTの認証情報と、Movieの登録者が一致していればdeleteへ進む
+	inquiryResult := utility.Db.Where("movie_url = ? AND movie_inputer_id = ?", mo.MovieUrl, &tokenLId).First(&dummyMo)
 	fmt.Printf("dummyMo = %v\n", dummyMo)
-	fmt.Printf("dummyMo.MovieInputerId = %d,\n mo.MovieInputerId= %d \n", *dummyMo.MovieInputerId, *mo.MovieInputerId)
-	if *dummyMo.MovieInputerId != *mo.MovieInputerId {
+	if inquiryResult.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "データを登録した人しか編集・削除は許可されていません。データ信頼性性の向上のための他者から申請できるシステムも開発中です。",
 		})
 		return
 	}
 
-	// result := utility.Db.Model(&vt).Where("vtuber_id = ?", vt.VtuberId).Updates(types.Vtuber{"vtuber_name:?, vtuber_kana:?, intro_movie_url:?", vt.VtuberName, vt.VtuberKana, vt.IntroMovieUrl})
+	// 正直movie_urlのみでよいが、フロント側の表示バグとか怖いので
 	result := utility.Db.Model(&mo).Where("movie_url = ? AND vtuber_id = ?", mo.MovieUrl, mo.VtuberId).Delete(mo)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -572,6 +564,8 @@ func DeleteMovie(c *gin.Context) {
 		"message": "Movieの情報を削除しました。",
 	})
 }
+
+//フロントからMovieUrl, KaraokeListId, SongNameを受け取る
 func DeleteKaraokeSing(c *gin.Context) {
 	var ka types.KaraokeList
 	err := c.ShouldBind(&ka)
@@ -582,8 +576,7 @@ func DeleteKaraokeSing(c *gin.Context) {
 		return
 	}
 
-	// JWTの認証情報、今回の申請者(httpリクエストの情報)、最初の登録者
-	// の３つの情報が全て一致していればupdateへ進む
+	//JWTの認証情報と、DBへの最初の登録者が一致していればdeleteへ進む
 	tokenLId, err := utility.TakeListenerIdFromJWT(c)
 	fmt.Printf("tokenLId = %v \n", tokenLId)
 	if err != nil {
@@ -592,33 +585,27 @@ func DeleteKaraokeSing(c *gin.Context) {
 			"err":     err,
 		})
 		return
-	} else if tokenLId != *&ka.KaraokeListInputerId {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "入力者の認証情報が不正です",
-		})
-		return
 	}
 
 	var dummyKa types.KaraokeList
-	utility.Db.Select("karaoke_list_inputer_id").Where("karaoke_list_id = ?", ka.KaraokeListId).First(&dummyKa)
-	fmt.Printf("dummyKo = %v\n", dummyKa)
-	fmt.Printf("dummyKo.KaraokeListInputerId = %d,\n ka.KaraokeListInputerId= %d \n", *&dummyKa.KaraokeListInputerId, *&ka.KaraokeListInputerId)
-	if *&dummyKa.KaraokeListInputerId != *&ka.KaraokeListInputerId {
+	inquiryResult := utility.Db.Where("karaoke_list_id = ? AND karaoke_list_inputer_id = ?", ka.KaraokeListId, tokenLId).First(&dummyKa)
+	fmt.Printf("dummyKo = %v\n", &dummyKa)
+	if inquiryResult.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "データを登録した人しか編集・削除は許可されていません。データ信頼性性の向上のための他者から申請できるシステムも開発中です。",
+			"message": "karaokeデータを登録した人のみ編集・削除が可能です。データ信頼性性の向上のための他者から申請できるシステムも開発中です。",
 		})
+		fmt.Print("karaoke登録者と不一致")
 		return
 	}
 
-	// result := utility.Db.Model(&vt).Where("vtuber_id = ?", vt.VtuberId).Updates(types.Vtuber{"vtuber_name:?, vtuber_kana:?, intro_movie_url:?", vt.VtuberName, vt.VtuberKana, vt.IntroMovieUrl})
-	result := utility.Db.Model(&ka).Where("karaoke_list_id = ? AND  song_name = ?", ka.KaraokeListId, ka.SongName).Delete(ka)
+	// 正直movie_url = ? AND karaoke_list_id = ?でよいが、フロント側で表示バグとか怖いので
+	result := utility.Db.Model(&ka).Where("movie_url = ? AND karaoke_list_id = ? AND  song_name = ?", ka.MovieUrl, ka.KaraokeListId, ka.SongName)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "編集に失敗しました。vtuber_idと名前が位置していない可能性があります(間違ったvtuber_id、同じnameで申請するとnameのuniqueで引っ掛かる)",
 		})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{
 		"message": "karaoke_listの情報を削除しました。",
 	})

@@ -258,7 +258,8 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
     const httpsAgent = new https.Agent({rejectUnauthorized: false});
     useEffect(()=>{
         const fetchData = async () => {
-
+            console.log("choiceCrudType=", crudContentType,"\n vtuberDataForFetch=", vtuberDataForFetch, 
+            "\n movieDataForFetch=", movieDataForFetch, "\nkaraokeDataForFetch=", karaokeDataForFetch)
                 if(vtuberDataForFetch || movieDataForFetch || karaokeDataForFetch){
                 try {const response = await axios.post(`https://localhost:8080/create/${ crudContentType }`,
                     vtuberDataForFetch || movieDataForFetch || karaokeDataForFetch,
@@ -308,7 +309,7 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
                 <div>
                 VTuber：{foundVtuber?.VtuberName && foundVtuber?.VtuberName}<br />
                 歌枠動画：{foundMovie?.MovieTitle}
-                {foundKaraoke?.SongName && foundMovie?.MovieTitle}<br/>
+               <br/>
                 &nbsp;&nbsp; の歌と開始時間を登録します。
                 </div>}<br/>
             <form onSubmit={handleSubmit(onSubmit)}>
