@@ -333,25 +333,21 @@ func EditVtuber(c *gin.Context) {
 			"err":     err,
 		})
 		return
-	} else if tokenLId != *vt.VtuberInputerId {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "入力者の認証情報が不正です",
-		})
-		return
 	}
+	vt.VtuberInputerId = &tokenLId
+
 	var dummyVt types.Vtuber
-	utility.Db.Select("vtuber_inputer_id").Where("vtuber_id = ?", vt.VtuberId).First(&dummyVt)
-	fmt.Printf("dummyVt.VtuberInputerId = %v,\n   vt.VtuberInputerId= %d \n", *dummyVt.VtuberInputerId, *vt.VtuberInputerId)
-	if *dummyVt.VtuberInputerId != *vt.VtuberInputerId {
+	inquiryResult := utility.Db.Where("vtuber_id = ? AND vtuber_inputer_id = ?", vt.VtuberId, vt.VtuberInputerId).First(&dummyVt)
+	fmt.Printf("dummyVt.VtuberInputerId = %v,\n   vt.VtuberInputerId= %v \n", dummyVt, vt)
+	if inquiryResult == nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "データを登録した人しか編集・削除は許可されていません。データ信頼性性の向上のための他者から申請できるシステムも開発中です。",
+			"message": "データ登録した本人のみ編集・削除が可能です。データ信頼性性の向上のための他者から編集申請できるシステムも開発中です。",
 		})
 		return
 	}
 
-	fmt.Print("bindしたvts = ", vt.VtuberName, *vt.VtuberKana, *vt.VtuberInputerId, vt.VtuberId, *vt.IntroMovieUrl)
+	fmt.Print("vt = ", vt)
 
-	// result := utility.Db.Model(&vt).Where("vtuber_id = ?", vt.VtuberId).Updates(types.Vtuber{"vtuber_name:?, vtuber_kana:?, intro_movie_url:?", vt.VtuberName, vt.VtuberKana, vt.IntroMovieUrl})
 	result := utility.Db.Model(&vt).Where("vtuber_id = ?", vt.VtuberId).Updates(vt)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -372,11 +368,15 @@ func EditMovie(c *gin.Context) {
 			"message": "Invalid request body",
 		})
 		return
+	} else if mo.MovieUrl == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "MovieUrlが空欄になっています。これはシステムエラーです。",
+		})
+		fmt.Print("MovieUrlが空欄のデータを受け取りました。\n")
 	}
-	fmt.Printf("bindしたmoの url=%v, inputerId=%d, motitle=%v, VtId=%d \n", mo.MovieUrl, *mo.MovieInputerId, *mo.MovieTitle, *mo.VtuberId)
+	// fmt.Printf("bindしたmoの url=%v, inputerId=%d, motitle=%v, VtId=%d \n", mo.MovieUrl, *mo.MovieInputerId, *mo.MovieTitle, *mo.VtuberId)
 
-	// JWTの認証情報、今回の申請者(httpリクエストの情報)、最初の登録者
-	// の３つの情報が全て一致していればupdateへ進む
+	// JWTの認証情報、movieデータの登録者が一致していればupdateへ進む
 	tokenLId, err := utility.TakeListenerIdFromJWT(c)
 	fmt.Printf("tokenLId = %v \n", tokenLId)
 	if err != nil {
@@ -385,11 +385,8 @@ func EditMovie(c *gin.Context) {
 			"err":     err,
 		})
 		return
-	} else if tokenLId != *mo.MovieInputerId {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "入力者の認証情報が不正です",
-		})
-		return
+	} else {
+		mo.MovieInputerId = &tokenLId
 	}
 
 	var dummyMo types.Movie
@@ -435,18 +432,14 @@ func EditKaraokeSing(c *gin.Context) {
 			"err":     err,
 		})
 		return
-		// 稼働確認後削除予定
-		// } else if tokenLId != *&ka.KaraokeListInputerId {
-		// 	c.JSON(http.StatusBadRequest, gin.H{
-		// 		"message": "入力者の認証情報が不正です",
-		// 	})
-		// 	return
+	} else {
+		ka.KaraokeListId = tokenLId
 	}
 
 	var dummyKa types.KaraokeList
 	utility.Db.Select("karaoke_list_inputer_id").Where("karaoke_list_id = ?", ka.KaraokeListId).First(&dummyKa)
 	fmt.Printf("dummyKo = %v\n", dummyKa)
-	fmt.Printf("dummyKo.KaraokeListInputerId = %d,\n ka.KaraokeListInputerId= %d \n", *&dummyKa.KaraokeListInputerId, *&ka.KaraokeListInputerId)
+	// fmt.Printf("dummyKo.KaraokeListInputerId = %d,\n ka.KaraokeListInputerId= %d \n", *&dummyKa.KaraokeListInputerId, *&ka.KaraokeListInputerId)
 	if *&dummyKa.KaraokeListInputerId != *&ka.KaraokeListInputerId {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "データを登録した人しか編集・削除は許可されていません。データ信頼性性の向上のための他者から申請できるシステムも開発中です。",
@@ -470,7 +463,6 @@ func EditKaraokeSing(c *gin.Context) {
 func EditSong(c *gin.Context) {}
 
 // データ削除(物理)
-
 // vtuber_id、vtuber_nameの両方がDBと一致していれば削除
 func DeleteVtuber(c *gin.Context) {
 	var vt types.Vtuber
@@ -505,7 +497,8 @@ func DeleteVtuber(c *gin.Context) {
 		return
 	}
 
-	result := utility.Db.Model(&vt).Where("vtuber_id = ? AND vtuber_name = ?", vt.VtuberId, vt.VtuberName).Delete(vt)
+	// vtuber_idだけでいいんだけど、フロント側の表示バグ等怖いので
+	result := utility.Db.Where("vtuber_name = ?", vt.VtuberName).Delete(vt)
 	// utility.Db.Where("vtuber_id = ?", vt.VtuberId).Delete(vt)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -553,7 +546,7 @@ func DeleteMovie(c *gin.Context) {
 	}
 
 	// 正直movie_urlのみでよいが、フロント側の表示バグとか怖いので
-	result := utility.Db.Model(&mo).Where("movie_url = ? AND vtuber_id = ?", mo.MovieUrl, mo.VtuberId).Delete(mo)
+	result := utility.Db.Model(&mo).Where("vtuber_id = ?", mo.VtuberId).Delete(mo)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "データを登録した人しか編集・削除は許可されていません。データ信頼性性の向上のための他者から申請できるシステムも開発中です。"})
@@ -598,8 +591,8 @@ func DeleteKaraokeSing(c *gin.Context) {
 		return
 	}
 
-	// 正直movie_url = ? AND karaoke_list_id = ?でよいが、フロント側で表示バグとか怖いので
-	result := utility.Db.Model(&ka).Where("movie_url = ? AND karaoke_list_id = ? AND  song_name = ?", ka.MovieUrl, ka.KaraokeListId, ka.SongName)
+	// 正直movie_url, karaoke_list_id のみでよいが、フロント側で表示バグとか怖いので
+	result := utility.Db.Where("song_name = ?", ka.SongName).Delete(&ka)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "編集に失敗しました。vtuber_idと名前が位置していない可能性があります(間違ったvtuber_id、同じnameで申請するとnameのuniqueで引っ掛かる)",

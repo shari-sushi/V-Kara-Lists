@@ -9,7 +9,7 @@ import https from 'https';
 import axios from 'axios';
 import '@szhsin/react-menu/dist/index.css';
 import {DropDownVt, DropDownMo, DropDownKa} from '../components/Dropdown';
-import YoutubePlayer from '../components/YoutubePlayer'
+import {YoutubePlayer } from '../components/YoutubePlayer'
 import {ConversionTime, ExtractVideoId} from '../components/Conversion'
 
 type TopPagePosts = {
@@ -164,17 +164,17 @@ type selectedDate ={
 
 export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke}:selectedDate) {
     const router = useRouter()
-    var defaultValues:CrudDate = {
-        VtuberId:  selectedVtuber,//入力不可とする
-        VtuberName:"",
-        VtuberKana:"",
-        IntroMovieUrl:"",
-        MovieUrl: "",
-        MovieTitle: "",
-        KaraokeListId: selectedKaraoke,//入力不可とする
-        SingStart: "",
-        SongName: "",    
-    }
+    // var defaultValues:CrudDate = {
+    //     VtuberId:  selectedVtuber,//入力不可とする
+    //     VtuberName:"",
+    //     VtuberKana:"",
+    //     IntroMovieUrl:"",
+    //     MovieUrl: "",
+    //     MovieTitle: "",
+    //     KaraokeListId: selectedKaraoke,//入力不可とする
+    //     SingStart: "",
+    //     SongName: "",    
+    // }
 
     // type  CrudDate:
     const foundVtuber = posts?.vtubers.find(vtuber => vtuber.VtuberId === selectedVtuber);
@@ -185,6 +185,8 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
     // console.log("foundKaraoke",foundKaraoke);
     // console.log("selectedKaraoke",selectedKaraoke);
 
+    const [crudContentType, setCrudContentType] = useState<string>("")
+
     const [vtuberNameInput, setVtuberNameInput] = useState(foundVtuber?.VtuberName);
     const [VtuberKanaInput, setVtuberKanaInput] = useState(foundVtuber?.VtuberKana);
     const [IntroMovieUrInput, setIntroMovieUrInput] = useState(foundVtuber?.IntroMovieUrl);
@@ -192,8 +194,6 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
     const [MovieTitleInput, setMovieTitleInput] = useState(foundMovie?.MovieTitle);
     const [SingStartInput, setSingStartInput] = useState(foundKaraoke?.SingStart);
     const [SongNameInput, setSongNameInput] = useState(foundKaraoke?.SongName);
-
-    const [crudContentType, setCrudContentType] = useState<string>("")
 
     type CreateVtuber = {
         VtuberId:       number;
@@ -225,7 +225,7 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
              selectedVtuber, "\n selectedKaraoke", selectedKaraoke);
         if (crudContentType === "vtuber"){
                 const  createVtuber:CreateVtuber={
-                    VtuberId:        selectedVtuber, //createでは0
+                    VtuberId:        0, //自動振り分け
                     VtuberName:      CrudData.VtuberName,
                     VtuberKana:      CrudData.VtuberKana,
                     IntroMovieUrl:   CrudData.IntroMovieUrl,
@@ -235,7 +235,7 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
             }else if (crudContentType === "movie"){
                 // const VtuberId =selectedVtuber
                 const createMovie:CreateMovie={
-                    VtuberId:       selectedVtuber,
+                    VtuberId:       selectedVtuber, //既存値
                     MovieTitle:     CrudData.MovieTitle,
                     MovieUrl:       CrudData.MovieUrl,
                 };
@@ -243,8 +243,8 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
                 console.log("movieDataForFetch", movieDataForFetch)
             }else if (crudContentType === "karaoke"){
                 const createKaraoke:CreateKaraoke={
-                    MovieUrl:       selectedMovie,
-                    KaraokeListId:  selectedKaraoke, //createでは0
+                    MovieUrl:       selectedMovie,//既存値
+                    KaraokeListId:  0, //自動振り分け
                     SongName:       CrudData.SongName,
                     SingStart:      CrudData.SingStart,
                 };
@@ -285,7 +285,7 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
         };
         fetchData();
         // router.reload()
-    }, [vtuberDataForFetch, movieDataForFetch, karaokeDataForFetch, crudContentType]);
+    }, [vtuberDataForFetch, movieDataForFetch, karaokeDataForFetch]);
 
     return (
         <div>
@@ -296,9 +296,9 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
             <button type="button" onClick={()=> setCrudContentType("karaoke")}>
                 ＜歌を登録＞</button>
             <br/><br/>
-            {crudContentType === "movie" &&
+            {crudContentType === "vtuber" &&
                 <div>
-                新規でVTuberを登録します。<br/>
+                VTuberを登録します。<br/>
                 </div>}
             {crudContentType === "movie" && 
                 <div>
