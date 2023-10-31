@@ -69,7 +69,7 @@ export const Withdraw = () => {
         <li>あなたのメールアドレス、パスワードが本サイトから削除されます。</li>
         <li>それらは一時的に保管されますが、３０日後に機械的に自動で完全にされます。</li>
         <li>あなたが登録したVTuber, Movie, Sing等のデータは削除されません。</li>
-      <button onClick={fetchLogout}>！！！退会確定！！！</button>
+      <button onClick={fetchWithdraw}>！！！退会確定！！！</button>
       </div>}
     </div>
     )
