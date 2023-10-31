@@ -44,9 +44,7 @@ const handleMovieClick = (movieId: string) => {
       <Link href="/test"><button >テスト</button></Link>
       <Link href="/create"><button >　CREATE　完成</button></Link>
       <Link href="/edit"><button >　EDIT　未完成</button></Link>
-      <Link href="/delete"><button >　DALETE　未完成</button></Link>
-
-      <Link href="CrudAlmighty"><button>CrudAlmightyへ</button></Link>   
+      <Link href="/delete"><button >　DALETE　完成</button></Link>
             
       <h1>TOP画面</h1>
         <h3>"推し"の"歌枠"の聴きたい"歌"を再生しよう。 <br />
@@ -71,11 +69,12 @@ const handleMovieClick = (movieId: string) => {
             ！注意！特に、個人→大手の切り替え時に爆音となる傾向があります。
 
         {/* 一覧表示 */}
+        <br/>
+        <Link href={`/create`} ><u>データ登録ページへ</u></Link>
 
         {/* 配信者一覧 */}
         <h2>★配信者</h2>
         <h2>{checkSignin}</h2>
-        <Link href={`/create`} ><u>推し登録</u></Link>
 
       <table border={4} > 
         <thead>{/* ← tabeleのhead */}
@@ -111,7 +110,6 @@ const handleMovieClick = (movieId: string) => {
 
       {/*動画一覧  */}
       <h2>★歌枠(動画)</h2>
-      <Link href={`/create`} ><u>歌枠を登録</u></Link>
       <table border={4} >
         <thead>
            <tr>
@@ -150,7 +148,6 @@ const handleMovieClick = (movieId: string) => {
 
     <h2>★歌</h2>
     <Link href={`/karaokelist/sings`} ><u>全歌一覧</u></Link>
-    <Link href={`/create`} ><u>歌を登録</u></Link> <br />
     <DataTableRandam
       data={posts.alljoindata}
       handleMovieClick={handleMovieClick} 

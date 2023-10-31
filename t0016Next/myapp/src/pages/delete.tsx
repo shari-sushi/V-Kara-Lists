@@ -9,7 +9,7 @@ import https from 'https';
 import axios from 'axios';
 import '@szhsin/react-menu/dist/index.css';
 import {DropDownVt, DropDownMo, DropDownKa} from '../components/Dropdown';
-import YoutubePlayer from '../components/YoutubePlayer'
+import {YoutubePlayer} from '../components/YoutubePlayer'
 import {ConversionTime, ExtractVideoId} from '../components/Conversion'
 
 type TopPagePosts = {
@@ -180,22 +180,14 @@ export function DeleteForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
     const foundMovie = posts?.movies.find(movie => movie.MovieUrl === selectedMovie);
     const foundMovies = posts.karaokes.filter(karaoke => karaoke.MovieUrl === selectedMovie); //movieの配列
     const foundKaraoke = foundMovies.find(foundMovie => foundMovie.KaraokeListId === selectedKaraoke)
-    console.log("foundVtuber",foundVtuber);
-    console.log("foundMovie",foundMovie);
-    console.log("foundMovies",foundMovies);
-    console.log("foundKaraoke",foundKaraoke);
-    console.log("selectedVtuber=", selectedVtuber)
-    console.log("selectedMovie=", selectedMovie)
-    console.log("selectedKaraoke",selectedKaraoke);
-
-    const [vtuberNameInput, setVtuberNameInput] = useState(foundVtuber?.VtuberName);
-    const [VtuberKanaInput, setVtuberKanaInput] = useState(foundVtuber?.VtuberKana);
-    const [IntroMovieUrInput, setIntroMovieUrInput] = useState(foundVtuber?.IntroMovieUrl);
-    const [MovieUrlInput, setMovieUrlInput] = useState(foundMovie?.MovieUrl);
-    const [MovieTitleInput, setMovieTitleInput] = useState(foundMovie?.MovieTitle);
-    const [SingStartInput, setSingStartInput] = useState(foundKaraoke?.SingStart);
-    const [SongNameInput, setSongNameInput] = useState(foundKaraoke?.SongName);
-
+    // console.log("selectedVtuber=", selectedVtuber)
+    // console.log("selectedMovie=", selectedMovie)
+    // console.log("selectedKaraoke",selectedKaraoke);
+    // console.log("foundVtuber",foundVtuber);
+    // console.log("foundMovie",foundMovie);
+    // console.log("foundMovies",foundMovies);
+    // console.log("foundKaraoke",foundKaraoke);
+ 
     const [crudContentType, setCrudContentType] = useState<string>("")
 
     type DeleteVtuber = {
@@ -246,7 +238,7 @@ export function DeleteForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
                 console.log("karaokeDataForFetch=", karaokeDataForFetch)
                 console.log("selectedMovie=", selectedMovie)
             } else {
-                console.log("削除するデータの種類(vtuber, movie, karaoke)の選択で想定外のエラーが発生しました。")
+                console.log("削除するデータの種類(vtuber, movie, karaoke)の選択、またはで想定外のエラーが発生しました。")
             }};;
     
     const httpsAgent = new https.Agent({rejectUnauthorized: false});

@@ -9,7 +9,7 @@ import https from 'https';
 import axios from 'axios';
 import '@szhsin/react-menu/dist/index.css';
 import {DropDownVt, DropDownMo, DropDownKa} from '../components/Dropdown';
-import YoutubePlayer from '../components/YoutubePlayer'
+import {YoutubePlayer } from '../components/YoutubePlayer'
 import {ConversionTime, ExtractVideoId} from '../components/Conversion'
 
 type TopPagePosts = {
@@ -90,7 +90,7 @@ const handleVtuberClear = () => {
 
   return ( 
     <div>
-        <h1>DB登録</h1>
+        <h1>DB編集</h1>
         <DropDownVt
             posts={posts}
             onVtuberSelect={setSelectedVtuber}
@@ -179,11 +179,15 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
     // type  CrudDate:
     const foundVtuber = posts?.vtubers.find(vtuber => vtuber.VtuberId === selectedVtuber);
     const foundMovie = posts?.movies.find(movie => movie.MovieUrl === selectedMovie);
-    console.log("selectedMovie=", selectedMovie)
     const foundMovies = posts.karaokes.filter(karaoke => karaoke.MovieUrl === selectedMovie);
     const foundKaraoke = foundMovies.find(foundMovie => foundMovie.KaraokeListId === selectedKaraoke)
-    // console.log("foundKaraoke",foundKaraoke);
-    // console.log("selectedKaraoke",selectedKaraoke);
+    console.log("selectedVtuber=", selectedVtuber)
+    console.log("selectedMovie=", selectedMovie)
+    console.log("selectedKaraoke",selectedKaraoke);
+    console.log("foundVtuber",foundVtuber);
+    console.log("foundMovie",foundMovie);
+    console.log("foundMovies",foundMovies);
+    console.log("foundKaraoke",foundKaraoke);
 
     const [vtuberNameInput, setVtuberNameInput] = useState(foundVtuber?.VtuberName);
     const [VtuberKanaInput, setVtuberKanaInput] = useState(foundVtuber?.VtuberKana);
@@ -195,71 +199,74 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
 
     const [crudContentType, setCrudContentType] = useState<string>("")
 
-    type CreateVtuber = {
+    type EditVtuber = {
         VtuberId:       number;
-        VtuberName:     string;
-        VtuberKana :    string;
+        VtuberName:     string|null;
+        VtuberKana :    string|null;
         IntroMovieUrl:  string | null;
     }
-    type CreateMovie = {
+    type EditMovie = {
         VtuberId:       number;
-        MovieTitle:     string;
+        MovieTitle:     string|null;
         MovieUrl:       string;
     }
-    type CreateKaraoke = {
+    type EditKaraoke = {
         MovieUrl:       string;
         KaraokeListId:  number;
-        SongName:       string;
-        SingStart:      string;
+        SongName:       string|null;
+        SingStart:      string|null;
     }
 
     const { register, handleSubmit, formState: { errors } , resetField} = useForm<CrudDate>();
-    const [vtuberDataForFetch, setVtuberDataForFetch]=useState<CreateVtuber>()
-    const [movieDataForFetch, setMovieDataForFetch]=useState<CreateMovie>()
-    const [karaokeDataForFetch, setKaraokeDataForFetch]=useState<CreateKaraoke>()
+    const [vtuberDataForFetch, setVtuberDataForFetch]=useState<EditVtuber>()
+    const [movieDataForFetch, setMovieDataForFetch]=useState<EditMovie>()
+    const [karaokeDataForFetch, setKaraokeDataForFetch]=useState<EditKaraoke>()
     console.log("vtuberDataForFetch=", vtuberDataForFetch, "\n movieDataForFetch=", movieDataForFetch, "\n karaokeDataForFetch", karaokeDataForFetch)
-    const onSubmit = async (CrudData:CrudDate) => {
+    const handleClick = async (CrudData:CrudDate) => {
         console.log("決定押下")
         console.log("CrudData", CrudData);
         console.log("choiceCrudType=", crudContentType, "\n selectedVtuber=",
              selectedVtuber, "\n selectedKaraoke", selectedKaraoke);
-        if (crudContentType === "vtuber"){
-                const  createVtuber:CreateVtuber={
-                    VtuberId:        selectedVtuber, //createでは0
-                    VtuberName:      CrudData.VtuberName,
-                    VtuberKana:      CrudData.VtuberKana,
-                    IntroMovieUrl:   CrudData.IntroMovieUrl,
+        if (crudContentType === "vtuber" && foundVtuber && selectedVtuber){
+                const  createVtuber:EditVtuber={
+                    VtuberId:        selectedVtuber,    //変更不可
+                    VtuberName:      CrudData.VtuberName || foundVtuber.VtuberName,
+                    VtuberKana:      CrudData.VtuberKana || foundVtuber.VtuberKana,
+                    IntroMovieUrl:   CrudData.IntroMovieUrl ||foundVtuber.IntroMovieUrl,
                 };
                 setVtuberDataForFetch(createVtuber);
                 console.log("vtuberDataForFetch=", vtuberDataForFetch)
-            }else if (crudContentType === "movie"){
+            }else if (crudContentType === "movie" && foundMovie && selectedMovie){
                 // const VtuberId =selectedVtuber
-                const createMovie:CreateMovie={
-                    VtuberId:       selectedVtuber,
-                    MovieTitle:     CrudData.MovieTitle,
-                    MovieUrl:       CrudData.MovieUrl,
+                const createMovie:EditMovie={
+                    VtuberId:       selectedVtuber,                             //変更不可
+                    MovieTitle:     CrudData.MovieTitle || foundMovie?.MovieTitle,
+                    MovieUrl:       selectedMovie,  //変更不可
                 };
                 setMovieDataForFetch(createMovie)
                 console.log("movieDataForFetch", movieDataForFetch)
-            }else if (crudContentType === "karaoke"){
-                const createKaraoke:CreateKaraoke={
-                    MovieUrl:       selectedMovie,
-                    KaraokeListId:  selectedKaraoke, //createでは0
-                    SongName:       CrudData.SongName,
-                    SingStart:      CrudData.SingStart,
+            }else if (crudContentType === "karaoke" && foundKaraoke && selectedMovie && selectedKaraoke){
+                const createKaraoke:EditKaraoke={
+                    MovieUrl:       selectedMovie,      //変更不可
+                    KaraokeListId:  selectedKaraoke,    //変更不可
+                    SongName:       CrudData.SongName || foundKaraoke?.SongName,
+                    SingStart:      CrudData.SingStart || foundKaraoke?.SingStart,
                 };
                 setKaraokeDataForFetch(createKaraoke)
                 console.log("karaokeDataForFetch=", karaokeDataForFetch)
                 console.log("selectedMovie=", selectedMovie)
             } else {
-                console.log("登録するデータの種類(vtuber, movie, karaoke)の選択で想定外のエラーが発生しました。")
-            }};;
+                console.log("編集するデータの種類(vtuber, movie, karaoke)の選択で想定外のエラーが発生しました。")
+            }
+    };;
     
     const httpsAgent = new https.Agent({rejectUnauthorized: false});
     useEffect(()=>{
         const fetchData = async () => {
+            console.log("choiceCrudType=", crudContentType,"\n vtuberDataForFetch=", vtuberDataForFetch, 
+            "\n movieDataForFetch=", movieDataForFetch, "\nkaraokeDataForFetch=", karaokeDataForFetch)
                 if(vtuberDataForFetch || movieDataForFetch || karaokeDataForFetch){
-                try {const response = await axios.post(`https://localhost:8080/create/${ crudContentType }`,
+                try {const response = await axios.post(`https://localhost:8080/edit/${ crudContentType }`,
                     vtuberDataForFetch || movieDataForFetch || karaokeDataForFetch,
                         {
                         httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
@@ -270,6 +277,7 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
                         });
                     console.log("choiceCrudType=", crudContentType,"\n vtuberDataForFetch=", vtuberDataForFetch, 
                     "\n movieDataForFetch=", movieDataForFetch, "\nkaraokeDataForFetch=", karaokeDataForFetch)
+
                     if (!response.status) { //「HTTPｽﾃｰﾀｽｺｰﾄﾞが200番台の時に!true
                         throw new Error(response.statusText);
                         //HTTPレスポンスのｽﾃｰﾀｽに応じてテキストを返す。404ならNot Founde
@@ -282,44 +290,45 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
         };
         fetchData();
         // router.reload()
-    }, [vtuberDataForFetch, movieDataForFetch, karaokeDataForFetch, crudContentType]);
+    }, [vtuberDataForFetch, movieDataForFetch, karaokeDataForFetch]);
 
     return (
         <div>
             <button type="button" onClick={()=> setCrudContentType("vtuber")} >
-                ＜VTuberを登録＞</button>
+                ＜VTuberを編集＞</button>
             <button type="button" onClick={()=> setCrudContentType("movie")}>
-                ＜歌枠動画を登録＞</button>
+                ＜歌枠動画を編集＞</button>
             <button type="button" onClick={()=> setCrudContentType("karaoke")}>
-                ＜歌を登録＞</button>
+                ＜歌を編集＞</button>
             <br/><br/>
-            {crudContentType === "movie" &&
+            {crudContentType === "vtuber" &&
                 <div>
-                新規でVTuberを登録します。<br/>
+                VTuberを編集します。<br/>
                 </div>}
             {crudContentType === "movie" && 
                 <div>
                 VTuber：{foundVtuber?.VtuberName}<br />
-                &nbsp;&nbsp; の歌枠動画を登録します。
+                &nbsp;&nbsp; の歌枠動画を編集します。
                 </div>}
             {crudContentType === "karaoke" &&
                 <div>
                 VTuber：{foundVtuber?.VtuberName && foundVtuber?.VtuberName}<br />
                 歌枠動画：{foundMovie?.MovieTitle}
                <br/>
-                &nbsp;&nbsp; の歌と開始時間を登録します。
+                &nbsp;&nbsp; の歌と開始時間を編集します。
                 </div>}<br/>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(handleClick)}>
                 {crudContentType === "vtuber" &&
                 <div>
+                    空欄にした場合、既存データが維持されます<br/>
                     ★Vtuber: <br />
                         &nbsp;&nbsp;VTuber名:
-                            <input {...register("VtuberName", { required: true })} placeholder={foundVtuber?.VtuberName || "例:妹望おいも"}
+                            <input {...register("VtuberName", { required: false })} placeholder={foundVtuber?.VtuberName || "例:妹望おいも"}
                                 // value={foundVtuber?.VtuberName}
                                 onChange={e => setVtuberNameInput(e.target.value)}
                             /><br />               
                         &nbsp;&nbsp;読み(kana):
-                            <input {...register("VtuberKana", { required: true })} placeholder={foundVtuber?.VtuberKana ||"例:imomochi_oimo"}
+                            <input {...register("VtuberKana", { required: false })} placeholder={foundVtuber?.VtuberKana ||"例:imomochi_oimo"}
                                 // value={foundVtuber?.VtuberKana}
                                 onChange={e => setVtuberKanaInput(e.target.value)}
                                 /><br />
@@ -335,29 +344,26 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
                 <div>
                 ★歌枠動画: <br/>
                     &nbsp;&nbsp;タイトル：
-                        <input {...register("MovieTitle", { required: true })} placeholder={foundMovie?.MovieTitle ||"動画タイトル"}
+                        <input {...register("MovieTitle", { required: false })} placeholder={foundMovie?.MovieTitle ||"動画タイトル"}
                             // value={foundMovie?.MovieTitle || ""} 
                             onChange={e => setMovieTitleInput(e.target.value)}
                             /><br />
                         {/* {errors.MovieTitle && "Movie is required"} */}
-                    &nbsp;&nbsp;URL:
-                        <input {...register("MovieUrl", { required: true })} placeholder={foundMovie?.MovieUrl ||"例：www.youtube.com/watch?v=AlHRqSsF--8"}
-                            // value={foundMovie?.MovieUrl}
-                            onChange={e => setMovieUrlInput(e.target.value)}
-                            /><br />
+                    &nbsp;&nbsp;URL:歌枠動画のURLの変更はできません。
+                       <br />
                         {/* {errors.MovieUrl && "Url is required"} */}
                         </div>}
                 {crudContentType === "karaoke" &&
                 <div>
                 ★歌: <br/>
                     &nbsp;&nbsp;曲名：
-                        <input {...register("SongName", { required: true })} placeholder={foundKaraoke?.SongName ||"曲名"}
+                        <input {...register("SongName", { required: false })} placeholder={foundKaraoke?.SongName ||"曲名"}
                             // value={foundKaraoke?.SongName || ""}
                             onChange={e => setSongNameInput(e.target.value)}
                             /><br />
                         {/* {errors.SongName && "Song is required"} */}
                     &nbsp;&nbsp;開始時間:
-                        <input {...register("SingStart", { required: true })} placeholder={foundKaraoke?.SingStart ||"例 00:05:30"}
+                        <input {...register("SingStart", { required: false })} placeholder={foundKaraoke?.SingStart ||"例 00:05:30"}
                             // value={foundKaraoke?.SingStart}
                             onChange={e => setSingStartInput(e.target.value)}
                         /><br />
@@ -365,8 +371,6 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
                 </div>}
                     {/* ※ページ最上部のリストから選択後、✖でクリアすることで、入力フォームを編集できるようになります。<br/> */}
                 <button type="submit" >＜決定＞</button>   
-                {/* <button type="submit" onClick={() => onSubmit} >＜決定＞</button>      */}
-                {/* <button onClick={resetTextValue} style={{ margin: "10px", background: "gray", color: "#fff" }}>クリア</button>    */}
             </form>
             <br />  &nbsp;  &nbsp;  &nbsp;  &nbsp;
         </div>
