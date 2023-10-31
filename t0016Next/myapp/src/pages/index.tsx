@@ -21,7 +21,7 @@ const AllDatePage: React.FC<PostsAndCheckSignin> = ({ posts, checkSignin }) =>  
     // setData1はステートを更新する関数。
 const [vtubers, setData1] = useState<Vtuber[]>();
 const [movies, setData2] = useState<VtuberMovie[]>();
-const [start,setStart]=useState<number>((60*8+29)) //60*25か60*47かなー, 60*7+59, 60*8+29
+const [start,setStart]=useState<number>((60*14+9)) //qFVhnuIBGiQなら60*25か60*47かなー, 60*7+59, 60*8+29
 const [allJoinData, setAllJoinData]=useState<AllJoinData>();
 
 const [currentMovieId, setCurrentMovieId] = useState<string>("qFVhnuIBGiQ");
