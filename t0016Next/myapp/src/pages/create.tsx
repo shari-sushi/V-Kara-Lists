@@ -53,9 +53,6 @@ useEffect(() => {
   if (selectedVtuber && selectedMovie && selectedKaraoke){
     const foundMovies = posts.karaokes.filter(karaoke => karaoke.MovieUrl === selectedMovie);
     const foundKaraoke = foundMovies.find(foundMovie => foundMovie.KaraokeListId === selectedKaraoke)
-    // console.log("posts.karaokes", posts.karaokes) //karaoke_listsテーブルの全データをオブジェクトの配列で
-    // console.log("foundMovies", foundMovies)     //どういつURLのオブジェクトの配列
-    // console.log("foundKaraoke", foundKaraoke);  //karaokeの配列
 
     if (foundKaraoke) {
       const foundSingStart = ConversionTime(foundKaraoke.SingStart);
@@ -112,7 +109,6 @@ const handleVtuberClear = () => {
         />
         <YoutubePlayer videoId={foundMovie}  start={foundKaraokeStart} />
         <Link href="/"><button>TOPへ</button></Link>   
-        <Link href="/CrudAlmighty"><button>CrudAlmightyへ</button></Link>   
         <CreateForm
             posts={posts}
             selectedVtuber={selectedVtuber}
@@ -123,9 +119,7 @@ const handleVtuberClear = () => {
   )};
 ///////////////////////////////////////////////////////////////////////////////////////////////////
   export async function getServerSideProps(context: { req: { headers: { cookie: any; }; }; }) {
-    const httpsAgent = new https.Agent({
-        rejectUnauthorized: false
-    });
+    const httpsAgent = new https.Agent({rejectUnauthorized: false});
     let resData;
     try {
         const response = await axios.get('https://localhost:8080/getalldate', {
@@ -164,19 +158,6 @@ type selectedDate ={
 
 export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke}:selectedDate) {
     const router = useRouter()
-    // var defaultValues:CrudDate = {
-    //     VtuberId:  selectedVtuber,//入力不可とする
-    //     VtuberName:"",
-    //     VtuberKana:"",
-    //     IntroMovieUrl:"",
-    //     MovieUrl: "",
-    //     MovieTitle: "",
-    //     KaraokeListId: selectedKaraoke,//入力不可とする
-    //     SingStart: "",
-    //     SongName: "",    
-    // }
-
-    // type  CrudDate:
     const foundVtuber = posts?.vtubers.find(vtuber => vtuber.VtuberId === selectedVtuber);
     const foundMovie = posts?.movies.find(movie => movie.MovieUrl === selectedMovie);
     console.log("selectedMovie=", selectedMovie)
@@ -213,79 +194,68 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
         SingStart:      string;
     }
 
+    const axiosClient = axios.create({
+        baseURL: "https://localhost:8080",
+        withCredentials: true,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    });
+
     const { register, handleSubmit, formState: { errors } , resetField} = useForm<CrudDate>();
-    const [vtuberDataForFetch, setVtuberDataForFetch]=useState<CreateVtuber>()
-    const [movieDataForFetch, setMovieDataForFetch]=useState<CreateMovie>()
-    const [karaokeDataForFetch, setKaraokeDataForFetch]=useState<CreateKaraoke>()
-    console.log("vtuberDataForFetch=", vtuberDataForFetch, "\n movieDataForFetch=", movieDataForFetch, "\n karaokeDataForFetch", karaokeDataForFetch)
+
+    // console.log("vtuberDataForFetch=", vtuberDataForFetch, "\n movieDataForFetch=", movieDataForFetch, "\n karaokeDataForFetch", karaokeDataForFetch)
     const onSubmit = async (CrudData:CrudDate) => {
-        console.log("決定押下")
-        console.log("CrudData", CrudData);
-        console.log("choiceCrudType=", crudContentType, "\n selectedVtuber=",
-             selectedVtuber, "\n selectedKaraoke", selectedKaraoke);
-        if (crudContentType === "vtuber"){
-                const  createVtuber:CreateVtuber={
+        // console.log("決定押下")
+        // console.log("CrudData", CrudData);
+        if (crudContentType === "vtuber") {
+            try{
+                const  reqBody:CreateVtuber={
                     VtuberId:        0, //自動振り分け
                     VtuberName:      CrudData.VtuberName,
                     VtuberKana:      CrudData.VtuberKana,
                     IntroMovieUrl:   CrudData.IntroMovieUrl,
                 };
-                setVtuberDataForFetch(createVtuber);
-                console.log("vtuberDataForFetch=", vtuberDataForFetch)
-            }else if (crudContentType === "movie"){
-                // const VtuberId =selectedVtuber
-                const createMovie:CreateMovie={
+                const response = await axiosClient.post("/create/vtuber", reqBody);
+                if (!response.status) {
+                    throw new Error(response.statusText);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }else if (crudContentType === "movie"){
+            try{
+                const reqBody:CreateMovie={
                     VtuberId:       selectedVtuber, //既存値
                     MovieTitle:     CrudData.MovieTitle,
                     MovieUrl:       CrudData.MovieUrl,
                 };
-                setMovieDataForFetch(createMovie)
-                console.log("movieDataForFetch", movieDataForFetch)
-            }else if (crudContentType === "karaoke"){
-                const createKaraoke:CreateKaraoke={
+                const response = await axiosClient.post("/create/movie", reqBody);
+                if (!response.status) {
+                    throw new Error(response.statusText);
+                }
+            } catch (err) {
+            console.error(err);
+            }
+        }else if (crudContentType === "karaoke"){
+            try{
+                const reqBody:CreateKaraoke={
                     MovieUrl:       selectedMovie,//既存値
                     KaraokeListId:  0, //自動振り分け
                     SongName:       CrudData.SongName,
                     SingStart:      CrudData.SingStart,
                 };
-                setKaraokeDataForFetch(createKaraoke)
-                console.log("karaokeDataForFetch=", karaokeDataForFetch)
-                console.log("selectedMovie=", selectedMovie)
-            } else {
-                console.log("登録するデータの種類(vtuber, movie, karaoke)の選択で想定外のエラーが発生しました。")
-            }};;
-    
-    const httpsAgent = new https.Agent({rejectUnauthorized: false});
-    useEffect(()=>{
-        const fetchData = async () => {
-            console.log("choiceCrudType=", crudContentType,"\n vtuberDataForFetch=", vtuberDataForFetch, 
-            "\n movieDataForFetch=", movieDataForFetch, "\nkaraokeDataForFetch=", karaokeDataForFetch)
-                if(vtuberDataForFetch || movieDataForFetch || karaokeDataForFetch){
-                try {const response = await axios.post(`https://localhost:8080/create/${ crudContentType }`,
-                    vtuberDataForFetch || movieDataForFetch || karaokeDataForFetch,
-                        {
-                        httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
-                        withCredentials: true,
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        });
-                    console.log("choiceCrudType=", crudContentType,"\n vtuberDataForFetch=", vtuberDataForFetch, 
-                    "\n movieDataForFetch=", movieDataForFetch, "\nkaraokeDataForFetch=", karaokeDataForFetch)
-
-                    if (!response.status) { //「HTTPｽﾃｰﾀｽｺｰﾄﾞが200番台の時に!true
-                        throw new Error(response.statusText);
-                        //HTTPレスポンスのｽﾃｰﾀｽに応じてテキストを返す。404ならNot Founde
-                    }
-                } catch (error) {
-                    console.error(error);
-                    console.log("apiへアクセスを試みたものchatchした")
+                const response = await axiosClient.post("/create/karaoke", reqBody);
+                if (!response.status) {
+                    throw new Error(response.statusText);
                 }
+            } catch (err) {
+                console.error(err);
             }
-        };
-        fetchData();
-        // router.reload()
-    }, [vtuberDataForFetch, movieDataForFetch, karaokeDataForFetch]);
+        } else {
+            console.log("登録するデータの種類(vtuber, movie, karaoke)の選択で想定外のエラーが発生しました。")
+        }
+    };
 
     return (
         <div>

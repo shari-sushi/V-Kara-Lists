@@ -37,7 +37,7 @@ export const GetLogout = () => {
 export const Withdraw = () => {
   const router = useRouter();
   const [isToDecision, setIsToDecision]=useState<boolean>(false)
-  const fetchLogout = async () => {
+  const fetchWithdraw = async () => {
     try {
       const response = await fetch(`https://localhost:8080/withdraw`, { 
           method: 'DELETE',

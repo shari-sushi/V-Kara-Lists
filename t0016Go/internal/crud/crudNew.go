@@ -141,6 +141,7 @@ func ReadSings(c *gin.Context) {
 //	/create/vtuber
 // test用　INSERT INTO `vtubers` (vtuber_id, `vtuber_name`,`vtuber_kana`,`intro_movie_url`,`vtuber_inputer_id`) VALUES (4, '宝鐘マリン','houshou_marin',NULL,1)
 func CreateVtuber(c *gin.Context) {
+	fmt.Print("CreateVtuber")
 	var vts types.Vtuber
 
 	err := c.ShouldBind(&vts)
@@ -390,10 +391,9 @@ func EditMovie(c *gin.Context) {
 	}
 
 	var dummyMo types.Movie
-	utility.Db.Select("movie_inputer_id").Where("movie_url = ?", mo.MovieUrl).First(&dummyMo)
+	inquiryResult := utility.Db.Where("movie_url = ? AND movie_inputer_id ", mo.MovieUrl, mo.MovieInputerId).First(&dummyMo)
 	fmt.Printf("dummyMo = %v\n", dummyMo)
-	fmt.Printf("dummyMo.MovieInputerId = %d,\n mo.MovieInputerId= %d \n", *dummyMo.MovieInputerId, *mo.MovieInputerId)
-	if *dummyMo.MovieInputerId != *mo.MovieInputerId {
+	if inquiryResult == nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "データを登録した人しか編集・削除は許可されていません。データ信頼性性の向上のための他者から申請できるシステムも開発中です。",
 		})
@@ -433,14 +433,14 @@ func EditKaraokeSing(c *gin.Context) {
 		})
 		return
 	} else {
-		ka.KaraokeListId = tokenLId
+		ka.KaraokeListInputerId = tokenLId
 	}
 
 	var dummyKa types.KaraokeList
-	utility.Db.Select("karaoke_list_inputer_id").Where("karaoke_list_id = ?", ka.KaraokeListId).First(&dummyKa)
+	inquiryResult := utility.Db.Where("karaoke_list_id = ? AND karaoke_inputer_id = ? ", ka.KaraokeListId, ka.KaraokeListInputerId).First(&dummyKa)
 	fmt.Printf("dummyKo = %v\n", dummyKa)
 	// fmt.Printf("dummyKo.KaraokeListInputerId = %d,\n ka.KaraokeListInputerId= %d \n", *&dummyKa.KaraokeListInputerId, *&ka.KaraokeListInputerId)
-	if *&dummyKa.KaraokeListInputerId != *&ka.KaraokeListInputerId {
+	if inquiryResult == nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "データを登録した人しか編集・削除は許可されていません。データ信頼性性の向上のための他者から申請できるシステムも開発中です。",
 		})
@@ -581,7 +581,7 @@ func DeleteKaraokeSing(c *gin.Context) {
 	}
 
 	var dummyKa types.KaraokeList
-	inquiryResult := utility.Db.Where("karaoke_list_id = ? AND karaoke_list_inputer_id = ?", ka.KaraokeListId, tokenLId).First(&dummyKa)
+	inquiryResult := utility.Db.Where("movie_url = ? AND karaoke_list_id = ? AND karaoke_list_inputer_id = ?", ka.MovieUrl, ka.KaraokeListId, tokenLId).First(&dummyKa)
 	fmt.Printf("dummyKo = %v\n", &dummyKa)
 	if inquiryResult.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
