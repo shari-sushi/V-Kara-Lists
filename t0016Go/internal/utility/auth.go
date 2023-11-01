@@ -326,6 +326,8 @@ func LogoutHandler(c *gin.Context) {
 // 		"message": "Successfully Withdrawn",
 // 	})
 // }
+
+// lister_id = 3 はゲストアカウントにつき、退会不可。
 func Withdrawal(c *gin.Context) {
 	tokenLId, err := TakeListenerIdFromJWT(c)
 	fmt.Printf("tokenLId = %v \n", tokenLId)
@@ -333,6 +335,11 @@ func Withdrawal(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid ListenerId of token",
 			"err":     err,
+		})
+		return
+	} else if tokenLId == 3 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "ゲストアカウントは退会できません。",
 		})
 		return
 	}
@@ -353,14 +360,14 @@ func Withdrawal(c *gin.Context) {
 }
 
 // lister_id = 3, listener_name = guest
-// func GestlogIn(c *gin.Context) {
-// 	trigerSetCookiebyUserAuth(c, 3)
-// 	c.JSON(http.StatusOK, gin.H{
-// 		"message":      "Successfully Guest Logged In",
-// 		"listenerId":   "3",
-// 		"listenerName": "guest",
-// 	})
-// }
+func GestlogIn(c *gin.Context) {
+	trigerSetCookiebyUserAuth(c, 3)
+	c.JSON(http.StatusOK, gin.H{
+		"message":      "Successfully Guest Logged In",
+		"listenerId":   "3",
+		"listenerName": "guest",
+	})
+}
 
 type LineOfLog struct {
 	RemoteAddr  string

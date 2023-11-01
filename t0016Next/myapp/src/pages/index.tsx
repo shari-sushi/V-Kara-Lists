@@ -7,7 +7,7 @@ import axios from 'axios';
 import {YoutubePlayer, YoutubePlayListPlayer} from '../components/YoutubePlayer'
 import {ConversionTime, ExtractVideoId} from '../components/Conversion'
 import { DataTableRandam} from '../components/Table'
-
+import {GestLogin} from '../components/authButton'
 
   type PostsAndCheckSignin= {
     posts: any; // anyは避けるべき？
@@ -42,9 +42,9 @@ const handleMovieClick = (movieId: string) => {
   return (
     <div>
       <Link href="/test"><button >テスト</button></Link>
-      <Link href="/create"><button >　CREATE　v.1完成</button></Link>
-      <Link href="/edit"><button >　EDIT　v.1完成</button></Link>
-      <Link href="/delete"><button >　DALETE　v.1完成</button></Link>
+      <Link href="/create"><button >　CREATE ver.1</button></Link>
+      <Link href="/edit"><button >　EDIT ver.1</button></Link>
+      <Link href="/delete"><button >　DALETE ver.1</button></Link>
             
       <h1>TOP画面</h1>
         <h3>"推し"の"歌枠"の聴きたい"歌"を再生しよう。 <br />
@@ -61,8 +61,7 @@ const handleMovieClick = (movieId: string) => {
             <Link href="/mypage"><button style={{ background: 'brown' }}>
                 マイページ</button>
             </Link>
-            <Link href="/guestlogin"><button style={{ background: 'brown' }}>
-                ゲストログイン</button></Link>
+            <GestLogin/>
             <YoutubePlayer videoId={currentMovieId}  start={start} />
 
             ！注意！Vtuber様や動画により音量差があります。 <br/>
