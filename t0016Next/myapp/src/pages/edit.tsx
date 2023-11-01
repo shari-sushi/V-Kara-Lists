@@ -112,7 +112,6 @@ const handleVtuberClear = () => {
         />
         <YoutubePlayer videoId={foundMovie}  start={foundKaraokeStart} />
         <Link href="/"><button>TOPへ</button></Link>   
-        <Link href="/CrudAlmighty"><button>CrudAlmightyへ</button></Link>   
         <CreateForm
             posts={posts}
             selectedVtuber={selectedVtuber}
@@ -217,82 +216,73 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
         SingStart:      string|null;
     }
 
+    const axiosClient = axios.create({
+        baseURL: "https://localhost:8080",
+        withCredentials: true,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    });
+
     const { register, handleSubmit, formState: { errors } , resetField} = useForm<CrudDate>();
-    const [vtuberDataForFetch, setVtuberDataForFetch]=useState<EditVtuber>()
-    const [movieDataForFetch, setMovieDataForFetch]=useState<EditMovie>()
-    const [karaokeDataForFetch, setKaraokeDataForFetch]=useState<EditKaraoke>()
-    console.log("vtuberDataForFetch=", vtuberDataForFetch, "\n movieDataForFetch=", movieDataForFetch, "\n karaokeDataForFetch", karaokeDataForFetch)
-    const handleClick = async (CrudData:CrudDate) => {
+
+    const onSubmit = async (CrudData:CrudDate) => {
         console.log("決定押下")
         console.log("CrudData", CrudData);
         console.log("choiceCrudType=", crudContentType, "\n selectedVtuber=",
              selectedVtuber, "\n selectedKaraoke", selectedKaraoke);
         if (crudContentType === "vtuber" && foundVtuber && selectedVtuber){
-                const  createVtuber:EditVtuber={
+            try {
+                const  reqBody:EditVtuber={
                     VtuberId:        selectedVtuber,    //変更不可
                     VtuberName:      CrudData.VtuberName || foundVtuber.VtuberName,
                     VtuberKana:      CrudData.VtuberKana || foundVtuber.VtuberKana,
                     IntroMovieUrl:   CrudData.IntroMovieUrl ||foundVtuber.IntroMovieUrl,
                 };
-                setVtuberDataForFetch(createVtuber);
-                console.log("vtuberDataForFetch=", vtuberDataForFetch)
-            }else if (crudContentType === "movie" && foundMovie && selectedMovie){
-                // const VtuberId =selectedVtuber
-                const createMovie:EditMovie={
-                    VtuberId:       selectedVtuber,                             //変更不可
-                    MovieTitle:     CrudData.MovieTitle || foundMovie?.MovieTitle,
-                    MovieUrl:       selectedMovie,  //変更不可
-                };
-                setMovieDataForFetch(createMovie)
-                console.log("movieDataForFetch", movieDataForFetch)
-            }else if (crudContentType === "karaoke" && foundKaraoke && selectedMovie && selectedKaraoke){
-                const createKaraoke:EditKaraoke={
+                const response = await axiosClient.post("/edit/vtuber", reqBody);
+                if (!response.status) {
+                    throw new Error(response.statusText);
+                }
+                } catch (err) {
+                    console.error(err);
+                }
+        }else if (crudContentType === "movie" && foundMovie && selectedMovie){
+            try {
+            // const VtuberId =selectedVtuber
+            const reqBody:EditMovie={
+                VtuberId:       selectedVtuber,                             //変更不可
+                MovieTitle:     CrudData.MovieTitle || foundMovie?.MovieTitle,
+                MovieUrl:       selectedMovie,  //変更不可
+            };
+            const response = await axiosClient.post("/edit/movie", reqBody);
+            if (!response.status) {
+                throw new Error(response.statusText);
+            }
+        } catch (err) {
+        console.error(err);
+        }
+        }else if (crudContentType === "karaoke" && foundKaraoke && selectedMovie && selectedKaraoke){
+            try{
+                const reqBody:EditKaraoke={
                     MovieUrl:       selectedMovie,      //変更不可
                     KaraokeListId:  selectedKaraoke,    //変更不可
                     SongName:       CrudData.SongName || foundKaraoke?.SongName,
                     SingStart:      CrudData.SingStart || foundKaraoke?.SingStart,
                 };
-                setKaraokeDataForFetch(createKaraoke)
-                console.log("karaokeDataForFetch=", karaokeDataForFetch)
-                console.log("selectedMovie=", selectedMovie)
-            } else {
-                console.log("編集するデータの種類(vtuber, movie, karaoke)の選択で想定外のエラーが発生しました。")
+                const response = await axiosClient.post("/edit/karaoke", reqBody);
+                if (!response.status) {
+                    throw new Error(response.statusText);
+                }
+            } catch (err) {
+                console.error(err);
             }
+            console.log("selectedMovie=", selectedMovie)
+        } else {
+            console.log("編集するデータの種類(vtuber, movie, karaoke)の選択で想定外のエラーが発生しました。")
+        }
     };;
     
-    const httpsAgent = new https.Agent({rejectUnauthorized: false});
-    useEffect(()=>{
-        const fetchData = async () => {
-            console.log("choiceCrudType=", crudContentType,"\n vtuberDataForFetch=", vtuberDataForFetch, 
-            "\n movieDataForFetch=", movieDataForFetch, "\nkaraokeDataForFetch=", karaokeDataForFetch)
-                if(vtuberDataForFetch || movieDataForFetch || karaokeDataForFetch){
-                try {const response = await axios.post(`https://localhost:8080/edit/${ crudContentType }`,
-                    vtuberDataForFetch || movieDataForFetch || karaokeDataForFetch,
-                        {
-                        httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
-                        withCredentials: true,
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        });
-                    console.log("choiceCrudType=", crudContentType,"\n vtuberDataForFetch=", vtuberDataForFetch, 
-                    "\n movieDataForFetch=", movieDataForFetch, "\nkaraokeDataForFetch=", karaokeDataForFetch)
-
-                    if (!response.status) { //「HTTPｽﾃｰﾀｽｺｰﾄﾞが200番台の時に!true
-                        throw new Error(response.statusText);
-                        //HTTPレスポンスのｽﾃｰﾀｽに応じてテキストを返す。404ならNot Founde
-                    }
-                } catch (error) {
-                    console.error(error);
-                    console.log("apiへアクセスを試みたものchatchした")
-                }
-            }
-        };
-        fetchData();
-        // router.reload()
-    }, [vtuberDataForFetch, movieDataForFetch, karaokeDataForFetch]);
-
-    return (
+    return(
         <div>
             <button type="button" onClick={()=> setCrudContentType("vtuber")} >
                 ＜VTuberを編集＞</button>
@@ -317,7 +307,7 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
                <br/>
                 &nbsp;&nbsp; の歌と開始時間を編集します。
                 </div>}<br/>
-            <form onSubmit={handleSubmit(handleClick)}>
+            <form onSubmit={handleSubmit(onSubmit)}>
                 {crudContentType === "vtuber" &&
                 <div>
                     空欄にした場合、既存データが維持されます<br/>

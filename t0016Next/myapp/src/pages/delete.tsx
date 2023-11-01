@@ -112,7 +112,6 @@ const handleVtuberClear = () => {
         />
         <YoutubePlayer videoId={foundMovie}  start={foundKaraokeStart} />
         <Link href="/"><button>TOPへ</button></Link>   
-        <Link href="/CrudAlmighty"><button>CrudAlmightyへ</button></Link>   
         <DeleteForm
             posts={posts}
             selectedVtuber={selectedVtuber}
@@ -205,70 +204,69 @@ export function DeleteForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
         SongName:       string;
     }
 
-    const [vtuberDataForFetch, setVtuberDataForFetch]=useState<DeleteVtuber>()
-    const [movieDataForFetch, setMovieDataForFetch]=useState<DeleteMovie>()
-    const [karaokeDataForFetch, setKaraokeDataForFetch]=useState<DeleteKaraoke>()
-    console.log("vtuberDataForFetch=", vtuberDataForFetch, "\n movieDataForFetch=", movieDataForFetch, "\n karaokeDataForFetch", karaokeDataForFetch)
-    const handleClick = () => {
+    // const reqBody:any={}
+    
+    const axiosClient = axios.create({
+        baseURL: "https://localhost:8080",
+        withCredentials: true,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    });
+
+    const handleClick = () => async (CrudData:CrudDate) => {
         console.log("決定押下")
         console.log("choiceCrudType=", crudContentType, "\n selectedVtuber=",
              selectedVtuber, "\n selectedKaraoke", selectedKaraoke);
         if (crudContentType === "vtuber" && foundVtuber?.VtuberName){
-                const  deleteVtuber:DeleteVtuber={
+            try { 
+                const  reqBody:DeleteVtuber={
                     VtuberId:        selectedVtuber,        //deleteで必須
                     VtuberName:      foundVtuber.VtuberName,   //deleteで必須
                 };
-                setVtuberDataForFetch(deleteVtuber);
-                console.log("vtuberDataForFetch=", vtuberDataForFetch)
-            }else if (crudContentType === "movie" && foundMovie?.MovieUrl){
-                // const VtuberId =selectedVtuber
-                const deleteMovie:DeleteMovie={
+                const response = await axiosClient.delete("/delete/vtuber", {
+                    data:reqBody,
+                });
+                if (!response.status) {
+                    throw new Error(response.statusText);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }else if (crudContentType === "movie" && foundMovie?.MovieUrl){
+            try {
+                const reqBody:DeleteMovie={
                     VtuberId:       selectedVtuber,     //deleteで必須
                     MovieUrl:       foundMovie.MovieUrl,  //deleteで必須
                 };
-                setMovieDataForFetch(deleteMovie)
-                console.log("movieDataForFetch", movieDataForFetch)
-            }else if (crudContentType === "karaoke" && foundKaraoke?.SongName){
-                const deleteKaraoke:DeleteKaraoke={
+                const response = await axiosClient.delete("/delete/movie", {
+                    data:reqBody,});
+                if (!response.status) {
+                    throw new Error(response.statusText);
+                }
+                } catch (err) {
+                    console.error(err);
+                }
+        }else if (crudContentType === "karaoke" && foundKaraoke?.SongName){
+                try {
+                const reqBody:DeleteKaraoke={
                     MovieUrl:       selectedMovie,      //deleteで必須
                     KaraokeListId:  selectedKaraoke,    //deleteで必須
                     SongName:       foundKaraoke.SongName,  //deleteで必須
                 };
-                setKaraokeDataForFetch(deleteKaraoke)
-                console.log("karaokeDataForFetch=", karaokeDataForFetch)
-                console.log("selectedMovie=", selectedMovie)
-            } else {
-                console.log("削除するデータの種類(vtuber, movie, karaoke)の選択、またはで想定外のエラーが発生しました。")
-            }};;
-    
-    const httpsAgent = new https.Agent({rejectUnauthorized: false});
-    useEffect(()=>{
-        const fetchData = async () => {
-            console.log("choiceCrudType=", crudContentType,"\n vtuberDataForFetch=", vtuberDataForFetch, 
-            "\n movieDataForFetch=", movieDataForFetch, "\nkaraokeDataForFetch=", karaokeDataForFetch)
-                if(vtuberDataForFetch || movieDataForFetch || karaokeDataForFetch){
-                try {const response = await axios.delete(`https://localhost:8080/delete/${ crudContentType }`, {
-                    httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
-                    withCredentials: true,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    data: vtuberDataForFetch || movieDataForFetch || karaokeDataForFetch
-                });
-                   
-                    if (!response.status) { //「HTTPｽﾃｰﾀｽｺｰﾄﾞが200番台の時に!true
-                        throw new Error(response.statusText);
-                        //HTTPレスポンスのｽﾃｰﾀｽに応じてテキストを返す。404ならNot Founde
-                    }
-                } catch (error) {
-                    console.error(error);
-                    console.log("apiへアクセスを試みたものchatchした")
+                const response = await axiosClient.delete("/delete/karaoke", {
+                    data:reqBody,});
+                if (!response.status) {
+                    throw new Error(response.statusText);
                 }
-            }
-        };
-        fetchData();
-        // router.reload()
-    }, [vtuberDataForFetch, movieDataForFetch, karaokeDataForFetch]);
+                } catch (err) {
+                    console.error(err);
+                }
+                console.log("selectedMovie=", selectedMovie)
+        } else {
+            console.log("削除するデータの種類(vtuber, movie, karaoke)の選択、またはで想定外のエラーが発生しました。")
+        }};;
+
 
     return (
         <div>
@@ -303,7 +301,7 @@ export function DeleteForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
                 </div>}<br/>
             {crudContentType &&
                 <div>
-                    <button onClick={handleClick} >決定</button>
+                <button onClick={handleClick} >決定</button>
                 </div>}
             <br />  &nbsp;  &nbsp;  &nbsp;  &nbsp;
         </div>

@@ -352,6 +352,16 @@ func Withdrawal(c *gin.Context) {
 	})
 }
 
+// lister_id = 3, listener_name = guest
+// func GestlogIn(c *gin.Context) {
+// 	trigerSetCookiebyUserAuth(c, 3)
+// 	c.JSON(http.StatusOK, gin.H{
+// 		"message":      "Successfully Guest Logged In",
+// 		"listenerId":   "3",
+// 		"listenerName": "guest",
+// 	})
+// }
+
 type LineOfLog struct {
 	RemoteAddr  string
 	ContentType string
