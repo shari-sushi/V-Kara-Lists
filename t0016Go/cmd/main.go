@@ -78,7 +78,7 @@ func main() {
 	r.DELETE("/withdraw", utility.Withdrawal)      //未
 	r.DELETE("/????", utility.Withdrawal)          //未 ver.1.5かなぁ	//論理削除後の期限切れ path不要か？
 	r.GET("/canelwithdrawal", utility.Withdrawal)  //未	//ver1.5かなぁ	//論理削除中に同じアドレスで再登録
-	// r.GET("/gestlogin", utility.GestlogIn)
+	r.GET("/gestlogin", utility.GestlogIn)         //動作未確認　退会不可に。
 
 	// /cud/~, /users/~にアクセスした際にmiddlewareでアクセスに認証制限
 	utility.CallGetMemberProfile(r) //未

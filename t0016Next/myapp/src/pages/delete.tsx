@@ -214,7 +214,7 @@ export function DeleteForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
         },
     });
 
-    const handleClick = () => async (CrudData:CrudDate) => {
+    const handleClick = async () => {
         console.log("決定押下")
         console.log("choiceCrudType=", crudContentType, "\n selectedVtuber=",
              selectedVtuber, "\n selectedKaraoke", selectedKaraoke);
@@ -303,7 +303,6 @@ export function DeleteForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
                 <div>
                 <button onClick={handleClick} >決定</button>
                 </div>}
-            <br />  &nbsp;  &nbsp;  &nbsp;  &nbsp;
         </div>
     );
 }

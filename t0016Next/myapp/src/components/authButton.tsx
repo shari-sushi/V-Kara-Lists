@@ -67,10 +67,41 @@ export const Withdraw = () => {
          キャンセル</button>
       <h2>退会について</h2>
         <li>あなたのメールアドレス、パスワードが本サイトから削除されます。</li>
-        <li>それらは一時的に保管されますが、３０日後に機械的に自動で完全にされます。</li>
-        <li>あなたが登録したVTuber, Movie, Sing等のデータは削除されません。</li>
+        <li>上述の情報は３０日後に自動で完全削除されます。</li>
+        <li>あなたが登録したアカウント情報以外のデータは削除されません。</li>
+        <li>なお、ゲストアカウントは退会できません。</li>
       <button onClick={fetchWithdraw}>！！！退会確定！！！</button>
       </div>}
+    </div>
+    )
+};
+
+export const GestLogin=()=>{
+  // /gestlogin
+  const router = useRouter();
+  const fetchWithdraw = async () => {
+    try {
+      const response = await fetch(`https://localhost:8080/gestlogin`, { 
+          method: 'get',
+          credentials: "include",
+          headers: {
+              'Content-Type': 'application/json'
+          },
+      });
+      if (response.status != 200) {
+          throw new Error(response.statusText);
+      }  
+    } catch (error) {
+      console.error(error);
+    }
+      router.push(`/`)
+  };
+  return(
+    <div>
+      <div>
+        <button onClick={fetchWithdraw} style={{ background: 'brown' }}>
+          ゲストログイン</button>
+      </div>
     </div>
     )
 };

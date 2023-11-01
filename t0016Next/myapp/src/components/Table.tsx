@@ -95,7 +95,7 @@ export const DataTablePageNation = ({ columns=[], data = [], pageSize }:DataTabl
       getTableProps,
       getTableBodyProps,
       headerGroups,
-      // rows,
+      rows,
       prepareRow,
   
       // ページネーション用
@@ -108,7 +108,7 @@ export const DataTablePageNation = ({ columns=[], data = [], pageSize }:DataTabl
       nextPage,
       previousPage,
       state: { pageIndex }
-    } = useTable(
+    } = useTable<AllJoinData>(
       {
         columns,
         data,
@@ -120,18 +120,10 @@ export const DataTablePageNation = ({ columns=[], data = [], pageSize }:DataTabl
     return (
       <div>
         <div>
-          <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-            {"<<"}
-          </button>
-          <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-            {"<"}
-          </button>
-          <button onClick={() => nextPage()} disabled={!canNextPage}>
-            {">"}
-          </button>
-          <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-            {">>"}
-          </button>
+          <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>{"<<"}</button>
+          <button onClick={() => previousPage()} disabled={!canPreviousPage}>{"<"}</button>
+          <button onClick={() => nextPage()} disabled={!canNextPage}>{">"}</button>
+          <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>{">>"}</button>
           <span>
             Page {pageIndex + 1} of {pageOptions.length}
           </span>
