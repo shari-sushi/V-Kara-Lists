@@ -101,7 +101,7 @@ const handleMovieClick = (movieId: string) => {
           )}
           <td><Link href={`/movie?streamer_id=${vtubers.VtuberId}`}>歌枠</Link></td>
           <td><Link href={`/sing?streamer_id=${vtubers.VtuberId}`}>歌</Link></td>
-          {checkSignin && <td><Link href={`/karaokelist/edit?Unique_id=${vtubers.VtuberId}`}>編集</Link></td>}
+          {checkSignin && <td><Link href={`/edit?Unique_id=${vtubers.VtuberId}`}>編集</Link></td>}
             </tr>
             ))}
         </tbody>
