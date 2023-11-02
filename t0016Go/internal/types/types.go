@@ -192,7 +192,7 @@ func FindUserByListenerId(db *gorm.DB, listenerId int) (Listener, error) {
 }
 
 // like_reration
-type FavoritePosts struct {
+type FavoritePost struct {
 	ListenerId int    `gorm:"primaryKey"`
 	Movie_url  string `gorm:"primaryKey"`
 	KaraokeId  int    `gorm:"primaryKey"`

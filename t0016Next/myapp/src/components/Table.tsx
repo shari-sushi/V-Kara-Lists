@@ -21,6 +21,13 @@ type DataTableRandam= {
 }
 
   export function DataTableRandam({ data, handleMovieClick, setStart}:DataTableRandam) {
+      if (data == null ){
+        return <div>曲が登録されていません</div>
+      } else if (data.length > 0 && data.length < 6) {
+        return <div>歌のランダム表示は登録件数が６件以上に実行されます。 <br/>
+        現在の登録件数 : {data.length}
+        </div>
+    } else {
     const [shuffledData, setShuffledData] = useState(data);
     const [currentPage, setCurrentPage] = useState(1);
     const [reRandom, setRandom] = useState(0)
@@ -70,7 +77,7 @@ type DataTableRandam= {
                   </tbody>
               </table>
           </div>
-      );
+      );}
   }
 
 

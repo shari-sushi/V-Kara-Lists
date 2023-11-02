@@ -43,41 +43,34 @@ func init() {
 	user := os.Getenv("MYSQL_USER")
 	pw := os.Getenv("MYSQL_PASSWORD")
 	db_name := os.Getenv("MYSQL_DATABASE")
+	path := fmt.Sprintf("%s:%s@tcp(localhost:3306)/%s?charset=utf8&parseTime=true", user, pw, db_name)
 
-	var path string = fmt.Sprintf("%s:%s@tcp(localhost:3306)/%s?charset=utf8&parseTime=true", user, pw, db_name)
-	// sqlへ接続するための文字列の生成
 	var err error
-
-	// fmt.Printf("%s\n%s\n", path, err)
-
 	Db, err = gorm.Open(mysql.Open(path), &gorm.Config{})
 	Db = Db.Debug()
 	if err != nil {
 		panic("failed to connect database")
-
 	}
-	if Db == nil {
-		panic("failed to connect database")
-
-	} //このif Db文消したい意味的に重複してる
 
 	fmt.Printf("path=%s\n, err=%s\n", path, err)
 	// checkConnect(1)
 	// defer Db.Close()
+
+	migration()
+}
+
+func migration() {
+	Db.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(
+		// User
+		types.Listener{},
+		// Like Relatoin
+		types.FavoritePost{}, types.Follow{},
+		// Vtuber Contents
+		types.KaraokeList{}, types.Movie{}, types.Vtuber{}, types.OriginalSong{},
+	)
 }
 
 // 会員登録
-// func CalltoSignUpHandler(){
-// 	h := Handler()
-// 	a := h.Handler(c)
-// }
-
-// func CalltoSignUpHandler(r *gin.RouterGroup, h *controllers.Handler) {
-//     auth := r.group("/auth")
-//     {
-//         auth.POST("/signup", h.SignUpHandler)
-//     }
-// }
 func CalltoSignUpHandler(c *gin.Context) {
 	h := Handler{DB: Db}
 	h.SignUpHandler(c)
