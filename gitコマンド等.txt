@@ -81,6 +81,11 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
     〇メモ
     git branch　--contains 現在のブランチ確認
 
+    merge取り消し
+    git log →ハッシュをコピー
+    git reset --hard <merge_commit_hash>
+
+
 7. issue駆動開発
 　issues作成　→　#番号メモ(下は#11のとき)
 　 

@@ -39,10 +39,11 @@ func GetDB() *gorm.DB {
 	return Db
 }
 
-func init() {
+func InitDb() {
 	user := os.Getenv("MYSQL_USER")
 	pw := os.Getenv("MYSQL_PASSWORD")
-	db_name := os.Getenv("MYSQL_DATABASE")
+	// db_name := os.Getenv("MYSQL_DATABASE")
+	db_name := "migration_test" //test用
 	path := fmt.Sprintf("%s:%s@tcp(localhost:3306)/%s?charset=utf8&parseTime=true", user, pw, db_name)
 
 	var err error
@@ -55,8 +56,6 @@ func init() {
 	fmt.Printf("path=%s\n, err=%s\n", path, err)
 	// checkConnect(1)
 	// defer Db.Close()
-
-	migration()
 }
 
 func migration() {

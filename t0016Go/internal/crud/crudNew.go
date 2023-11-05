@@ -10,8 +10,6 @@ import (
 	"github.com/sharin-sushi/0016go_next_relation/internal/utility"
 )
 
-// var all types.AllData
-// var alls []types.AllData
 var vt types.Vtuber
 var vts []types.Vtuber
 var mo types.Movie
@@ -34,11 +32,6 @@ type AllDate struct {
 	kar types.KaraokeList
 }
 
-// var movie Movie
-// var movies []Movie
-// var karaokeList KaraokeList
-// var karaokelists []KaraokeList
-
 // Vtuberを全件取得する共通処理
 func fetchVtubers() ([]types.Vtuber, error) {
 	var vts []types.Vtuber
@@ -53,7 +46,7 @@ func fetchVtubersJoinMovies(vts []types.Vtuber) ([]*types.VtuberMovie, error) {
 	return vtsmos, resultVtsmo.Error
 }
 
-// メイン3種をjoinして全件取得
+// メインコンテンツ3種をjoinして全件取得
 func fetchAllJoinData() ([]*types.AllColumns, error) {
 	var kas []*types.KaraokeList
 	var alls []*types.AllColumns
@@ -61,12 +54,6 @@ func fetchAllJoinData() ([]*types.AllColumns, error) {
 	resultAll := utility.Db.Model(&kas).Select(selectAll).Joins("LEFT JOIN movies mo USING(movie_url) LEFT JOIN vtubers vt USING(vtuber_id)").Scan(&alls)
 	return alls, resultAll.Error
 }
-
-// SELECT
-// vtubers.vtuber_id, vtubers.vtuber_name,
-// mo.movie_url, mo.movie_title
-// FROM `vtubers`
-// LEFT JOIN movies  mo USING(vtuber_id)
 
 ///　/top
 func ReadAllVtubersAndMovies(c *gin.Context) {
