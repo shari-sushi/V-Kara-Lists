@@ -118,9 +118,9 @@ type FavoritePost struct {
 
 type Follow struct {
 	FollowId         int `gorm:"primaryKey;type:int(11)"`
-	FollowListener   int `gorm:"not null;type:int(11);uniqueIndex:follow_folloed"`
-	FollowedVtuber   int `gorm:"type:int(11);uniqueIndex:follow_folloed"`
-	FollowedListener int `gorm:"type:int(11);uniqueIndex:follow_folloed"`
+	FollowListener   int `gorm:"not null;type:int(11);uniqueIndex:follow_followed"`
+	FollowedVtuber   int `gorm:"type:int(11);uniqueIndex:follow_followed"`
+	FollowedListener int `gorm:"type:int(11);uniqueIndex:follow_followed"`
 } // ポリモーフィック
 
 type OriginalSong struct {
