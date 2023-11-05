@@ -14,6 +14,11 @@ import (
 )
 
 func main() {
+	start()
+}
+
+func start() {
+	utility.InitDb()
 	r := gin.Default()
 	r.Use(RequestLogger())
 	r.Use(cors.New(cors.Config{

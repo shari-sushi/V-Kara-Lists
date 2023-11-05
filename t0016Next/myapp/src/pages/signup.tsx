@@ -74,7 +74,9 @@ const Signup = () => {
                 value: /[a-z\d\-]{4,255}/i,
                 message: "Passwordは4文字以上必要です" 
             }
-            })} />
+            })}
+            placeholder="Password" type={isRevealPassword ? 'text' : 'password'} 
+            />
               {errors.Password && errors.Password.message} <br />
             <Checkbox checked={isRevealPassword }
               onChange={() => setIsRevealPassword((state) => !state)} >パスワード表示⇔非表示</Checkbox><br />
@@ -92,40 +94,3 @@ const Signup = () => {
 }
 
 export default Signup;
-
-
-
-// ****memo****
-//  <DeleteButton Unique_id ={ Unique_id }/>
-
-// router.push(`/show?Unique_id=${Unique_id}`)
-
-//  条件付きレンダリング…左辺がtrueなら右辺を表示する
-// Email: <input {...register("Email", { required: true })} placeholder="Email" /><br />
-           
-// register：フォームフィールドを登録する関数
-// handleSubmit：フォームの送信を処理する関数
-// errors：フォームフィールドのエラー情報を含むオブジェクト　　の３つを取得
-// const router = useRouter();
-// const { Unique_id } = router.query;
-
-
-// フォームの送信が行われたとき(他の処理が終わったとき？)に呼び出される
-// const onSubmit = async (data: LoginUser) => {
-    // data：送信されたフォームフィールドの値を含むオブジェクト
-    // const unique_id = router.query.id;
-
-    // const response = await fetch(`http://localhost:8080/login2`, { 
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': 'application/json'
-    //     },
-    //     body: JSON.stringify(data) //dataをJSONに変換
-    //     });
-
-//tryブロック　この中でエラー発生したら直後のchatchブロックが実行される
-// try {
-    // fecthとか
-// } chatch{
-    // エラー処理とか}
-    // 

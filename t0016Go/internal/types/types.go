@@ -23,6 +23,7 @@ import (
 // var ka types.KaraokeList
 // var kas []types.KaraokeList
 
+// マイグレーションに使う型
 // VTuber Contents
 type VtuberMovie struct {
 	Vtuber
@@ -38,11 +39,11 @@ type VtuberMovieKalaokeList struct {
 //GORMなのに何故か `json:"~~"`が無いとスネークにならない
 
 type Vtuber struct {
-	VtuberId        int     `gorm:"primaryKey"` //`json:"vtuber_id"` //
-	VtuberName      string  //`json:"vtuver_name"`
-	VtuberKana      *string //`json:"vtuber_kana"`
-	IntroMovieUrl   *string //`json:"vtuber_intro_movie_url"`
-	VtuberInputerId *int    //`json:"vtuber_inputer_id"`
+	VtuberId        int     `gorm:"primaryKey;type:int(11);auto_increment"` //`json:"vtuber_id"` //
+	VtuberName      string  `gorm:"type:varchar(50);not null;unique"`       //`json:"vtuver_name"`
+	VtuberKana      *string `gorm:"type:varchar(50);unique"`                //`json:"vtuber_kana"`
+	IntroMovieUrl   *string `gorm:"type:varchar(100)"`                      //`json:"vtuber_intro_movie_url"`
+	VtuberInputerId *int    `gorm:"type:int(11);not null"`                  //`json:"vtuber_inputer_id"`
 }
 
 type EntryVtuber struct {
@@ -53,22 +54,21 @@ type EntryVtuber struct {
 }
 
 type Movie struct {
-	MovieUrl       string  `gorm:"primaryKey"` //`json:"movie_url"`
-	MovieTitle     *string //`json:"movie_title"`
-	VtuberId       *int    //`json:"vtuber_id"`
-	MovieInputerId *int    //`json:"movie_inputer_id"` /new
+	MovieUrl       string  `gorm:"primaryKey;type:varchar(100)"` //`json:"movie_url"`
+	MovieTitle     *string `gorm:"type:varchar(200);not null"`   //`json:"movie_title"`
+	VtuberId       *int    `gorm:"type:int(11);not null"`        //`json:"vtuber_id"`
+	MovieInputerId *int    `gorm:"type:int(11);not null"`        //`json:"movie_inputer_id"` /new
 }
 
 type KaraokeList struct {
-	MovieUrl             string  `gorm:"primaryKey"` //`json:"movie_url"`
-	KaraokeListId        int     `gorm:"primaryKey"` //`json:"id"`
-	SingStart            *string //`json:"sing_start"` //nill可にするためのポインタ
-	SongName             string  //`json:"song_name"`
-	KaraokeListInputerId int     //`json:"inputer_id"`
+	MovieUrl             string  `gorm:"primaryKey;type:varchar(100)"` //`json:"movie_url"`
+	KaraokeListId        int     `gorm:"primaryKey;type:int(11)"`      //`json:"id"`
+	SingStart            *string `gorm:"type:time(0)"`                 //`json:"sing_start"` //nill可にするためのポインタ
+	SongName             string  `gorm:"type:varchar(100)"`            //`json:"song_name"`
+	KaraokeListInputerId int     `gorm:"type:int(11)"`                 //`json:"inputer_id"`
 }
 
 // コピペ用全カラム
-// ーーキャメル
 type AllColumns struct {
 	VtueberId            int
 	VtuberName           string
@@ -86,13 +86,13 @@ type AllColumns struct {
 
 //// User
 type Listener struct {
-	ListenerId   int `gorm:"primaryKey"`
-	ListenerName string
-	Email        string
-	Password     string
-	CreatedAt    time.Time
-	UpdatedAt    sql.NullTime   //new time.Timeのままで良かったかも
-	DeletedAt    gorm.DeletedAt `gorm:"index"` //new
+	ListenerId   int            `gorm:"type:int(11);primaryKey;auto_increment"`
+	ListenerName string         `gorm:"type:varchar(50);not null"`
+	Email        string         `gorm:"type:varchar(255);unique;not null"`
+	Password     string         `gorm:"type:varchar(100);not null"`
+	CreatedAt    time.Time      `gorm:"type:datetime;default:current_timestamp"`
+	UpdatedAt    sql.NullTime   `gorm:"type:datetime"`                     //new time.Timeのままで良かったかも
+	DeletedAt    gorm.DeletedAt `gorm:"type:datetime;index:deleted_index"` //new
 	// DeletedAt    sql.NullTime //new これだと物理削除になってまう
 }
 
@@ -107,6 +107,29 @@ type UserInfoFromFront struct {
 	ListenerName string
 	Email        string
 	Password     string
+}
+
+// like_reration
+type FavoritePost struct {
+	ListenerId int    `gorm:"primaryKey;type:int(11)"`
+	Movie_url  string `gorm:"primaryKey;type:varchar(100)"`
+	KaraokeId  int    `gorm:"primaryKey;type:int(11)"`
+}
+
+type Follow struct {
+	FollowId         int `gorm:"primaryKey;type:int(11)"`
+	FollowListener   int `gorm:"not null;type:int(11);uniqueIndex:follow_folloed"`
+	FollowedVtuber   int `gorm:"type:int(11);uniqueIndex:follow_folloed"`
+	FollowedListener int `gorm:"type:int(11);uniqueIndex:follow_folloed"`
+} // ポリモーフィック
+
+type OriginalSong struct {
+	SongID        int       `gorm:"type:int(11);primaryKey:auto_increment"`
+	ArtistId      int       `gorm:"type:int(11)"`
+	SongName      string    `gorm:"type:varchar(100);unique"`
+	MovieUrl      string    `gorm:"type:varchar(100);unique"`
+	ReleseData    time.Time `gorm:"type:datetime;default null"`
+	SongInputerId int       `gorm:"type:int(11);not null"` //`gorm:"not null"`
 }
 
 //listener構造体の型で新規発行したIDと共にユーザー情報を返す
@@ -189,27 +212,4 @@ func FindUserByListenerId(db *gorm.DB, listenerId int) (Listener, error) {
 	result := db.Where("listener_id = ?", listenerId).First(&user)
 	fmt.Printf("Idで取得したuser= %v \n", user)
 	return user, result.Error
-}
-
-// like_reration
-type FavoritePost struct {
-	ListenerId int    `gorm:"primaryKey"`
-	Movie_url  string `gorm:"primaryKey"`
-	KaraokeId  int    `gorm:"primaryKey"`
-}
-
-type Follow struct {
-	FollowId         int `gorm:"primaryKey"`
-	FollowListener   int
-	FollowedVtuber   int
-	FollowedListener int
-}
-
-type OriginalSong struct {
-	SongID        int `gorm:"primaryKey"`
-	ArtistId      int
-	SongName      string
-	MovieUrl      string
-	ReleseData    time.Time
-	SongInputerId int
 }

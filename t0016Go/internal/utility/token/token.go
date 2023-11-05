@@ -10,7 +10,7 @@ import (
 
 func GenerateToken(ListenerId int) (string, error) {
 	secretKey := os.Getenv("SECRET_KEY")
-	// tokenLifeTime, err := strconv.Atoi(os.Getenv("TOKEN_LIFETIME"))　//これ環境変数で設定するの？
+	// tokenLifeTime, err := strconv.Atoi(os.Getenv("TOKEN_LIFETIME"))　//環境変数で設定する必要ある？
 	// if err != nil {
 	// 	return "", err
 	// }
