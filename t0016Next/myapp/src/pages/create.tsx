@@ -11,6 +11,8 @@ import '@szhsin/react-menu/dist/index.css';
 import {DropDownVt, DropDownMo, DropDownKa} from '../components/Dropdown';
 import {YoutubePlayer } from '../components/YoutubePlayer'
 import {ConversionTime, ExtractVideoId} from '../components/Conversion'
+import {domain} from '../../env'
+
 
 type TopPagePosts = {
 //   alljoindata: AllJoinData[];
@@ -60,6 +62,7 @@ useEffect(() => {
     //   console.log("foundSingStart", foundSingStart)
     }
   }
+  console.log("selectedKaraoke=", selectedKaraoke)
 }, [selectedVtuber, selectedMovie, selectedKaraoke, posts.karaokes]);
 
 // 親選択クリア時に子もクリアするuseEffect 2つ
@@ -71,7 +74,7 @@ useEffect(() => {
 },[selectedVtuber, selectedMovie, selectedKaraoke]);
 const handleMovieClear = () => {
   setSelectedMovie("");
-  setSelectedKaraoke(0);
+  setSelectedKaraoke(0);  
   // console.log('isClearable value:', props.isClearable);
 };
 const handleVtuberClear = () => {
@@ -87,7 +90,7 @@ const handleVtuberClear = () => {
 
   return ( 
     <div>
-        <h1>DB登録</h1>
+        <h1>データベース登録</h1>
         <DropDownVt
             posts={posts}
             onVtuberSelect={setSelectedVtuber}
@@ -99,7 +102,7 @@ const handleVtuberClear = () => {
         <DropDownMo
             posts={posts}
             selectedVtuber={selectedVtuber}
-            onMovieSelect={setSelectedMovie} //このファイルではstringになってる
+            onMovieSelect={setSelectedMovie}
             onKaraokeClear={handleMovieClear}
         />
         <DropDownKa
@@ -122,7 +125,7 @@ const handleVtuberClear = () => {
     const httpsAgent = new https.Agent({rejectUnauthorized: false});
     let resData;
     try {
-        const response = await axios.get('https://localhost:8080/getalldate', {
+        const response = await axios.get(`${domain.backendHost}/getalldate`, {
           // 0019だとnullでサーバー起動、undefinedはダメだとエラーが出る。
             httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
         });
@@ -348,187 +351,3 @@ export function CreateForm({posts,selectedVtuber, selectedMovie, selectedKaraoke
 
 
 // *****memo******
-
-// ①決定１回目ではデータが格納されない(fetchはされる)
-// const foundVtuber = posts?.vtubers.find(vtuber => vtuber.VtuberId === selectedVtuber);
-// const foundMovie = posts?.movies.find(movie => movie.MovieUrl === selectedMovie);
-// console.log("selectedMovie=", selectedMovie)
-// const foundMovies = posts.karaokes.filter(karaoke => karaoke.MovieUrl === selectedMovie);
-// const foundKaraoke = foundMovies.find(foundMovie => foundMovie.KaraokeListId === selectedKaraoke)
-// // console.log("foundKaraoke",foundKaraoke);
-// // console.log("selectedKaraoke",selectedKaraoke);
-
-// const [vtuberNameInput, setVtuberNameInput] = useState(foundVtuber?.VtuberName);
-// const [VtuberKanaInput, setVtuberKanaInput] = useState(foundVtuber?.VtuberKana);
-// const [IntroMovieUrInput, setIntroMovieUrInput] = useState(foundVtuber?.IntroMovieUrl);
-// const [MovieUrlInput, setMovieUrlInput] = useState(foundMovie?.MovieUrl);
-// const [MovieTitleInput, setMovieTitleInput] = useState(foundMovie?.MovieTitle);
-// const [SingStartInput, setSingStartInput] = useState(foundKaraoke?.SingStart);
-// const [SongNameInput, setSongNameInput] = useState(foundKaraoke?.SongName);
-
-// const [isToDecision, setIsTpoDecision]=useState<boolean>(false)
-// const [crudContentType, setCrudContentType] = useState<string>("")
-
-// type CreateVtuber = {
-//     VtuberId:       number;
-//     VtuberName:     string;
-//     VtuberKana :    string;
-//     IntroMovieUrl:  string | null;
-// }
-// type CreateMovie = {
-//     VtuberId:       number;
-//     MovieTitle:     string;
-//     MovieUrl:       string;
-// }
-// type CreateKaraoke = {
-//     MovieUrl:       string;
-//     KaraokeListId:  number;
-//     SongName:       string;
-//     SingStart:      string;
-// }
-
-// const { register, handleSubmit, formState: { errors } , resetField} = useForm<CrudDate>();
-// const [vtuberDataForFetch, setVtuberDataForFetch]=useState<CreateVtuber>()
-// const [movieDataForFetch, setMovieDataForFetch]=useState<CreateMovie>()
-// const [karaokeDataForFetch, setKaraokeDataForFetch]=useState<CreateKaraoke>()
-// const onSubmit = async (CrudData:CrudDate) => {
-//     console.log("CrudData", CrudData);
-//     console.log("choiceCrudType=", crudContentType, "\n selectedVtuber=",
-//          selectedVtuber, "\n selectedKaraoke", selectedKaraoke);
-//     if (crudContentType === "vtuber"){
-//             const  createVtuber:CreateVtuber={
-//                 VtuberId:        selectedVtuber, //createでは0
-//                 VtuberName:      CrudData.VtuberName,
-//                 VtuberKana:      CrudData.VtuberKana,
-//                 IntroMovieUrl:   CrudData.IntroMovieUrl,
-//             };
-//             setVtuberDataForFetch(createVtuber);
-//             console.log("vtuberDataForFetch=", vtuberDataForFetch)
-//         }else if (crudContentType === "movie"){
-//             // const VtuberId =selectedVtuber
-//             const createMovie:CreateMovie={
-//                 VtuberId:       selectedVtuber,
-//                 MovieTitle:     CrudData.MovieTitle,
-//                 MovieUrl:       CrudData.MovieUrl,
-//             };
-//             setMovieDataForFetch(createMovie)
-//             console.log("movieDataForFetch", movieDataForFetch)
-//         }else if (crudContentType === "karaoke"){
-//             const createKaraoke:CreateKaraoke={
-//                 MovieUrl:       selectedMovie,
-//                 KaraokeListId:  selectedKaraoke, //createでは0
-//                 SongName:       CrudData.SongName,
-//                 SingStart:      CrudData.SingStart,
-//             };
-//             setKaraokeDataForFetch(createKaraoke)
-//             console.log("karaokeDataForFetch=", karaokeDataForFetch)
-//             console.log("selectedMovie=", selectedMovie)
-
-//         } else {
-//             console.log("登録するデータの種類(vtuber, movie, karaoke)選択にて想定外のエラーが発生しました。")
-//         };
-
-//     const httpsAgent = new https.Agent({
-//         rejectUnauthorized: false
-//     });
-//     try {const response = await axios.post(`https://localhost:8080/create/${ crudContentType }`,
-//     vtuberDataForFetch || movieDataForFetch || karaokeDataForFetch,
-//             {
-//             httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
-//             withCredentials: true,
-//             headers: {
-//                 'Content-Type': 'application/json'
-//             },
-//             // body: JSON.stringify(createDateStrage[`${choiceCrudType}DataforFetch`])
-//             });
-//         console.log("choiceCrudType=", crudContentType,"\n fetchCreateData=", vtuberDataForFetch, 
-//         "\n movieDataForFetc=", movieDataForFetch, "\nkaraokeDataForFetch=", karaokeDataForFetch)
-
-//         if (!response.status) { //「HTTPｽﾃｰﾀｽｺｰﾄﾞが200番台の時に!true
-//             throw new Error(response.statusText);
-//             //HTTPレスポンスのｽﾃｰﾀｽに応じてテキストを返す。404ならNot Founde
-//         }
-//     } catch (error) {
-//         console.error(error);
-//         console.log("apiへアクセスを試みたものchatchした")
-//     }
-//     // router.reload()
-// };
-
-
-////////////////// 決定１回目ではデータが格納されない(fetchはされる)課題に対して、
-//////////////// onSubmitの外でuseEffectを使って解決しようとした。（だめだった）
-
-// const { register, handleSubmit, formState: { errors } , resetField} = useForm<CrudData>();
-// const [vtuberDataForFetch, setVtuberDataForFetch]=useState<CreateVtuber>()
-// const [movieDataForFetch, setMovieDataForFetch]=useState<CreateMovie>()
-// const [karaokeDataForFetch, setKaraokeDataForFetch]=useState<CreateKaraoke>()
-// const [crudDataState, setCrudDataState] = useState<CrudData | null>(null);
-
-// useEffect(() =>{
-//     if (!crudDataState) return; 
-//     if (choiceCrudType === "vtuber"){
-//             const  createVtuber:CreateVtuber={
-//                 VtuberId:        selectedVtuber, //createでは0
-//                 VtuberName:      crudDataState.VtuberName,
-//                 VtuberKana:      crudDataState.VtuberKana,
-//                 IntroMovieUrl:   crudDataState.IntroMovieUrl,
-//             };
-//             setVtuberDataForFetch(createVtuber);
-//             console.log("vtuberDataForFetch=", vtuberDataForFetch)
-//         }else if (choiceCrudType === "movie"){
-//             // const VtuberId =selectedVtuber
-//             const createMovie:CreateMovie={
-//                 VtuberId:       selectedVtuber,
-//                 MovieTitle:     crudDataState.MovieTitle,
-//                 MovieUrl:       crudDataState.MovieUrl,
-//             };
-//             setMovieDataForFetch(createMovie)
-//             console.log("movieDataForFetch", movieDataForFetch)
-//         }else if (choiceCrudType === "karaoke"){
-//             const fetchCreateData:CreateKaraoke={
-//                 MovieUrl:       selectedMovie,
-//                 KaraokeListId:  selectedKaraoke, //createでは0
-//                 SongName:       crudDataState.SongName,
-//                 SingStart:      crudDataState.SingStart,
-//             };
-//             setKaraokeDataForFetch(fetchCreateData)
-//             console.log("karaokeDataForFetch=", karaokeDataForFetch)
-//             console.log("selectedMovie=", selectedMovie)
-//         } else {
-//             console.log("登録するデータの種類(vtuber, movie, karaoke)選択にて想定外のエラーが発生しました。")
-//         };
-// }, [vtuberDataForFetch, movieDataForFetch, karaokeDataForFetch])
-
-
-// const onSubmit = async (crudData:CrudData) => {
-//     console.log("CrudData", crudData);
-//     console.log("choiceCrudType=", choiceCrudType, "\n selectedVtuber=",
-//          selectedVtuber, "\n selectedKaraoke", selectedKaraoke);
-//     setCrudDataState(crudData);
-//     const httpsAgent = new https.Agent({
-//         rejectUnauthorized: false
-//     });
-//     try {const response = await axios.post(`https://localhost:8080/create/${ choiceCrudType }`,
-//     vtuberDataForFetch || movieDataForFetch || karaokeDataForFetch,
-//             {
-//             httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
-//             withCredentials: true,
-//             headers: {
-//                 'Content-Type': 'application/json'
-//             },
-//             // body: JSON.stringify(createDateStrage[`${choiceCrudType}DataforFetch`])
-//             });
-//         console.log("choiceCrudType=", choiceCrudType,"\n fetchCreateData=", vtuberDataForFetch, 
-//         "\n movieDataForFetc=", movieDataForFetch, "\nkaraokeDataForFetch=", karaokeDataForFetch)
-
-//         if (!response.status) { //「HTTPｽﾃｰﾀｽｺｰﾄﾞが200番台の時に!true
-//             throw new Error(response.statusText);
-//             //HTTPレスポンスのｽﾃｰﾀｽに応じてテキストを返す。404ならNot Founde
-//         }
-//     } catch (error) {
-//         console.error(error);
-//         console.log("apiへアクセスを試みたものchatchした")
-//     }
-//     // router.reload()
-// };

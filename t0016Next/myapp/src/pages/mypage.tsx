@@ -8,13 +8,21 @@ import https from 'https';
 import axios from 'axios';
 import { AxiosRequestConfig } from 'axios';
 import {GetLogout, Withdraw} from '../components/authButton';
+import {domain} from '../../env'
 
 type Mypage ={
   listener:User;
   checkAuth:boolean;
 }
 
+
+
 const MyPage = ({ listener, checkAuth}:Mypage) => {
+  // if (checkAuth === false) {
+  //   const message = "ログインしてください"
+  //   window.alert(message)
+  //   alert(message);
+  // }; Node.js開発環境だとダメっぽい？
   // console.log("listener, checkAuth",listener, checkAuth)
   return (
     <div>
@@ -81,7 +89,7 @@ export async function getServerSideProps (context: ContextType){
 
   let resData=null;
   try {
-  const res = await axios.get('https://localhost:8080/users/profile', options);
+  const res = await axios.get(`${domain.backendHost}/users/profile`, options);
   resData = res.data;
   CheckSignin = true
   } catch (error) {

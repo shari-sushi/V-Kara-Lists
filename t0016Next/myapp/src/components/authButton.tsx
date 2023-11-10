@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import type { LoginUser } from "../types/usertype";
 import Link from 'next/link';
 import {Checkbox} from '../components/SomeFunction';
+import {domain} from '../../env'
 
 
 
@@ -12,8 +13,8 @@ export const GetLogout = () => {
   const router = useRouter();
   const fetchLogout = async () => {
     try {
-      const response = await fetch(`https://localhost:8080/logout`, { 
-          method: 'GET',
+      const response = await fetch(`${domain.backendHost}/logout`, { 
+          method: 'PUT',
           credentials: "include",
           headers: {
               'Content-Type': 'application/json'
@@ -39,7 +40,7 @@ export const Withdraw = () => {
   const [isToDecision, setIsToDecision]=useState<boolean>(false)
   const fetchWithdraw = async () => {
     try {
-      const response = await fetch(`https://localhost:8080/withdraw`, { 
+      const response = await fetch(`${domain.backendHost}/withdraw`, { 
           method: 'DELETE',
           credentials: "include",
           headers: {
@@ -81,7 +82,7 @@ export const GestLogin=()=>{
   const router = useRouter();
   const fetchWithdraw = async () => {
     try {
-      const response = await fetch(`https://localhost:8080/gestlogin`, { 
+      const response = await fetch(`${domain.backendHost}/gestlogin`, { 
           method: 'get',
           credentials: "include",
           headers: {

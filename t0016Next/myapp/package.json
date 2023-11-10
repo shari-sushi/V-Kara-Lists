@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "dev": "next dev -p 80",
+    "start": "next start -p 80",
     "dev-https": "node server.js",
-    "dev": "next dev",
     "build": "next build",
-    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {
@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
-    "@types/react-table": "^7.7.17"
+    "@types/react-table": "^7.7.18",
+    "@types/youtube": "^0.0.50"
   }
 }

@@ -4,6 +4,8 @@ import { useRouter } from "next/router";
 import type { LoginUser as LoginListener } from "../types/usertype";
 import Link from 'next/link';
 import {Checkbox} from '../components/SomeFunction';
+import {domain} from '../../env'
+
 
 
 // var1.5~2.0でやりたい
@@ -23,8 +25,8 @@ const SigninPage = () => {
   const onSubmit = async (data:InputValues) => {
     try {
       console.log("data=", data);
-      const response = await fetch(`https://localhost:8080/login`, { 
-          method: 'POST',
+      const response = await fetch(`${domain.backendHost}/login`, { 
+          method: 'PUT',
           credentials: "include",
           headers: {
               'Content-Type': 'application/json'
@@ -32,7 +34,7 @@ const SigninPage = () => {
           body: JSON.stringify(data)
       });
       if (response.ok) {
-        router.push(`/`)
+        // router.push(`/`)
       }else{
           throw new Error(response.statusText);
       }
@@ -73,7 +75,7 @@ const SigninPage = () => {
       </form>  <br />
       <div>
         <Link href={`/`}><button style={{ background: 'brown' }}>
-          ログインせずに閲覧する</button></Link><br />
+          ログインせずにTOPへ戻る</button></Link><br />
         <Link href={`/mypage`}><button style={{ background: 'brown' }}>
           mypageへ</button></Link>
         <Link href="/signup"><button style={{ background: 'brown' }}>

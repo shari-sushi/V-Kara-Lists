@@ -11,6 +11,7 @@ import '@szhsin/react-menu/dist/index.css';
 import {DropDownVt, DropDownMo, DropDownKa} from '../components/Dropdown';
 import {YoutubePlayer } from '../components/YoutubePlayer'
 import {ConversionTime, ExtractVideoId} from '../components/Conversion'
+import {domain} from '../../env'
 
 type TopPagePosts = {
 //   alljoindata: AllJoinData[];
@@ -90,7 +91,7 @@ const handleVtuberClear = () => {
 
   return ( 
     <div>
-        <h1>DB編集</h1>
+        <h1>データベース編集</h1>
         <DropDownVt
             posts={posts}
             onVtuberSelect={setSelectedVtuber}
@@ -127,7 +128,7 @@ const handleVtuberClear = () => {
     });
     let resData;
     try {
-        const response = await axios.get('https://localhost:8080/getalldate', {
+        const response = await axios.get(`${domain.backendHost}/getalldate`, {
           // 0019だとnullでサーバー起動、undefinedはダメだとエラーが出る。
             httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
         });

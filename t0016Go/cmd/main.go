@@ -23,7 +23,7 @@ func start() {
 	r.Use(RequestLogger())
 	r.Use(cors.New(cors.Config{
 		// アクセス許可するオリジン
-		AllowOrigins: []string{"https://localhost:3000"},
+		AllowOrigins: []string{"https://localhost", "http://localhost"},
 		// AllowOrigins: []string{"*"}, //ワイルドカードだが、クライアント側がcredenrials incliudeでは許されてない。
 
 		// アクセス許可するHTTPメソッド
@@ -78,8 +78,8 @@ func start() {
 
 	//ユーザー認証 ※ブラウザでは"/"にリンク有り
 	r.POST("/signup", utility.CalltoSignUpHandler) //動作ほぼok　登録済みのメアドの時に、処理は止めてくれるけど、エラー内容を返してくれない…。
-	r.POST("/login", utility.CalltoLogInHandler)   //動作ok
-	r.GET("/logout", utility.LogoutHandler)        //動作ok だけどフロントで完結しない？まあよしとした。
+	r.PUT("/login", utility.CalltoLogInHandler)    //動作ok
+	r.PUT("/logout", utility.LogoutHandler)        //動作ok だけどフロントで完結しない？まあよしとした。
 	r.DELETE("/withdraw", utility.Withdrawal)      //未
 	r.DELETE("/????", utility.Withdrawal)          //未 ver.1.5かなぁ	//論理削除後の期限切れ path不要か？
 	r.GET("/resignup", utility.Withdrawal)         //未	ver1.5かなぁ	//論理削除中に同じアドレスで再登録
@@ -91,7 +91,8 @@ func start() {
 	// //開発者用　パスワード照会（ リポジトリ0019で作り直した）
 	// r.GET("/envpass", postrequest.EnvPass)
 
-	r.RunTLS(":8080", "../../key/server.pem", "../../key/server_unencrypted.key")
+	r.Run(":8080")
+	// r.RunTLS(":8080", "../../key/server.pem", "../../key/server_unencrypted.key")
 }
 
 func RequestLogger() gin.HandlerFunc {
