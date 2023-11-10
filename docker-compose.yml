@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+# nginx:
+#   image: nginx
+#   container_name: nginx
+#   ports:
+#     - 80:80
+#     - 443:443
+#   volumes:
+#     - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+#   depends_on:
+#     - app
+  db:
+    image: mysql
+    platform: linux/amd64 #mac環境では必須なことがあるらしい
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD : ${MYSQL_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+    # TZ: "Asia/Tokyo"
+    # volumes:
+    #   - ./my.cnf:/etc/mysql/conf.d/my.cnf
+    build:
+      context: .
+    ports:
+      - "3307:3306"
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci --skip-character-set-client-handshake
+
+  api:
+    build: 
+      context: ./t0016Go
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./t0016Go:/api/src
+      # - ./key:/api/key
+    ports:
+      - "8080:8080"
+    command: tail -f /dev/null
+
+  app:
+    build:
+      context: ./t0016Next
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./t0016Next:/app/src
+      # - ./key:/app/key
+    ports:
+      - "80:80"
+    command: tail -f /dev/null
+
+    
+  # https-portal3000:
+  #   image: steveltn/https-portal:1
+  #   ports:
+  #     go, nextで443(httpsで標準的に使用されるポート)でポート開放することが前提？
+  #     - '3443:443'
+  #   environment:
+  #     STAGE: local
+  #     DOMAINS: 'localhost -> http://host.docker.internal:3000'
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
+      
+#####################################################
+  # api:                この名前がvolumeで基準になる?
+  #   build: ./t0016Go  このディテクトリのdockerfileを使用する
+  #   tty: true   テレタイプデバイスを有効にする…（？）。
+                  #trueにしとかないと、ｺﾏﾝﾄﾞ実行後にコンテナが落ちる
+  #   volumes:    ホストマシンとコンテナの関連付け
+  #     - ./api:/go/src 
+  #   ports:　ポートのマッピング
+  #     - "3000:3000"　ホストマシンのポート：コンテナのポート

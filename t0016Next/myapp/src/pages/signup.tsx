@@ -11,6 +11,8 @@ import { useRouter } from "next/router";
 import type { SignupListener } from "../types/usertype";
 import Link from 'next/link';
 import {Checkbox} from '../components/SomeFunction';
+import {domain} from '../../env'
+
 
 const Signup = () => {
   const defaultValues: SignupListener = {
@@ -28,7 +30,7 @@ const Signup = () => {
   const onSubmit = async (data:InputValues) => {
     try {
       console.log("data=", data);
-      const response = await fetch(`https://localhost:8080/signup`, { 
+      const response = await fetch(`${domain.backendHost}/signup`, { 
           method: 'POST',
           credentials: "include",
           headers: {
@@ -84,7 +86,7 @@ const Signup = () => {
         </form>
         <br />
         <div>
-            <button style={{ background: '' }}><Link href={`/`}>会員登録せずに閲覧する</Link></button><br />
+            <button style={{ background: '' }}><Link href={`/`}>会員登録せずにTOPへ戻る</Link></button><br />
             <button style={{ background: '' }}><Link href={`/signin`}>ログインフォームへ</Link></button><br />
             <button style={{ background: '' }}><Link href={`/mypage`}>mypageへ</Link></button>
                 </div>

@@ -154,7 +154,7 @@ func CreateVtuber(c *gin.Context) {
 	vts.VtuberInputerId = &tokenLId
 
 	var anotherVts types.Vtuber
-	anotherVts.VtuberInputerId = &tokenLId //vtuber_idが空のものを用意→あるとand検索になってしまう。
+	anotherVts.VtuberInputerId = &tokenLId //vtuber_idが空のものを用意→データが有るとand検索になってしまう。
 	utility.Db.Where("vtuber_name = ?", vts.VtuberName).Find(&anotherVts)
 	fmt.Printf(" vtuber_id= %d に登録されています\n", *&anotherVts.VtuberId)
 	if *&vts.VtuberId != 0 {

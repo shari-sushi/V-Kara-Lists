@@ -6,8 +6,10 @@ import https from 'https';
 import axios from 'axios';
 import {YoutubePlayer, YoutubePlayListPlayer} from '../components/YoutubePlayer'
 import {ConversionTime, ExtractVideoId} from '../components/Conversion'
-import { DataTableRandam} from '../components/Table'
+import { RandamTable} from '../components/Table'
 import {GestLogin} from '../components/authButton'
+import {domain} from '../../env'
+
 
   type PostsAndCheckSignin= {
     posts: any; // anyは避けるべき？
@@ -21,10 +23,12 @@ const AllDatePage: React.FC<PostsAndCheckSignin> = ({ posts, checkSignin }) =>  
     // setData1はステートを更新する関数。
 const [vtubers, setData1] = useState<Vtuber[]>();
 const [movies, setData2] = useState<VtuberMovie[]>();
-const [start,setStart]=useState<number>((60*14+9)) //qFVhnuIBGiQなら60*25か60*47かなー, 60*7+59, 60*8+29
+const [start,setStart]=useState<number>((36*60+41))
+//qFVhnuIBGiQなら60*25か60*47かなー, 60*7+59, 60*8+29
+// E7x2TZ1_Ys4 なら43*60,36*60+34
 const [allJoinData, setAllJoinData]=useState<AllJoinData>();
 
-const [currentMovieId, setCurrentMovieId] = useState<string>("qFVhnuIBGiQ");
+const [currentMovieId, setCurrentMovieId] = useState<string>("E7x2TZ1_Ys4");
 const handleMovieClick = (movieId: string) => {
   setCurrentMovieId(movieId);
 };
@@ -35,7 +39,6 @@ const handleMovieClick = (movieId: string) => {
           setData2(posts.vtubers_and_movies);
           setAllJoinData(posts.alljoindata);
               // setData3(checkSingin)
-          console.log("checkSignin=", checkSignin)
       }
   }, [posts]);
 
@@ -47,8 +50,8 @@ const handleMovieClick = (movieId: string) => {
       <Link href="/delete"><button >　DALETE ver.1</button></Link>
             
       <h1>TOP画面</h1>
-        <h3>"推し"の"歌枠"の聴きたい"歌"を再生しよう。 <br />
-        推しが歌った"歌"を一目で把握、布教しよう。<br /><br />
+        <h3>「推し」の「歌枠」の聴きたい「歌」 <br />
+          「即座に再生」、「一目で把握」、「布教」<br /><br />
         ※ご本人様にはご自身の歌った歌の把握にお使いいただければ幸いです。
         </h3>
            {/*  ログイン機能のリンクボタン */}
@@ -62,7 +65,7 @@ const handleMovieClick = (movieId: string) => {
                 マイページ</button>
             </Link>
             <GestLogin/>
-            <YoutubePlayer videoId={currentMovieId}  start={start} />
+            <YoutubePlayer videoId={currentMovieId} start={start} />
 
             ！注意！Vtuber様や動画により音量差があります。 <br/>
             ！注意！特に、個人→大手の切り替え時に爆音となる傾向があります。
@@ -77,21 +80,19 @@ const handleMovieClick = (movieId: string) => {
 
       <table border={4} > 
         <thead>{/* ← tabeleのhead */}
-           <tr>
-            <td>ID</td>
-            <td>推し</td>
+          <tr>
+            <td>お名前</td>
             <td>読み</td>
             <td>紹介動画</td>
             <td>ｻｲﾄ内ﾘﾝｸ</td>
             <td>ｻｲﾄ内ﾘﾝｸ</td>
             {checkSignin && <td>編集</td>}
-         </tr>
+          </tr>
         </thead>
     
         <tbody>
         {vtubers && vtubers.map((vtubers, index) => (
         <tr key={index}>
-         <td>{vtubers.VtuberId}</td>
          <td>{vtubers.VtuberName}</td>
          <td>{vtubers.VtuberKana}</td>
          {vtubers.IntroMovieUrl ? (
@@ -121,7 +122,7 @@ const handleMovieClick = (movieId: string) => {
         <tbody>
           {movies && movies.map((movies, index) => (
             <tr key={index}>
-          <td>{movies.VtuberName}</td>
+            <td>{movies.VtuberName}</td>
           {movies.MovieUrl ? (
                <td><a href="#" onClick={(e) => {
                 e.preventDefault();
@@ -147,10 +148,10 @@ const handleMovieClick = (movieId: string) => {
 
     <h2>★歌</h2>
     <Link href={`/karaokelist/sings`} ><u>全歌一覧</u></Link>
-    <DataTableRandam
+    <RandamTable
       data={posts.alljoindata}
       handleMovieClick={handleMovieClick} 
-      setStart={setStart} 
+      setStart={setStart}
     />
 </div>
   )};
@@ -162,9 +163,12 @@ const handleMovieClick = (movieId: string) => {
     const httpsAgent = new https.Agent({
         rejectUnauthorized: false
     });
-    let resData;
+    let resData:AllJoinData| undefined;
+    // let resData;
     try {
-        const response = await axios.get('https://localhost:8080', {
+      console.log("domain.backendHost:",domain.backendHost)
+        // const response = await axios.get(`${domain.backendHost}/`, {
+        const response = await axios.get(`http://localhost:8080/`, {
           // 0019だとnullじゃないとサーバーが起動しない。undefinedはダメだとエラーが出る。
             httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
         });
@@ -174,7 +178,7 @@ const handleMovieClick = (movieId: string) => {
     }
 
     // console.log("resData: ", resData)
-    console.log("resData=", resData) //この時点では動画情報持ってる
+    // console.log("resData=", resData) //この時点では動画情報持ってる
     
     // Signinしていればtrueを返す
     const rawCookie = context.req.headers.cookie;
@@ -196,20 +200,9 @@ const handleMovieClick = (movieId: string) => {
   
   export default AllDatePage;
   
-
-
 //   **** memo ****
 
 //      <DeleteButton Unique_id={item.streamer_id} /> 
-
-// 各種リンク
-            //  {item2.Movies ? ( <td>{item2.Movies'MovieId'}</td>
-            //   ) : ( <td>未登録</td>      )}
-
-            //  {item2.MovieUrl ? ( <td>{item2.MovieUrl}</td>
-            //   ) : (<td>-</td>            )}
-            // {item2.MovieTitle ? (  <td>{item2.MovieTitle}</td>
-            //   ) : (<td>-</td>            )} 
 
 // SSR化する前のコード
 // function AllDatePage( posts : AllData)  {

@@ -1,0 +1,19 @@
+# syntax=docker/dockerfile:1
+
+# go
+FROM golang:1.16-alpine
+
+WORKDIR /t0016Go/cmd
+
+# Download necessary Go modules
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
+
+COPY *.go ./
+
+RUN go build -o /docker-gs-ping
+
+EXPOSE 8080
+
+CMD [ "go", "run", "." ]

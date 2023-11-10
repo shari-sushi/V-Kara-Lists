@@ -5,6 +5,7 @@ import React, { useState, useEffect, useMemo  } from 'react';
 import Select from 'react-select';
 import type { AllData, Vtuber, Movie, KaraokeList, AllJoinData, VtuberMovie } from '../types/singdata';
 import dynamic from 'next/dynamic';
+import {domain} from '../../env'
 
 // 不要なら消したい。現状、エラーが出てしまったため使ってるだけ。
 const DynamicReactSelect = dynamic(() => import('react-select'), {
@@ -57,8 +58,8 @@ type DropDownVt={
  export const DropDownVt = ({posts, onVtuberSelect, onMovieClear, onKaraokeClear }:DropDownVt) => {
   // console.log("DropDownVt2のposts", posts)
   const handleVtuberClear = () => {
-    onVtuberSelect(0);   //nillになる
-    onMovieClear();         //undefinedになる
+    onVtuberSelect(0);
+    onMovieClear();
     onKaraokeClear();
   };
   const [vtuberOptions, setVtuberOptions] = useState<Options[]>([]); //配列の初期値が　[] となる。
@@ -77,7 +78,7 @@ type DropDownVt={
       }
     };
     fetchVtubers();
-  }, []);
+  }, [posts.vtubers]);
   return (
     <><Select
         id="selectbox"
@@ -145,7 +146,8 @@ export const DropDownMo = ({ posts, selectedVtuber, onMovieSelect, onKaraokeClea
       setSelectedMovieId("");
     };
     filterMoviesOfSelectedVtuber();
-  }, [selectedVtuber]);
+  }, [selectedVtuber, posts.movies]);
+
   return (
     <><Select
         id="selectbox"
@@ -218,7 +220,7 @@ export const DropDownKa = ({ posts, selectedMovie, onKaraokeSelect }:DropDownKaP
       setSelectedKaraoke(0);
     };
     fetchKaraokes();
-  }, [selectedMovie]);
+  }, [selectedMovie, posts.karaokes]);
   return (
     <>
       <Select

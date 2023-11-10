@@ -6,10 +6,11 @@ import https from 'https';
 import axios from 'axios';
 import {YoutubePlayer} from '../../components/YoutubePlayer'
 import {ConversionTime, ExtractVideoId} from '../../components/Conversion'
-import { DataTablePageNation } from '../../components/Table'
+// import { DataTablePageNation } from '../../components/Table'
 import { createRoot } from 'react-dom/client';
 import {Checkbox} from '../../components/SomeFunction';
 import { CellProps } from 'react-table';
+import {domain} from '../../../env'
 
 
   type PostsAndCheckSignin= {
@@ -33,40 +34,40 @@ type Column = {
   accessor: string;
   Cell?: (cell: CellProps<any, any>) => React.ReactElement;
 };
-const columns:Column = [
-  {Header: "VTuber", accessor: "VtuberName"},
-  {Header: "歌",     accessor: "SongName",
-    Cell: (cell: { row: { original: any; }; }) => { //どっちが良いんだ…
-    // Cell: (cell: CellProps<any,any>) => {
-      const item = cell.row.original;
-      return (
-        <a href="#" onClick={(e) => {
-          e.preventDefault();
-          console.log("item.MovieUrl", item.MovieUrl);
-          handleMovieClick(ExtractVideoId(item.MovieUrl));
-          setStart(ConversionTime(item.SingStart));
-        }}>
-          {item.SongName}
-        </a>
-      )
-    }
-  },
-  {Header: "外部リンク", accessor: "MovieUrl",
-  Cell: (cell: CellProps<any,any>) => {
-    const item = cell.row.original;
-    return (
-      <a href="#" onClick={(e) => {
-        e.preventDefault();
-        console.log("item.MovieUrl", item.MovieUrl);
-        handleMovieClick(ExtractVideoId(item.MovieUrl));
-        setStart(ConversionTime(item.SingStart));
-      }}>
-        YouYubeへ
-      </a>
-    )
-  }
-  }
-];
+// const columns:Column = [
+//   {Header: "VTuber", accessor: "VtuberName"},
+//   {Header: "歌",     accessor: "SongName",
+//     Cell: (cell: { row: { original: any; }; }) => { //どっちが良いんだ…
+//     // Cell: (cell: CellProps<any,any>) => {
+//       const item = cell.row.original;
+//       return (
+//         <a href="#" onClick={(e) => {
+//           e.preventDefault();
+//           console.log("item.MovieUrl", item.MovieUrl);
+//           handleMovieClick(ExtractVideoId(item.MovieUrl));
+//           setStart(ConversionTime(item.SingStart));
+//         }}>
+//           {item.SongName}
+//         </a>
+//       )
+//     }
+//   },
+//   {Header: "外部リンク", accessor: "MovieUrl",
+//   Cell: (cell: CellProps<any,any>) => {
+//     const item = cell.row.original;
+//     return (
+//       <a href="#" onClick={(e) => {
+//         e.preventDefault();
+//         console.log("item.MovieUrl", item.MovieUrl);
+//         handleMovieClick(ExtractVideoId(item.MovieUrl));
+//         setStart(ConversionTime(item.SingStart));
+//       }}>
+//         YouYubeへ
+//       </a>
+//     )
+//   }
+//   }
+// ];
 
   useEffect(() => {
       if (posts) {
@@ -83,12 +84,12 @@ const columns:Column = [
     <Checkbox checked={isRandomOrAll}
     onChange={() => setIsRandomOrAll((state) => !state)} >：{pageSize}件ずつ表示⇔全件表示(全{allJoinData?.length}歌)</Checkbox>
 
-    {isRandomOrAll &&
+    {/* {isRandomOrAll &&
       <DataTablePageNation
       columns={columns}
       data={posts.alljoindata}
       pageSize={pageSize}/>
-    }
+    } */}
     {!isRandomOrAll &&
       <table border={4}>
         <thead>
@@ -131,7 +132,7 @@ const columns:Column = [
     });
     let resData;
     try {
-        const response = await axios.get('https://localhost:8080', {
+        const response = await axios.get(`${domain.backendHost}`, {
             httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
         });
         resData = response.data;

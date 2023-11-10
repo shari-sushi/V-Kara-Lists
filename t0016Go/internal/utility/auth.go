@@ -55,7 +55,7 @@ func InitDb() {
 
 	fmt.Printf("path=%s\n, err=%s\n", path, err)
 	// checkConnect(1)
-	// defer Db.Close()
+	// defer D.Close()
 }
 
 func migration() {
@@ -180,25 +180,36 @@ func trigerSetCookiebyUserAuth(c *gin.Context, ListenerId int) {
 		return
 	}
 	// Cookieにトークンをセット
-	cookieMaxAge := 60 * 60 * 12
-	// c.SetCookie("token", token, cookieMaxAge, "/", "localhost", false, true)
-	// c.SetCookie("token", token, cookieMaxAge, "/", "", false, false)
+	cookieMaxAge := 60 * 60 * 24 * 365
 
-	cookie := &http.Cookie{
+	// domain := getdomain()
+	domain := "localhost"
+
+	newCookie := &http.Cookie{
 		Name: "auth-token",
 		// Name:     "next-auth.session-token",
 		Value:    token,
 		Path:     "/",
-		Domain:   "localhost",
+		Domain:   domain,
 		MaxAge:   cookieMaxAge,
 		HttpOnly: true,
 		Secure:   true, //httpsの環境ではtrueにすること。
-		SameSite: http.SameSiteNoneMode,
-		// 	SameSite: http.SameSiteLaxMode, //c.SetCookieでは設定不可かも。デフォだとLax。Strict, Lax, Noneの3択。
-
+		SameSite: http.SameSiteStrictMode,
 	}
-	http.SetCookie(c.Writer, cookie)
-	fmt.Printf("発行したcookie= %v /n", cookie)
+	http.SetCookie(c.Writer, newCookie)
+	fmt.Printf("発行したcookie= %v /n", newCookie)
+}
+
+func getdomain() string {
+	// ローカル環境
+	if os.Getenv("ENV") == "local" {
+		return "localhoset"
+		// 本番環境
+	} else if os.Getenv("ENV") == "production" {
+		return "my_domain"
+	} else {
+		return ""
+	}
 }
 
 // mainにてmiddleware管理
