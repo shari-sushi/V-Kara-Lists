@@ -82,7 +82,7 @@ func ReadAllVtubersAndMovies(c *gin.Context) {
 	})
 }
 
-// ↑　SELECT
+// ↑実行結果　SELECT
 // vtuber_id, vtuber_name,
 // movie_url,  movie_title,
 // karaoke_list_id, sing_start, song_name, karaoke_list_inputer_id
@@ -116,7 +116,7 @@ func ReadSings(c *gin.Context) {
 	})
 }
 
-// ↑　SELECT
+// ↑実行結果　SELECT
 // vtuber_id, vtuber_name,
 // movie_id,  movie_url,  movie_title,
 // song_id,  sing_start,  song

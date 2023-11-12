@@ -14,7 +14,7 @@ import {Checkbox} from '../components/SomeFunction';
 import {domain} from '../../env'
 
 
-const Signup = () => {
+export function Signup()  {
   const defaultValues: SignupListener = {
     ListenerName: "",
     Email: "",

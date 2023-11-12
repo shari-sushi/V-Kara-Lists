@@ -229,8 +229,8 @@ func CallGetMemberProfile(r *gin.Engine) {
 	cud.Use(middleware.AuthMiddleware)
 	{
 		users.POST("create", h.GetListenerProfile) // 未定
-		users.POST("delete", h.GetListenerProfile) // 未定
-		users.POST("update", h.GetListenerProfile) // 未定
+		// users.POST("delete", h.GetListenerProfile) // 未定
+		// users.POST("update", h.GetListenerProfile) // 未定
 	}
 }
 

@@ -12,7 +12,7 @@ import {domain} from '../../env'
 // 送信する前にバリデーションチェック　
 // https://yutaro-blog.net/2021/10/22/react-state-tips/
 
-const SigninPage = () => {
+export function SigninPage() {
   const defaultValues: LoginListener = {
     Email: "",
     Password: "",
@@ -34,14 +34,13 @@ const SigninPage = () => {
           body: JSON.stringify(data)
       });
       if (response.ok) {
-        // router.push(`/`)
+        router.push(`/`)
       }else{
-          throw new Error(response.statusText);
+          throw new Error(response.statusText); //catchに飛ぶから呼び出されること無い？
       }
     } catch (error) {
       console.error(error);
     }
-    
   };
 
   return (
