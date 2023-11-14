@@ -1,11 +1,12 @@
 # ベースイメージを指定
-FROM node:14
+FROM node:18
 
 # コンテナ内の作業ディレクトリを設定
-WORKDIR /app/src
+# = ./t0016Next
+WORKDIR /app/src 
 
 # package.jsonとpackage-lock.jsonをコピー
-COPY /myapp/package*.json ./
+COPY /myapp/package*.json ./myapp/
 
 # 依存関係をインストール
 RUN npm install
@@ -14,6 +15,7 @@ RUN npm install
 COPY . .
 
 # アプリケーションをビルド
+# WORKDIR /app/src/myapp/
 RUN npm run build
 
 # アプリケーションを起動

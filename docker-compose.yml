@@ -37,7 +37,7 @@ services:
       # - ./key:/api/key
     ports:
       - "8080:8080"
-    command: tail -f /dev/null
+    # command: tail -f /dev/null
 
   app:
     build:
@@ -49,7 +49,7 @@ services:
       # - ./key:/app/key
     ports:
       - "80:80"
-    command: tail -f /dev/null
+    # command: tail -f /dev/null
 
     
   # https-portal3000:
