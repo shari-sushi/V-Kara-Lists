@@ -16,15 +16,17 @@ services:
     platform: linux/amd64 #mac環境では必須なことがあるらしい
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_ROOT_PASSWORD : ${MYSQL_PASSWORD}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD : ${MYSQL_PASSWORD} 
       MYSQL_USER: ${MYSQL_USER}
     # TZ: "Asia/Tokyo"
     # volumes:
     #   - ./my.cnf:/etc/mysql/conf.d/my.cnf
+    container_name: test_db
     build:
       context: .
     ports:
-      - "3307:3306"
+      - "3306:3306"
     command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci --skip-character-set-client-handshake
 
   api:
@@ -35,20 +37,24 @@ services:
     volumes:
       - ./t0016Go:/api/src
       # - ./key:/api/key
+    depends_on:
+      - "db"
     ports:
       - "8080:8080"
     # command: tail -f /dev/null
 
-  app:
-    build:
-      context: ./t0016Next
-    stdin_open: true
-    tty: true
-    volumes:
-      - ./t0016Next:/app/src
-      # - ./key:/app/key
-    ports:
-      - "80:80"
+  # app:
+  #   build:
+  #     context: ./t0016Next
+  #   stdin_open: true
+  #   tty: true
+  #   volumes:
+  #     - ./t0016Next:/app/src
+  #     # - ./key:/app/key
+  #    depends_on:
+  #      - "api" 
+  #   ports:
+  #     - "80:80"
     # command: tail -f /dev/null
 
     

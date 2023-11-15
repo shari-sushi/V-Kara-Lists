@@ -29,7 +29,7 @@ COPY *.go ./
 
 # Run
 # CMD [ "/t0016Go" ]
-CMD [ "go","run","cmd\main.go" ]
+CMD [ "go","run","cmd/main.go" ]
 
 ##################################
 # syntax=docker/dockerfile:1    文法の指定。書くなら最初。

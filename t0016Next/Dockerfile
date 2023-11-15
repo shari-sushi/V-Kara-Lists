@@ -6,13 +6,13 @@ FROM node:18
 WORKDIR /app/src 
 
 # package.jsonとpackage-lock.jsonをコピー
-COPY /myapp/package*.json ./myapp/
+COPY /myapp/package*.json .
 
 # 依存関係をインストール
 RUN npm install
 
 # アプリケーションのソースコードをコピー
-COPY . .
+COPY ./myapp .
 
 # アプリケーションをビルド
 # WORKDIR /app/src/myapp/

@@ -43,15 +43,18 @@ func InitDb() {
 	user := os.Getenv("MYSQL_USER")
 	pw := os.Getenv("MYSQL_PASSWORD")
 	db_name := os.Getenv("MYSQL_DATABASE")
-	// db_name := "migration_test" //test用
-	path := fmt.Sprintf("%s:%s@tcp(localhost:3306)/%s?charset=utf8&parseTime=true", user, pw, db_name)
-
+	// db_name := "migration_test" //migrationテスト用
+	tcp := "_db:3306" //docker用
+	// tcp := "localhost:3306" //docker不使用用
+	path := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=true", user, pw, tcp, db_name)
 	var err error
 	Db, err = gorm.Open(mysql.Open(path), &gorm.Config{})
 	Db = Db.Debug()
 	if err != nil {
 		panic("failed to connect database")
 	}
+
+	// migration()
 
 	fmt.Printf("path=%s\n, err=%s\n", path, err)
 	// checkConnect(1)

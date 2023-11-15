@@ -7,6 +7,8 @@ require (
 	gorm.io/driver/mysql v1.5.1
 )
 
+require github.com/joho/godotenv v1.5.1 // indirect
+
 require (
 	github.com/gin-contrib/sessions v0.0.5
 	github.com/gorilla/context v1.1.1 // indirect
