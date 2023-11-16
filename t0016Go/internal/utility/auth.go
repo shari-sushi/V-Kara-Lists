@@ -18,7 +18,6 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-jwt/jwt"
 	"github.com/joho/godotenv"
-	_ "github.com/joho/godotenv"
 	"github.com/sharin-sushi/0016go_next_relation/internal/controller/crypto"
 	"github.com/sharin-sushi/0016go_next_relation/internal/types"
 	"github.com/sharin-sushi/0016go_next_relation/internal/utility/token"
@@ -42,9 +41,20 @@ func GetDB() *gorm.DB {
 }
 
 func init() {
+	//docker外ではPCのGO_ENVを取得し、godotenvが.dnvを取得する。
+	//docker上ではdockercomposeが.envを取得する。
+	// goEnv := os.Getenv("GO_ENV")
+	// if goEnv == "development" {
+	// fmt.Printf("goEnc=%v \n", goEnv)
+	// t0016Go\internal\utility\auth.go
 	err := godotenv.Load("../.env")
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	if err == nil {
+		checkFile := os.Getenv("GO_ENV")
+		fmt.Printf("got .env file is %v \n", checkFile)
+	} else {
+		fmt.Print("godotenvによる.envファイル取得失敗。dockercompose.yamlから取得 \n")
+		// log.Fatal("Error loading go/.env file")
+		// }
 	}
 }
 
@@ -53,10 +63,19 @@ func InitDb() {
 	pw := os.Getenv("MYSQL_PASSWORD")
 	db_name := os.Getenv("MYSQL_DATABASE")
 	// db_name := "migration_test" //migrationテスト用
-	tcp := "_db:3306" //docker用
-	// tcp := "localhost:3306" //docker不使用用
-	path := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=true", user, pw, tcp, db_name)
-	fmt.Print("path=", path)
+	// port := "v_kara_db" //docker用
+	var port string
+	checkFile := os.Getenv("GO_ENV")
+	if checkFile == "development" {
+		port = "localhost:3306" //docker不使用用
+	} else if checkFile == "" {
+		port = "v_kara_db" //docker不使用用
+	} else {
+		log.Fatal("GO_ENVに想定外の値が入力されています。")
+
+	}
+	path := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=true", user, pw, port, db_name)
+	fmt.Printf("path=%v \n", path)
 	var err error
 	Db, err = gorm.Open(mysql.Open(path), &gorm.Config{})
 	Db = Db.Debug()
@@ -64,10 +83,9 @@ func InitDb() {
 		panic("failed to connect database")
 	}
 
-	// migration()
+	migration()
 
-	fmt.Printf("path=%s\n, err=%s\n", path, err)
-	// checkConnect(1)
+	// fmt.Printf("err=%s\n", err)
 	// defer D.Close()
 }
 

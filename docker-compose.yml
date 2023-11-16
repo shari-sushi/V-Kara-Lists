@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+# https化に必要らしく記述中だったが、一旦httpで進めることにしたのでコメントアウト化
 # nginx:
 #   image: nginx
 #   container_name: nginx
@@ -13,7 +14,7 @@ services:
 #     - app
   db:
     image: mysql
-    platform: linux/amd64 #mac環境では必須なことがあるらしい
+    platform: linux/amd64 #mac環境で必須なことがあるらしい
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
@@ -22,7 +23,7 @@ services:
     # TZ: "Asia/Tokyo"
     # volumes:
     #   - ./my.cnf:/etc/mysql/conf.d/my.cnf
-    container_name: test_db
+    container_name: v_kara_db
     build:
       context: .
     ports:
@@ -32,6 +33,11 @@ services:
   api:
     build: 
       context: ./t0016Go
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD : ${MYSQL_PASSWORD} 
+      MYSQL_USER: ${MYSQL_USER}
     stdin_open: true
     tty: true
     volumes:
