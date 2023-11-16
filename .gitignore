@@ -1,12 +1,4 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-
-# local env files
-
-.env
-t0016Next/myapp/.env.production
-t0016Next/myapp/.env.development
-t0016Next/.env
+# nextは t0016Next\myapp\.env にて
 
 # vercel
 .vercel

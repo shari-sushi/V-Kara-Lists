@@ -17,6 +17,8 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-jwt/jwt"
+	"github.com/joho/godotenv"
+	_ "github.com/joho/godotenv"
 	"github.com/sharin-sushi/0016go_next_relation/internal/controller/crypto"
 	"github.com/sharin-sushi/0016go_next_relation/internal/types"
 	"github.com/sharin-sushi/0016go_next_relation/internal/utility/token"
@@ -39,6 +41,13 @@ func GetDB() *gorm.DB {
 	return Db
 }
 
+func init() {
+	err := godotenv.Load("../../.env")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+}
+
 func InitDb() {
 	user := os.Getenv("MYSQL_USER")
 	pw := os.Getenv("MYSQL_PASSWORD")
@@ -47,6 +56,7 @@ func InitDb() {
 	tcp := "_db:3306" //docker用
 	// tcp := "localhost:3306" //docker不使用用
 	path := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=true", user, pw, tcp, db_name)
+	fmt.Print("path=", path)
 	var err error
 	Db, err = gorm.Open(mysql.Open(path), &gorm.Config{})
 	Db = Db.Debug()
