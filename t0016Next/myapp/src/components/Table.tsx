@@ -26,25 +26,26 @@ type RandamTableData= {
     const [shuffledData, setShuffledData] = useState(data);
     const [reload, setRandom] = useState(true)
 
-    useEffect(() => { //dataの配列の順をぐちゃぐちゃにする
+    useEffect(() => {
       setShuffledData(shuffleArray(data));
     }, [data, reload]);
-    const itemsPerPage = 5; //1回で表示する件数を指定
+    const itemsPerPage = 5;
     const getCurrentData = () => {
       return shuffledData.slice(0, itemsPerPage -1); //バグ有り
       //ページ更新で表示数増減することが多い。表示数について第二引数~+3。
     }
+
       return (
         <div>
           {data === null &&
             <div>曲が登録されていません</div>
           }
-          {(data.length > 0 && data.length < 6) && 
+          {(data?.length > 0 && data?.length < 6) && 
             <div>歌のランダム表示は登録件数が６件以上に実行されます。 <br/>
             現在の登録件数 : {data.length}
             </div>
           }
-          { data.length > 7 &&
+          { data?.length > 7 &&
             <div>
                 <button onClick={() => setRandom(!reload)} >
                   表示更新

@@ -13,3 +13,8 @@ my.cfn
 /key
 
 rebase-merge/
+
+.env
+
+memo.txt
+!.env.txt

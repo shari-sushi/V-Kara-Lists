@@ -74,6 +74,7 @@ func ReadAllVtubersAndMovies(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"result VTsmoのerror": errA.Error()})
 		return
 	}
+	fmt.Printf("vts=%v, \n vtsmos=%v,\n alljoin=%v", vts, vtsmos, alljoin)
 
 	c.JSON(http.StatusOK, gin.H{
 		"vtubers":            vts,
