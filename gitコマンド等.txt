@@ -104,9 +104,9 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
     git merge (ブランチＡ)
 
 8. 別のブランチの最新の状態をもらう。
-    git checkout [新しいブランチ名]
+    git checkout -b [新ブランチ名] または　 git switch -c [新ブランチ名]
     git reset --hard [別のブランチ名]
-    git push -f origin [新しいブランチ名]
+    git push -f origin [作成したブランチ名]
 
 80. rebase
     〇
@@ -129,3 +129,5 @@ go get "github.com/sharin-sushi/0010/test/internal/article"
     git mv <ファイル名> <移動先>
 
     git branch -m [new] //現在のbranchの名称変更
+
+    git rm --cached <ファイル名>     インデックスから除外する 

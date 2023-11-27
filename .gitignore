@@ -18,3 +18,7 @@ rebase-merge/
 
 memo.txt
 !.env.txt
+
+# 逐一、細々と編集している。それを全て残すと履歴汚染になるため、gitの追跡を外した。
+# 専用branchを作るほどのことでもない。
+README.md
