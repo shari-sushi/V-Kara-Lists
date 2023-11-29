@@ -1,55 +1,55 @@
-package crud
+package interfaces
 
 import (
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sharin-sushi/0016go_next_relation/internal/types"
+	"github.com/sharin-sushi/0016go_next_relation/domain"
 
 	"github.com/sharin-sushi/0016go_next_relation/internal/utility"
 )
 
-var vt types.Vtuber
-var vts []types.Vtuber
-var mo types.Movie
-var mos []types.Movie
-var ka types.KaraokeList
-var kas []types.KaraokeList
+var vt domain.Vtuber
+var vts []domain.Vtuber
+var mo domain.Movie
+var mos []domain.Movie
+var ka domain.KaraokeList
+var kas []domain.KaraokeList
 
-var vtsmo types.VtuberMovie
-var vtsmos []*types.VtuberMovie //Scan()するからポインタ？
+var vtsmo domain.VtuberMovie
+var vtsmos []*domain.VtuberMovie //Scan()するからポインタ？
 
-var vtsmoskl types.VtuberMovieKalaokeList
-var vtsmoskls []*types.VtuberMovieKalaokeList
+var vtsmoskl domain.VtuberMovieKalaokeList
+var vtsmoskls []*domain.VtuberMovieKalaokeList
 
-var all types.AllColumns
-var alls []*types.AllColumns
+var all domain.AllColumns
+var alls []*domain.AllColumns
 
 type AllDate struct {
-	vts types.Vtuber
-	mos types.Movie
-	kar types.KaraokeList
+	vts domain.Vtuber
+	mos domain.Movie
+	kar domain.KaraokeList
 }
 
 // Vtuberを全件取得する共通処理
-func fetchVtubers() ([]types.Vtuber, error) {
-	var vts []types.Vtuber
+func fetchVtubers() ([]domain.Vtuber, error) {
+	var vts []domain.Vtuber
 	resultVts := utility.Db.Find(&vts)
 	return vts, resultVts.Error
 }
 
 // VtuberとMovieを全件取得する共通処理
-func fetchVtubersJoinMovies(vts []types.Vtuber) ([]*types.VtuberMovie, error) {
-	var vtsmos []*types.VtuberMovie
+func fetchVtubersJoinMovies(vts []domain.Vtuber) ([]*domain.VtuberMovie, error) {
+	var vtsmos []*domain.VtuberMovie
 	resultVtsmo := utility.Db.Model(&vts).Select("vtubers.vtuber_id, vtubers.vtuber_name, mo.movie_url, mo.movie_title").Joins("LEFT JOIN movies  mo USING(vtuber_id)").Scan(&vtsmos)
 	return vtsmos, resultVtsmo.Error
 }
 
 // メインコンテンツ3種をjoinして全件取得
-func fetchAllJoinData() ([]*types.AllColumns, error) {
-	var kas []*types.KaraokeList
-	var alls []*types.AllColumns
+func fetchAllJoinData() ([]*domain.AllColumns, error) {
+	var kas []*domain.KaraokeList
+	var alls []*domain.AllColumns
 	selectAll := "vtuber_id, vtuber_name, vtuber_kana, intro_movie_url, movie_url, movie_title, karaoke_list_id, sing_start, song_name, karaoke_list_inputer_id "
 	resultAll := utility.Db.Model(&kas).Select(selectAll).Joins("LEFT JOIN movies mo USING(movie_url) LEFT JOIN vtubers vt USING(vtuber_id)").Scan(&alls)
 	return alls, resultAll.Error
@@ -93,7 +93,7 @@ func ReadAllVtubersAndMovies(c *gin.Context) {
 
 //  /sings
 func ReadAllSings(c *gin.Context) {
-	var vtsmoskls []*types.VtuberMovieKalaokeList
+	var vtsmoskls []*domain.VtuberMovieKalaokeList
 	resultVtsmo := utility.Db.Model(&kas).Select("vtubers.vtuber_id, vtubers.vtuber_name, mo.movie_url, mo.movie_title, karaoke_list_id, sing_start, song_name, karaoke_list_inputer_id").Joins("LEFT JOIN movies  mo USING(movie_url) LEFT JOIN vtubers  USING(vtuber_id)").Scan(&vtsmoskls)
 	if resultVtsmo.Error != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -130,7 +130,7 @@ func ReadSings(c *gin.Context) {
 // test用　INSERT INTO `vtubers` (vtuber_id, `vtuber_name`,`vtuber_kana`,`intro_movie_url`,`vtuber_inputer_id`) VALUES (4, '宝鐘マリン','houshou_marin',NULL,1)
 func CreateVtuber(c *gin.Context) {
 	fmt.Print("CreateVtuber")
-	var vts types.Vtuber
+	var vts domain.Vtuber
 
 	err := c.ShouldBind(&vts)
 	if err != nil {
@@ -154,7 +154,7 @@ func CreateVtuber(c *gin.Context) {
 
 	vts.VtuberInputerId = &tokenLId
 
-	var anotherVts types.Vtuber
+	var anotherVts domain.Vtuber
 	anotherVts.VtuberInputerId = &tokenLId //vtuber_idが空のものを用意→データが有るとand検索になってしまう。
 	utility.Db.Where("vtuber_name = ?", vts.VtuberName).Find(&anotherVts)
 	fmt.Printf(" vtuber_id= %d に登録されています\n", *&anotherVts.VtuberId)
@@ -181,8 +181,8 @@ func CreateVtuber(c *gin.Context) {
 
 //	/create/movie
 func CreateMovie(c *gin.Context) {
-	var mo types.Movie
-	var vt types.Vtuber
+	var mo domain.Movie
+	var vt domain.Vtuber
 
 	tokenLId, err := utility.TakeListenerIdFromJWT(c)
 	fmt.Printf("tokenLId=%v", tokenLId)
@@ -214,7 +214,7 @@ func CreateMovie(c *gin.Context) {
 	}
 
 	// 既存チェック(movieにmovie_urlが登録済みならエラーを返す)だけど、不要な気がする。PKだから。
-	// var dummy types.Movie
+	// var dummy domain.Movie
 	// result := utility.Db.Where("movie_url = ?", mo.MovieUrl).Find(&dummy)
 	// if result.Error != nil {
 	// 	c.JSON(http.StatusInternalServerError, gin.H{
@@ -250,7 +250,7 @@ func CreateKaraokeSing(c *gin.Context) {
 		return
 	}
 
-	var ka types.KaraokeList
+	var ka domain.KaraokeList
 	errBind := c.ShouldBind(&ka)
 	if errBind != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -303,7 +303,7 @@ func CreateSong(c *gin.Context) {}
 
 //データ編集
 func EditVtuber(c *gin.Context) {
-	var vt types.Vtuber
+	var vt domain.Vtuber
 	err := c.ShouldBind(&vt)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -325,7 +325,7 @@ func EditVtuber(c *gin.Context) {
 	}
 	vt.VtuberInputerId = &tokenLId
 
-	var dummyVt types.Vtuber
+	var dummyVt domain.Vtuber
 	inquiryResult := utility.Db.Where("vtuber_id = ? AND vtuber_inputer_id = ?", vt.VtuberId, vt.VtuberInputerId).First(&dummyVt)
 	fmt.Printf("dummyVt.VtuberInputerId = %v,\n   vt.VtuberInputerId= %v \n", dummyVt, vt)
 	if inquiryResult == nil {
@@ -350,7 +350,7 @@ func EditVtuber(c *gin.Context) {
 	})
 }
 func EditMovie(c *gin.Context) {
-	var mo types.Movie
+	var mo domain.Movie
 	err := c.ShouldBind(&mo)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -378,7 +378,7 @@ func EditMovie(c *gin.Context) {
 		mo.MovieInputerId = &tokenLId
 	}
 
-	var dummyMo types.Movie
+	var dummyMo domain.Movie
 	inquiryResult := utility.Db.Where("movie_url = ? AND movie_inputer_id ", mo.MovieUrl, mo.MovieInputerId).First(&dummyMo)
 	fmt.Printf("dummyMo = %v\n", dummyMo)
 	if inquiryResult == nil {
@@ -388,7 +388,7 @@ func EditMovie(c *gin.Context) {
 		return
 	}
 
-	// result := utility.Db.Model(&vt).Where("vtuber_id = ?", vt.VtuberId).Updates(types.Vtuber{"vtuber_name:?, vtuber_kana:?, intro_movie_url:?", vt.VtuberName, vt.VtuberKana, vt.IntroMovieUrl})
+	// result := utility.Db.Model(&vt).Where("vtuber_id = ?", vt.VtuberId).Updates(domain.Vtuber{"vtuber_name:?, vtuber_kana:?, intro_movie_url:?", vt.VtuberName, vt.VtuberKana, vt.IntroMovieUrl})
 	result := utility.Db.Model(&mo).Where("movie_url = ?", mo.MovieUrl).Updates(mo)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -401,7 +401,7 @@ func EditMovie(c *gin.Context) {
 	})
 }
 func EditKaraokeSing(c *gin.Context) {
-	var ka types.KaraokeList
+	var ka domain.KaraokeList
 	err := c.ShouldBind(&ka)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -424,7 +424,7 @@ func EditKaraokeSing(c *gin.Context) {
 		ka.KaraokeListInputerId = tokenLId
 	}
 
-	var dummyKa types.KaraokeList
+	var dummyKa domain.KaraokeList
 	inquiryResult := utility.Db.Where("karaoke_list_id = ? AND karaoke_inputer_id = ? ", ka.KaraokeListId, ka.KaraokeListInputerId).First(&dummyKa)
 	fmt.Printf("dummyKo = %v\n", dummyKa)
 	// fmt.Printf("dummyKo.KaraokeListInputerId = %d,\n ka.KaraokeListInputerId= %d \n", *&dummyKa.KaraokeListInputerId, *&ka.KaraokeListInputerId)
@@ -435,7 +435,7 @@ func EditKaraokeSing(c *gin.Context) {
 		return
 	}
 
-	// result := utility.Db.Model(&vt).Where("vtuber_id = ?", vt.VtuberId).Updates(types.Vtuber{"vtuber_name:?, vtuber_kana:?, intro_movie_url:?", vt.VtuberName, vt.VtuberKana, vt.IntroMovieUrl})
+	// result := utility.Db.Model(&vt).Where("vtuber_id = ?", vt.VtuberId).Updates(domain.Vtuber{"vtuber_name:?, vtuber_kana:?, intro_movie_url:?", vt.VtuberName, vt.VtuberKana, vt.IntroMovieUrl})
 	result := utility.Db.Model(&ka).Where("karaoke_list_id = ?", ka.KaraokeListId).Updates(ka)
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -453,7 +453,7 @@ func EditSong(c *gin.Context) {}
 // データ削除(物理)
 // vtuber_id、vtuber_nameの両方がDBと一致していれば削除
 func DeleteVtuber(c *gin.Context) {
-	var vt types.Vtuber
+	var vt domain.Vtuber
 	err := c.ShouldBind(&vt)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -474,7 +474,7 @@ func DeleteVtuber(c *gin.Context) {
 	}
 	vt.VtuberInputerId = &tokenLId
 
-	var dummyVt types.Vtuber
+	var dummyVt domain.Vtuber
 	//JWTの認証情報と、Vtuberの登録者が一致していればdeleteへ進む
 	inquiryResult := utility.Db.Select("vtuber_inputer_id").Where("vtuber_id = ? AND vtuber_inputer_id = ?", vt.VtuberId, &tokenLId).First(&dummyVt)
 	fmt.Printf("inquiryResult = %v\n", inquiryResult)
@@ -502,7 +502,7 @@ func DeleteVtuber(c *gin.Context) {
 
 //httpリクエストbodyでVtuberId, MovieUrlが渡される
 func DeleteMovie(c *gin.Context) {
-	var mo types.Movie
+	var mo domain.Movie
 	err := c.ShouldBind(&mo)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -522,7 +522,7 @@ func DeleteMovie(c *gin.Context) {
 		return
 	}
 
-	var dummyMo types.Movie
+	var dummyMo domain.Movie
 	//JWTの認証情報と、Movieの登録者が一致していればdeleteへ進む
 	inquiryResult := utility.Db.Where("movie_url = ? AND movie_inputer_id = ?", mo.MovieUrl, &tokenLId).First(&dummyMo)
 	fmt.Printf("dummyMo = %v\n", dummyMo)
@@ -548,7 +548,7 @@ func DeleteMovie(c *gin.Context) {
 
 //フロントからMovieUrl, KaraokeListId, SongNameを受け取る
 func DeleteKaraokeSing(c *gin.Context) {
-	var ka types.KaraokeList
+	var ka domain.KaraokeList
 	err := c.ShouldBind(&ka)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -568,7 +568,7 @@ func DeleteKaraokeSing(c *gin.Context) {
 		return
 	}
 
-	var dummyKa types.KaraokeList
+	var dummyKa domain.KaraokeList
 	inquiryResult := utility.Db.Where("movie_url = ? AND karaoke_list_id = ? AND karaoke_list_inputer_id = ?", ka.MovieUrl, ka.KaraokeListId, tokenLId).First(&dummyKa)
 	fmt.Printf("dummyKo = %v\n", &dummyKa)
 	if inquiryResult.Error != nil {
@@ -606,7 +606,7 @@ func ReadAllVtubersName(c *gin.Context) {
 	})
 }
 func ReadMovieTitlesOfTheVTuber(c *gin.Context) {
-	var mo types.Movie
+	var mo domain.Movie
 	err := c.ShouldBind(&mo)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -616,7 +616,7 @@ func ReadMovieTitlesOfTheVTuber(c *gin.Context) {
 	}
 	fmt.Printf("bindしたmoの VtId=%d \n", *mo.VtuberId)
 
-	var returnMoOftheV []types.Movie
+	var returnMoOftheV []domain.Movie
 	utility.Db.Where("vtuber_id = ?", mo.VtuberId).Find(&returnMoOftheV)
 
 	for _, mo := range returnMoOftheV {
@@ -627,7 +627,7 @@ func ReadMovieTitlesOfTheVTuber(c *gin.Context) {
 	})
 }
 func ReadKaraokeListsOfTheMovie(c *gin.Context) {
-	var ka types.KaraokeList
+	var ka domain.KaraokeList
 	err := c.ShouldBind(&ka)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -637,7 +637,7 @@ func ReadKaraokeListsOfTheMovie(c *gin.Context) {
 	}
 	fmt.Printf("bindしたmoの VtId=%d \n", &ka.MovieUrl)
 
-	var returnKaOfTheMo []types.KaraokeList
+	var returnKaOfTheMo []domain.KaraokeList
 	utility.Db.Where("movie_url = ?", ka.MovieUrl).Find(&returnKaOfTheMo)
 	for _, ka := range returnKaOfTheMo {
 		fmt.Printf("returnMo = %v, %v\n", ka.SongName, ka.MovieUrl)
@@ -651,9 +651,9 @@ func ReadAllSongs(c *gin.Context) {}
 
 // vtuber, mobie, karaokeをjoinせずに取得
 func ReadAllDate(c *gin.Context) {
-	var vts []types.Vtuber
-	var mos []types.Movie
-	var kas []types.KaraokeList
+	var vts []domain.Vtuber
+	var mos []domain.Movie
+	var kas []domain.KaraokeList
 	var err error
 	resultVts := utility.Db.Find(&vts)
 	if resultVts.Error != nil {

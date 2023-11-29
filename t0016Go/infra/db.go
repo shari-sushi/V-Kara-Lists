@@ -1,4 +1,4 @@
-package utility
+package infra
 
 //"github.com/sharin-sushi/0022loginwithJWT/internal/utility"
 
@@ -58,7 +58,7 @@ func init() {
 	}
 }
 
-func InitDb() {
+func initDb() {
 	user := os.Getenv("MYSQL_USER")
 	pw := os.Getenv("MYSQL_PASSWORD")
 	db_name := os.Getenv("MYSQL_DATABASE")
