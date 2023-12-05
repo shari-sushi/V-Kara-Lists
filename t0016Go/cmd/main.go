@@ -21,7 +21,7 @@ func main() {
 
 	infra.Routing(r)
 
-	r.Run(":8080")
+	r.Run("localhost:8080")
 	// r.RunTLS(":8080", "../../key/server.pem", "../../key/server_unencrypted.key")
 }
 

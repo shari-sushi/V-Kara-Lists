@@ -16,6 +16,8 @@ rebase-merge/
 
 .env
 
+.vscode
+z_memo
 memo.txt
 !.env.txt
 
