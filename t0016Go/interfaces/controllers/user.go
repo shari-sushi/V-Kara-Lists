@@ -124,7 +124,9 @@ func (controller *UserController) LogIn(c *gin.Context) {
 	foundListener, err := controller.Interactor.FindUserByEmail(user.Email)
 	fmt.Printf("foundListener=%v\n", foundListener)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching listener info"})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Error fetching listener info",
+		})
 		return
 	}
 
@@ -186,7 +188,7 @@ func (controller *UserController) GetListenerProfile(c *gin.Context) {
 	})
 }
 
-// ver? で実装する。要件はissueにて
+// ver2 で実装する。要件はissueにて
 // func (controller *UserController) RestoreUser(c *gin.Context) {
 // 	var user domain.Listener
 // 	if err := c.ShouldBind(&user); err != nil {

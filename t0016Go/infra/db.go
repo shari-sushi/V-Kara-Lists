@@ -68,7 +68,7 @@ func DbInit() database.SqlHandler {
 
 	}
 	db_name := "test_interfaces"
-	path := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=true", user, pw, port, db_name)
+	path := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=true", user, pw, port, db_name)
 	fmt.Printf("path=%v \n", path)
 	var err error
 	gormDB, err := gorm.Open(mysql.Open(path), &gorm.Config{})
@@ -129,6 +129,12 @@ func (handler *SqlHandler) Model(value interface{}) *gorm.DB {
 }
 func (handler *SqlHandler) Save(value interface{}) *gorm.DB {
 	return handler.Conn.Save(value)
+}
+func (handler *SqlHandler) Joins(query string, value interface{}) *gorm.DB {
+	return handler.Conn.Joins(query, value)
+}
+func (handler *SqlHandler) Omit(columns string) *gorm.DB {
+	return handler.Conn.Joins(columns)
 }
 
 // type LineOfLog struct {

@@ -31,4 +31,6 @@ type SqlHandler interface {
 	Updates(interface{}) *gorm.DB
 	Model(interface{}) *gorm.DB
 	Save(interface{}) *gorm.DB
+	Joins(string, interface{}) *gorm.DB
+	Omit(string) *gorm.DB
 }

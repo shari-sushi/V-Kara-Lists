@@ -52,17 +52,3 @@ func (db *UserRepository) FindUserByListenerId(ListenerId domain.ListenerId) (do
 	}
 	return user, err
 }
-
-// FindUserByListenerIdと同じ処理
-// func (db *UserRepository) GetListenerProfile(user domain.Listener) (foundUser domain.Listener, err error) {
-// 	var user domain.Listener
-// 	err := db.First
-// }
-
-// func (db *UserRepository) GuestLogIn() (u domain.Listener, err error) {
-// 	var user domain.Listener
-// 	if err := db.First(&user, user.ListenerName).Error; err != nil {
-// 		return user, err
-// 	}
-// 	return user, nil
-// }
