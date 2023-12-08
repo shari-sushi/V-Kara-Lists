@@ -67,7 +67,7 @@ func DbInit() database.SqlHandler {
 		log.Fatal("GO_ENVに想定外の値が入力されています。")
 
 	}
-	db_name := "test_interfaces"
+	db_name := "test"
 	path := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=true", user, pw, port, db_name)
 	fmt.Printf("path=%v \n", path)
 	var err error

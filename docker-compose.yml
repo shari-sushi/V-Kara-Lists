@@ -44,3 +44,8 @@ services:
        - "api" 
     ports:
       - "80:80"
+
+# INSERT INTO karaoke_lists 
+# (movie_url,  sing_start, song_name, karaoke_list_inputter_id) 
+# VALUE
+# ('www.youtube.com/watch?v=5WzeYsoGCZc', '00:08:07', 'aaa', 1);

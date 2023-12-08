@@ -41,4 +41,12 @@ type VtuberContentRepository interface {
 	// 親子の存在確認
 }
 type LikeRepository interface {
+	CreateLike() error
+	DeleteLike() error
+	GetUserLike()
+
+	// 後で実装
+	CreateFollow() error
+	DeleteFollow() error
+	GetUserFollow()
 }

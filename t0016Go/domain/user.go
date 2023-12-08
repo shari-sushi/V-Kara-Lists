@@ -15,9 +15,8 @@ type Listener struct {
 	Email        string         `gorm:"type:varchar(255);unique;not null"`
 	Password     string         `gorm:"type:varchar(100);not null"`
 	CreatedAt    time.Time      `gorm:"type:datetime;default:current_timestamp"`
-	UpdatedAt    sql.NullTime   `gorm:"type:datetime"`                     //new time.Timeのままで良かったかも
-	DeletedAt    gorm.DeletedAt `gorm:"type:datetime;index:deleted_index"` //new
-	// DeletedAt    sql.NullTime //new これだと物理削除になってまう
+	UpdatedAt    sql.NullTime   `gorm:"type:datetime"`
+	DeletedAt    gorm.DeletedAt `gorm:"type:datetime;index:deleted_index"`
 }
 
 type EntryListener struct {
@@ -32,3 +31,18 @@ type UserInfoFromFront struct {
 	Email        string
 	Password     string
 }
+
+// SELECT CONCAT('SHOW CREATE TABLE ', table_name, ';') AS show_create_table_query
+// FROM information_schema.tables
+// WHERE table_schema = 'MYSQL_DATABASE';
+// +-----------------------------------+
+// | show_create_table_query           |
+// +-----------------------------------+
+// | SHOW CREATE TABLE favorite_posts; |
+// | SHOW CREATE TABLE follows;        |
+// | SHOW CREATE TABLE karaoke_lists;  |
+// | SHOW CREATE TABLE listeners;      |
+// | SHOW CREATE TABLE movies;         |
+// | SHOW CREATE TABLE original_songs; |
+// | SHOW CREATE TABLE vtubers;        |
+// +-----------------------------------+

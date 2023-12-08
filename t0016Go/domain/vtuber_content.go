@@ -5,7 +5,7 @@ import "time"
 // VTuber Contents
 type VtuberId int
 type Vtuber struct {
-	VtuberId         VtuberId    `gorm:"primaryKey;type:int(11)"`          //`json:"vtuber_id"` //
+	VtuberId         VtuberId    `gorm:"primaryKey;type:int(11)"`          //`json:"vtuber_id"`
 	VtuberName       string      `gorm:"type:varchar(50);not null;unique"` //`json:"vtuver_name"`
 	VtuberKana       *string     `gorm:"type:varchar(50);unique"`          //`json:"vtuber_kana"`
 	IntroMovieUrl    *string     `gorm:"type:varchar(100)"`                //`json:"vtuber_intro_movie_url"`
@@ -28,11 +28,11 @@ type Movie struct {
 
 type KaraokeListId int
 type KaraokeList struct {
-	MovieUrl              string        `gorm:"primaryKey;type:varchar(100)"` //`json:"movie_url"`
-	KaraokeListId         KaraokeListId `gorm:"primaryKey;type:int(11)"`      //`json:"id"`
-	SingStart             *string       `gorm:"type:time(0)"`                 //`json:"sing_start"` //nill可にするためのポインタ
-	SongName              string        `gorm:"type:varchar(100)"`            //`json:"song_name"`
-	KaraokeListInputterId *ListenerId   `gorm:"type:int(11)"`                 //`json:"inputter_id"`
+	KaraokeListId         KaraokeListId `gorm:"primaryKey;type:int(11);"`   //`json:"id"`
+	MovieUrl              string        `gorm:"type:varchar(100);not null"` //`json:"movie_url"`
+	SingStart             *string       `gorm:"type:time(0)"`               //`json:"sing_start"`
+	SongName              string        `gorm:"type:varchar(100)"`          //`json:"song_name"`
+	KaraokeListInputterId *ListenerId   `gorm:"type:int(11)"`               //`json:"inputter_id"`
 }
 
 type SongId int
@@ -42,7 +42,7 @@ type OriginalSong struct {
 	SongName       string     `gorm:"type:varchar(100);unique"`
 	MovieUrl       string     `gorm:"type:varchar(100);unique"`
 	ReleseData     time.Time  `gorm:"type:datetime;default null"`
-	SongInputterId ListenerId `gorm:"type:int(11);not null"` //`gorm:"not null"`
+	SongInputterId ListenerId `gorm:"type:int(11);not null"`
 }
 
 type EssentialOfVtMoKa struct {
