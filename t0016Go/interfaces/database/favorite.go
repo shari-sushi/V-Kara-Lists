@@ -66,12 +66,12 @@ func (db *FavoriteRepository) CountAllMovieFavorites() ([]domain.MovieFavoriteCo
 	}
 	return favCnt, err
 }
-func (db *FavoriteRepository) CountAllKaraokeFavorites() ([]domain.KarokeFavoriteCount, error) {
+func (db *FavoriteRepository) CountAllKaraokeFavorites() ([]domain.KaraokeFavoriteCount, error) {
 	fmt.Print("interfaces/database/favorite.go \n")
 	// 期待するクエリ
 	// SELECT karaoke_id, COUNT(*) AS count FROM favorite_posts WHERE karaoke_id != 0 GROUP BY karaoke_id;
 	var fav domain.Favorite
-	var favCnt []domain.KarokeFavoriteCount
+	var favCnt []domain.KaraokeFavoriteCount
 	err := db.Model(&fav).Select("karaoke_id").Where("where karaoke_list_id != 0").Group("karoke_list_id").
 		Find(&favCnt).Error
 	if err != nil {

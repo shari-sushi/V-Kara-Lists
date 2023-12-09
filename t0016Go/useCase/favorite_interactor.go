@@ -47,7 +47,7 @@ func (interactor *FavoriteInteractor) CountAllMovieFavorites() ([]domain.MovieFa
 	cnt, err := interactor.FavoriteRepository.CountAllMovieFavorites()
 	return cnt, err
 }
-func (interactor *FavoriteInteractor) CountAllKaraokeFavorites() ([]domain.KarokeFavoriteCount, error) {
+func (interactor *FavoriteInteractor) CountAllKaraokeFavorites() ([]domain.KaraokeFavoriteCount, error) {
 	fmt.Print("useCase/favorite_interactor.go \n")
 	cnt, err := interactor.FavoriteRepository.CountAllKaraokeFavorites()
 	return cnt, err

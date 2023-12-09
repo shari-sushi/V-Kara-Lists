@@ -39,24 +39,25 @@ func (controller *VtuberContentController) TopPageData(c *gin.Context) {
 	if err != nil {
 		errs = append(errs, err)
 	}
-	allVtsMos, err := controller.Interactor.GetAllVtubersMovies()
-	if err != nil {
-		errs = append(errs, err)
-
-	}
-	// movieFavCnt, err := controller.FavoInteractor.CountAllMovieFavorites()
-	// if err != nil {
-	// 	errs = append(errs, err)
-	// }
-	// karaokeFavCnt, err := controller.FavoInteractor.CountAllKaraokeFavorites()
-	// if err != nil {
-	// 	errs = append(errs, err)
-	// }
-
-	allVtsMosKas, err := controller.Interactor.GetEssentialJoinVtubersMoviesKaraokes()
+	allVtsMosWithoutFav, err := controller.Interactor.GetAllVtubersMovies()
 	if err != nil {
 		errs = append(errs, err)
 	}
+	allVtsMosKasWithoutFav, err := controller.Interactor.GetAllVtubersMoviesKaraokes()
+	if err != nil {
+		errs = append(errs, err)
+	}
+	movieFavCnt, err := controller.FavoInteractor.CountAllMovieFavorites()
+	if err != nil {
+		errs = append(errs, err)
+	}
+	karaokeFavCnt, err := controller.FavoInteractor.CountAllKaraokeFavorites()
+	if err != nil {
+		errs = append(errs, err)
+	}
+	allVtsMos := common.ReturnTransmitMovieData(allVtsMosWithoutFav, movieFavCnt)
+	allVtsMosKas := common.ReturnTransmitKaraokeData(allVtsMosKasWithoutFav, karaokeFavCnt)
+
 	c.JSON(http.StatusOK, gin.H{
 		"vtubers":                         allVts,
 		"vtubers_and_movies":              allVtsMos,

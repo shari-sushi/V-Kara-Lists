@@ -51,5 +51,5 @@ type FavoriteRepository interface {
 
 	// CountUserFavorite(domain.ListenerId) ([]domain.Favorite, error)
 	CountAllMovieFavorites() ([]domain.MovieFavoriteCount, error)
-	CountAllKaraokeFavorites() ([]domain.KarokeFavoriteCount, error)
+	CountAllKaraokeFavorites() ([]domain.KaraokeFavoriteCount, error)
 }

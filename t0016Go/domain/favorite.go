@@ -23,24 +23,27 @@ type favoriteCount struct {
 	Karaoke    int
 }
 
-type MovieWithFavorites struct {
-	Movie
-	Favorites []Favorite
-}
+// type MovieWithFavorites struct {
+// 	Movie
+// 	Favorites []Favorite
+// }
 
-// appへ送信用
+// appへ送信用, dbからCount取得用
 type MovieFavoriteCount struct {
-	MovieUrl string
-	Count    int
+	Vtuber
+	Movie
+	Count int
 }
 
-type KaraokeWithFavorites struct {
+// type KaraokeWithFavorites struct {
+// 	KaraokeList
+// 	Favorites []Favorite
+// }
+
+// appへ送信用, dbからCount取得用
+type KaraokeFavoriteCount struct {
+	Vtuber
+	Movie
 	KaraokeList
-	Favorites []Favorite
-}
-
-// appへ送信用
-type KarokeFavoriteCount struct {
-	KaraokeListId
 	Count int
 }
