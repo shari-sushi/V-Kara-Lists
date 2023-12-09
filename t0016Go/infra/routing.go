@@ -9,11 +9,14 @@ import (
 // https://github.com/sharin-sushi/0016go_next_relation/issues/71#issuecomment-1843543763
 
 func Routing(r *gin.Engine) {
+	userController := controllers.NewUserController(DbInit())
+	VCController := controllers.NewVtuberContentController(DbInit())
+	// FavoriteController := controllers.NewFavoriteContentController(DbInit())
+
 	ver := r.Group("/v1")
 	{
 		users := ver.Group("/users")
 		{
-			userController := controllers.NewUserController(DbInit())
 			users.POST("/signup", userController.CreateUser)
 			users.PUT("/login", userController.LogIn)                   //動作ok
 			users.PUT("/logout", controllers.Logout)                    //動作ok だけどフロントで完結しない？まあよしとした。
@@ -26,7 +29,6 @@ func Routing(r *gin.Engine) {
 		}
 		vcontents := ver.Group("/vcontents")
 		{
-			VCController := controllers.NewVtuberContentController(DbInit())
 
 			vcontents.GET("/", VCController.TopPageData) //動作ok
 			// vcontents.GET("/vtuber=[id]", VCController.ReadAllVtubersAndMovies)        //未 ver. 1.0の最後
@@ -59,9 +61,17 @@ func Routing(r *gin.Engine) {
 			vcontents.GET("/oimomochimochiimomochioimo", VCController.Enigma) //動作ok
 
 		}
-		// likes := ver.Group("/likes")
-		// {
-		// }
+		favorites := ver.Group("/likes")
+		{
+			favorites.GET("/followvtuber", func(*gin.Context) {}) //登録V数が増えたら実装
+			favorites.GET("/", func(*gin.Context) {})             //登録V数が増えたら実装
+			favorites.GET("/", func(*gin.Context) {})             //登録V数が増えたら実装
+			favorites.GET("/likemovie", func(*gin.Context) {})
+			favorites.GET("/unlikemovie", func(*gin.Context) {})
+			favorites.GET("/createkaraokegood", func(*gin.Context) {})
+			favorites.GET("/deletekaraokegood", func(*gin.Context) {})
+
+		}
 	}
 }
 

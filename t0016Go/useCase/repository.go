@@ -40,10 +40,10 @@ type VtuberContentRepository interface {
 
 	// 親子の存在確認
 }
-type LikeRepository interface {
-	CreateLike() error
-	DeleteLike() error
-	GetUserLike()
+type FavoriteRepository interface {
+	CreateFavorite() error
+	DeleteFavorite() error
+	GetUserFavorite()
 
 	// 後で実装
 	CreateFollow() error
