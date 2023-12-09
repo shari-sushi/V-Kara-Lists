@@ -97,26 +97,38 @@ func (Db *SqlHandler) migration() {
 	)
 }
 
+func (handler *SqlHandler) Count(column *int64) *gorm.DB {
+	return handler.Conn.Count(column)
+}
 func (handler *SqlHandler) Create(value interface{}) *gorm.DB {
 	return handler.Conn.Create(value)
 }
-
 func (handler *SqlHandler) Delete(value interface{}, conds ...interface{}) *gorm.DB {
-	return handler.Conn.Delete(value)
+	return handler.Conn.Delete(value, conds...)
 }
-
 func (handler *SqlHandler) Find(value interface{}, conds ...interface{}) *gorm.DB {
-	return handler.Conn.Find(value)
+	return handler.Conn.Find(value, conds...)
 }
-func (handler *SqlHandler) Where(value interface{}, conds ...interface{}) *gorm.DB {
-	return handler.Conn.Where(value)
-}
-
 func (handler *SqlHandler) First(value interface{}, conds ...interface{}) *gorm.DB {
-	return handler.Conn.First(value)
+	return handler.Conn.First(value, conds...)
+}
+func (handler *SqlHandler) Group(column string) *gorm.DB {
+	return handler.Conn.Group(column)
+}
+func (handler *SqlHandler) Joins(query string, value ...interface{}) *gorm.DB {
+	return handler.Conn.Joins(query, value...)
+}
+func (handler *SqlHandler) Model(value interface{}) *gorm.DB {
+	return handler.Conn.Model(value)
+}
+func (handler *SqlHandler) Omit(columns ...string) *gorm.DB {
+	return handler.Conn.Omit(columns...)
+}
+func (handler *SqlHandler) Save(value interface{}) *gorm.DB {
+	return handler.Conn.Save(value)
 }
 func (handler *SqlHandler) Select(value interface{}, conds ...interface{}) *gorm.DB {
-	return handler.Conn.Select(value)
+	return handler.Conn.Select(value, conds...)
 }
 func (handler *SqlHandler) Update(column string, value interface{}) *gorm.DB {
 	return handler.Conn.Update(column, value)
@@ -124,17 +136,8 @@ func (handler *SqlHandler) Update(column string, value interface{}) *gorm.DB {
 func (handler *SqlHandler) Updates(values interface{}) *gorm.DB {
 	return handler.Conn.Updates(values)
 }
-func (handler *SqlHandler) Model(value interface{}) *gorm.DB {
-	return handler.Conn.Model(value)
-}
-func (handler *SqlHandler) Save(value interface{}) *gorm.DB {
-	return handler.Conn.Save(value)
-}
-func (handler *SqlHandler) Joins(query string, value interface{}) *gorm.DB {
-	return handler.Conn.Joins(query, value)
-}
-func (handler *SqlHandler) Omit(columns string) *gorm.DB {
-	return handler.Conn.Joins(columns)
+func (handler *SqlHandler) Where(value interface{}, conds ...interface{}) *gorm.DB {
+	return handler.Conn.Where(value, conds...)
 }
 
 // type LineOfLog struct {

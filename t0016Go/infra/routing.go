@@ -5,72 +5,63 @@ import (
 	"github.com/sharin-sushi/0016go_next_relation/interfaces/controllers"
 )
 
-// 命名規則
+// このリポジトリの命名規則
 // https://github.com/sharin-sushi/0016go_next_relation/issues/71#issuecomment-1843543763
 
 func Routing(r *gin.Engine) {
 	userController := controllers.NewUserController(DbInit())
 	VCController := controllers.NewVtuberContentController(DbInit())
-	// FavoriteController := controllers.NewFavoriteContentController(DbInit())
+	FavoriteController := controllers.NewFavoriteController(DbInit())
 
 	ver := r.Group("/v1")
 	{
 		users := ver.Group("/users")
 		{
 			users.POST("/signup", userController.CreateUser)
-			users.PUT("/login", userController.LogIn)                   //動作ok
-			users.PUT("/logout", controllers.Logout)                    //動作ok だけどフロントで完結しない？まあよしとした。
+			users.PUT("/login", userController.LogIn)
+			users.PUT("/logout", controllers.Logout)
 			users.DELETE("/withdraw", userController.LogicalDeleteUser) //未
-			// users.DELETE("/?", userController.)       //未 ver.1.5かなぁ	//論理削除後の期限切れ path不要か？
-			// users.GET("/resignup", userController.Undelete) //未	ver1.5かなぁ	//論理削除中に同じアドレスで再登録
-			users.GET("/gestlogin", controllers.GuestLogIn) //動作ok
+			users.GET("/gestlogin", controllers.GuestLogIn)
 			users.GET("/profile", userController.GetListenerProfile)
-			// users.GET("/restore", userController.RestoreUser)　//ver ?で実装する。
+			// users.GET("/resignup", userController.RestoreUser)　//ver1.5
 		}
 		vcontents := ver.Group("/vcontents")
 		{
-
-			vcontents.GET("/", VCController.TopPageData) //動作ok
-			// vcontents.GET("/vtuber=[id]", VCController.ReadAllVtubersAndMovies)        //未 ver. 1.0の最後
-			// vcontents.GET("/vtuber=[id]/movies", VCController.ReadAllVtubersAndMovies) //未 ver. 1.0の最後
-			vcontents.GET("/sings", VCController.GetAllJoinVtubersMoviesKaraokes) //動作ok
-
-			// メインコンテンツのCRUD　/vtuber, /movie, /karaokeはフロント側で比較演算に使われてる
+			vcontents.GET("/", VCController.TopPageData)
+			vcontents.GET("/sings", VCController.GetAllJoinVtubersMoviesKaraokes)
+			// メインコンテンツのCRUD　/vtuber, /movie, /karaokeの文字列はフロント側で比較演算に使われてる
 			// データ新規登録
-			vcontents.POST("/create/vtuber", VCController.CreateVtuber)       //動作ok
-			vcontents.POST("/create/movie", VCController.CreateMovie)         //動作ok
-			vcontents.POST("/create/karaoke", VCController.CreateKaraokeSing) //動作ok
-			// vcontents.POST("/create/song", VCController.CreateSong)           //未　ver1.5かな
+			vcontents.POST("/create/vtuber", VCController.CreateVtuber)
+			vcontents.POST("/create/movie", VCController.CreateMovie)
+			vcontents.POST("/create/karaoke", VCController.CreateKaraokeSing)
+			// vcontents.POST("/create/song", VCController.CreateSong)           //ver1.5
 
 			//データ編集
-			vcontents.POST("/edit/vtuber", VCController.EditVtuber)       //動作ok
-			vcontents.POST("/edit/movie", VCController.EditMovie)         //動作ok
-			vcontents.POST("/edit/karaoke", VCController.EditKaraokeSing) //動作ok
-			// vcontents.POST("/edit/song", VCController.EditSong)           //未　ver1.5かな
+			vcontents.POST("/edit/vtuber", VCController.EditVtuber)
+			vcontents.POST("/edit/movie", VCController.EditMovie)
+			vcontents.POST("/edit/karaoke", VCController.EditKaraokeSing)
+			// vcontents.POST("/edit/song", VCController.EditSong)           //ver1.5
 
 			// // データ削除(物理)
-			vcontents.DELETE("/delete/vtuber", VCController.DeleteVtuber)       //動作ok
-			vcontents.DELETE("/delete/movie", VCController.DeleteMovie)         //動作ok
-			vcontents.DELETE("/delete/karaoke", VCController.DeleteKaraokeSing) //動作ok
-			// vcontents.DELETE("/delete/song", VCController.DeleteSong)           //未　ver1.5かな
+			vcontents.DELETE("/delete/vtuber", VCController.DeleteVtuber)
+			vcontents.DELETE("/delete/movie", VCController.DeleteMovie)
+			vcontents.DELETE("/delete/karaoke", VCController.DeleteKaraokeSing)
+			// vcontents.DELETE("/delete/song", VCController.DeleteSong)           //ver1.5
 
 			//ドロップダウン用
-			// vcontents.GET("/getsong", VCController.ReadAllSongs)                      //動作ok
-			vcontents.GET("/getalldata", VCController.ReadAllVtuverMovieKaraoke) //未
-			// 管理者用
-			vcontents.GET("/oimomochimochiimomochioimo", VCController.Enigma) //動作ok
+			// vcontents.GET("/getsong", VCController.ReadAllSongs)       //ver1.5かな
+			vcontents.GET("/getalldata", VCController.ReadAllVtuverMovieKaraoke)
+			vcontents.GET("/oimomochimochiimomochioimo", VCController.Enigma) // 管理者用
 
 		}
 		favorites := ver.Group("/likes")
 		{
-			favorites.GET("/followvtuber", func(*gin.Context) {}) //登録V数が増えたら実装
-			favorites.GET("/", func(*gin.Context) {})             //登録V数が増えたら実装
-			favorites.GET("/", func(*gin.Context) {})             //登録V数が増えたら実装
-			favorites.GET("/likemovie", func(*gin.Context) {})
-			favorites.GET("/unlikemovie", func(*gin.Context) {})
-			favorites.GET("/createkaraokegood", func(*gin.Context) {})
-			favorites.GET("/deletekaraokegood", func(*gin.Context) {})
-
+			// favorites.GET("/followvtuber")   //V数が増えたら実装
+			// favorites.GET("/unfollowvtuber") //V数が増えたら実装
+			favorites.GET("/favoritemovie", FavoriteController.CreateMovieFavorite)
+			favorites.GET("/unfavoritemovie", FavoriteController.DeleteMovieFavorite)
+			favorites.GET("/favoritekaraoke", FavoriteController.CreateKaraokeFavorite)
+			favorites.GET("/unfavoritemovie", FavoriteController.DeleteKaraokeFavorite)
 		}
 	}
 }

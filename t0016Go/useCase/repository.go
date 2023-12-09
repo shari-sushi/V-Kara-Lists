@@ -38,15 +38,18 @@ type VtuberContentRepository interface {
 	VerifyUserModifyMovie(int, domain.Movie) (bool, error)
 	VerifyUserModifyKaraoke(int, domain.KaraokeList) (bool, error)
 
-	// 親子の存在確認
-}
-type FavoriteRepository interface {
-	CreateFavorite() error
-	DeleteFavorite() error
-	GetUserFavorite()
+	//自分が登録したコンテンツデータの取得(マイページ用)
+	// GetAllMyRecord(domain.ListenerId)(domain.Vtuber, domain.Movie, domain.KaraokeList, error)
 
-	// 後で実装
-	CreateFollow() error
-	DeleteFollow() error
-	GetUserFollow()
+}
+
+type FavoriteRepository interface {
+	CreateMovieFavorite(domain.Favorite) error
+	DeleteMovieFavorite(domain.Favorite) error
+	CreateKaraokeFavorite(domain.Favorite) error
+	DeleteKaraokeFavorite(domain.Favorite) error
+
+	// CountUserFavorite(domain.ListenerId) ([]domain.Favorite, error)
+	CountAllMovieFavorites() ([]domain.MovieFavoriteCount, error)
+	CountAllKaraokeFavorites() ([]domain.KarokeFavoriteCount, error)
 }

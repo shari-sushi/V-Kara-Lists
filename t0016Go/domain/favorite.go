@@ -28,6 +28,7 @@ type MovieWithFavorites struct {
 	Favorites []Favorite
 }
 
+// appへ送信用
 type MovieFavoriteCount struct {
 	MovieUrl string
 	Count    int
@@ -38,7 +39,8 @@ type KaraokeWithFavorites struct {
 	Favorites []Favorite
 }
 
-type KarokeFavorioteCount struct {
+// appへ送信用
+type KarokeFavoriteCount struct {
 	KaraokeListId
 	Count int
 }

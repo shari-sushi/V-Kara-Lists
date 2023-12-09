@@ -12,7 +12,8 @@ import (
 )
 
 type VtuberContentController struct {
-	Interactor useCase.VtuberContentInteractor
+	Interactor     useCase.VtuberContentInteractor
+	FavoInteractor useCase.FavoriteInteractor
 }
 
 func NewVtuberContentController(sqlHandler database.SqlHandler) *VtuberContentController {
@@ -43,6 +44,14 @@ func (controller *VtuberContentController) TopPageData(c *gin.Context) {
 		errs = append(errs, err)
 
 	}
+	// movieFavCnt, err := controller.FavoInteractor.CountAllMovieFavorites()
+	// if err != nil {
+	// 	errs = append(errs, err)
+	// }
+	// karaokeFavCnt, err := controller.FavoInteractor.CountAllKaraokeFavorites()
+	// if err != nil {
+	// 	errs = append(errs, err)
+	// }
 
 	allVtsMosKas, err := controller.Interactor.GetEssentialJoinVtubersMoviesKaraokes()
 	if err != nil {
