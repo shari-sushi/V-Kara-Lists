@@ -7,25 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sharin-sushi/0016go_next_relation/domain"
 	"github.com/sharin-sushi/0016go_next_relation/interfaces/controllers/common"
-	"github.com/sharin-sushi/0016go_next_relation/interfaces/database"
-	"github.com/sharin-sushi/0016go_next_relation/useCase"
 )
-
-type UserController struct {
-	UserInteractor useCase.UserInteractor
-	VtCoInteractor useCase.VtuberContentInteractor
-	FavInteractor  useCase.FavoriteInteractor
-}
-
-func NewUserController(sqlHandler database.SqlHandler) *UserController {
-	return &UserController{
-		UserInteractor: useCase.UserInteractor{
-			UserRepository: &database.UserRepository{
-				SqlHandler: sqlHandler, //SqlHandller.Conn に *gorm,DBを持たせてる
-			},
-		},
-	}
-}
 
 var guest domain.Listener
 
@@ -33,7 +15,7 @@ func init() {
 	guest.ListenerId = 2
 }
 
-func (controller *UserController) CreateUser(c *gin.Context) {
+func (controller *Controller) CreateUser(c *gin.Context) {
 	var user domain.Listener
 	if err := c.ShouldBind(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -84,7 +66,7 @@ func (controller *UserController) CreateUser(c *gin.Context) {
 	return
 }
 
-func (controller *UserController) LogicalDeleteUser(c *gin.Context) {
+func (controller *Controller) LogicalDeleteUser(c *gin.Context) {
 	tokenLId, err := common.TakeListenerIdFromJWT(c)
 	fmt.Printf("tokenLId = %v \n", tokenLId)
 	if err != nil {
@@ -114,7 +96,7 @@ func (controller *UserController) LogicalDeleteUser(c *gin.Context) {
 	})
 }
 
-func (controller *UserController) LogIn(c *gin.Context) {
+func (controller *Controller) LogIn(c *gin.Context) {
 	var user domain.Listener
 	if err := c.ShouldBind(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -164,7 +146,7 @@ func GuestLogIn(c *gin.Context) {
 	})
 }
 
-func (controller *UserController) GetListenerProfile(c *gin.Context) {
+func (controller *Controller) GetListenerProfile(c *gin.Context) {
 	ListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Need Login"})
@@ -190,20 +172,20 @@ func (controller *UserController) GetListenerProfile(c *gin.Context) {
 	})
 }
 
-func (controller *UserController) GetUserRegistriedDate(c *gin.Context) {
+func (controller *Controller) GetUserRegistriedDate(c *gin.Context) {
 	ListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Need Login"})
 		return
 	}
 	var errs []error
-	inputVts, inputVtsMos, inputVtsMosKas, err := controller.VtCoInteractor.GetAllRecordOfUserInput(ListenerId)
+	inputVts, inputVtsMos, inputVtsMosKas, err := controller.VtuberContentInteractor.GetAllRecordOfUserInput(ListenerId)
 
 	if err != nil {
 		errs = append(errs, err)
 	}
-	AllfavsOfUser, err := controller.FavInteractor.FindFavsOfUser(ListenerId)
-	favVtsMos, favVtsMosKas, toAddErrs := controller.FavInteractor.FindAllFavContensByListenerId(AllfavsOfUser)
+	AllfavsOfUser, err := controller.FavoriteInteractor.FindFavsOfUser(ListenerId)
+	favVtsMos, favVtsMosKas, toAddErrs := controller.FavoriteInteractor.FindAllFavContensByListenerId(AllfavsOfUser)
 	if err != nil {
 		errs = append(errs, toAddErrs[0], toAddErrs[1])
 	}
@@ -220,7 +202,7 @@ func (controller *UserController) GetUserRegistriedDate(c *gin.Context) {
 }
 
 // ver2 で実装する。要件はissueにて
-// func (controller *UserController) RestoreUser(c *gin.Context) {
+// func (controller *Controller) RestoreUser(c *gin.Context) {
 // 	var user domain.Listener
 // 	if err := c.ShouldBind(&user); err != nil {
 // 		c.JSON(http.StatusBadRequest, gin.H{

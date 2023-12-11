@@ -7,79 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sharin-sushi/0016go_next_relation/domain"
 	"github.com/sharin-sushi/0016go_next_relation/interfaces/controllers/common"
-	"github.com/sharin-sushi/0016go_next_relation/interfaces/database"
-	"github.com/sharin-sushi/0016go_next_relation/useCase"
 )
 
-type VtuberContentController struct {
-	VtuberContentInteractor useCase.VtuberContentInteractor
-	FavoriteInteractor      useCase.FavoriteInteractor
-	UserInteractor          useCase.UserInteractor
-}
-
-func NewVtuberContentController(sqlHandler database.SqlHandler) *VtuberContentController {
-	return &VtuberContentController{
-		VtuberContentInteractor: useCase.VtuberContentInteractor{
-			VtuberContentRepository: &database.VtuberContentRepository{
-				SqlHandler: sqlHandler,
-			},
-		},
-		UserInteractor: useCase.UserInteractor{
-			UserRepository: &database.UserRepository{
-				SqlHandler: sqlHandler,
-			},
-		},
-		FavoriteInteractor: useCase.FavoriteInteractor{
-			FavoriteRepository: &database.FavoriteRepository{
-				SqlHandler: sqlHandler,
-			},
-		},
-	}
-}
-
-func (controller *VtuberContentController) ReturnTopPageData(c *gin.Context) {
-	var errs []error
-	allVts, err := controller.VtuberContentInteractor.GetAllVtubers()
-	if err != nil {
-		errs = append(errs, err)
-	}
-	VtsMosWitFav, err := controller.FavoriteInteractor.GetVtubersMoviesWithFavCnts() //エラー発生
-	if err != nil {
-		fmt.Print("err:", err)
-		errs = append(errs, err)
-	}
-	VtsMosKasWithFav, err := controller.FavoriteInteractor.GetVtubersMoviesKaraokesWithFavCnts()
-	if err != nil {
-		errs = append(errs, err)
-	}
-
-	applicantListenerId, err := common.TakeListenerIdFromJWT(c) //非ログイン時でも処理は続ける
-	if err != nil || applicantListenerId == 0 {
-		errs = append(errs, err)
-		c.JSON(http.StatusOK, gin.H{
-			"vtubers":                 allVts,
-			"vtubers_movies":          VtsMosWitFav,
-			"vtubers_movies_karaokes": VtsMosKasWithFav,
-			// "error":   errs,
-			"message": "dont you Loged in ?",
-		})
-		return
-	}
-
-	myFav, err := controller.FavoriteInteractor.FindFavsOfUser(applicantListenerId)
-	TransmitMovies := common.AddIsFavToMovieWithFav(VtsMosWitFav, myFav)
-	TransmitKaraokes := common.AddIsFavToKaraokeWithFav(VtsMosKasWithFav, myFav)
-
-	c.JSON(http.StatusOK, gin.H{
-		"vtubers":                 allVts,
-		"vtubers_movies":          TransmitMovies,
-		"vtubers_movies_karaokes": TransmitKaraokes,
-		"error":                   errs,
-	})
-	return
-}
-
-func (controller *VtuberContentController) GetAllJoinVtubersMoviesKaraokes(c *gin.Context) {
+func (controller *Controller) GetAllJoinVtubersMoviesKaraokes(c *gin.Context) {
 	allVsMsKs, err := controller.VtuberContentInteractor.GetEssentialJoinVtubersMoviesKaraokes()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"resultStsのerror": err.Error()})
@@ -90,7 +20,7 @@ func (controller *VtuberContentController) GetAllJoinVtubersMoviesKaraokes(c *gi
 	})
 	return
 }
-func (controller *VtuberContentController) CreateVtuber(c *gin.Context) {
+func (controller *Controller) CreateVtuber(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -119,7 +49,7 @@ func (controller *VtuberContentController) CreateVtuber(c *gin.Context) {
 	return
 }
 
-func (controller *VtuberContentController) CreateMovie(c *gin.Context) {
+func (controller *Controller) CreateMovie(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -148,7 +78,7 @@ func (controller *VtuberContentController) CreateMovie(c *gin.Context) {
 	})
 	return
 }
-func (controller *VtuberContentController) CreateKaraokeSing(c *gin.Context) {
+func (controller *Controller) CreateKaraokeSing(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -175,7 +105,7 @@ func (controller *VtuberContentController) CreateKaraokeSing(c *gin.Context) {
 	})
 	return
 }
-func (controller *VtuberContentController) EditVtuber(c *gin.Context) {
+func (controller *Controller) EditVtuber(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -213,7 +143,7 @@ func (controller *VtuberContentController) EditVtuber(c *gin.Context) {
 	})
 	return
 }
-func (controller *VtuberContentController) EditMovie(c *gin.Context) {
+func (controller *Controller) EditMovie(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -251,7 +181,7 @@ func (controller *VtuberContentController) EditMovie(c *gin.Context) {
 	})
 	return
 }
-func (controller *VtuberContentController) EditKaraokeSing(c *gin.Context) {
+func (controller *Controller) EditKaraokeSing(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -289,7 +219,7 @@ func (controller *VtuberContentController) EditKaraokeSing(c *gin.Context) {
 	})
 	return
 }
-func (controller *VtuberContentController) DeleteVtuber(c *gin.Context) {
+func (controller *Controller) DeleteVtuber(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -328,7 +258,7 @@ func (controller *VtuberContentController) DeleteVtuber(c *gin.Context) {
 	return
 }
 
-func (controller *VtuberContentController) DeleteMovie(c *gin.Context) {
+func (controller *Controller) DeleteMovie(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -367,7 +297,7 @@ func (controller *VtuberContentController) DeleteMovie(c *gin.Context) {
 	return
 }
 
-func (controller *VtuberContentController) DeleteKaraokeSing(c *gin.Context) {
+func (controller *Controller) DeleteKaraokeSing(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -406,7 +336,7 @@ func (controller *VtuberContentController) DeleteKaraokeSing(c *gin.Context) {
 	return
 }
 
-func (controller *VtuberContentController) ReadAllVtuverMovieKaraoke(c *gin.Context) {
+func (controller *Controller) ReadAllVtuverMovieKaraoke(c *gin.Context) {
 	var errs []error
 	allVts, err := controller.VtuberContentInteractor.GetAllVtubers()
 	if err != nil {
@@ -428,7 +358,7 @@ func (controller *VtuberContentController) ReadAllVtuverMovieKaraoke(c *gin.Cont
 	})
 }
 
-func (controller *VtuberContentController) Enigma(c *gin.Context) {
+func (controller *Controller) Enigma(c *gin.Context) {
 	var errs []error
 	allVts, err := controller.VtuberContentInteractor.GetAllVtubers()
 	if err != nil {

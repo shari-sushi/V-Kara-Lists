@@ -7,26 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sharin-sushi/0016go_next_relation/domain"
 	"github.com/sharin-sushi/0016go_next_relation/interfaces/controllers/common"
-	"github.com/sharin-sushi/0016go_next_relation/interfaces/database"
-	"github.com/sharin-sushi/0016go_next_relation/useCase"
 )
 
-type FavoriteController struct {
-	FavoriteInteractor      useCase.FavoriteInteractor
-	VtuberContentInteractor useCase.VtuberContentInteractor
-}
-
-func NewFavoriteController(sqlHandler database.SqlHandler) *FavoriteController {
-	return &FavoriteController{
-		FavoriteInteractor: useCase.FavoriteInteractor{
-			FavoriteRepository: &database.FavoriteRepository{
-				SqlHandler: sqlHandler, //SqlHandller.Conn に *gorm,DBを持たせてる
-			},
-		},
-	}
-}
-
-func (controller *FavoriteController) ReturnTopPageData(c *gin.Context) {
+func (controller *Controller) ReturnTopPageData(c *gin.Context) {
 	var errs []error
 	allVts, err := controller.VtuberContentInteractor.GetAllVtubers()
 	if err != nil {
@@ -86,7 +69,7 @@ func a(c *gin.Context) {
 	// controller.Interactor.
 }
 
-func (controller *FavoriteController) CreateMovieFavorite(c *gin.Context) {
+func (controller *Controller) CreateMovieFavorite(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -121,7 +104,7 @@ func (controller *FavoriteController) CreateMovieFavorite(c *gin.Context) {
 	})
 	return
 }
-func (controller *FavoriteController) DeleteMovieFavorite(c *gin.Context) {
+func (controller *Controller) DeleteMovieFavorite(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -150,7 +133,7 @@ func (controller *FavoriteController) DeleteMovieFavorite(c *gin.Context) {
 	})
 	return
 }
-func (controller *FavoriteController) CreateKaraokeFavorite(c *gin.Context) {
+func (controller *Controller) CreateKaraokeFavorite(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -183,7 +166,7 @@ func (controller *FavoriteController) CreateKaraokeFavorite(c *gin.Context) {
 	})
 	return
 }
-func (controller *FavoriteController) DeleteKaraokeFavorite(c *gin.Context) {
+func (controller *Controller) DeleteKaraokeFavorite(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
