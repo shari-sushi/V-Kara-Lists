@@ -26,13 +26,13 @@ type Movie struct {
 	MovieInputterId *ListenerId `gorm:"type:int(11);not null"`        //`json:"movie_inputter_id"` /new
 }
 
-type KaraokeListId int
-type KaraokeList struct {
-	KaraokeListId         KaraokeListId `gorm:"primaryKey;type:int(11);"`   //`json:"id"`
-	MovieUrl              string        `gorm:"type:varchar(100);not null"` //`json:"movie_url"`
-	SingStart             *string       `gorm:"type:time(0)"`               //`json:"sing_start"`
-	SongName              string        `gorm:"type:varchar(100)"`          //`json:"song_name"`
-	KaraokeListInputterId *ListenerId   `gorm:"type:int(11)"`               //`json:"inputter_id"`
+type KaraokeId int
+type Karaoke struct {
+	KaraokeId         KaraokeId   `gorm:"primaryKey;type:int(11);"`   //`json:"id"`
+	MovieUrl          string      `gorm:"type:varchar(100);not null"` //`json:"movie_url"`
+	SingStart         *string     `gorm:"type:time(0)"`               //`json:"sing_start"`
+	SongName          string      `gorm:"type:varchar(100)"`          //`json:"song_name"`
+	KaraokeInputterId *ListenerId `gorm:"type:int(11)"`               //`json:"inputter_id"`
 }
 
 type SongId int
@@ -46,18 +46,18 @@ type OriginalSong struct {
 }
 
 type EssentialOfVtMoKa struct {
-	VtuberId              VtuberId
-	VtuberName            string
-	NameKana              string
-	IntroMovieUrl         string
-	VtuberInputterId      ListenerId
-	MovieUrl              string
-	MovieTitle            string
-	MovieInputterId       ListenerId
-	KaraokeListId         int
-	SingStart             *string
-	SongName              string
-	KaraokeListInputterId ListenerId
+	VtuberId          VtuberId
+	VtuberName        string
+	NameKana          string
+	IntroMovieUrl     string
+	VtuberInputterId  ListenerId
+	MovieUrl          string
+	MovieTitle        string
+	MovieInputterId   ListenerId
+	KaraokeId         int
+	SingStart         *string
+	SongName          string
+	KaraokeInputterId ListenerId
 }
 
 type VtuberMovie struct {
@@ -68,5 +68,5 @@ type VtuberMovie struct {
 type VtuberMovieKaraoke struct {
 	Vtuber
 	Movie
-	KaraokeList
+	Karaoke
 }

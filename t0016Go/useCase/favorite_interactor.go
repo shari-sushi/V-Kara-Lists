@@ -7,7 +7,9 @@ import (
 )
 
 type FavoriteInteractor struct {
-	FavoriteRepository FavoriteRepository //user_repositoryのinterfaceで中身を定義
+	FavoriteRepository      FavoriteRepository
+	VtuberContentRepository VtuberContentRepository
+	UserRepository          UserRepository
 }
 
 func (interactor *FavoriteInteractor) CreateMovieFavorite(fav domain.Favorite) error {
@@ -42,13 +44,48 @@ func (interactor *FavoriteInteractor) DeleteKaraokeFavorite(fav domain.Favorite)
 // 	return cnt, err
 // }
 
-func (interactor *FavoriteInteractor) CountAllMovieFavorites() ([]domain.MovieFavoriteCount, error) {
+func (interactor *FavoriteInteractor) CountMovieFavorites() ([]domain.TransmitMovie, error) {
 	fmt.Print("useCase/favorite_interactor.go \n")
-	cnt, err := interactor.FavoriteRepository.CountAllMovieFavorites()
+	cnt, err := interactor.FavoriteRepository.CountMovieFavorites()
 	return cnt, err
 }
-func (interactor *FavoriteInteractor) CountAllKaraokeFavorites() ([]domain.KaraokeFavoriteCount, error) {
+func (interactor *FavoriteInteractor) CountKaraokeFavorites() ([]domain.TransmitKaraoke, error) {
 	fmt.Print("useCase/favorite_interactor.go \n")
-	cnt, err := interactor.FavoriteRepository.CountAllKaraokeFavorites()
+	cnt, err := interactor.FavoriteRepository.CountKaraokeFavorites()
 	return cnt, err
+}
+
+func (interactor *FavoriteInteractor) FindAllFavContensByListenerId(favs []domain.Favorite) ([]domain.VtuberMovie, []domain.VtuberMovieKaraoke, []error) {
+	fmt.Print("useCase/favorite_interactor.go \n")
+	var errs []error
+	favMos, err := interactor.FavoriteRepository.FindFavMoviesByListenerId(favs)
+	if err != nil {
+		errs = append(errs, err)
+	}
+	favKas, err := interactor.FavoriteRepository.FindFavKaraokesByListenerId(favs)
+	if err != nil {
+		errs = append(errs, err)
+	}
+	return favMos, favKas, errs
+}
+
+func (interactor *FavoriteInteractor) FindFavsOfUser(Lid domain.ListenerId) ([]domain.Favorite, error) {
+	fmt.Print("useCase/favorite_interactor.go \n")
+	favsOfUser, err := interactor.FavoriteRepository.FindFavsOfUser(Lid)
+	return favsOfUser, err
+}
+func (interactor *FavoriteInteractor) FindFavsByListenerId(lid domain.ListenerId, fav domain.Favorite) (domain.Favorite, error) {
+	foundFavOfUser, err := interactor.FavoriteRepository.FindFavsByListenerId(lid, fav)
+	return foundFavOfUser, err
+}
+func (interactor *FavoriteInteractor) GetVtubersMoviesWithFavCnts() ([]domain.TransmitMovie, error) {
+	fmt.Print("useCase/favorite_interactor.go \n")
+	VtsMosWitFav, err := interactor.FavoriteRepository.GetVtubersMoviesWithFavCnts()
+	return VtsMosWitFav, err
+}
+
+func (interactor *FavoriteInteractor) GetVtubersMoviesKaraokesWithFavCnts() ([]domain.TransmitKaraoke, error) {
+	fmt.Print("useCase/favorite_interactor.go \n")
+	VtsMosKasWitFav, err := interactor.FavoriteRepository.GetVtubersMoviesKaraokesWithFavCnts()
+	return VtsMosKasWitFav, err
 }

@@ -93,7 +93,7 @@ func (Db *SqlHandler) migration() {
 		// Like Relatoin
 		domain.Favorite{}, domain.Follow{},
 		// Vtuber Contents
-		domain.KaraokeList{}, domain.Movie{}, domain.Vtuber{}, domain.OriginalSong{},
+		domain.Karaoke{}, domain.Movie{}, domain.Vtuber{}, domain.OriginalSong{},
 	)
 }
 

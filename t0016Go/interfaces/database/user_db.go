@@ -11,6 +11,7 @@ type UserRepository struct {
 }
 
 func (db *UserRepository) CreateUser(user domain.Listener) (domain.Listener, error) {
+	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	err := db.Create(&user).Error
 	if err != nil {
 		return user, err
@@ -18,19 +19,11 @@ func (db *UserRepository) CreateUser(user domain.Listener) (domain.Listener, err
 	return user, nil
 }
 
-func (db *UserRepository) LogicalDeleteUser(user domain.Listener) error {
-	err := db.Delete(&user, &user.ListenerId).Error
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func (db *UserRepository) FindUserByEmail(email string) (domain.Listener, error) {
+	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var user domain.Listener
 	query := "email = '" + email + "'"
 	err := db.Where(query).First(&user).Error
-	fmt.Printf("user=%v \n", user)
 	if err != nil {
 		return user, err
 	}
@@ -41,6 +34,13 @@ func (db *UserRepository) LogIn(user domain.Listener) (domain.Listener, error) {
 		return user, err
 	}
 	return user, nil
+}
+func (db *UserRepository) LogicalDeleteUser(user domain.Listener) error {
+	err := db.Delete(&user, &user.ListenerId).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (db *UserRepository) FindUserByListenerId(ListenerId domain.ListenerId) (domain.Listener, error) {

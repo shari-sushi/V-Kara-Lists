@@ -17,19 +17,21 @@ func Routing(r *gin.Engine) {
 	{
 		users := ver.Group("/users")
 		{
-			users.POST("/signup", userController.CreateUser)
+			users.POST("/signup", userController.CreateUser) //ok
 			users.PUT("/login", userController.LogIn)
 			users.PUT("/logout", controllers.Logout)
 			users.DELETE("/withdraw", userController.LogicalDeleteUser) //未
 			users.GET("/gestlogin", controllers.GuestLogIn)
 			users.GET("/profile", userController.GetListenerProfile)
+			users.GET("/mypage", userController.GetListenerProfile)
+
 			// users.GET("/resignup", userController.RestoreUser)　//ver1.5
 		}
 		vcontents := ver.Group("/vcontents")
 		{
-			vcontents.GET("/", VCController.TopPageData)
+			vcontents.GET("/", VCController.ReturnTopPageData)
 			vcontents.GET("/sings", VCController.GetAllJoinVtubersMoviesKaraokes)
-			// メインコンテンツのCRUD　/vtuber, /movie, /karaokeの文字列はフロント側で比較演算に使われてる
+			// /vtuber, /movie, /karaokeの文字列はフロント側で比較演算に使われてる
 			// データ新規登録
 			vcontents.POST("/create/vtuber", VCController.CreateVtuber)
 			vcontents.POST("/create/movie", VCController.CreateMovie)
@@ -54,14 +56,16 @@ func Routing(r *gin.Engine) {
 			vcontents.GET("/oimomochimochiimomochioimo", VCController.Enigma) // 管理者用
 
 		}
-		favorites := ver.Group("/likes")
+		fav := ver.Group("/fav")
 		{
+			fav.GET("/", FavoriteController.ReturnTopPageData)
+
 			// favorites.GET("/followvtuber")   //V数が増えたら実装
 			// favorites.GET("/unfollowvtuber") //V数が増えたら実装
-			favorites.GET("/favoritemovie", FavoriteController.CreateMovieFavorite)
-			favorites.GET("/unfavoritemovie", FavoriteController.DeleteMovieFavorite)
-			favorites.GET("/favoritekaraoke", FavoriteController.CreateKaraokeFavorite)
-			favorites.GET("/unfavoritemovie", FavoriteController.DeleteKaraokeFavorite)
+			fav.POST("/favorite/movie", FavoriteController.CreateMovieFavorite) //ok
+			fav.POST("/unfavorite/movie", FavoriteController.DeleteMovieFavorite)
+			fav.POST("/favorite/karaoke", FavoriteController.CreateKaraokeFavorite) //ok
+			fav.POST("/unfavorite/karaoke", FavoriteController.DeleteKaraokeFavorite)
 		}
 	}
 }

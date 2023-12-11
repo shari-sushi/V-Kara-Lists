@@ -12,12 +12,14 @@ import (
 )
 
 type UserController struct {
-	Interactor useCase.UserInteractor
+	UserInteractor useCase.UserInteractor
+	VtCoInteractor useCase.VtuberContentInteractor
+	FavInteractor  useCase.FavoriteInteractor
 }
 
 func NewUserController(sqlHandler database.SqlHandler) *UserController {
 	return &UserController{
-		Interactor: useCase.UserInteractor{
+		UserInteractor: useCase.UserInteractor{
 			UserRepository: &database.UserRepository{
 				SqlHandler: sqlHandler, //SqlHandller.Conn に *gorm,DBを持たせてる
 			},
@@ -47,7 +49,7 @@ func (controller *UserController) CreateUser(c *gin.Context) {
 		})
 		return
 	}
-	if _, err := controller.Interactor.FindUserByEmail(user.Email); err == nil {
+	if _, err := controller.UserInteractor.FindUserByEmail(user.Email); err == nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":   "error", //errがnilの時にリクエストを受理できないという処理で正しい。エラーどうしよう???
 			"message": "the E-mail address already in use",
@@ -63,7 +65,7 @@ func (controller *UserController) CreateUser(c *gin.Context) {
 	}
 	user.Password = hashPW
 
-	newUser, err := controller.Interactor.CreateUser(user)
+	newUser, err := controller.UserInteractor.CreateUser(user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "failed Singed Up",
@@ -99,7 +101,7 @@ func (controller *UserController) LogicalDeleteUser(c *gin.Context) {
 	}
 	var dummyLi domain.Listener
 	dummyLi.ListenerId = tokenLId
-	if err := controller.Interactor.LogicalDeleteUser(dummyLi); err != nil {
+	if err := controller.UserInteractor.LogicalDeleteUser(dummyLi); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid Withdrawn",
 			"err":     err,
@@ -121,7 +123,7 @@ func (controller *UserController) LogIn(c *gin.Context) {
 		return
 	}
 	fmt.Printf("bindしたuser = %v \n", user)
-	foundListener, err := controller.Interactor.FindUserByEmail(user.Email)
+	foundListener, err := controller.UserInteractor.FindUserByEmail(user.Email)
 	fmt.Printf("foundListener=%v\n", foundListener)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -169,7 +171,7 @@ func (controller *UserController) GetListenerProfile(c *gin.Context) {
 		return
 	}
 
-	ListenerInfo, err := controller.Interactor.FindUserByListenerId(ListenerId)
+	ListenerInfo, err := controller.UserInteractor.FindUserByListenerId(ListenerId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching listener info"})
 		return
@@ -186,6 +188,35 @@ func (controller *UserController) GetListenerProfile(c *gin.Context) {
 		"Password":     "secret",
 		"message":      "got urself infomation",
 	})
+}
+
+func (controller *UserController) GetUserRegistriedDate(c *gin.Context) {
+	ListenerId, err := common.TakeListenerIdFromJWT(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Need Login"})
+		return
+	}
+	var errs []error
+	inputVts, inputVtsMos, inputVtsMosKas, err := controller.VtCoInteractor.GetAllRecordOfUserInput(ListenerId)
+
+	if err != nil {
+		errs = append(errs, err)
+	}
+	AllfavsOfUser, err := controller.FavInteractor.FindFavsOfUser(ListenerId)
+	favVtsMos, favVtsMosKas, toAddErrs := controller.FavInteractor.FindAllFavContensByListenerId(AllfavsOfUser)
+	if err != nil {
+		errs = append(errs, toAddErrs[0], toAddErrs[1])
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"u_input_vtubers":  inputVts,
+		"u_input_vtsmos":   inputVtsMos,
+		"u_input_vtsmokas": inputVtsMosKas,
+		"fav_vtsmos":       favVtsMos,
+		"fav_vtsmoskas":    favVtsMosKas,
+		"error":            errs,
+		"message":          "yukkuri site itte ne!",
+	})
+	return
 }
 
 // ver2 で実装する。要件はissueにて

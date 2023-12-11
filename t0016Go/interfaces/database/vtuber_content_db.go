@@ -28,9 +28,9 @@ func (db *VtuberContentRepository) GetAllMovies() ([]domain.Movie, error) {
 	}
 	return Mos, nil
 }
-func (db *VtuberContentRepository) GetAllKaraokes() ([]domain.KaraokeList, error) {
+func (db *VtuberContentRepository) GetAllKaraokes() ([]domain.Karaoke, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
-	var Kas []domain.KaraokeList
+	var Kas []domain.Karaoke
 	err := db.Find(&Kas).Error
 	if err != nil {
 		return nil, err
@@ -38,17 +38,6 @@ func (db *VtuberContentRepository) GetAllKaraokes() ([]domain.KaraokeList, error
 	return Kas, nil
 }
 
-// func ReadSings(c *gin.Context) {
-// 	q := c.Query("movie_url")
-// 	utility.Db.Model(&kas).
-// 		Select("vtuber_id, vtuber_name, movie_id,  movie_url, movie_title, song_id, sing_start, song").
-// 		Where("movie_url = ?", q).Joins("LEFT JOIN movies m USING(movie_url)").
-// 		Joins("LEFT JOIN vtubers s USING(vtuber_id)").
-// 		Find(&alls)
-
-// }
-
-///////////////////
 func (db *VtuberContentRepository) GetAllVtubersMovies() ([]domain.VtuberMovie, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var Mos []domain.Movie
@@ -61,9 +50,10 @@ func (db *VtuberContentRepository) GetAllVtubersMovies() ([]domain.VtuberMovie, 
 	}
 	return VtsMos, nil
 }
+
 func (db *VtuberContentRepository) GetAllVtubersMoviesKaraokes() ([]domain.VtuberMovieKaraoke, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
-	var Kas []domain.KaraokeList
+	var Kas []domain.Karaoke
 	var VtsMosKas []domain.VtuberMovieKaraoke
 	joinsQ := "LEFT JOIN movies USING(movie_url) LEFT JOIN vtubers USING(vtuber_id)"
 	err := db.Model(Kas).Joins(joinsQ).Scan(&VtsMosKas).Error
@@ -74,9 +64,9 @@ func (db *VtuberContentRepository) GetAllVtubersMoviesKaraokes() ([]domain.Vtube
 }
 func (db *VtuberContentRepository) GetEssentialJoinVtubersMoviesKaraokes() ([]domain.EssentialOfVtMoKa, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
-	var Kas []domain.KaraokeList
+	var Kas []domain.Karaoke
 	var allVtsMoskas []domain.EssentialOfVtMoKa
-	selectQ := "vtuber_id, vtuber_name, vtuber_inputter_id  movie_url, movie_title, movie_inputter_id,  karaoke_list_id, sing_start, song_name, karaoke_list_inputter_id"
+	selectQ := "vtuber_id, vtuber_name, vtuber_inputter_id  movie_url, movie_title, movie_inputter_id,  karaoke_id, sing_start, song_name, karaoke_inputter_id"
 	joinsQ := "LEFT JOIN movies USING(movie_url) LEFT JOIN vtubers USING(vtuber_id)"
 	err := db.Model(Kas).Select(selectQ).Joins(joinsQ).Scan(&allVtsMoskas).Error
 	if err != nil {
@@ -105,7 +95,7 @@ func (db *VtuberContentRepository) CreateMovie(M domain.Movie) error {
 	return result.Error
 }
 
-func (db *VtuberContentRepository) CreateKaraokeSing(K domain.KaraokeList) error {
+func (db *VtuberContentRepository) CreateKaraokeSing(K domain.Karaoke) error {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var Mo domain.Movie
 	Mo.MovieUrl = K.MovieUrl
@@ -133,10 +123,10 @@ func (db *VtuberContentRepository) UpdateMovie(M domain.Movie) error {
 	return result.Error
 }
 
-func (db *VtuberContentRepository) UpdateKaraokeSing(K domain.KaraokeList) error {
+func (db *VtuberContentRepository) UpdateKaraokeSing(K domain.Karaoke) error {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var Ka domain.Vtuber
-	result := db.Model(&Ka).Where("karaoke_list_id = ?", K.KaraokeListId).Updates(&K)
+	result := db.Model(&Ka).Where("karaoke_id = ?", K.KaraokeId).Updates(&K)
 	return result.Error
 }
 
@@ -154,17 +144,17 @@ func (db *VtuberContentRepository) DeleteVtuber(V domain.Vtuber) error {
 
 func (db *VtuberContentRepository) DeleteMovie(M domain.Movie) error {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
-	var Ka domain.KaraokeList
+	var Ka domain.Karaoke
 	Ka.MovieUrl = M.MovieUrl
 	db.First(&Ka)
-	if Ka.KaraokeListId != 0 {
+	if Ka.KaraokeId != 0 {
 		return fmt.Errorf("Delete Vtuber after its Movie ")
 	}
 	result := db.Where("movie_title = ?", M.MovieTitle).Delete(M) //フロント側の表示バグ対策でPK+αで絞込み
 	return result.Error
 }
 
-func (db *VtuberContentRepository) DeleteKaraokeSing(K domain.KaraokeList) error {
+func (db *VtuberContentRepository) DeleteKaraokeSing(K domain.Karaoke) error {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	result := db.Where("song_name = ?", K.SongName).Delete(K) //フロント側の表示バグ対策でPK+αで絞込み
 	return result.Error
@@ -180,8 +170,36 @@ func (db *VtuberContentRepository) VerifyUserModifyMovie(id int, M domain.Movie)
 	result := db.Where("movie_Inputter_id=?", id).First(M, M.MovieUrl)
 	return M.MovieInputterId != nil, result.Error
 }
-func (db *VtuberContentRepository) VerifyUserModifyKaraoke(id int, K domain.KaraokeList) (bool, error) {
+func (db *VtuberContentRepository) VerifyUserModifyKaraoke(id int, K domain.Karaoke) (bool, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
-	result := db.Where("karaoke_Inputter_id=?", id).First(K, K.KaraokeListId)
-	return K.KaraokeListInputterId != nil, result.Error
+	result := db.Where("karaoke_Inputter_id=?", id).First(K, K.KaraokeId)
+	return K.KaraokeInputterId != nil, result.Error
+}
+
+func (db *VtuberContentRepository) GetAllRecordOfUserInput(Lid domain.ListenerId) ([]domain.Vtuber, []domain.VtuberMovie, []domain.VtuberMovieKaraoke, error) {
+	fmt.Print("interfaces/database/vtuber_content_db.go \n")
+	var Vts []domain.Vtuber
+	var VtsMos []domain.VtuberMovie
+	var VtsMosKas []domain.VtuberMovieKaraoke
+	var errs []error
+	var err error
+	whereQOfVts := fmt.Sprintf("vtuber_Inputter_id= %v", Lid)
+	err = db.Where(whereQOfVts).First(&Vts).Error
+	if err != nil {
+		errs = append(errs, err)
+	}
+	joinsQOfVtsMos := "LEFT JOIN vtubers USING(vtuber_id)"
+	whereOfVtsMos := fmt.Sprintf("where movies.inputter_listener_id = %v", Lid)
+	err = db.Model(&VtsMos).Where(whereOfVtsMos).Joins(joinsQOfVtsMos).Scan(&VtsMos).Error
+	if err != nil {
+		errs = append(errs, err)
+	}
+
+	joinsQOfVtsMosKas := "LEFT JOIN movies USING(movie_url) LEFT JOIN vtubers USING(vtuber_id)"
+	whereOfVtsMosKas := fmt.Sprintf("where karaokes.inputterr_id = %v", Lid)
+	err = db.Model(&VtsMosKas).Where(whereOfVtsMosKas).Joins(joinsQOfVtsMosKas).Scan(&VtsMosKas).Error
+	if err != nil {
+		errs = append(errs, err)
+	}
+	return Vts, VtsMos, VtsMosKas, err
 }

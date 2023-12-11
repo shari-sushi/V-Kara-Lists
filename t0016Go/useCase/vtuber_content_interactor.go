@@ -7,7 +7,9 @@ import (
 )
 
 type VtuberContentInteractor struct {
-	VtuberContentRepository VtuberContentRepository //user_repositoryのinterfaceで中身を定義
+	VtuberContentRepository VtuberContentRepository
+	UserRepository          UserRepository
+	FavoriteRepository      FavoriteRepository
 }
 
 func (interactor *VtuberContentInteractor) GetAllVtubers() ([]domain.Vtuber, error) {
@@ -20,7 +22,7 @@ func (interactor *VtuberContentInteractor) GetAllMovies() ([]domain.Movie, error
 	allMos, err := interactor.VtuberContentRepository.GetAllMovies()
 	return allMos, err
 }
-func (interactor *VtuberContentInteractor) GetAllKaraokes() ([]domain.KaraokeList, error) {
+func (interactor *VtuberContentInteractor) GetAllKaraokes() ([]domain.Karaoke, error) {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
 	allKas, err := interactor.VtuberContentRepository.GetAllKaraokes()
 	return allKas, err
@@ -54,7 +56,7 @@ func (interactor *VtuberContentInteractor) CreateMovie(m domain.Movie) error {
 	err := interactor.VtuberContentRepository.CreateMovie(m)
 	return err
 }
-func (interactor *VtuberContentInteractor) CreateKaraokeSing(k domain.KaraokeList) error {
+func (interactor *VtuberContentInteractor) CreateKaraokeSing(k domain.Karaoke) error {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
 	err := interactor.VtuberContentRepository.CreateKaraokeSing(k)
 	return err
@@ -70,7 +72,7 @@ func (interactor *VtuberContentInteractor) UpdateMovie(m domain.Movie) error {
 	err := interactor.VtuberContentRepository.UpdateMovie(m)
 	return err
 }
-func (interactor *VtuberContentInteractor) UpdateKaraokeSing(k domain.KaraokeList) error {
+func (interactor *VtuberContentInteractor) UpdateKaraokeSing(k domain.Karaoke) error {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
 	err := interactor.VtuberContentRepository.UpdateKaraokeSing(k)
 	return err
@@ -86,7 +88,7 @@ func (interactor *VtuberContentInteractor) DeleteMovie(m domain.Movie) error {
 	err := interactor.VtuberContentRepository.DeleteMovie(m)
 	return err
 }
-func (interactor *VtuberContentInteractor) DeleteKaraokeSing(k domain.KaraokeList) error {
+func (interactor *VtuberContentInteractor) DeleteKaraokeSing(k domain.Karaoke) error {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
 	err := interactor.VtuberContentRepository.DeleteKaraokeSing(k)
 	return err
@@ -102,8 +104,14 @@ func (interactor *VtuberContentInteractor) VerifyUserModifyMovie(id int, m domai
 	isAuth, err := interactor.VtuberContentRepository.VerifyUserModifyMovie(id, m)
 	return isAuth, err
 }
-func (interactor *VtuberContentInteractor) VerifyUserModifyKaraoke(id int, k domain.KaraokeList) (bool, error) {
+func (interactor *VtuberContentInteractor) VerifyUserModifyKaraoke(id int, k domain.Karaoke) (bool, error) {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
 	isAuth, err := interactor.VtuberContentRepository.VerifyUserModifyKaraoke(id, k)
 	return isAuth, err
+}
+
+func (interactor *VtuberContentInteractor) GetAllRecordOfUserInput(Lid domain.ListenerId) ([]domain.Vtuber, []domain.VtuberMovie, []domain.VtuberMovieKaraoke, error) {
+	fmt.Print("useCase/vtuber_content_interactor.go \n")
+	vts, mos, kas, err := interactor.VtuberContentRepository.GetAllRecordOfUserInput(Lid)
+	return vts, mos, kas, err
 }

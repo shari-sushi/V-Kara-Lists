@@ -6,8 +6,8 @@ import "gorm.io/gorm"
 type Favorite struct {
 	*gorm.Model
 	ListenerId ListenerId `gorm:"type:int(11);uniqueIndex:favorite_uq;not null"`
-	Movie_url  string     `gorm:"type:varchar(100);uniqueIndex:favorite_uq"`
-	KaraokeId  int        `gorm:"type:int(11);uniqueIndex:favorite_uq"`
+	MovieUrl   string     `gorm:"type:varchar(100);uniqueIndex:favorite_uq"`
+	KaraokeId  KaraokeId  `gorm:"type:int(11);uniqueIndex:favorite_uq"`
 }
 
 type Follow struct {
@@ -17,33 +17,31 @@ type Follow struct {
 	FollowedListener int `gorm:"type:int(11);uniqueIndex:follow_uq"`
 }
 
-type favoriteCount struct {
-	ListenerId ListenerId
-	Movie      int
-	Karaoke    int
+// appへ送信用
+type TransmitMovie struct {
+	Vtuber
+	Movie
+	Count int
+	IsFav bool
 }
 
-// type MovieWithFavorites struct {
-// 	Movie
-// 	Favorites []Favorite
-// }
-
-// appへ送信用, dbからCount取得用
+// dbからCount取得用
 type MovieFavoriteCount struct {
-	Vtuber
 	Movie
 	Count int
 }
 
-// type KaraokeWithFavorites struct {
-// 	KaraokeList
-// 	Favorites []Favorite
-// }
-
-// appへ送信用, dbからCount取得用
-type KaraokeFavoriteCount struct {
+// appへ送信用
+type TransmitKaraoke struct {
 	Vtuber
 	Movie
-	KaraokeList
+	Karaoke
+	Count int
+	IsFav bool
+}
+
+// dbからCount取得用
+type KaraokeFavoriteCount struct {
+	Karaoke
 	Count int
 }
