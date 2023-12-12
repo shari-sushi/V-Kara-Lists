@@ -44,9 +44,10 @@ type VtuberContentRepository interface {
 }
 
 type FavoriteRepository interface {
-	CreateMovieFavorite(domain.Favorite) error
+	FindFavoriteIdByFavOrUnfavRegistry(domain.Favorite) uint
+	SaveMovieFavorite(domain.Favorite) error
 	DeleteMovieFavorite(domain.Favorite) error
-	CreateKaraokeFavorite(domain.Favorite) error
+	SaveKaraokeFavorite(domain.Favorite) error
 	DeleteKaraokeFavorite(domain.Favorite) error
 
 	// CountUserFavorite(domain.ListenerId) ([]domain.Favorite, error) //使ってたのか分からなくなっちゃった。エラー解消したら消す。

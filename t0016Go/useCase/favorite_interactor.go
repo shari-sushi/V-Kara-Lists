@@ -12,38 +12,6 @@ type FavoriteInteractor struct {
 	UserRepository          UserRepository
 }
 
-func (interactor *FavoriteInteractor) CreateMovieFavorite(fav domain.Favorite) error {
-	fmt.Print("useCase/favorite_interactor.go \n")
-	fav.KaraokeId = 0 //保険
-	err := interactor.FavoriteRepository.CreateMovieFavorite(fav)
-	return err
-}
-
-func (interactor *FavoriteInteractor) DeleteMovieFavorite(fav domain.Favorite) error {
-	fmt.Print("useCase/favorite_interactor.go \n")
-	fav.KaraokeId = 0 //保険
-	err := interactor.FavoriteRepository.DeleteMovieFavorite(fav)
-	return err
-}
-
-func (interactor *FavoriteInteractor) CreateKaraokeFavorite(fav domain.Favorite) error {
-	fmt.Print("useCase/favorite_interactor.go \n")
-	err := interactor.FavoriteRepository.CreateKaraokeFavorite(fav)
-	return err
-}
-
-func (interactor *FavoriteInteractor) DeleteKaraokeFavorite(fav domain.Favorite) error {
-	fmt.Print("useCase/favorite_interactor.go \n")
-	err := interactor.FavoriteRepository.DeleteKaraokeFavorite(fav)
-	return err
-}
-
-// func (interactor *FavoriteInteractor) CountUserFavorite(lid domain.ListenerId) (domain.Listener, error){ //何返すんだろう
-// 	fmt.Print("useCase/favorite_interactor.go \n")
-// 	cnt, err := interactor.FavoriteRepository.CountUserFavorite(lid)
-// 	return cnt, err
-// }
-
 func (interactor *FavoriteInteractor) CountMovieFavorites() ([]domain.TransmitMovie, error) {
 	fmt.Print("useCase/favorite_interactor.go \n")
 	cnt, err := interactor.FavoriteRepository.CountMovieFavorites()
@@ -53,6 +21,23 @@ func (interactor *FavoriteInteractor) CountKaraokeFavorites() ([]domain.Transmit
 	fmt.Print("useCase/favorite_interactor.go \n")
 	cnt, err := interactor.FavoriteRepository.CountKaraokeFavorites()
 	return cnt, err
+}
+func (interactor *FavoriteInteractor) DeleteMovieFavorite(fav domain.Favorite) error {
+	fmt.Print("useCase/favorite_interactor.go \n")
+	fav.KaraokeId = 0 //保険
+	err := interactor.FavoriteRepository.DeleteMovieFavorite(fav)
+	return err
+}
+
+func (interactor *FavoriteInteractor) DeleteKaraokeFavorite(fav domain.Favorite) error {
+	fmt.Print("useCase/favorite_interactor.go \n")
+	err := interactor.FavoriteRepository.DeleteKaraokeFavorite(fav)
+	return err
+}
+func (interactor *FavoriteInteractor) FindFavoriteIdByFavOrUnfavRegistry(fav domain.Favorite) uint {
+	fmt.Print("useCase/favorite_interactor.go \n")
+	favId := interactor.FavoriteRepository.FindFavoriteIdByFavOrUnfavRegistry(fav)
+	return favId
 }
 
 func (interactor *FavoriteInteractor) FindAllFavContensByListenerId(favs []domain.Favorite) ([]domain.VtuberMovie, []domain.VtuberMovieKaraoke, []error) {
@@ -88,4 +73,17 @@ func (interactor *FavoriteInteractor) GetVtubersMoviesKaraokesWithFavCnts() ([]d
 	fmt.Print("useCase/favorite_interactor.go \n")
 	VtsMosKasWitFav, err := interactor.FavoriteRepository.GetVtubersMoviesKaraokesWithFavCnts()
 	return VtsMosKasWitFav, err
+}
+
+func (interactor *FavoriteInteractor) SaveMovieFavorite(fav domain.Favorite) error {
+	fmt.Print("useCase/favorite_interactor.go \n")
+	fav.KaraokeId = 0 //保険
+	err := interactor.FavoriteRepository.SaveMovieFavorite(fav)
+	return err
+}
+
+func (interactor *FavoriteInteractor) SaveKaraokeFavorite(fav domain.Favorite) error {
+	fmt.Print("useCase/favorite_interactor.go \n")
+	err := interactor.FavoriteRepository.SaveKaraokeFavorite(fav)
+	return err
 }

@@ -60,11 +60,12 @@ func Routing(r *gin.Engine) {
 
 			// favorites.GET("/followvtuber")   //V数が増えたら実装
 			// favorites.GET("/unfollowvtuber") //V数が増えたら実装
-			fav.POST("/favorite/movie", Controller.CreateMovieFavorite) //ok
-			fav.POST("/unfavorite/movie", Controller.DeleteMovieFavorite)
-			fav.POST("/favorite/karaoke", Controller.CreateKaraokeFavorite) //ok
-			fav.POST("/unfavorite/karaoke", Controller.DeleteKaraokeFavorite)
+			fav.POST("/favorite/movie", Controller.SaveMovieFavorite)
+			fav.DELETE("/unfavorite/movie", Controller.DeleteMovieFavorite)
+			fav.POST("/favorite/karaoke", Controller.SaveKaraokeFavorite)
+			fav.DELETE("/unfavorite/karaoke", Controller.DeleteKaraokeFavorite)
 		}
+		///v1/fav/unfavorite/karaoke
 	}
 }
 

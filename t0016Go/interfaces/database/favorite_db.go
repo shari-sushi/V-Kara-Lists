@@ -10,42 +10,6 @@ type FavoriteRepository struct {
 	SqlHandler
 }
 
-func (db *FavoriteRepository) CreateMovieFavorite(fav domain.Favorite) error {
-	fmt.Print("interfaces/database/favorite.go\n")
-	err := db.Create(&fav).Error
-	if err != nil {
-		return err
-	}
-	return err
-}
-
-func (db *FavoriteRepository) DeleteMovieFavorite(fav domain.Favorite) error {
-	fmt.Print("interfaces/database/favorite.go\n")
-	err := db.Delete(&fav).Error
-	if err != nil {
-		return err
-	}
-	return err
-}
-
-func (db *FavoriteRepository) CreateKaraokeFavorite(fav domain.Favorite) error {
-	fmt.Print("interfaces/database/favorite.go\n")
-	err := db.Create(&fav).Error
-	if err != nil {
-		return err
-	}
-	return err
-}
-
-func (db *FavoriteRepository) DeleteKaraokeFavorite(fav domain.Favorite) error {
-	fmt.Print("interfaces/database/favorite.go\n")
-	err := db.Delete(&fav).Error
-	if err != nil {
-		return err
-	}
-	return err
-}
-
 func (db *FavoriteRepository) CountMovieFavorites() ([]domain.TransmitMovie, error) {
 	fmt.Print("interfaces/database/favorite.go\n")
 	// 期待するクエリ
@@ -80,6 +44,25 @@ func (db *FavoriteRepository) CountKaraokeFavorites() ([]domain.TransmitKaraoke,
 	}
 	return favCnt, err
 }
+func (db *FavoriteRepository) DeleteMovieFavorite(fav domain.Favorite) error {
+	fmt.Print("interfaces/database/favorite.go\n")
+	whereQu := fmt.Sprintf("listener_id = %v AND movie_url = '%v' AND karaoke_id = 0", fav.ListenerId, fav.MovieUrl)
+	err := db.Where(whereQu).Delete(&fav).Error
+	if err != nil {
+		return err
+	}
+	return err
+}
+
+func (db *FavoriteRepository) DeleteKaraokeFavorite(fav domain.Favorite) error {
+	fmt.Print("interfaces/database/favorite.go\n")
+	whereQu := fmt.Sprintf("listener_id = %v AND movie_url = '%v' AND karaoke_id = %v", fav.ListenerId, fav.MovieUrl, fav.KaraokeId)
+	err := db.Where(whereQu).Delete(&fav).Error
+	if err != nil {
+		return err
+	}
+	return err
+}
 
 // 使ってないと思う
 func (db *FavoriteRepository) GetAllFavContensByListenerId(favs []domain.Favorite) ([]domain.VtuberMovie, []domain.VtuberMovieKaraoke, error) {
@@ -107,6 +90,53 @@ func (db *FavoriteRepository) GetAllFavContensByListenerId(favs []domain.Favorit
 	return VtsMos, VtsMosKas, err
 }
 
+func (db *FavoriteRepository) GetVtubersMoviesWithFavCnts() ([]domain.TransmitMovie, error) {
+	fmt.Print("interfaces/database/favorite.go \n")
+	var TmMos []domain.TransmitMovie
+	var err error
+
+	var vt domain.Vtuber
+	selectQu1 := "vtubers.vtuber_id, vtubers.vtuber_name, vtubers.vtuber_kana, vtubers.intro_movie_url, vtubers.vtuber_inputter_id"
+	selectQu2 := "m.movie_url, m.movie_title, m.movie_inputter_id"
+	selectQu3 := "COUNT(favorites.movie_url) AS count "
+	joinQu1 := "LEFT JOIN movies as m USING(vtuber_id)"
+	joinQu2 := "LEFT JOIN favorites ON m.movie_url = favorites.movie_url AND favorites.karaoke_id = 0 "
+	joinQu := fmt.Sprint(joinQu1, joinQu2)
+	whereQu := "m.movie_url IS NOT NULL "
+	groupQu := "m.movie_url"
+	err = db.Model(vt).Select(selectQu1, selectQu2, selectQu3).
+		Joins(joinQu).Where(whereQu).Group(groupQu).
+		Scan(&TmMos).Error
+	if err != nil {
+		return nil, err
+	}
+	return TmMos, nil
+}
+
+func (db *FavoriteRepository) GetVtubersMoviesKaraokesWithFavCnts() ([]domain.TransmitKaraoke, error) {
+	fmt.Print("interfaces/database/favorite.go \n")
+	var TmKas []domain.TransmitKaraoke
+	var err error
+
+	var vt domain.Vtuber
+	selectQu1 := "vtubers.vtuber_id, vtubers.vtuber_name, vtubers.vtuber_kana, vtubers.intro_movie_url, vtubers.vtuber_inputter_id "
+	selectQu2 := "m.movie_url, m.movie_title, m.movie_inputter_id "
+	selectQu3 := "k.karaoke_id, k.sing_start, k.song_name, k.karaoke_inputter_id "
+	selectQu4 := "COUNT(f.karaoke_id) AS count"
+	joinQu1 := "LEFT JOIN movies as m USING(vtuber_id) "
+	joinQu2 := "LEFT JOIN karaokes as k ON m.movie_url = k.movie_url "
+	joinQu3 := "LEFT JOIN favorites as f ON k.karaoke_id = f.karaoke_id AND f.karaoke_id != 0 "
+	joinQu := fmt.Sprint(joinQu1, joinQu2, joinQu3)
+	whereQu := "m.movie_url IS NOT NULL AND k.karaoke_id != 0 "
+	groupQu := "k.karaoke_id"
+	err = db.Model(vt).Select(selectQu1, selectQu2, selectQu3, selectQu4).
+		Joins(joinQu).Where(whereQu).Group(groupQu).
+		Scan(&TmKas).Error
+	if err != nil {
+		return nil, err
+	}
+	return TmKas, nil
+}
 func (db *FavoriteRepository) FindFavMoviesByListenerId(favs []domain.Favorite) ([]domain.VtuberMovie, error) {
 	fmt.Print("interfaces/database/favorite.go \n")
 	var Mos []domain.Movie
@@ -143,7 +173,7 @@ func (db *FavoriteRepository) FindFavsOfUser(Lid domain.ListenerId) ([]domain.Fa
 	// 期待するクエリ
 	// Select * FROM favorites Where listener_id = ?
 	var favsOfUser []domain.Favorite
-	whereQuery := fmt.Sprintf("where listener_id = %v", Lid)
+	whereQuery := fmt.Sprintf("listener_id = %v", Lid)
 	err := db.Where(whereQuery).Find(&favsOfUser).Error
 	if err != nil {
 		return nil, err
@@ -157,47 +187,27 @@ func (db *FavoriteRepository) FindFavsByListenerId(lid domain.ListenerId, fav do
 	return fav, result.Error
 }
 
-func (db *FavoriteRepository) GetVtubersMoviesWithFavCnts() ([]domain.TransmitMovie, error) {
-	fmt.Print("interfaces/database/favorite.go \n")
-	var TmMos []domain.TransmitMovie
-	var err error
-
-	var vt domain.Vtuber
-	SelectQu1 := "vtuber.vtuber_id, vtuber.vtuber_name, vtuber.vtuber_kana, vtuber.intro_movie_url, vtuber.vtuber_inputter_id, "
-	SelectQu2 := "m.movie_url, m.movie_title, m.movie_inputter_id, "
-	SelectQu3 := "COUNT(favorites.movie_url) AS count "
-	JoinQu := "LEFT JOIN movies as m USING(vtuber_id) LEFT JOIN favorites ON m.movie_url = favorites.movie_url AND favorites.karaoke_id = 0 "
-	WhereQu := "m.movie_url IS NOT NULL "
-	GroupQu := "m.movie_url "
-	err = db.Model(vt).Select(SelectQu1, SelectQu2, SelectQu3).
-		Joins(JoinQu).Where(WhereQu).Group(GroupQu).
-		Scan(&TmMos).Error
-	if err != nil {
-		return nil, err
-	}
-	return TmMos, nil
+func (db *FavoriteRepository) FindFavoriteIdByFavOrUnfavRegistry(fav domain.Favorite) uint {
+	fmt.Print("interfaces/database/favorite.go\n")
+	err := db.Select("id").Where("movie_url = ? AND karaoke_id = ?", fav.MovieUrl, fav.KaraokeId).First(&fav).Error
+	fmt.Printf("FindFavoriteIdByFavOrUnfavRegistry got err=%v\n", err)
+	// fmt.Printf("got favId = %v\n", fav.ID) //プリントできない…
+	return fav.ID
 }
 
-func (db *FavoriteRepository) GetVtubersMoviesKaraokesWithFavCnts() ([]domain.TransmitKaraoke, error) {
-	fmt.Print("interfaces/database/favorite.go \n")
-	var TmKas []domain.TransmitKaraoke
-	var err error
-
-	var vt domain.Vtuber
-	SelectQu1 := "vtuber.vtuber_id, vtuber.vtuber_name, vtuber.vtuber_kana, vtuber.intro_movie_url, vtuber.vtuber_inputter_id, "
-	SelectQu2 := "m.movie_url, m.movie_title, m.movie_inputter_id, "
-	SelectQu3 := "k.karaoke_id, k.sing_start, k.song_name, k.karaoke_inputter_id, "
-	SelectQu4 := "COUNT(k.karaoke_id) AS count"
-	JoinQu1 := "LEFT JOIN movies as m USING(vtuber_id) "
-	JoinQu2 := "LEFT JOIN karaokes as k ON m.movie_url = k.movie_url "
-	JoinQu3 := "LEFT JOIN favorites as f ON k.karaoke_id = f.karaoke_id AND f.karaoke_id != 0 "
-	WhereQu := "m.movie_url IS NOT NULL AND k.karaoke_id != 0 "
-	GroupQu := "m.movie_url "
-	err = db.Model(vt).Select(SelectQu1, SelectQu2, SelectQu3, SelectQu4).
-		Joins(JoinQu1, JoinQu2, JoinQu3).Where(WhereQu).Group(GroupQu).
-		Scan(&TmKas).Error
+func (db *FavoriteRepository) SaveKaraokeFavorite(fav domain.Favorite) error {
+	fmt.Print("interfaces/database/favorite.go\n")
+	err := db.Save(&fav).Error
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return TmKas, nil
+	return err
+}
+func (db *FavoriteRepository) SaveMovieFavorite(fav domain.Favorite) error {
+	fmt.Print("interfaces/database/favorite.go\n")
+	err := db.Save(&fav).Error
+	if err != nil {
+		return err
+	}
+	return err
 }

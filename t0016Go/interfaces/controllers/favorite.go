@@ -15,7 +15,7 @@ func (controller *Controller) ReturnTopPageData(c *gin.Context) {
 	if err != nil {
 		errs = append(errs, err)
 	}
-	VtsMosWitFav, err := controller.FavoriteInteractor.GetVtubersMoviesWithFavCnts() //エラー発生
+	VtsMosWitFav, err := controller.FavoriteInteractor.GetVtubersMoviesWithFavCnts()
 	if err != nil {
 		fmt.Print("err:", err)
 		errs = append(errs, err)
@@ -69,7 +69,7 @@ func a(c *gin.Context) {
 	// controller.Interactor.
 }
 
-func (controller *Controller) CreateMovieFavorite(c *gin.Context) {
+func (controller *Controller) SaveMovieFavorite(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -83,17 +83,22 @@ func (controller *Controller) CreateMovieFavorite(c *gin.Context) {
 			"message": "Invalid request body",
 		})
 		return
+	} else if fav.KaraokeId != 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "/favrite/movie Get Fav Karaoke",
+		})
+		return
 	} else if fav.MovieUrl == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Send Data(movie_url) is NULL",
 		})
 		return
 	}
-	fmt.Printf("1-1, fav= %v \n", fav)   //4
-	fmt.Printf("1-2, &fav= %v \n", &fav) //4
 	fav.ListenerId = applicantListenerId
 
-	if err := controller.FavoriteInteractor.CreateMovieFavorite(fav); err != nil {
+	fav.ID = controller.FavoriteInteractor.FindFavoriteIdByFavOrUnfavRegistry(fav)
+	fmt.Printf("got fav.ID is %v\n", fav.ID)
+	if err := controller.FavoriteInteractor.SaveMovieFavorite(fav); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invailed Favorite it",
 		})
@@ -118,6 +123,16 @@ func (controller *Controller) DeleteMovieFavorite(c *gin.Context) {
 			"message": "Invalid request body",
 		})
 		return
+	} else if fav.KaraokeId != 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "/favrite/movie Get Fav Karaoke",
+		})
+		return
+	} else if fav.MovieUrl == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Send Data(movie_url) is NULL",
+		})
+		return
 	}
 	fmt.Printf("1-1, fav= %v \n", fav) //4
 	fav.ListenerId = applicantListenerId
@@ -133,7 +148,7 @@ func (controller *Controller) DeleteMovieFavorite(c *gin.Context) {
 	})
 	return
 }
-func (controller *Controller) CreateKaraokeFavorite(c *gin.Context) {
+func (controller *Controller) SaveKaraokeFavorite(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -154,8 +169,9 @@ func (controller *Controller) CreateKaraokeFavorite(c *gin.Context) {
 		return
 	}
 	fav.ListenerId = applicantListenerId
+	fav.ID = controller.FavoriteInteractor.FindFavoriteIdByFavOrUnfavRegistry(fav)
 	fmt.Println("fav", fav)
-	if err := controller.FavoriteInteractor.CreateKaraokeFavorite(fav); err != nil {
+	if err := controller.FavoriteInteractor.SaveKaraokeFavorite(fav); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invailed Favorite it",
 		})
@@ -178,6 +194,11 @@ func (controller *Controller) DeleteKaraokeFavorite(c *gin.Context) {
 	if err := c.ShouldBind(&fav); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid request body",
+		})
+		return
+	} else if fav.MovieUrl == "" || fav.KaraokeId == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Send Data has \"\" or 0",
 		})
 		return
 	}
