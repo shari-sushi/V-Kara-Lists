@@ -78,7 +78,7 @@ func (controller *Controller) CreateMovie(c *gin.Context) {
 	})
 	return
 }
-func (controller *Controller) CreateKaraokeSing(c *gin.Context) {
+func (controller *Controller) CreateKaraoke(c *gin.Context) {
 	listenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -94,14 +94,14 @@ func (controller *Controller) CreateKaraokeSing(c *gin.Context) {
 		return
 	}
 	karaoke.KaraokeInputterId = listenerId
-	if err := controller.VtuberContentInteractor.CreateKaraokeSing(karaoke); err != nil {
+	if err := controller.VtuberContentInteractor.CreateKaraoke(karaoke); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invailed Registered the New KaraokeSing",
+			"message": "Invailed Registered the New Karaoke",
 		})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Successfully Registered the New KaraokeSing",
+		"message": "Successfully Registered the New Karaoke",
 	})
 	return
 }
@@ -181,7 +181,7 @@ func (controller *Controller) EditMovie(c *gin.Context) {
 	})
 	return
 }
-func (controller *Controller) EditKaraokeSing(c *gin.Context) {
+func (controller *Controller) EditKaraoke(c *gin.Context) {
 	listenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -208,7 +208,7 @@ func (controller *Controller) EditKaraokeSing(c *gin.Context) {
 		})
 		return
 	}
-	if err := controller.VtuberContentInteractor.UpdateKaraokeSing(Karaoke); err != nil {
+	if err := controller.VtuberContentInteractor.UpdateKaraoke(Karaoke); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Inputter can modify each data",
 		})
@@ -297,7 +297,7 @@ func (controller *Controller) DeleteMovie(c *gin.Context) {
 	return
 }
 
-func (controller *Controller) DeleteKaraokeSing(c *gin.Context) {
+func (controller *Controller) DeleteKaraoke(c *gin.Context) {
 	listenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -324,7 +324,7 @@ func (controller *Controller) DeleteKaraokeSing(c *gin.Context) {
 		})
 		return
 	}
-	if err := controller.VtuberContentInteractor.DeleteKaraokeSing(Karaoke); err != nil {
+	if err := controller.VtuberContentInteractor.DeleteKaraoke(Karaoke); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Inputter can modify each data",
 		})

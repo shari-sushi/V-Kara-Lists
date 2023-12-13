@@ -50,9 +50,9 @@ func (interactor *VtuberContentInteractor) CreateMovie(m domain.Movie) error {
 	err := interactor.VtuberContentRepository.CreateMovie(m)
 	return err
 }
-func (interactor *VtuberContentInteractor) CreateKaraokeSing(k domain.Karaoke) error {
+func (interactor *VtuberContentInteractor) CreateKaraoke(k domain.Karaoke) error {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
-	err := interactor.VtuberContentRepository.CreateKaraokeSing(k)
+	err := interactor.VtuberContentRepository.CreateKaraoke(k)
 	return err
 }
 
@@ -66,9 +66,9 @@ func (interactor *VtuberContentInteractor) UpdateMovie(m domain.Movie) error {
 	err := interactor.VtuberContentRepository.UpdateMovie(m)
 	return err
 }
-func (interactor *VtuberContentInteractor) UpdateKaraokeSing(k domain.Karaoke) error {
+func (interactor *VtuberContentInteractor) UpdateKaraoke(k domain.Karaoke) error {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
-	err := interactor.VtuberContentRepository.UpdateKaraokeSing(k)
+	err := interactor.VtuberContentRepository.UpdateKaraoke(k)
 	return err
 }
 func (interactor *VtuberContentInteractor) DeleteVtuber(v domain.Vtuber) error {
@@ -82,9 +82,9 @@ func (interactor *VtuberContentInteractor) DeleteMovie(m domain.Movie) error {
 	err := interactor.VtuberContentRepository.DeleteMovie(m)
 	return err
 }
-func (interactor *VtuberContentInteractor) DeleteKaraokeSing(k domain.Karaoke) error {
+func (interactor *VtuberContentInteractor) DeleteKaraoke(k domain.Karaoke) error {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
-	err := interactor.VtuberContentRepository.DeleteKaraokeSing(k)
+	err := interactor.VtuberContentRepository.DeleteKaraoke(k)
 	return err
 }
 

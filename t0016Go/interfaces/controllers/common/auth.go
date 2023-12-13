@@ -9,6 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"github.com/sharin-sushi/0016go_next_relation/domain"
+
+	validation "github.com/go-ozzo/ozzo-validation"
 )
 
 func SetListenerIdintoCookie(c *gin.Context, ListenerId domain.ListenerId) (err error) {
@@ -88,4 +90,24 @@ func ParseToken(tokenString string) (*jwt.Token, error) {
 		return nil, err
 	}
 	return token, nil
+}
+
+// 最低文字数の制限は今のところここでしかやってない、元々1, 255。8, 255だった。
+// import "validation "github.com/go-ozzo/ozzo-validation"
+func ValidateSignup(m *domain.Listener) error {
+	err := validation.ValidateStruct(m,
+		validation.Field(&m.ListenerName,
+			validation.Required.Error("Name is requred"),
+			validation.Length(2, 20).Error("Name needs 2~20 cahrs"),
+		),
+		validation.Field(&m.Password,
+			validation.Required.Error("Password is required"),
+			validation.Length(4, 20).Error("Password needs 4 ~ 20 chars"),
+		),
+		validation.Field(&m.Email,
+			validation.Required.Error("Email is required"),
+			validation.Length(10, 100).Error("Email needs 4 ~ 20 chars"), //メアドは現状、これ以外の制限はしてない
+		),
+	)
+	return err
 }

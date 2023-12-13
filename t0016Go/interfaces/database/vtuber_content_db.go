@@ -83,7 +83,7 @@ func (db *VtuberContentRepository) CreateMovie(M domain.Movie) error {
 	return result.Error
 }
 
-func (db *VtuberContentRepository) CreateKaraokeSing(K domain.Karaoke) error {
+func (db *VtuberContentRepository) CreateKaraoke(K domain.Karaoke) error {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var Mo domain.Movie
 	Mo.MovieUrl = K.MovieUrl
@@ -106,7 +106,7 @@ func (db *VtuberContentRepository) UpdateMovie(M domain.Movie) error {
 	return result.Error
 }
 
-func (db *VtuberContentRepository) UpdateKaraokeSing(K domain.Karaoke) error {
+func (db *VtuberContentRepository) UpdateKaraoke(K domain.Karaoke) error {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var Ka domain.Vtuber
 	result := db.Model(&Ka).Where("karaoke_id = ?", K.KaraokeId).Updates(&K)
@@ -137,7 +137,7 @@ func (db *VtuberContentRepository) DeleteMovie(M domain.Movie) error {
 	return result.Error
 }
 
-func (db *VtuberContentRepository) DeleteKaraokeSing(K domain.Karaoke) error {
+func (db *VtuberContentRepository) DeleteKaraoke(K domain.Karaoke) error {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	result := db.Where("song_name = ?", K.SongName).Delete(K) //フロント側の表示バグ対策でPK+αで絞込み
 	return result.Error

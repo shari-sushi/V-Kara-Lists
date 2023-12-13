@@ -19,15 +19,15 @@ type VtuberContentRepository interface {
 	GetVtubersMoviesKaraokes() ([]domain.VtuberMovieKaraoke, error) //
 	CreateVtuber(domain.Vtuber) error                               //
 	CreateMovie(domain.Movie) error                                 //
-	CreateKaraokeSing(domain.Karaoke) error                         //
+	CreateKaraoke(domain.Karaoke) error                             //
 	// // CreateOrinalSong() (error) //実装予定
-	UpdateVtuber(domain.Vtuber) error       //
-	UpdateMovie(domain.Movie) error         //
-	UpdateKaraokeSing(domain.Karaoke) error //
+	UpdateVtuber(domain.Vtuber) error   //
+	UpdateMovie(domain.Movie) error     //
+	UpdateKaraoke(domain.Karaoke) error //
 	// // UpdateSong() (error) //実装予定
-	DeleteVtuber(domain.Vtuber) error       //
-	DeleteMovie(m domain.Movie) error       //
-	DeleteKaraokeSing(domain.Karaoke) error //
+	DeleteVtuber(domain.Vtuber) error   //
+	DeleteMovie(m domain.Movie) error   //
+	DeleteKaraoke(domain.Karaoke) error //
 	// // DeleteSong() (domain.OriginalSong, error) //実装予定
 
 	// データ登録者の確認lId

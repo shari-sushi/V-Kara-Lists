@@ -21,6 +21,8 @@ z_memo
 memo.txt
 !.env.txt
 
+t0016Go/interfaces/controllers/common/crypto_test.go
+
 # 逐一、細々と編集している。それを全て残すと履歴汚染になるため、gitの追跡を外した。
 # 専用branchを作るほどのことでもない。
 README.md

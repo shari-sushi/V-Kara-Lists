@@ -33,19 +33,19 @@ func Routing(r *gin.Engine) {
 			// データ新規登録
 			vcontents.POST("/create/vtuber", Controller.CreateVtuber)
 			vcontents.POST("/create/movie", Controller.CreateMovie)
-			vcontents.POST("/create/karaoke", Controller.CreateKaraokeSing)
+			vcontents.POST("/create/karaoke", Controller.CreateKaraoke)
 			// vcontents.POST("/create/song", Controller.CreateSong)           //ver1.5
 
 			//データ編集
 			vcontents.POST("/edit/vtuber", Controller.EditVtuber)
 			vcontents.POST("/edit/movie", Controller.EditMovie)
-			vcontents.POST("/edit/karaoke", Controller.EditKaraokeSing)
+			vcontents.POST("/edit/karaoke", Controller.EditKaraoke)
 			// vcontents.POST("/edit/song", Controller.EditSong)           //ver1.5
 
 			// // データ削除(物理)
 			vcontents.DELETE("/delete/vtuber", Controller.DeleteVtuber)
 			vcontents.DELETE("/delete/movie", Controller.DeleteMovie)
-			vcontents.DELETE("/delete/karaoke", Controller.DeleteKaraokeSing)
+			vcontents.DELETE("/delete/karaoke", Controller.DeleteKaraoke)
 			// vcontents.DELETE("/delete/song", Controller.DeleteSong)           //ver1.5
 
 			//ドロップダウン用
