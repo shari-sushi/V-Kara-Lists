@@ -12,13 +12,6 @@ type Vtuber struct {
 	VtuberInputterId ListenerId `gorm:"type:int(11);not null"`            //`json:"vtuber_inputter_id"`
 }
 
-type EntryVtuber struct {
-	VtuberName       string     //`json:"vtuver_name"`
-	VtuberKana       string     //`json:"vtuber_kana"`
-	IntroMovieUrl    string     //`json:"vtuber_intro_movie_url"`
-	VtuberInputterId ListenerId //`json:"vtuber_inputter_id"`
-}
-
 type Movie struct {
 	MovieUrl        string     `gorm:"primaryKey;type:varchar(100)"` //`json:"movie_url"`
 	MovieTitle      string     `gorm:"type:varchar(200);not null"`   //`json:"movie_title"`

@@ -18,8 +18,7 @@ func (controller *Controller) SaveMovieFavorite(c *gin.Context) {
 		})
 		return
 	}
-	// fav := domain.Favorite{Model: &gorm.Model{}}
-	var fav domain.Favorite //*gorm.Modelからやめたけど大丈夫だろうか
+	var fav domain.Favorite
 
 	if err := c.ShouldBind(&fav); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -41,8 +40,7 @@ func (controller *Controller) SaveMovieFavorite(c *gin.Context) {
 	fav.ListenerId = applicantListenerId
 	foundFav := controller.FavoriteInteractor.FindFavoriteUnscopedByFavOrUnfavRegistry(fav)
 	fmt.Print("fav.ID:", fav.ID)
-	zeroValue := gorm.DeletedAt{} //これ以外に思いつかなかった。gorm.を記述しない方法見つかれば使いたい
-	// fmt.Println("fav", foundFav)
+	zeroValue := gorm.DeletedAt{}
 	fmt.Printf("foundFav:%v", foundFav)
 	if foundFav.ID == 0 {
 		err := controller.FavoriteInteractor.CreateMovieFavorite(foundFav)
@@ -119,8 +117,7 @@ func (controller *Controller) SaveKaraokeFavorite(c *gin.Context) {
 		})
 		return
 	}
-	// fav := domain.Favorite{Model: &gorm.Model{}}
-	var fav domain.Favorite //*gorm.Modelからやめたけど大丈夫だろうか
+	var fav domain.Favorite
 	if err := c.ShouldBind(&fav); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid request body",
@@ -134,7 +131,7 @@ func (controller *Controller) SaveKaraokeFavorite(c *gin.Context) {
 	}
 	fav.ListenerId = applicantListenerId
 	foundFav := controller.FavoriteInteractor.FindFavoriteUnscopedByFavOrUnfavRegistry(fav)
-	zeroValue := gorm.DeletedAt{} //これ以外に思いつかなかった。gorm.を記述しない方法見つかれば使いたい
+	zeroValue := gorm.DeletedAt{}
 	fmt.Println("fav", foundFav)
 	fmt.Printf("foundFav:%v", foundFav)
 	if foundFav.ID == 0 {

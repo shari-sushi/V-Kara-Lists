@@ -16,15 +16,7 @@ func (db *FavoriteRepository) CountMovieFavorites() ([]domain.TransmitMovie, err
 	// SELECT movie_url COUNT(*) AS count FROM favorite_posts WHERE karaoke_id != 0 GROUP BY movie_url;
 	var fav domain.Favorite
 	var favCnt []domain.TransmitMovie
-	err := db.Model(&fav).Select("movie_url").Where("karaoke_id = 0").Group("movie_url").
-		Find(&favCnt).Error
-
-	// 動作確認できたら削除するメモ
-	// var favs []domain.Favorite
-	// var moviesFavCount []domain.MovieFavoriteCount
-	// var cnt int64
-	// err := db.Model(&favs).Select().Group("movie_url").Count(&cnt).Error
-
+	err := db.Model(&fav).Select("movie_url").Where("karaoke_id = 0").Group("movie_url").Find(&favCnt).Error
 	if err != nil {
 		return favCnt, err
 	}
@@ -37,8 +29,7 @@ func (db *FavoriteRepository) CountKaraokeFavorites() ([]domain.TransmitKaraoke,
 	// SELECT karaoke_id, COUNT(*) AS count FROM favorite_posts WHERE karaoke_id != 0 GROUP BY karaoke_id;
 	var fav domain.Favorite
 	var favCnt []domain.TransmitKaraoke
-	err := db.Model(&fav).Select("karaoke_id").Where("where karaoke_id != 0").Group("karoke_list_id").
-		Find(&favCnt).Error
+	err := db.Model(&fav).Select("karaoke_id").Where("where karaoke_id != 0").Group("karoke_list_id").Find(&favCnt).Error
 	if err != nil {
 		return nil, err
 	}

@@ -96,13 +96,8 @@ func (db *VtuberContentRepository) CreateKaraokeSing(K domain.Karaoke) error {
 
 func (db *VtuberContentRepository) UpdateVtuber(V domain.Vtuber) error {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
-	// これで行けるなら、Modelに渡す構造体は空じゃなくて良い。
 	result := db.Model(&V).Where("vtuber_id = ?", V.VtuberId).Updates(&V)
 	return result.Error
-	// var Vt domain.Vtuber
-	// fmt.Printf("Vt(nil値)=%v\n", Vt)
-	// result := db.Model(&Vt).Where("vtuber_id = ?", V.VtuberId).Updates(&V)
-	// return result.Error
 }
 func (db *VtuberContentRepository) UpdateMovie(M domain.Movie) error {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")

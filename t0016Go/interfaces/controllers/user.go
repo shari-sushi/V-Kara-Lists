@@ -30,9 +30,9 @@ func (controller *Controller) CreateUser(c *gin.Context) {
 		})
 		return
 	}
-	if _, err := controller.UserInteractor.FindUserByEmail(user.Email); err == nil {
+	if _, err := controller.UserInteractor.FindUserByEmail(user.Email); err == nil { //er==nilであってる。nilならリクエスト却下するから
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error":   "error", //errがnilの時にリクエストを受理できないという処理で正しい。エラーどうしよう???
+			"error":   "error",
 			"message": "the E-mail address already in use",
 		})
 		return
@@ -58,8 +58,6 @@ func (controller *Controller) CreateUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		// "memberId":   newMember.ListenerId,
-		// "memberName": newMember.ListenerName,
 		"message": "Successfully created user, and logined",
 	})
 	return

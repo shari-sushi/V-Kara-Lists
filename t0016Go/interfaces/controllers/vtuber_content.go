@@ -360,8 +360,8 @@ func (controller *Controller) ReturnTopPageData(c *gin.Context) {
 			"vtubers":                 allVts,
 			"vtubers_movies":          VtsMosWitFav,
 			"vtubers_movies_karaokes": VtsMosKasWithFav,
-			// "error":   errs,
-			"message": "dont you Loged in ?",
+			"error":                   errs,
+			"message":                 "dont you Loged in ?",
 		})
 		return
 	}

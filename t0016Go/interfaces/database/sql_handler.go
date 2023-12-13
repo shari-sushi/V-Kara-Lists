@@ -4,22 +4,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// type Session struct {
-// 	DryRun                   bool
-// 	PrepareStmt              bool
-// 	NewDB                    bool
-// 	SkipHooks                bool
-// 	SkipDefaultTransaction   bool
-// 	DisableNestedTransaction bool
-// 	AllowGlobalUpdate        bool
-// 	FullSaveAssociations     bool
-// 	QueryFields              bool
-// 	Context                  context.Context
-// 	Logger                   logger.Interface
-// 	NowFunc                  func() time.Time
-// 	CreateBatchSize          int
-// }
-
 type SqlHandler interface {
 	Count(*int64) *gorm.DB
 	Create(interface{}) *gorm.DB

@@ -28,27 +28,9 @@ func ValidateSignup(m *domain.Listener) error {
 	return err
 }
 
-func Validate(el *domain.EntryListener) error {
-	err := validation.ValidateStruct(el,
-		validation.Field(&el.ListenerName,
-			validation.Required.Error("Name is requred"),
-			validation.Length(2, 20).Error("Name needs 2~20 cahrs"),
-		),
-		validation.Field(&el.Password,
-			validation.Required.Error("Password is required"),
-			validation.Length(4, 20).Error("Password needs 4 ~ 20 chars"),
-		),
-		validation.Field(&el.Email,
-			validation.Required.Error("Email is required"),
-			validation.Length(10, 100).Error("Email needs 4 ~ 20 chars"), //メアドは現状、これ以外の制限はしてない
-		),
-	)
-	return err
-}
-
 func FindUserByEmail(db *gorm.DB, email string) (domain.Listener, error) {
 	var user domain.Listener
-	result := db.Where("email = ?", email).Find(&user) //FirstからFindに変えた
+	result := db.Where("email = ?", email).Find(&user)
 	fmt.Printf("Emailで取得したuser= %v \n", user)
 	return user, result.Error
 }

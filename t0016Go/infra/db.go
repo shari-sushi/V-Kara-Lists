@@ -3,20 +3,14 @@ package infra
 //"github.com/sharin-sushi/0022loginwithJWT/internal/utility"
 
 import (
-	// "database/sql"
-
 	"fmt"
 	"log"
 	"os"
-
-	// "time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 	domain "github.com/sharin-sushi/0016go_next_relation/domain"
 	"github.com/sharin-sushi/0016go_next_relation/interfaces/database"
-
-	// "github.com/sharin-sushi/0022loginwithJWT/t0022Go/pkg/middleware"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

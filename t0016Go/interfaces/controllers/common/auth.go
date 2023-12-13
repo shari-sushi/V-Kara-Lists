@@ -12,7 +12,6 @@ import (
 )
 
 func SetListenerIdintoCookie(c *gin.Context, ListenerId domain.ListenerId) (err error) {
-	// Token発行　＝　JWTでいいのかな？
 	var token string
 	token, err = GenerateToken(int(ListenerId))
 	if err != nil {
@@ -64,7 +63,7 @@ func TakeListenerIdFromJWT(c *gin.Context) (domain.ListenerId, error) {
 
 func GenerateToken(ListenerId int) (string, error) {
 	secretKey := os.Getenv("SECRET_KEY")
-	tokenLifeTime := 60 * 60 * 12 // 12hにする
+	tokenLifeTime := 60 * 60 * 12
 
 	claims := jwt.MapClaims{
 		"listener_id": ListenerId,
