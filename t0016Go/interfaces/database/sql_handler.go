@@ -32,6 +32,7 @@ type SqlHandler interface {
 	Omit(...string) *gorm.DB
 	Save(interface{}) *gorm.DB
 	Select(interface{}, ...interface{}) *gorm.DB
+	Unscoped() *gorm.DB
 	Update(string, interface{}) *gorm.DB
 	Updates(interface{}) *gorm.DB
 	Where(interface{}, ...interface{}) *gorm.DB

@@ -7,67 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sharin-sushi/0016go_next_relation/domain"
 	"github.com/sharin-sushi/0016go_next_relation/interfaces/controllers/common"
+	"gorm.io/gorm"
 )
-
-func (controller *Controller) ReturnTopPageData(c *gin.Context) {
-	var errs []error
-	allVts, err := controller.VtuberContentInteractor.GetAllVtubers()
-	if err != nil {
-		errs = append(errs, err)
-	}
-	VtsMosWitFav, err := controller.FavoriteInteractor.GetVtubersMoviesWithFavCnts()
-	if err != nil {
-		fmt.Print("err:", err)
-		errs = append(errs, err)
-	}
-	VtsMosKasWithFav, err := controller.FavoriteInteractor.GetVtubersMoviesKaraokesWithFavCnts()
-	if err != nil {
-		errs = append(errs, err)
-	}
-
-	applicantListenerId, err := common.TakeListenerIdFromJWT(c) //非ログイン時でも処理は続ける
-	if err != nil || applicantListenerId == 0 {
-		errs = append(errs, err)
-		c.JSON(http.StatusOK, gin.H{
-			"vtubers":                 allVts,
-			"vtubers_movies":          VtsMosWitFav,
-			"vtubers_movies_karaokes": VtsMosKasWithFav,
-			// "error":   errs,
-			"message": "dont you Loged in ?",
-		})
-		return
-	}
-
-	myFav, err := controller.FavoriteInteractor.FindFavsOfUser(applicantListenerId)
-	TransmitMovies := common.AddIsFavToMovieWithFav(VtsMosWitFav, myFav)
-	TransmitKaraokes := common.AddIsFavToKaraokeWithFav(VtsMosKasWithFav, myFav)
-
-	c.JSON(http.StatusOK, gin.H{
-		"vtubers":                 allVts,
-		"vtubers_movies":          TransmitMovies,
-		"vtubers_movies_karaokes": TransmitKaraokes,
-		"error":                   errs,
-	})
-	return
-}
-
-func a(c *gin.Context) {
-	tokenLId, err := common.TakeListenerIdFromJWT(c)
-	fmt.Printf("tokenLId = %v \n", tokenLId)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid ListenerId of token",
-			"err":     err,
-		})
-		return
-	} else if tokenLId == guest.ListenerId {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Guest Acc. must NOT Withdrawal",
-		})
-		return
-	}
-	// controller.Interactor.
-}
 
 func (controller *Controller) SaveMovieFavorite(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
@@ -77,7 +18,9 @@ func (controller *Controller) SaveMovieFavorite(c *gin.Context) {
 		})
 		return
 	}
-	var fav domain.Favorite
+	// fav := domain.Favorite{Model: &gorm.Model{}}
+	var fav domain.Favorite //*gorm.Modelからやめたけど大丈夫だろうか
+
 	if err := c.ShouldBind(&fav); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid request body",
@@ -94,16 +37,36 @@ func (controller *Controller) SaveMovieFavorite(c *gin.Context) {
 		})
 		return
 	}
-	fav.ListenerId = applicantListenerId
 
-	fav.ID = controller.FavoriteInteractor.FindFavoriteIdByFavOrUnfavRegistry(fav)
-	fmt.Printf("got fav.ID is %v\n", fav.ID)
-	if err := controller.FavoriteInteractor.SaveMovieFavorite(fav); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invailed Favorite it",
+	fav.ListenerId = applicantListenerId
+	foundFav := controller.FavoriteInteractor.FindFavoriteUnscopedByFavOrUnfavRegistry(fav)
+	fmt.Print("fav.ID:", fav.ID)
+	zeroValue := gorm.DeletedAt{} //これ以外に思いつかなかった。gorm.を記述しない方法見つかれば使いたい
+	// fmt.Println("fav", foundFav)
+	fmt.Printf("foundFav:%v", foundFav)
+	if foundFav.ID == 0 {
+		err := controller.FavoriteInteractor.CreateMovieFavorite(foundFav)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "Invailed Favorite it",
+			})
+			return
+		}
+	} else if foundFav.DeletedAt != zeroValue {
+		err := controller.FavoriteInteractor.UpdateMovieFavorite(foundFav)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "Invailed Favorite it",
+			})
+			return
+		}
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Already Favorite it",
 		})
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully Favorite it",
 	})
@@ -156,7 +119,8 @@ func (controller *Controller) SaveKaraokeFavorite(c *gin.Context) {
 		})
 		return
 	}
-	var fav domain.Favorite
+	// fav := domain.Favorite{Model: &gorm.Model{}}
+	var fav domain.Favorite //*gorm.Modelからやめたけど大丈夫だろうか
 	if err := c.ShouldBind(&fav); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid request body",
@@ -169,14 +133,33 @@ func (controller *Controller) SaveKaraokeFavorite(c *gin.Context) {
 		return
 	}
 	fav.ListenerId = applicantListenerId
-	fav.ID = controller.FavoriteInteractor.FindFavoriteIdByFavOrUnfavRegistry(fav)
-	fmt.Println("fav", fav)
-	if err := controller.FavoriteInteractor.SaveKaraokeFavorite(fav); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invailed Favorite it",
+	foundFav := controller.FavoriteInteractor.FindFavoriteUnscopedByFavOrUnfavRegistry(fav)
+	zeroValue := gorm.DeletedAt{} //これ以外に思いつかなかった。gorm.を記述しない方法見つかれば使いたい
+	fmt.Println("fav", foundFav)
+	fmt.Printf("foundFav:%v", foundFav)
+	if foundFav.ID == 0 {
+		err := controller.FavoriteInteractor.CreateKaraokeFavorite(foundFav)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "Invailed Favorite it",
+			})
+			return
+		}
+	} else if foundFav.DeletedAt != zeroValue {
+		err := controller.FavoriteInteractor.UpdateKaraokeFavorite(foundFav)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "Invailed Favorite it",
+			})
+			return
+		}
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Already Favorite it",
 		})
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully Favorite it",
 	})

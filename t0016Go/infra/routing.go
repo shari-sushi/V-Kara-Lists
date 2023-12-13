@@ -21,7 +21,7 @@ func Routing(r *gin.Engine) {
 			users.DELETE("/withdraw", Controller.LogicalDeleteUser) //未
 			users.GET("/gestlogin", controllers.GuestLogIn)
 			users.GET("/profile", Controller.GetListenerProfile)
-			users.GET("/mypage", Controller.GetListenerProfile)
+			users.GET("/mypage", Controller.ListenerPage)
 
 			// users.GET("/resignup", userController.RestoreUser)　//ver1.5
 		}
@@ -50,7 +50,7 @@ func Routing(r *gin.Engine) {
 
 			//ドロップダウン用
 			// vcontents.GET("/getsong", Controller.ReadAllSongs)       //ver1.5かな
-			vcontents.GET("/getalldata", Controller.ReadAllVtuverMovieKaraoke)
+			vcontents.GET("/getalldata", Controller.GetAllVtuverMovieKaraoke)
 			vcontents.GET("/oimomochimochiimomochioimo", Controller.Enigma) // 管理者用
 
 		}
@@ -65,7 +65,6 @@ func Routing(r *gin.Engine) {
 			fav.POST("/favorite/karaoke", Controller.SaveKaraokeFavorite)
 			fav.DELETE("/unfavorite/karaoke", Controller.DeleteKaraokeFavorite)
 		}
-		///v1/fav/unfavorite/karaoke
 	}
 }
 

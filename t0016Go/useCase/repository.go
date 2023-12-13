@@ -44,24 +44,31 @@ type VtuberContentRepository interface {
 }
 
 type FavoriteRepository interface {
-	FindFavoriteIdByFavOrUnfavRegistry(domain.Favorite) uint
-	SaveMovieFavorite(domain.Favorite) error
-	DeleteMovieFavorite(domain.Favorite) error
-	SaveKaraokeFavorite(domain.Favorite) error
-	DeleteKaraokeFavorite(domain.Favorite) error
+	FindFavoriteUnscopedByFavOrUnfavRegistry(domain.Favorite) domain.Favorite
+	CreateMovieFavorite(domain.Favorite) error
+	UpdateMovieFavorite(domain.Favorite) error
 
+	DeleteMovieFavorite(domain.Favorite) error
+	CreateKaraokeFavorite(domain.Favorite) error
+	UpdateKaraokeFavorite(domain.Favorite) error
+
+	DeleteKaraokeFavorite(domain.Favorite) error
 	// CountUserFavorite(domain.ListenerId) ([]domain.Favorite, error) //使ってたのか分からなくなっちゃった。エラー解消したら消す。
 	CountKaraokeFavorites() ([]domain.TransmitKaraoke, error)
 	CountMovieFavorites() ([]domain.TransmitMovie, error)
 
-	// 追加中
 	GetVtubersMoviesWithFavCnts() ([]domain.TransmitMovie, error)
 	GetVtubersMoviesKaraokesWithFavCnts() ([]domain.TransmitKaraoke, error)
 
-	// FindAllFavContensByListenerId([]domain.Favorite) ([]domain.VtuberMovie, []domain.VtuberMovieKaraoke, []error)
 	FindFavMoviesByListenerId([]domain.Favorite) ([]domain.VtuberMovie, error)
 	FindFavKaraokesByListenerId([]domain.Favorite) ([]domain.VtuberMovieKaraoke, error)
-
 	FindFavsOfUser(domain.ListenerId) ([]domain.Favorite, error)
 	FindFavsByListenerId(domain.ListenerId, domain.Favorite) (domain.Favorite, error)
+
+	// 以下、開発中
+	FindVtubersThisListenerIdCreated(domain.ListenerId) ([]domain.Vtuber, error)
+	FindMoviesThisListenerIdCreated(domain.ListenerId) ([]domain.TransmitMovie, error)
+	FindKaraokesThisListenerIdCreated(domain.ListenerId) ([]domain.TransmitKaraoke, error)
+	FindMoviesThisListenerIdFavorited(domain.ListenerId) ([]domain.TransmitMovie, error)
+	FindKaraokesThisListenerIdFavorited(domain.ListenerId) ([]domain.TransmitKaraoke, error)
 }

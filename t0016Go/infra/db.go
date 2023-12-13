@@ -130,6 +130,9 @@ func (handler *SqlHandler) Save(value interface{}) *gorm.DB {
 func (handler *SqlHandler) Select(value interface{}, conds ...interface{}) *gorm.DB {
 	return handler.Conn.Select(value, conds...)
 }
+func (handler *SqlHandler) Unscoped() *gorm.DB {
+	return handler.Conn.Unscoped()
+}
 func (handler *SqlHandler) Update(column string, value interface{}) *gorm.DB {
 	return handler.Conn.Update(column, value)
 }

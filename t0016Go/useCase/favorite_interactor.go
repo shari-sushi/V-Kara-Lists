@@ -34,10 +34,11 @@ func (interactor *FavoriteInteractor) DeleteKaraokeFavorite(fav domain.Favorite)
 	err := interactor.FavoriteRepository.DeleteKaraokeFavorite(fav)
 	return err
 }
-func (interactor *FavoriteInteractor) FindFavoriteIdByFavOrUnfavRegistry(fav domain.Favorite) uint {
+func (interactor *FavoriteInteractor) FindFavoriteUnscopedByFavOrUnfavRegistry(fav domain.Favorite) domain.Favorite {
 	fmt.Print("useCase/favorite_interactor.go \n")
-	favId := interactor.FavoriteRepository.FindFavoriteIdByFavOrUnfavRegistry(fav)
-	return favId
+	gotFav := interactor.FavoriteRepository.FindFavoriteUnscopedByFavOrUnfavRegistry(fav)
+	fmt.Print("useCase/favorite_interactor.go later\n")
+	return gotFav
 }
 
 func (interactor *FavoriteInteractor) FindAllFavContensByListenerId(favs []domain.Favorite) ([]domain.VtuberMovie, []domain.VtuberMovieKaraoke, []error) {
@@ -75,15 +76,55 @@ func (interactor *FavoriteInteractor) GetVtubersMoviesKaraokesWithFavCnts() ([]d
 	return VtsMosKasWitFav, err
 }
 
-func (interactor *FavoriteInteractor) SaveMovieFavorite(fav domain.Favorite) error {
+func (interactor *FavoriteInteractor) UpdateMovieFavorite(fav domain.Favorite) error {
 	fmt.Print("useCase/favorite_interactor.go \n")
 	fav.KaraokeId = 0 //保険
-	err := interactor.FavoriteRepository.SaveMovieFavorite(fav)
+	err := interactor.FavoriteRepository.UpdateMovieFavorite(fav)
 	return err
 }
 
-func (interactor *FavoriteInteractor) SaveKaraokeFavorite(fav domain.Favorite) error {
+func (interactor *FavoriteInteractor) UpdateKaraokeFavorite(fav domain.Favorite) error {
 	fmt.Print("useCase/favorite_interactor.go \n")
-	err := interactor.FavoriteRepository.SaveKaraokeFavorite(fav)
+	err := interactor.FavoriteRepository.UpdateKaraokeFavorite(fav)
 	return err
+}
+
+func (interactor *FavoriteInteractor) CreateMovieFavorite(fav domain.Favorite) error {
+	fmt.Print("useCase/favorite_interactor.go \n")
+	fav.KaraokeId = 0 //保険
+	err := interactor.FavoriteRepository.CreateMovieFavorite(fav)
+	return err
+}
+
+func (interactor *FavoriteInteractor) CreateKaraokeFavorite(fav domain.Favorite) error {
+	fmt.Print("useCase/favorite_interactor.go \n")
+	err := interactor.FavoriteRepository.CreateKaraokeFavorite(fav)
+	return err
+}
+
+// 以下、開発中
+func (interactor *FavoriteInteractor) FindVtubersThisListenerIdCreated(lid domain.ListenerId) ([]domain.Vtuber, error) {
+	fmt.Print("useCase/favorite_interactor.go \n")
+	x, err := interactor.FavoriteRepository.FindVtubersThisListenerIdCreated(lid)
+	return x, err
+}
+func (interactor *FavoriteInteractor) FindMoviesThisListenerIdCreated(lid domain.ListenerId) ([]domain.TransmitMovie, error) {
+	fmt.Print("useCase/favorite_interactor.go \n")
+	x, err := interactor.FavoriteRepository.FindMoviesThisListenerIdCreated(lid)
+	return x, err
+}
+func (interactor *FavoriteInteractor) FindKaraokesThisListenerIdCreated(lid domain.ListenerId) ([]domain.TransmitKaraoke, error) {
+	fmt.Print("useCase/favorite_interactor.go \n")
+	x, err := interactor.FavoriteRepository.FindKaraokesThisListenerIdCreated(lid)
+	return x, err
+}
+func (interactor *FavoriteInteractor) FindMoviesThisListenerIdFavorited(lid domain.ListenerId) ([]domain.TransmitMovie, error) {
+	fmt.Print("useCase/favorite_interactor.go \n")
+	x, err := interactor.FavoriteRepository.FindMoviesThisListenerIdFavorited(lid)
+	return x, err
+}
+func (interactor *FavoriteInteractor) FindKaraokesThisListenerIdFavorited(lid domain.ListenerId) ([]domain.TransmitKaraoke, error) {
+	fmt.Print("useCase/favorite_interactor.go \n")
+	x, err := interactor.FavoriteRepository.FindKaraokesThisListenerIdFavorited(lid)
+	return x, err
 }

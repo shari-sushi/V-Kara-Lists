@@ -201,49 +201,47 @@ func (controller *Controller) GetUserRegistriedDate(c *gin.Context) {
 	return
 }
 
-// ver2 で実装する。要件はissueにて
-// func (controller *Controller) RestoreUser(c *gin.Context) {
-// 	var user domain.Listener
-// 	if err := c.ShouldBind(&user); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{
-// 			"message": "Invalid request body",
-// 		})
-// 		return
-// 	}
-// 	fmt.Printf("bindしたuser = %v \n", user)
+// 開発中
+func (controller *Controller) ListenerPage(c *gin.Context) {
+	// listenerId取得
+	ListenerId, err := common.TakeListenerIdFromJWT(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Need Login"})
+		return
+	}
+	var errs []error
+	// listenerIdで作成した情報をゲット 3種
+	// listenerIdでいいねした情報をゲット 2種
+	createdVts, err := controller.FavoriteInteractor.FindVtubersThisListenerIdCreated(ListenerId)
+	if err != nil {
+		errs = append(errs, err)
+	}
+	createdVtsMos, err := controller.FavoriteInteractor.FindMoviesThisListenerIdCreated(ListenerId)
+	if err != nil {
+		fmt.Print("err:", err)
+		errs = append(errs, err)
+	}
+	// createdVtsMosKas, err := controller.FavoriteInteractor.FindKaraokesThisListenerIdCreated(ListenerId)
+	// if err != nil {
+	// 	errs = append(errs, err)
+	// }
+	// TransmitFavoriteMos, err := controller.FavoriteInteractor.FindMoviesThisListenerIdFavorited(ListenerId)
+	// if err != nil {
+	// 	errs = append(errs, err)
+	// }
+	// TransmitFavoriteKas, err := controller.FavoriteInteractor.FindKaraokesThisListenerIdFavorited(ListenerId)
+	// if err != nil {
+	// 	errs = append(errs, err)
+	// }
 
-// 	// deleted_atがnilでないものを探す処理にする必要がある。
-// 	if _, err := controller.Interactor.FindUserByEmail(user.Email); err == nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{
-// 			"error":   "error", //errがnilの時にリクエストを受理できないという処理で正しい。エラーどうしよう???
-// 			"message": "the E-mail address already in use",
-// 		})
-// 		return
-// 	}
-// 	hashPW, err := common.EncryptPassword(user.Password)
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{
-// 			"message": "failed generate hassed Password",
-// 		})
-// 		return
-// 	}
-// 	user.Password = hashPW
-
-// 	newUser, err := controller.Interactor.CreateUser(user)
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{
-// 			"message": "failed Singed Up",
-// 		})
-// 		return
-// 	}
-// 	if err := common.SetListenerIdintoCookie(c, newUser.ListenerId); err != nil {
-
-// 	}
-
-// 	c.JSON(http.StatusOK, gin.H{
-// 		// "memberId":   newMember.ListenerId,
-// 		// "memberName": newMember.ListenerName,
-// 		"message": "Successfully created user, and logined",
-// 	})
-// 	return
-// }
+	// 全部返す
+	c.JSON(http.StatusOK, gin.H{
+		"vtubers_u_created":        createdVts,
+		"vtubers_movies_u_created": createdVtsMos,
+		// "vtubers_movies_karaokes_u_created":   createdVtsMosKas,
+		// "vtubers_movies_u_favorited":          TransmitFavoriteMos,
+		// "vtubers_movies_karaokes_u_favorited": TransmitFavoriteKas,
+		"error": errs,
+	})
+	return
+}
