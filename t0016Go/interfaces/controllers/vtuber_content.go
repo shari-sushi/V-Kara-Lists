@@ -9,8 +9,8 @@ import (
 	"github.com/sharin-sushi/0016go_next_relation/interfaces/controllers/common"
 )
 
-func (controller *Controller) GetAllJoinVtubersMoviesKaraokes(c *gin.Context) {
-	allVsMsKs, err := controller.VtuberContentInteractor.GetEssentialJoinVtubersMoviesKaraokes()
+func (controller *Controller) GetJoinVtubersMoviesKaraokes(c *gin.Context) {
+	allVsMsKs, err := controller.VtuberContentInteractor.GetVtubersMoviesKaraokes()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"resultStsのerror": err.Error()})
 		return
@@ -298,7 +298,7 @@ func (controller *Controller) DeleteMovie(c *gin.Context) {
 }
 
 func (controller *Controller) DeleteKaraokeSing(c *gin.Context) {
-	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
+	listenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Error fetching listener info",
@@ -312,8 +312,8 @@ func (controller *Controller) DeleteKaraokeSing(c *gin.Context) {
 		})
 		return
 	}
-	Karaoke.KaraokeInputterId = &applicantListenerId
-	if isAuth, err := controller.VtuberContentInteractor.VerifyUserModifyKaraoke(int(applicantListenerId), Karaoke); err != nil {
+	Karaoke.KaraokeInputterId = &listenerId
+	if isAuth, err := controller.VtuberContentInteractor.VerifyUserModifyKaraoke(int(listenerId), Karaoke); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Auth Check is failed.(we could not Verify)",
 		})
@@ -338,7 +338,7 @@ func (controller *Controller) DeleteKaraokeSing(c *gin.Context) {
 
 func (controller *Controller) ReturnTopPageData(c *gin.Context) {
 	var errs []error
-	allVts, err := controller.VtuberContentInteractor.GetAllVtubers()
+	allVts, err := controller.VtuberContentInteractor.GetVtubers()
 	if err != nil {
 		errs = append(errs, err)
 	}
@@ -352,8 +352,9 @@ func (controller *Controller) ReturnTopPageData(c *gin.Context) {
 		errs = append(errs, err)
 	}
 
-	applicantListenerId, err := common.TakeListenerIdFromJWT(c) //非ログイン時でも処理は続ける
-	if err != nil || applicantListenerId == 0 {
+	listenerId, err := common.TakeListenerIdFromJWT(c) //非ログイン時でも処理は続ける
+	fmt.Printf("listenerId=%v\n", listenerId)
+	if err != nil || listenerId == 0 {
 		errs = append(errs, err)
 		c.JSON(http.StatusOK, gin.H{
 			"vtubers":                 allVts,
@@ -365,7 +366,7 @@ func (controller *Controller) ReturnTopPageData(c *gin.Context) {
 		return
 	}
 
-	myFav, err := controller.FavoriteInteractor.FindFavsOfUser(applicantListenerId)
+	myFav, err := controller.FavoriteInteractor.FindFavoritesCreatedByListenerId(listenerId)
 	TransmitMovies := common.AddIsFavToMovieWithFav(VtsMosWitFav, myFav)
 	TransmitKaraokes := common.AddIsFavToKaraokeWithFav(VtsMosKasWithFav, myFav)
 
@@ -378,17 +379,17 @@ func (controller *Controller) ReturnTopPageData(c *gin.Context) {
 	return
 }
 
-func (controller *Controller) GetAllVtuverMovieKaraoke(c *gin.Context) {
+func (controller *Controller) GetVtuverMovieKaraoke(c *gin.Context) {
 	var errs []error
-	allVts, err := controller.VtuberContentInteractor.GetAllVtubers()
+	allVts, err := controller.VtuberContentInteractor.GetVtubers()
 	if err != nil {
 		errs = append(errs, err)
 	}
-	allMos, err := controller.VtuberContentInteractor.GetAllMovies()
+	allMos, err := controller.VtuberContentInteractor.GetMovies()
 	if err != nil {
 		errs = append(errs, err)
 	}
-	allKas, err := controller.VtuberContentInteractor.GetAllKaraokes()
+	allKas, err := controller.VtuberContentInteractor.GetKaraokes()
 	if err != nil {
 		errs = append(errs, err)
 	}
@@ -402,32 +403,32 @@ func (controller *Controller) GetAllVtuverMovieKaraoke(c *gin.Context) {
 
 func (controller *Controller) Enigma(c *gin.Context) {
 	var errs []error
-	allVts, err := controller.VtuberContentInteractor.GetAllVtubers()
+	allVts, err := controller.VtuberContentInteractor.GetVtubers()
 	if err != nil {
 		errs = append(errs, err)
 	}
-	allMos, err := controller.VtuberContentInteractor.GetAllMovies()
+	allMos, err := controller.VtuberContentInteractor.GetMovies()
 	if err != nil {
 		errs = append(errs, err)
 	}
-	allKas, err := controller.VtuberContentInteractor.GetAllKaraokes()
+	allKas, err := controller.VtuberContentInteractor.GetKaraokes()
 	if err != nil {
 		errs = append(errs, err)
 	}
 	if err != nil {
 		errs = append(errs, err)
 	}
-	allVtsMos, err := controller.VtuberContentInteractor.GetAllVtubersMovies()
+	allVtsMos, err := controller.VtuberContentInteractor.GetVtubersMovies()
 	if err != nil {
 		errs = append(errs, err)
 
 	}
 
-	allVtsMosKas, err := controller.VtuberContentInteractor.GetEssentialJoinVtubersMoviesKaraokes()
+	allVtsMosKas, err := controller.VtuberContentInteractor.GetVtubersMoviesKaraokes()
 	if err != nil {
 		errs = append(errs, err)
 	}
-	all, err := controller.VtuberContentInteractor.GetAllVtubersMoviesKaraokes()
+	all, err := controller.VtuberContentInteractor.GetVtubersMoviesKaraokes()
 	if err != nil {
 		errs = append(errs, err)
 	}

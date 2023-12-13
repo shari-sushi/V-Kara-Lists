@@ -45,21 +45,6 @@ type OriginalSong struct {
 	SongInputterId ListenerId `gorm:"type:int(11);not null"`
 }
 
-type EssentialOfVtMoKa struct {
-	VtuberId          VtuberId
-	VtuberName        string
-	NameKana          string
-	IntroMovieUrl     string
-	VtuberInputterId  ListenerId
-	MovieUrl          string
-	MovieTitle        string
-	MovieInputterId   ListenerId
-	KaraokeId         int
-	SingStart         *string
-	SongName          string
-	KaraokeInputterId ListenerId
-}
-
 type VtuberMovie struct {
 	Vtuber
 	Movie

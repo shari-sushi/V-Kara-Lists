@@ -41,28 +41,9 @@ func (interactor *FavoriteInteractor) FindFavoriteUnscopedByFavOrUnfavRegistry(f
 	return gotFav
 }
 
-func (interactor *FavoriteInteractor) FindAllFavContensByListenerId(favs []domain.Favorite) ([]domain.VtuberMovie, []domain.VtuberMovieKaraoke, []error) {
-	fmt.Print("useCase/favorite_interactor.go \n")
-	var errs []error
-	favMos, err := interactor.FavoriteRepository.FindFavMoviesByListenerId(favs)
-	if err != nil {
-		errs = append(errs, err)
-	}
-	favKas, err := interactor.FavoriteRepository.FindFavKaraokesByListenerId(favs)
-	if err != nil {
-		errs = append(errs, err)
-	}
-	return favMos, favKas, errs
-}
-
-func (interactor *FavoriteInteractor) FindFavsOfUser(Lid domain.ListenerId) ([]domain.Favorite, error) {
-	fmt.Print("useCase/favorite_interactor.go \n")
-	favsOfUser, err := interactor.FavoriteRepository.FindFavsOfUser(Lid)
-	return favsOfUser, err
-}
-func (interactor *FavoriteInteractor) FindFavsByListenerId(lid domain.ListenerId, fav domain.Favorite) (domain.Favorite, error) {
-	foundFavOfUser, err := interactor.FavoriteRepository.FindFavsByListenerId(lid, fav)
-	return foundFavOfUser, err
+func (interactor *FavoriteInteractor) FindFavoritesCreatedByListenerId(lid domain.ListenerId) ([]domain.Favorite, error) {
+	foundFavs, err := interactor.FavoriteRepository.FindFavoritesCreatedByListenerId(lid)
+	return foundFavs, err
 }
 func (interactor *FavoriteInteractor) GetVtubersMoviesWithFavCnts() ([]domain.TransmitMovie, error) {
 	fmt.Print("useCase/favorite_interactor.go \n")
@@ -103,28 +84,37 @@ func (interactor *FavoriteInteractor) CreateKaraokeFavorite(fav domain.Favorite)
 }
 
 // 以下、開発中
-func (interactor *FavoriteInteractor) FindVtubersThisListenerIdCreated(lid domain.ListenerId) ([]domain.Vtuber, error) {
+func (interactor *FavoriteInteractor) FindVtubersCreatedByListenerId(lid domain.ListenerId) ([]domain.Vtuber, error) {
 	fmt.Print("useCase/favorite_interactor.go \n")
-	x, err := interactor.FavoriteRepository.FindVtubersThisListenerIdCreated(lid)
+	x, err := interactor.FavoriteRepository.FindVtubersCreatedByListenerId(lid)
 	return x, err
 }
-func (interactor *FavoriteInteractor) FindMoviesThisListenerIdCreated(lid domain.ListenerId) ([]domain.TransmitMovie, error) {
+func (interactor *FavoriteInteractor) FindMoviesCreatedByListenerId(lid domain.ListenerId) ([]domain.TransmitMovie, error) {
 	fmt.Print("useCase/favorite_interactor.go \n")
-	x, err := interactor.FavoriteRepository.FindMoviesThisListenerIdCreated(lid)
+	x, err := interactor.FavoriteRepository.FindMoviesCreatedByListenerId(lid)
 	return x, err
 }
-func (interactor *FavoriteInteractor) FindKaraokesThisListenerIdCreated(lid domain.ListenerId) ([]domain.TransmitKaraoke, error) {
+func (interactor *FavoriteInteractor) FindKaraokesCreatedByListenerId(lid domain.ListenerId) ([]domain.TransmitKaraoke, error) {
 	fmt.Print("useCase/favorite_interactor.go \n")
-	x, err := interactor.FavoriteRepository.FindKaraokesThisListenerIdCreated(lid)
+	x, err := interactor.FavoriteRepository.FindKaraokesCreatedByListenerId(lid)
 	return x, err
 }
-func (interactor *FavoriteInteractor) FindMoviesThisListenerIdFavorited(lid domain.ListenerId) ([]domain.TransmitMovie, error) {
+func (interactor *FavoriteInteractor) FindMoviesFavoritedByListenerId(lid domain.ListenerId) ([]domain.TransmitMovie, error) {
 	fmt.Print("useCase/favorite_interactor.go \n")
-	x, err := interactor.FavoriteRepository.FindMoviesThisListenerIdFavorited(lid)
+	x, err := interactor.FavoriteRepository.FindMoviesFavoritedByListenerId(lid)
 	return x, err
 }
-func (interactor *FavoriteInteractor) FindKaraokesThisListenerIdFavorited(lid domain.ListenerId) ([]domain.TransmitKaraoke, error) {
+func (interactor *FavoriteInteractor) FindKaraokesFavoritedByListenerId(lid domain.ListenerId) ([]domain.TransmitKaraoke, error) {
 	fmt.Print("useCase/favorite_interactor.go \n")
-	x, err := interactor.FavoriteRepository.FindKaraokesThisListenerIdFavorited(lid)
+	x, err := interactor.FavoriteRepository.FindKaraokesFavoritedByListenerId(lid)
 	return x, err
+}
+
+func (interactor *FavoriteInteractor) FindEachRecordsCreatedByListenerId(lid domain.ListenerId) ([]domain.Vtuber, []domain.TransmitMovie, []domain.TransmitKaraoke, error) {
+	fmt.Print("useCase/vtuber_content_interactor.go \n")
+	vts, err := interactor.FavoriteRepository.FindVtubersCreatedByListenerId(lid)
+	mos, err := interactor.FavoriteRepository.FindMoviesCreatedByListenerId(lid)
+	kas, err := interactor.FavoriteRepository.FindKaraokesCreatedByListenerId(lid)
+
+	return vts, mos, kas, err
 }

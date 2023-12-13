@@ -10,7 +10,7 @@ type VtuberContentRepository struct {
 	SqlHandler
 }
 
-func (db *VtuberContentRepository) GetAllVtubers() ([]domain.Vtuber, error) {
+func (db *VtuberContentRepository) GetVtubers() ([]domain.Vtuber, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var Vts []domain.Vtuber
 	err := db.Find(&Vts).Error
@@ -19,7 +19,7 @@ func (db *VtuberContentRepository) GetAllVtubers() ([]domain.Vtuber, error) {
 	}
 	return Vts, nil
 }
-func (db *VtuberContentRepository) GetAllMovies() ([]domain.Movie, error) {
+func (db *VtuberContentRepository) GetMovies() ([]domain.Movie, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var Mos []domain.Movie
 	err := db.Find(&Mos).Error
@@ -28,7 +28,7 @@ func (db *VtuberContentRepository) GetAllMovies() ([]domain.Movie, error) {
 	}
 	return Mos, nil
 }
-func (db *VtuberContentRepository) GetAllKaraokes() ([]domain.Karaoke, error) {
+func (db *VtuberContentRepository) GetKaraokes() ([]domain.Karaoke, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var Kas []domain.Karaoke
 	err := db.Find(&Kas).Error
@@ -38,7 +38,7 @@ func (db *VtuberContentRepository) GetAllKaraokes() ([]domain.Karaoke, error) {
 	return Kas, nil
 }
 
-func (db *VtuberContentRepository) GetAllVtubersMovies() ([]domain.VtuberMovie, error) {
+func (db *VtuberContentRepository) GetVtubersMovies() ([]domain.VtuberMovie, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var Mos []domain.Movie
 	var VtsMos []domain.VtuberMovie
@@ -51,7 +51,7 @@ func (db *VtuberContentRepository) GetAllVtubersMovies() ([]domain.VtuberMovie, 
 	return VtsMos, nil
 }
 
-func (db *VtuberContentRepository) GetAllVtubersMoviesKaraokes() ([]domain.VtuberMovieKaraoke, error) {
+func (db *VtuberContentRepository) GetVtubersMoviesKaraokes() ([]domain.VtuberMovieKaraoke, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var Kas []domain.Karaoke
 	var VtsMosKas []domain.VtuberMovieKaraoke
@@ -61,18 +61,6 @@ func (db *VtuberContentRepository) GetAllVtubersMoviesKaraokes() ([]domain.Vtube
 		return nil, err
 	}
 	return VtsMosKas, nil
-}
-func (db *VtuberContentRepository) GetEssentialJoinVtubersMoviesKaraokes() ([]domain.EssentialOfVtMoKa, error) {
-	fmt.Print("interfaces/database/vtuber_content_db.go \n")
-	var Kas []domain.Karaoke
-	var allVtsMoskas []domain.EssentialOfVtMoKa
-	selectQ := "vtuber_id, vtuber_name, vtuber_inputter_id  movie_url, movie_title, movie_inputter_id,  karaoke_id, sing_start, song_name, karaoke_inputter_id"
-	joinsQ := "LEFT JOIN movies USING(movie_url) LEFT JOIN vtubers USING(vtuber_id)"
-	err := db.Model(Kas).Select(selectQ).Joins(joinsQ).Scan(&allVtsMoskas).Error
-	if err != nil {
-		return nil, err
-	}
-	return allVtsMoskas, nil
 }
 
 func (db *VtuberContentRepository) CreateVtuber(V domain.Vtuber) error {
@@ -176,7 +164,7 @@ func (db *VtuberContentRepository) VerifyUserModifyKaraoke(id int, K domain.Kara
 	return K.KaraokeInputterId != nil, result.Error
 }
 
-func (db *VtuberContentRepository) GetAllRecordOfUserInput(Lid domain.ListenerId) ([]domain.Vtuber, []domain.VtuberMovie, []domain.VtuberMovieKaraoke, error) {
+func (db *VtuberContentRepository) GetRecordsCreatedByThisListerId(Lid domain.ListenerId) ([]domain.Vtuber, []domain.VtuberMovie, []domain.VtuberMovieKaraoke, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var Vts []domain.Vtuber
 	var VtsMos []domain.VtuberMovie

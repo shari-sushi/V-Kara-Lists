@@ -19,9 +19,6 @@ func SetListenerIdintoCookie(c *gin.Context, ListenerId domain.ListenerId) (err 
 		return
 	}
 	cookieMaxAge := 60 * 60 * 12 * 12 //開発中につき長時間化中
-	// c.SetCookie("token", token, cookieMaxAge, "/", "localhost", false, true)
-	// c.SetCookie("token", token, cookieMaxAge, "/", "", false, false)
-
 	cookie := &http.Cookie{
 		Name:     "auth-token",
 		Value:    token,
@@ -54,8 +51,6 @@ func TakeListenerIdFromJWT(c *gin.Context) (domain.ListenerId, error) {
 		if val, exists := claims["listener_id"]; exists {
 			listenerIdFloat, ok := val.(float64) // JSON numbers are float64
 			if !ok {
-				// c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid listener_id format in token"})
-				// err == nil
 				return 0, fmt.Errorf("Invalid listener_id format in token")
 			}
 			listenerId = int(listenerIdFloat)
@@ -69,10 +64,6 @@ func TakeListenerIdFromJWT(c *gin.Context) (domain.ListenerId, error) {
 
 func GenerateToken(ListenerId int) (string, error) {
 	secretKey := os.Getenv("SECRET_KEY")
-	// tokenLifeTime, err := strconv.Atoi(os.Getenv("TOKEN_LIFETIME"))　//これ環境変数で設定するの？
-	// if err != nil {
-	// 	return "", err
-	// }
 	tokenLifeTime := 60 * 60 * 12 // 12hにする
 
 	claims := jwt.MapClaims{

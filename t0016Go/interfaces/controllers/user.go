@@ -23,7 +23,6 @@ func (controller *Controller) CreateUser(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Printf("bindしたuser = %v \n", user)
 
 	if err := common.ValidateSignup(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -172,35 +171,6 @@ func (controller *Controller) GetListenerProfile(c *gin.Context) {
 	})
 }
 
-func (controller *Controller) GetUserRegistriedDate(c *gin.Context) {
-	ListenerId, err := common.TakeListenerIdFromJWT(c)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Need Login"})
-		return
-	}
-	var errs []error
-	inputVts, inputVtsMos, inputVtsMosKas, err := controller.VtuberContentInteractor.GetAllRecordOfUserInput(ListenerId)
-
-	if err != nil {
-		errs = append(errs, err)
-	}
-	AllfavsOfUser, err := controller.FavoriteInteractor.FindFavsOfUser(ListenerId)
-	favVtsMos, favVtsMosKas, toAddErrs := controller.FavoriteInteractor.FindAllFavContensByListenerId(AllfavsOfUser)
-	if err != nil {
-		errs = append(errs, toAddErrs[0], toAddErrs[1])
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"u_input_vtubers":  inputVts,
-		"u_input_vtsmos":   inputVtsMos,
-		"u_input_vtsmokas": inputVtsMosKas,
-		"fav_vtsmos":       favVtsMos,
-		"fav_vtsmoskas":    favVtsMosKas,
-		"error":            errs,
-		"message":          "yukkuri site itte ne!",
-	})
-	return
-}
-
 // 開発中
 func (controller *Controller) ListenerPage(c *gin.Context) {
 	// listenerId取得
@@ -211,34 +181,26 @@ func (controller *Controller) ListenerPage(c *gin.Context) {
 	}
 	var errs []error
 	// listenerIdで作成した情報をゲット 3種
+	createdVts, createdVtsMos, createdVtsMosKas, err := controller.FavoriteInteractor.FindEachRecordsCreatedByListenerId(ListenerId)
+	if err != nil {
+		errs = append(errs, err)
+	}
 	// listenerIdでいいねした情報をゲット 2種
-	createdVts, err := controller.FavoriteInteractor.FindVtubersThisListenerIdCreated(ListenerId)
-	if err != nil {
-		errs = append(errs, err)
-	}
-	createdVtsMos, err := controller.FavoriteInteractor.FindMoviesThisListenerIdCreated(ListenerId)
-	if err != nil {
-		fmt.Print("err:", err)
-		errs = append(errs, err)
-	}
-	// createdVtsMosKas, err := controller.FavoriteInteractor.FindKaraokesThisListenerIdCreated(ListenerId)
+
+	// TransmitFavoriteMos, err := controller.FavoriteInteractor.FindMoviesFavoritedByListenerId(ListenerId)
 	// if err != nil {
 	// 	errs = append(errs, err)
 	// }
-	// TransmitFavoriteMos, err := controller.FavoriteInteractor.FindMoviesThisListenerIdFavorited(ListenerId)
-	// if err != nil {
-	// 	errs = append(errs, err)
-	// }
-	// TransmitFavoriteKas, err := controller.FavoriteInteractor.FindKaraokesThisListenerIdFavorited(ListenerId)
+	// TransmitFavoriteKas, err := controller.FavoriteInteractor.FindKaraokesFavoritedByListenerId(ListenerId)
 	// if err != nil {
 	// 	errs = append(errs, err)
 	// }
 
 	// 全部返す
 	c.JSON(http.StatusOK, gin.H{
-		"vtubers_u_created":        createdVts,
-		"vtubers_movies_u_created": createdVtsMos,
-		// "vtubers_movies_karaokes_u_created":   createdVtsMosKas,
+		"vtubers_u_created":                 createdVts,
+		"vtubers_movies_u_created":          createdVtsMos,
+		"vtubers_movies_karaokes_u_created": createdVtsMosKas,
 		// "vtubers_movies_u_favorited":          TransmitFavoriteMos,
 		// "vtubers_movies_karaokes_u_favorited": TransmitFavoriteKas,
 		"error": errs,

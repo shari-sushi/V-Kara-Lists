@@ -5,7 +5,7 @@ import (
 	"github.com/sharin-sushi/0016go_next_relation/interfaces/controllers"
 )
 
-// このリポジトリの命名規則
+// 命名規則
 // https://github.com/sharin-sushi/0016go_next_relation/issues/71#issuecomment-1843543763
 
 func Routing(r *gin.Engine) {
@@ -15,7 +15,7 @@ func Routing(r *gin.Engine) {
 	{
 		users := ver.Group("/users")
 		{
-			users.POST("/signup", Controller.CreateUser) //ok
+			users.POST("/signup", Controller.CreateUser)
 			users.PUT("/login", Controller.LogIn)
 			users.PUT("/logout", controllers.Logout)
 			users.DELETE("/withdraw", Controller.LogicalDeleteUser) //未
@@ -28,7 +28,7 @@ func Routing(r *gin.Engine) {
 		vcontents := ver.Group("/vcontents")
 		{
 			vcontents.GET("/", Controller.ReturnTopPageData)
-			vcontents.GET("/sings", Controller.GetAllJoinVtubersMoviesKaraokes)
+			vcontents.GET("/sings", Controller.GetJoinVtubersMoviesKaraokes)
 			// /vtuber, /movie, /karaokeの文字列はフロント側で比較演算に使われてる
 			// データ新規登録
 			vcontents.POST("/create/vtuber", Controller.CreateVtuber)
@@ -49,17 +49,12 @@ func Routing(r *gin.Engine) {
 			// vcontents.DELETE("/delete/song", Controller.DeleteSong)           //ver1.5
 
 			//ドロップダウン用
-			// vcontents.GET("/getsong", Controller.ReadAllSongs)       //ver1.5かな
-			vcontents.GET("/getalldata", Controller.GetAllVtuverMovieKaraoke)
+			vcontents.GET("/getalldata", Controller.GetVtuverMovieKaraoke)
 			vcontents.GET("/oimomochimochiimomochioimo", Controller.Enigma) // 管理者用
 
 		}
 		fav := ver.Group("/fav")
 		{
-			fav.GET("/", Controller.ReturnTopPageData)
-
-			// favorites.GET("/followvtuber")   //V数が増えたら実装
-			// favorites.GET("/unfollowvtuber") //V数が増えたら実装
 			fav.POST("/favorite/movie", Controller.SaveMovieFavorite)
 			fav.DELETE("/unfavorite/movie", Controller.DeleteMovieFavorite)
 			fav.POST("/favorite/karaoke", Controller.SaveKaraokeFavorite)

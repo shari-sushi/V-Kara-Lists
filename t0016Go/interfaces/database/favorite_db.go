@@ -68,31 +68,6 @@ func (db *FavoriteRepository) DeleteKaraokeFavorite(fav domain.Favorite) error {
 	return err
 }
 
-// 使ってないと思う
-func (db *FavoriteRepository) GetAllFavContensByListenerId(favs []domain.Favorite) ([]domain.VtuberMovie, []domain.VtuberMovieKaraoke, error) {
-	fmt.Print("interfaces/database/favorite.go \n")
-	var Mos []domain.Movie
-	var VtsMos []domain.VtuberMovie
-	var Kas []domain.Karaoke
-	var errs []error
-	var err error
-	joinsQOfVtsMos := "LEFT JOIN vtubers USING(vtuber_id)"
-	whereOfVtsMos := fmt.Sprintf("where movies.inputter_listener_id = %v", favs[0].ListenerId)
-	err = db.Model(Mos).Where(whereOfVtsMos).Joins(joinsQOfVtsMos).Scan(&VtsMos).Error
-	if err != nil {
-		errs = append(errs, err)
-	}
-
-	var VtsMosKas []domain.VtuberMovieKaraoke
-	joinsQOfVtsMosKas := "LEFT JOIN movies USING(movie_url) LEFT JOIN vtubers USING(vtuber_id)"
-	whereOfVtsMosKas := fmt.Sprintf("where karaoke_lists.inputter_listener_id = %v", favs[0].ListenerId)
-	err = db.Model(Kas).Where(whereOfVtsMosKas).Joins(joinsQOfVtsMosKas).Scan(&VtsMosKas).Error
-	if err != nil {
-		errs = append(errs, err)
-	}
-	return VtsMos, VtsMosKas, err
-}
-
 func (db *FavoriteRepository) GetVtubersMoviesWithFavCnts() ([]domain.TransmitMovie, error) {
 	fmt.Print("interfaces/database/favorite.go \n")
 	var TmMos []domain.TransmitMovie
@@ -140,53 +115,15 @@ func (db *FavoriteRepository) GetVtubersMoviesKaraokesWithFavCnts() ([]domain.Tr
 	}
 	return TmKas, nil
 }
-func (db *FavoriteRepository) FindFavMoviesByListenerId(favs []domain.Favorite) ([]domain.VtuberMovie, error) {
-	fmt.Print("interfaces/database/favorite.go \n")
-	var Mos []domain.Movie
-	var VtsMos []domain.VtuberMovie
-	var errs []error
-	var err error
-	joinsQOfVtsMos := "LEFT JOIN vtubers USING(vtuber_id)"
-	whereOfVtsMos := fmt.Sprintf("where movies.inputter_listener_id = %v", favs[0].ListenerId)
-	err = db.Model(Mos).Where(whereOfVtsMos).Joins(joinsQOfVtsMos).Scan(&VtsMos).Error
-	if err != nil {
-		errs = append(errs, err)
-	}
-	return VtsMos, err
-}
 
-func (db *FavoriteRepository) FindFavKaraokesByListenerId(favs []domain.Favorite) ([]domain.VtuberMovieKaraoke, error) {
-	fmt.Print("interfaces/database/favorite.go \n")
-	var Kas []domain.Karaoke
-	var errs []error
-	var err error
-	var VtsMosKas []domain.VtuberMovieKaraoke
-	joinsQOfVtsMosKas := "LEFT JOIN movies USING(movie_url) LEFT JOIN vtubers USING(vtuber_id)"
-	whereOfVtsMosKas := fmt.Sprintf("where karaoke_lists.inputter_listener_id = %v", favs[0].ListenerId)
-	err = db.Model(Kas).Where(whereOfVtsMosKas).Joins(joinsQOfVtsMosKas).Scan(&VtsMosKas).Error
-	if err != nil {
-		errs = append(errs, err)
-	}
-	return VtsMosKas, err
-}
-
-func (db *FavoriteRepository) FindFavsOfUser(Lid domain.ListenerId) ([]domain.Favorite, error) {
-	fmt.Print("interfaces/database/favorite.go \n")
+func (db *FavoriteRepository) FindFavoritesCreatedByListenerId(lId domain.ListenerId) ([]domain.Favorite, error) {
+	fmt.Print("interfaces/database/favorite_db.go \n")
 	// 期待するクエリ
 	// Select * FROM favorites Where listener_id = ?
-	var favsOfUser []domain.Favorite
-	whereQuery := fmt.Sprintf("listener_id = %v", Lid)
-	err := db.Where(whereQuery).Find(&favsOfUser).Error
-	if err != nil {
-		return nil, err
-	}
-	return favsOfUser, err
-}
-
-func (db *FavoriteRepository) FindFavsByListenerId(lid domain.ListenerId, fav domain.Favorite) (domain.Favorite, error) {
-	fmt.Print("interfaces/database/favorite_db.go \n")
-	result := db.Where("listener_id=?", lid).Find(fav)
-	return fav, result.Error
+	var favs []domain.Favorite
+	fmt.Print("favs:", favs)
+	result := db.Where("listener_id=?", lId).Find(&favs)
+	return favs, result.Error
 }
 
 func (db *FavoriteRepository) FindFavoriteUnscopedByFavOrUnfavRegistry(fav domain.Favorite) domain.Favorite {
@@ -234,29 +171,23 @@ func (db *FavoriteRepository) UpdateKaraokeFavorite(fav domain.Favorite) error {
 	return err
 }
 
-// /////////////////////////////////////////////
-// /////////////////////////////////////////////
-// /////////////////////////////////////////////
-// /////////////////////////////////////////////
-// /////////////////////////////////////////////
-
 // 以下、開発中
 
-func (db *FavoriteRepository) FindVtubersThisListenerIdCreated(lid domain.ListenerId) ([]domain.Vtuber, error) {
+func (db *FavoriteRepository) FindVtubersCreatedByListenerId(lId domain.ListenerId) ([]domain.Vtuber, error) {
 	fmt.Print("interfaces/database/favorite.go \n")
 	var vts []domain.Vtuber
-	err := db.Where("vtuber_inputter_id = ?", lid).Find(&vts).Error
+	err := db.Where("vtuber_inputter_id = ?", lId).Find(&vts).Error
 	if err != nil {
 		return vts, err
 	}
 	return vts, nil
 }
 
-func (db *FavoriteRepository) FindMoviesThisListenerIdCreated(lid domain.ListenerId) ([]domain.TransmitMovie, error) {
+func (db *FavoriteRepository) FindMoviesCreatedByListenerId(lId domain.ListenerId) ([]domain.TransmitMovie, error) {
 	fmt.Print("interfaces/database/favorite.go\n")
 	var vt domain.Vtuber
 	var tmMos []domain.TransmitMovie
-	err := db.Model(vt).Where("movie_inputter_id = ?", lid).Joins("LEFT JOIN movies as m USING(vtuber_id)").Find(&tmMos).Error
+	err := db.Model(vt).Where("movie_inputter_id = ?", lId).Joins("LEFT JOIN movies as m USING(vtuber_id)").Find(&tmMos).Error
 
 	// selectQu1 := "vtubers.vtuber_id, vtubers.vtuber_name, vtubers.vtuber_kana, vtubers.intro_movie_url, vtubers.vtuber_inputter_id"
 	// selectQu2 := "m.movie_url, m.movie_title, m.movie_inputter_id"
@@ -276,21 +207,38 @@ func (db *FavoriteRepository) FindMoviesThisListenerIdCreated(lid domain.Listene
 }
 
 // まだーーーー
-func (db *FavoriteRepository) FindKaraokesThisListenerIdCreated(lid domain.ListenerId) ([]domain.TransmitKaraoke, error) {
+func (db *FavoriteRepository) FindKaraokesCreatedByListenerId(lId domain.ListenerId) ([]domain.TransmitKaraoke, error) {
 	fmt.Print("interfaces/database/favorite.go\n")
 	var err error
 	var tmKas []domain.TransmitKaraoke
 	return tmKas, err
 }
-func (db *FavoriteRepository) FindMoviesThisListenerIdFavorited(lid domain.ListenerId) ([]domain.TransmitMovie, error) {
+func (db *FavoriteRepository) FindMoviesFavoritedByListenerId(lId domain.ListenerId) ([]domain.TransmitMovie, error) {
 	fmt.Print("interfaces/database/favorite.go\n")
-	var err error
+	var Mos []domain.Movie
 	var tmMos []domain.TransmitMovie
+	var errs []error
+	var err error
+	joinsQOfVtsMos := "LEFT JOIN vtubers USING(vtuber_id)"
+	whereOfVtsMos := fmt.Sprintf("where movies.inputter_listener_id = %v", lId)
+	err = db.Model(Mos).Where(whereOfVtsMos).Joins(joinsQOfVtsMos).Scan(&tmMos).Error
+	if err != nil {
+		errs = append(errs, err)
+	}
 	return tmMos, err
 }
-func (db *FavoriteRepository) FindKaraokesThisListenerIdFavorited(lid domain.ListenerId) ([]domain.TransmitKaraoke, error) {
+func (db *FavoriteRepository) FindKaraokesFavoritedByListenerId(lId domain.ListenerId) ([]domain.TransmitKaraoke, error) {
 	fmt.Print("interfaces/database/favorite.go\n")
 	var err error
 	var tmKas []domain.TransmitKaraoke
+	var Kas []domain.Karaoke
+	var errs []error
+	var VtsMosKas []domain.VtuberMovieKaraoke
+	joinsQOfVtsMosKas := "LEFT JOIN movies USING(movie_url) LEFT JOIN vtubers USING(vtuber_id)"
+	whereOfVtsMosKas := fmt.Sprintf("where karaoke_lists.inputter_listener_id = %v", lId)
+	err = db.Model(Kas).Where(whereOfVtsMosKas).Joins(joinsQOfVtsMosKas).Scan(&VtsMosKas).Error
+	if err != nil {
+		errs = append(errs, err)
+	}
 	return tmKas, err
 }

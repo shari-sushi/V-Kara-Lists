@@ -22,16 +22,9 @@ import (
 	"gorm.io/gorm"
 )
 
-// var DbGo *sql.DB
-// var Db *gorm.DB
-
 type SqlHandler struct {
 	Conn *gorm.DB
 }
-
-// func GetDB() *gorm.DB {
-// 	return Db
-// }
 
 func init() {
 	//docker外ではPCのGO_ENVを取得し、godotenvが.dnvを取得する。
@@ -39,15 +32,12 @@ func init() {
 	// goEnv := os.Getenv("GO_ENV")
 	// if goEnv == "development" {
 	// fmt.Printf("goEnc=%v \n", goEnv)
-	// t0016Go\internal\utility\auth.go
 	err := godotenv.Load("../.env")
 	if err == nil {
 		checkFile := os.Getenv("GO_ENV")
 		fmt.Printf("got .env file is %v \n", checkFile)
 	} else {
 		fmt.Print("godotenvによる.envファイル取得失敗。dockercompose.yamlから取得 \n")
-		// log.Fatal("Error loading go/.env file")
-		// }
 	}
 }
 
@@ -60,9 +50,9 @@ func DbInit() database.SqlHandler {
 	var port string
 	checkFile := os.Getenv("GO_ENV")
 	if checkFile == "development" {
-		port = "localhost:3306" //docker不使用用
+		port = "localhost:3306" //docker不使用時
 	} else if checkFile == "" {
-		port = "v_kara_db" //docker不使用用
+		port = "v_kara_db" //docker不使用用時
 	} else {
 		log.Fatal("GO_ENVに想定外の値が入力されています。")
 
@@ -80,8 +70,6 @@ func DbInit() database.SqlHandler {
 	sqlHandler.Conn = gormDB
 	sqlHandler.migration()
 
-	// fmt.Printf("err=%s\n", err)
-	// defer D.Close()
 	return sqlHandler
 }
 
@@ -142,58 +130,3 @@ func (handler *SqlHandler) Updates(values interface{}) *gorm.DB {
 func (handler *SqlHandler) Where(value interface{}, conds ...interface{}) *gorm.DB {
 	return handler.Conn.Where(value, conds...)
 }
-
-// type LineOfLog struct {
-// 	RemoteAddr  string
-// 	ContentType string
-// 	Path        string
-// 	Query       string
-// 	Method      string
-// 	Body        string
-// }
-
-// var TemplateOfLog = `
-// Remote address:   {{.RemoteAddr}}
-// Content-Type:     {{.ContentType}}
-// HTTP method:      {{.Method}}
-
-// path:
-// {{.Path}}
-
-// query string:
-// {{.Query}}
-
-// body:
-// {{.Body}}
-
-// `
-
-// //httpリクエストの中身をログに出力しようとして、やめた残がい。
-// func Log(handler http.Handler) http.Handler {
-// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 		bufbody := new(bytes.Buffer)
-// 		bufbody.ReadFrom(r.Body)
-// 		body := bufbody.String()
-
-// 		line := LineOfLog{
-// 			r.RemoteAddr,
-// 			r.Header.Get("Content-Type"),
-// 			r.URL.Path,
-// 			r.URL.RawQuery,
-// 			r.Method, body,
-// 		}
-// 		tmpl, err := template.New("line").Parse(TemplateOfLog)
-// 		if err != nil {
-// 			panic(err)
-// 		}
-
-// 		bufline := new(bytes.Buffer)
-// 		err = tmpl.Execute(bufline, line)
-// 		if err != nil {
-// 			panic(err)
-// 		}
-
-// 		log.Printf(bufline.String())
-// 		handler.ServeHTTP(w, r)
-// 	})
-// }

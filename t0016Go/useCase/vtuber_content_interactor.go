@@ -12,36 +12,31 @@ type VtuberContentInteractor struct {
 	FavoriteRepository      FavoriteRepository
 }
 
-func (interactor *VtuberContentInteractor) GetAllVtubers() ([]domain.Vtuber, error) {
+func (interactor *VtuberContentInteractor) GetVtubers() ([]domain.Vtuber, error) {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
-	allVts, err := interactor.VtuberContentRepository.GetAllVtubers()
+	allVts, err := interactor.VtuberContentRepository.GetVtubers()
 	return allVts, err
 }
-func (interactor *VtuberContentInteractor) GetAllMovies() ([]domain.Movie, error) {
+func (interactor *VtuberContentInteractor) GetMovies() ([]domain.Movie, error) {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
-	allMos, err := interactor.VtuberContentRepository.GetAllMovies()
+	allMos, err := interactor.VtuberContentRepository.GetMovies()
 	return allMos, err
 }
-func (interactor *VtuberContentInteractor) GetAllKaraokes() ([]domain.Karaoke, error) {
+func (interactor *VtuberContentInteractor) GetKaraokes() ([]domain.Karaoke, error) {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
-	allKas, err := interactor.VtuberContentRepository.GetAllKaraokes()
+	allKas, err := interactor.VtuberContentRepository.GetKaraokes()
 	return allKas, err
 }
 
-func (interactor *VtuberContentInteractor) GetAllVtubersMovies() ([]domain.VtuberMovie, error) {
+func (interactor *VtuberContentInteractor) GetVtubersMovies() ([]domain.VtuberMovie, error) {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
-	VM, err := interactor.VtuberContentRepository.GetAllVtubersMovies()
+	VM, err := interactor.VtuberContentRepository.GetVtubersMovies()
 	return VM, err
 }
 
-func (interactor *VtuberContentInteractor) GetEssentialJoinVtubersMoviesKaraokes() ([]domain.EssentialOfVtMoKa, error) {
+func (interactor *VtuberContentInteractor) GetVtubersMoviesKaraokes() ([]domain.VtuberMovieKaraoke, error) {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
-	allVtsMosKas, err := interactor.VtuberContentRepository.GetEssentialJoinVtubersMoviesKaraokes()
-	return allVtsMosKas, err
-}
-func (interactor *VtuberContentInteractor) GetAllVtubersMoviesKaraokes() ([]domain.VtuberMovieKaraoke, error) {
-	fmt.Print("useCase/vtuber_content_interactor.go \n")
-	allVtsMosKas, err := interactor.VtuberContentRepository.GetAllVtubersMoviesKaraokes()
+	allVtsMosKas, err := interactor.VtuberContentRepository.GetVtubersMoviesKaraokes()
 	return allVtsMosKas, err
 }
 
@@ -108,10 +103,4 @@ func (interactor *VtuberContentInteractor) VerifyUserModifyKaraoke(id int, k dom
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
 	isAuth, err := interactor.VtuberContentRepository.VerifyUserModifyKaraoke(id, k)
 	return isAuth, err
-}
-
-func (interactor *VtuberContentInteractor) GetAllRecordOfUserInput(Lid domain.ListenerId) ([]domain.Vtuber, []domain.VtuberMovie, []domain.VtuberMovieKaraoke, error) {
-	fmt.Print("useCase/vtuber_content_interactor.go \n")
-	vts, mos, kas, err := interactor.VtuberContentRepository.GetAllRecordOfUserInput(Lid)
-	return vts, mos, kas, err
 }
