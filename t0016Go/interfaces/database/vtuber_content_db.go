@@ -72,7 +72,7 @@ func (db *VtuberContentRepository) CreateVtuber(V domain.Vtuber) error {
 func (db *VtuberContentRepository) CreateMovie(M domain.Movie) error {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var V domain.Vtuber
-	V.VtuberId = *M.VtuberId
+	V.VtuberId = M.VtuberId
 	fmt.Printf("2-1:%v \n", V.VtuberId)
 	if result := db.First(&V); result.Error != nil {
 		fmt.Printf("V:%v", V)
@@ -121,7 +121,7 @@ func (db *VtuberContentRepository) UpdateKaraokeSing(K domain.Karaoke) error {
 func (db *VtuberContentRepository) DeleteVtuber(V domain.Vtuber) error {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var Mo domain.Movie
-	Mo.VtuberId = &V.VtuberId
+	Mo.VtuberId = V.VtuberId
 	db.First(&Mo)
 	if Mo.MovieUrl != "" {
 		return fmt.Errorf("Delete Vtuber after its Movie ")
@@ -151,17 +151,17 @@ func (db *VtuberContentRepository) DeleteKaraokeSing(K domain.Karaoke) error {
 func (db *VtuberContentRepository) VerifyUserModifyVtuber(id int, V domain.Vtuber) (bool, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	result := db.Where("vtuber_Inputter_id=?", id).First(V, V.VtuberId)
-	return V.VtuberInputterId != nil, result.Error
+	return V.VtuberInputterId != 0, result.Error
 }
 func (db *VtuberContentRepository) VerifyUserModifyMovie(id int, M domain.Movie) (bool, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	result := db.Where("movie_Inputter_id=?", id).First(M, M.MovieUrl)
-	return M.MovieInputterId != nil, result.Error
+	return M.MovieInputterId != 0, result.Error
 }
 func (db *VtuberContentRepository) VerifyUserModifyKaraoke(id int, K domain.Karaoke) (bool, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	result := db.Where("karaoke_Inputter_id=?", id).First(K, K.KaraokeId)
-	return K.KaraokeInputterId != nil, result.Error
+	return K.KaraokeInputterId != 0, result.Error
 }
 
 func (db *VtuberContentRepository) GetRecordsCreatedByThisListerId(Lid domain.ListenerId) ([]domain.Vtuber, []domain.VtuberMovie, []domain.VtuberMovieKaraoke, error) {

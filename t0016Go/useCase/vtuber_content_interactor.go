@@ -47,7 +47,6 @@ func (interactor *VtuberContentInteractor) CreateVtuber(v domain.Vtuber) error {
 }
 func (interactor *VtuberContentInteractor) CreateMovie(m domain.Movie) error {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
-	fmt.Printf("3-1:%v \n", *m.VtuberId)
 	err := interactor.VtuberContentRepository.CreateMovie(m)
 	return err
 }
