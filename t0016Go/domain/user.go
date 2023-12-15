@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"database/sql"
 	"time"
 
 	"gorm.io/gorm"
@@ -15,6 +14,6 @@ type Listener struct {
 	Email        string         `gorm:"type:varchar(255);unique;not null"`
 	Password     string         `gorm:"type:varchar(100);not null"`
 	CreatedAt    time.Time      `gorm:"type:datetime;default:current_timestamp"`
-	UpdatedAt    sql.NullTime   `gorm:"type:datetime"`
+	UpdatedAt    time.Time      `gorm:"type:datetime"`
 	DeletedAt    gorm.DeletedAt `gorm:"type:datetime;index:deleted_index"`
 }
