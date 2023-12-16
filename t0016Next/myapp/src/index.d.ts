@@ -1,3 +1,5 @@
+
+// 使ってる？使ってないなら削除予定する。
 // index.d.ts
 type AccessControlType = 'replace' | 'push';
 type AccessControlFallback = { type: AccessControlType; destination: string }

@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useMemo  } from 'react';
 import Select from 'react-select';
 import type { AllJoinData, Vtuber, Movie, KaraokeList } from '../types/singdata';
+import { NumbersOutlined } from '@mui/icons-material';
 // import Creatable from 'react-select/creatable' 後々の更新で歌検索として実装したい
+import {domain} from '../../env'
 
 // import { colourOptions } from '../data';
 
@@ -15,10 +17,16 @@ import type { AllJoinData, Vtuber, Movie, KaraokeList } from '../types/singdata'
 
 // DropDinwMo, Kaについは、on~~Seletがnillとか0なら処理を止める用にすべき
 
+
+type DropDownVtType ={
+  onVtuberSelect:number;
+  onMovieClear:()=> void;
+  onKaraokeClear:()=> void;
+} 
  //onVtuberSelectはVtuberが選択されたときに親コンポーネントへ通知するためのコールバック関数
- export const AllDateFetch = ({ onVtuberSelect, onMovieClear, onKaraokeClear }) => {
+ export const DropDownVt= ({ onVtuberSelect, onMovieClear, onKaraokeClear }: DropDownVtType) => {
   const handleVtuberClear = () => {
-    onVtuberSelect(null);
+    onVtuberSelect=0;
     onMovieClear();
     onKaraokeClear();
   };
@@ -27,7 +35,7 @@ import type { AllJoinData, Vtuber, Movie, KaraokeList } from '../types/singdata'
   useEffect(() => {
     const fetchVtubers = async () => {
       try {
-        let response = await fetch("https://localhost:8080/getvtuber");
+        let response = await fetch(`${domain.backendHost}/getvtuber`);
         let data = await response.json();
         console.log("API Response Vt:", data);
         let havingVt = data.vtubers.map((vtuber:Vtuber) => ({
@@ -35,6 +43,7 @@ import type { AllJoinData, Vtuber, Movie, KaraokeList } from '../types/singdata'
           label: vtuber.VtuberName
         }));
         setVtuberOptions(havingVt);
+        
       } catch (error) {
         console.error("Error fetching vtubers:", error);
       }
@@ -59,7 +68,7 @@ import type { AllJoinData, Vtuber, Movie, KaraokeList } from '../types/singdata'
         onChange={option => {
           if (option) {
             console.log("Selected Vtuber:", option);
-            onVtuberSelect(option.value);
+            onVtuberSelect=option;
           } else {
             handleVtuberClear();
           }
@@ -69,12 +78,18 @@ import type { AllJoinData, Vtuber, Movie, KaraokeList } from '../types/singdata'
   );
 };
 
+type DropDownMoType ={
+  selectedVtuber:number;
+  onMovieSelect:string;
+  onKaraokeClear:()=> void;
+}
+
 //  movie用
-export const DropDownMo = ({ selectedVtuber, onMovieSelect, onKaraokeClear }) => {
+export const DropDownMo = ({ selectedVtuber, onMovieSelect, onKaraokeClear }:DropDownMoType) => {
 // export const DropDownMo = ({ selectedVtuber ,onMovieSelect}) => {  
   //const [selectedVtuber, setSelectedVtuber] = useState(null);
   const handleMovieClear = () => {
-    onMovieSelect(null);
+    onMovieSelect="";
     onKaraokeClear();
   };
   const [movieOptions, setMovieOptions] = useState([]);
@@ -130,19 +145,15 @@ export const DropDownMo = ({ selectedVtuber, onMovieSelect, onKaraokeClear }) =>
           container: (base) => ({
             ...base,
             width: '300px'
-        }),
-        control: (base) => ({ //controlでholder、optionで選択肢の文字サイズを指定
-          ...base,
-          fontSize: '12px'  // ここで文字サイズを指定
-          
-        }),
-      }}
+          }),
+          control: (base) => ({ //controlでholder、optionで選択肢の文字サイズを指定
+            ...base,
+            fontSize: '12px'  // ここで文字サイズを指定
+          }),
+        }}
         onChange={option => {
-        //   console.log("Selected Movie:", option);
-        //   if (typeof onMovieSelect === 'function') {
-        //       onMovieSelect(option);
           if (option) {
-            onMovieSelect(option);
+            onMovieSelect=option;
           } else {
             handleMovieClear();
           }}}
@@ -151,21 +162,22 @@ export const DropDownMo = ({ selectedVtuber, onMovieSelect, onKaraokeClear }) =>
   );
 };
 
+type DropDownKa = {
+  selectedMovie:string;
+  onKaraokeSelect:number; 
+}
+
 // karaoke_list用
-export const DropDownKa = ({ selectedMovie, onKaraokeSelect }) => {
+export const DropDownKa = ({ selectedMovie, onKaraokeSelect }:DropDownKa) => {
   // const [movies, setData2] = useState<KaraokeList[]>();
   const [karaokeListOptions, setMovieOptions] = useState([]);
-  const [selectedKaraoke, setSelectedKaraoke] = useState(null);
+  const [selectedKaraoke, setSelectedKaraoke] = useState(0);
 
   useEffect(() => {
     if (!selectedMovie) {
       setMovieOptions([]); // Movieが選択解除された場合、karaokeの選択肢を空にする
       return;
     }
-    // if (!selectedKaraoke){
-    //   setSelectedKaraoke(null);
-    //   return;
-    // }
     const fetchMovies = async () => {
       try {
         console.log("selectedMovie=",selectedMovie)
@@ -174,8 +186,7 @@ export const DropDownKa = ({ selectedMovie, onKaraokeSelect }) => {
           headers: {
               'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ MovieUrl: selectedMovie.value })
-          // body: JSON.stringify({ MovieId: selectedMovie ? selectedMovie.value : null })
+          body: JSON.stringify({ MovieUrl: selectedMovie })
           })
         let data = await response.json();
         console.log("API Response ka:", data);
@@ -187,7 +198,7 @@ export const DropDownKa = ({ selectedMovie, onKaraokeSelect }) => {
       } catch (error) {
         console.error("Error fetching vtubers:", error);
       }
-      setSelectedKaraoke(null);
+      setSelectedKaraoke(0);
     };
     fetchMovies();
   }, [selectedMovie]);
@@ -214,15 +225,14 @@ export const DropDownKa = ({ selectedMovie, onKaraokeSelect }) => {
           fontSize: '12px'  // ここで文字サイズを指定
         }),
       }}
-      onChange={option => {
-        // if (option){ //選んだ時にエラー吐く
-        console.log("Selected Karaoke1:", option); 
-        if (typeof onKaraokeSelect === 'function') {
-          console.log("Selected Karaoke2:", option); 
-          onKaraokeSelect(option);
-        }    
-            // }  
-      }}        
+      // onChange={option => {
+      //   // if (option){ //選んだ時にエラー吐く
+      //   console.log("Selected Karaoke1:", option); 
+      //   if (option !== 0) {
+      //     console.log("Selected Karaoke2:", option); 
+      //     onKaraokeSelect=option;
+      //   }    
+      // }}
       />
     </>
   );

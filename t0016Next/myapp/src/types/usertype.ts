@@ -12,3 +12,9 @@ export type LoginUser= {
   Email		:	string|null;
   Password	:	string;	
 };
+
+export type SignupListener = {
+  ListenerName: string;
+  Email: string;
+  Password: string;
+};

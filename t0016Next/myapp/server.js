@@ -11,8 +11,6 @@ const handle = app.getRequestHandler();
 const httpsOptions = {
   key: fs.readFileSync(path.join(__dirname, '..', '..', 'key', 'server_unencrypted.key')),
   cert: fs.readFileSync(path.join(__dirname, '..', '..', 'key', 'server.pem')),
-  // key: fs.readFileSync('../../key/server_unencrypted.key'),
-  // cert: fs.readFileSync('../../key/server.pem'),
 };
 
 app.prepare().then(() => {

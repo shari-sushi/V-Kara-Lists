@@ -4,7 +4,8 @@ import style from '../Youtube.module.css';
 import type { AllJoinData, Vtuber, VtuberMovie } from '../types/singdata'; //type{}で型情報のみインポート
 import https from 'https';
 import axios from 'axios';
-import YoutubePlayer from '../components/YoutubePlayer'
+import {YoutubePlayer} from '../components/YoutubePlayer'
+import {domain} from '../../env'
 
 export const ConversionTime =(SingStart: string):number =>{
     const match =SingStart.match(/\d+/g);
