@@ -1,3 +1,4 @@
+// 初期の遺物　削除したい
 export type SingData= {
     vtuber_id	:	number;
     movie		:	string;
@@ -12,15 +13,26 @@ export type AllJoinData= {
 	VtuberId		:	number; 
 	VtuberName	:	string;
 	VtuberKana		:	string;
-	SelfIntroUrl	:	string | null;
+	IntroMovieUrl	:	string | null;
 	VtuberInputerId	:	string;
-	MovieId			:	number;
-	MovieUrl		:	string | null;
-	MovieTitle		:	string | null;
-	SongId			:	number;
-	SingStart		:	string | null;
-	SongName		:	string | null;
+	MovieUrl		:	string;
+	MovieTitle		:	string;
+	KaraokeListId			:	number;
+	SingStart		:	string ;
+	SongName		:	string;
 	SongInputerId	:	string | null;
+}
+
+export type CrudDate= {
+	VtuberId		:	number; 
+	VtuberName	:	string;
+	VtuberKana		:	string;
+	IntroMovieUrl	:	string | null;
+	MovieUrl		:	string;
+	MovieTitle		:	string;
+	KaraokeListId			:	number;
+	SingStart		:	string ;
+	SongName		:	string;
 }
 
 export type AllData = {
@@ -53,7 +65,7 @@ export type  Vtuber= {
 export type Movie= {
 	VtuberId		:	number; 
 	MovieId			:	number;
-	MovieUrl		:	string | null;
+	MovieUrl		:	string ;	//ExtraVideoIdのために| null削除。他で不整合発生したら再検討
 	MovieTitle		:	string | null;
 	MovieInputerId	: number|null;
 };
@@ -61,7 +73,7 @@ export type Movie= {
 export type KaraokeList= {
 	MovieUrl				:	string | null;
 	KaraokeListId			:	number;
-	SingStart				:	string | null;
+	SingStart				:	string;
 	SongName				:	string | null;
 	KaraokeListInputerId	:	number | null;
 };

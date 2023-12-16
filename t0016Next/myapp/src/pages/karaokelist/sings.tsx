@@ -4,10 +4,13 @@ import style from '../Youtube.module.css';
 import type { AllJoinData, Vtuber, VtuberMovie } from '../../types/singdata'; //type{}で型情報のみインポート
 import https from 'https';
 import axios from 'axios';
-import YoutubePlayer from '../../components/YoutubePlayer'
+import {YoutubePlayer} from '../../components/YoutubePlayer'
 import {ConversionTime, ExtractVideoId} from '../../components/Conversion'
-import { DataTablePageNation } from '../../components/Table'
-import { createRoot } from "react-dom/client";
+// import { DataTablePageNation } from '../../components/Table'
+import { createRoot } from 'react-dom/client';
+import {Checkbox} from '../../components/SomeFunction';
+import { CellProps } from 'react-table';
+import {domain} from '../../../env'
 
 
   type PostsAndCheckSignin= {
@@ -15,63 +18,79 @@ import { createRoot } from "react-dom/client";
     checkSignin: boolean;
   }
 
-  const columns = [
-    {
-      Header: "VTuber",
-      accessor: "VtuberName"
-    },
-    {
-      Header: "歌",
-      accessor: "SongName"
-    },
-    {
-      Header: "ページ内再生",
-      accessor: "MovieUrl",
-    }
-  ];
-
-const AllDatePage: React.FC<PostsAndCheckSignin> = ({ posts, checkSignin }) =>  {
+// const AllDatePage: React.FC<PostsAndCheckSignin> = ({ posts, checkSignin }) =>  {　//どっちが良いんだ
+const AllDatePage = ({ posts, checkSignin }:PostsAndCheckSignin) =>  {
 const [start,setStart]=useState<number>(60*8+29) //60*25か60*47かなー, 60*7+59, 60*8+29
-const [allJoinData, setAllJoinData]=useState<AllJoinData>();
-
-const extractVideoId = (url: string): string => { //(変数:型):返値の型
-  const match = url.match(/v=([^&]+)/);
-  if (match && match[1]) {
-      return match[1];
-  }
-  return ''; 
-};
-
+const [allJoinData, setAllJoinData]=useState<AllJoinData[]>();
 const [currentMovieId, setCurrentMovieId] = useState<string>("kORHSmXcYNc");
 const handleMovieClick = (movieId: string) => {
   setCurrentMovieId(movieId);
 };
+const [isRandomOrAll, setIsRandomOrAll] = useState(true);
+const pageSize = 15
+
+type Column = {
+  Header: string;
+  accessor: string;
+  Cell?: (cell: CellProps<any, any>) => React.ReactElement;
+};
+// const columns:Column = [
+//   {Header: "VTuber", accessor: "VtuberName"},
+//   {Header: "歌",     accessor: "SongName",
+//     Cell: (cell: { row: { original: any; }; }) => { //どっちが良いんだ…
+//     // Cell: (cell: CellProps<any,any>) => {
+//       const item = cell.row.original;
+//       return (
+//         <a href="#" onClick={(e) => {
+//           e.preventDefault();
+//           console.log("item.MovieUrl", item.MovieUrl);
+//           handleMovieClick(ExtractVideoId(item.MovieUrl));
+//           setStart(ConversionTime(item.SingStart));
+//         }}>
+//           {item.SongName}
+//         </a>
+//       )
+//     }
+//   },
+//   {Header: "外部リンク", accessor: "MovieUrl",
+//   Cell: (cell: CellProps<any,any>) => {
+//     const item = cell.row.original;
+//     return (
+//       <a href="#" onClick={(e) => {
+//         e.preventDefault();
+//         console.log("item.MovieUrl", item.MovieUrl);
+//         handleMovieClick(ExtractVideoId(item.MovieUrl));
+//         setStart(ConversionTime(item.SingStart));
+//       }}>
+//         YouYubeへ
+//       </a>
+//     )
+//   }
+//   }
+// ];
 
   useEffect(() => {
       if (posts) {
           setAllJoinData(posts.alljoindata);
-              // setData3(checkSingin)
-          console.log("checkSignin=", checkSignin)
-          console.log("posts.alljoindata=", posts.alljoindata)
       }
   }, [posts]);
-
-  console.log("data:", posts.alljoindata)
 
   return (
     <div>
       <Link href={`/`} ><u>TOP</u></Link>
     <h2>★歌</h2>
-
-    <Link href={`/karaokerist/sings`} ><u>全歌一覧</u></Link> <br />
     <Link href={`/create`} ><u>歌を登録</u></Link>
       <YoutubePlayer videoId={currentMovieId}  start={start} />
+    <Checkbox checked={isRandomOrAll}
+    onChange={() => setIsRandomOrAll((state) => !state)} >：{pageSize}件ずつ表示⇔全件表示(全{allJoinData?.length}歌)</Checkbox>
 
+    {/* {isRandomOrAll &&
       <DataTablePageNation
       columns={columns}
       data={posts.alljoindata}
-      handleMovieClick={handleMovieClick} 
-      setStart={setStart} />
+      pageSize={pageSize}/>
+    } */}
+    {!isRandomOrAll &&
       <table border={4}>
         <thead>
            <tr>
@@ -81,7 +100,7 @@ const handleMovieClick = (movieId: string) => {
           </tr>
         </thead>
         <tbody>
-          {allJoinData && allJoinData.map((allJoinData, index) => (
+          {allJoinData && allJoinData.map((allJoinData:AllJoinData, index) => (
             <tr key={index}>
           <td>{allJoinData.VtuberName}</td>
             {allJoinData.SongName ? (
@@ -102,7 +121,8 @@ const handleMovieClick = (movieId: string) => {
             </tr>
             ))}
         </tbody>
-      </table><br />
+      </table>
+    }<br />
 </div>
   )};
 
@@ -112,7 +132,7 @@ const handleMovieClick = (movieId: string) => {
     });
     let resData;
     try {
-        const response = await axios.get('https://localhost:8080', {
+        const response = await axios.get(`${domain.backendHost}`, {
             httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
         });
         resData = response.data;
@@ -122,7 +142,7 @@ const handleMovieClick = (movieId: string) => {
 
     console.log("resData=", resData) //この時点では動画情報持ってる
     const rawCookie = context.req.headers.cookie;
-    const sessionToken = rawCookie?.split(';').find(cookie => cookie.trim().startsWith('auth-token='))?.split('=')[1];
+    const sessionToken = rawCookie?.split(';').find((cookie:string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];
     var CheckSignin = false
     if(sessionToken){CheckSignin = true}
     console.log("checkSingin=", CheckSignin)

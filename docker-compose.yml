@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql
+    platform: linux/amd64 #mac環境で必須なことがあるらしい
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD : ${MYSQL_PASSWORD} 
+      MYSQL_USER: ${MYSQL_USER}
+    container_name: v_kara_db
+    build:
+      context: .
+    ports:
+      - "3306:3306"
+    command: mysqld --character-set-server=utf8b4 --collation-server=utf8b4_unicode_ci --skip-character-set-client-handshake
+    # command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci --skip-character-set-client-handshake
+  api:
+    build: 
+      context: ./t0016Go
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD : ${MYSQL_PASSWORD} 
+      MYSQL_USER: ${MYSQL_USER}
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./t0016Go:/api/src
+    depends_on:
+      - "db"
+    ports:
+      - "8080:8080"
+
+  app:
+    build:
+      context: ./t0016Next
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./t0016Next/myapp:/app/src
+    depends_on:
+       - "api" 
+    ports:
+      - "80:80"
+
+# INSERT INTO karaoke_lists 
+# (movie_url,  sing_start, song_name, karaoke_list_inputter_id) 
+# VALUE
+# ('www.youtube.com/watch?v=5WzeYsoGCZc', '00:08:07', 'aaa', 1);
