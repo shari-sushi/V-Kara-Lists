@@ -20,7 +20,7 @@ type SqlHandler struct {
 	Conn *gorm.DB
 }
 
-func init() {
+func init() { //共通化したい……interfaces/controllers/commonと
 	//docker外ではPCのGO_ENVを取得し、godotenvが.dnvを取得する。
 	//docker上ではdockercomposeが.envを取得する。
 	// goEnv := os.Getenv("GO_ENV")
