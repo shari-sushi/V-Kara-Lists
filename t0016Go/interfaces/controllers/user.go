@@ -53,7 +53,7 @@ func (controller *Controller) CreateUser(c *gin.Context) {
 		return
 	}
 	user.Password = hashPW
-
+	user.Email = emailAES
 	newUser, err := controller.UserInteractor.CreateUser(user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

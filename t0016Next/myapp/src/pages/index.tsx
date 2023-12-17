@@ -170,7 +170,7 @@ export async function getServerSideProps(context: { req: { headers: { cookie: an
     console.log("domain.backendHost:", domain.backendHost)
     // const response = await axios.get(`${domain.backendHost}/`, {
     // const response = await axios.get(`http://localhost:8080/`, {
-    const response = await axios.get(`http://127.0.0.1:8080/`, {
+    const response = await axios.get(`http://127.0.0.1:8080/v1/vcontents/`, {
       // 0019だとnullじゃないとサーバーが起動しない。undefinedはダメだとエラーが出る。
       httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
     });
@@ -207,34 +207,3 @@ export async function getServerSideProps(context: { req: { headers: { cookie: an
 }
 
 export default AllDatePage;
-
-//   **** memo ****
-
-//      <DeleteButton Unique_id={item.streamer_id} />
-
-// SSR化する前のコード
-// function AllDatePage( posts : AllData)  {
-//     // data1というステートを定義。streamerの配列を持つ。
-//     // setData1はステートを更新する関数。
-//   const [streamers, setData1] = useState<Streamer[]>();
-//   const [streamerstoMovies, setData2] = useState<StreamerMovie[]>();
-//   const router = useRouter();
-
-//   useEffect(() => {
-//     async function fetchData() {
-//         try {
-//             const response = await fetch('https://localhost:8080');
-//                 if (!response.ok) {
-//                     throw new Error('Network response was not ok');
-//                 }
-//             const resData = await response.json();
-//             setData1(resData.streamers);
-//             setData2(resData.streamers_and_moviesmovies);
-//         } catch (error) {
-//             console.error("There was a problem with the fetch operation:", error);
-//         }
-//     }
-//     fetchData();
-// }, []);
-
-//   return (
