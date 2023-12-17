@@ -25,7 +25,7 @@ export function SigninPage() {
   const onSubmit = async (data:InputValues) => {
     try {
       console.log("data=", data);
-      const response = await fetch(`${domain.backendHost}/login`, { 
+      const response = await fetch(`${domain.backendHost}/v1/users/login`, { 
           method: 'PUT',
           credentials: "include",
           headers: {

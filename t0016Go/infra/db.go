@@ -1,7 +1,5 @@
 package infra
 
-//"github.com/sharin-sushi/0022loginwithJWT/internal/utility"
-
 import (
 	"fmt"
 	"log"
@@ -23,9 +21,10 @@ type SqlHandler struct {
 func init() { //共通化したい……interfaces/controllers/commonと
 	//docker外ではPCのGO_ENVを取得し、godotenvが.dnvを取得する。
 	//docker上ではdockercomposeが.envを取得する。
-	// goEnv := os.Getenv("GO_ENV")
-	// if goEnv == "development" {
-	// fmt.Printf("goEnc=%v \n", goEnv)
+	goEnv := os.Getenv("GO_ENV")
+	if goEnv == "development" {
+		fmt.Printf("goEnc=%v \n", goEnv)
+	}
 	err := godotenv.Load("../.env")
 	if err == nil {
 		checkFile := os.Getenv("GO_ENV")
@@ -38,7 +37,7 @@ func init() { //共通化したい……interfaces/controllers/commonと
 func DbInit() database.SqlHandler {
 	user := os.Getenv("MYSQL_USER")
 	pw := os.Getenv("MYSQL_PASSWORD")
-	// db_name := os.Getenv("MYSQL_DATABASE")
+	db_name := os.Getenv("MYSQL_DATABASE")
 	// db_name := "migration_test" //migrationテスト用
 	// port := "v_kara_db" //docker用
 	var port string
@@ -51,7 +50,7 @@ func DbInit() database.SqlHandler {
 		log.Fatal("GO_ENVに想定外の値が入力されています。")
 
 	}
-	db_name := "test"
+	// db_name := "test"
 	path := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=true", user, pw, port, db_name)
 	fmt.Printf("path=%v \n", path)
 	var err error
