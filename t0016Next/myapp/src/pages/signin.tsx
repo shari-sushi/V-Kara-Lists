@@ -1,7 +1,7 @@
 import React,{ useState } from "react";
 import { useForm } from 'react-hook-form';
 import { useRouter } from "next/router";
-import type { LoginUser as LoginListener } from "../types/usertype";
+import type { LoginUser as LoginListener } from "../types/user";
 import Link from 'next/link';
 import {Checkbox} from '../components/SomeFunction';
 import {domain} from '../../env'
@@ -25,7 +25,7 @@ export function SigninPage() {
   const onSubmit = async (data:InputValues) => {
     try {
       console.log("data=", data);
-      const response = await fetch(`${domain.backendHost}/v1/users/login`, { 
+      const response = await fetch(`${domain.backendHost}/users/login`, { 
           method: 'PUT',
           credentials: "include",
           headers: {
