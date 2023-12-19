@@ -1,4 +1,4 @@
-import type { AllJoinData, Vtuber, VtuberMovie } from '../types/singdata'; //type{}で型情報のみインポート
+import type { AllJoinData, ReceivedVtuber, ReceivedMovie } from '../types/vtuber_content'; //type{}で型情報のみインポート
 
 
 

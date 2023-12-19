@@ -8,7 +8,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
-import type { SignupListener } from "../types/usertype";
+import type { SignupListener } from "../types/user";
 import Link from 'next/link';
 import { Checkbox } from '../components/SomeFunction';
 import { domain } from '../../env'
@@ -30,7 +30,7 @@ export function Signup() {
   const onSubmit = async (data: InputValues) => {
     try {
       console.log("data=", data);
-      const response = await fetch(`${domain.backendHost}/v1/users/signup`, {
+      const response = await fetch(`${domain.backendHost}/users/signup`, {
         method: 'POST',
         credentials: "include",
         headers: {

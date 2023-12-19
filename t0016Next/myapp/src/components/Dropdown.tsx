@@ -3,7 +3,7 @@
 ///////////////////////////////////////////////////////////////////////
 import React, { useState, useEffect, useMemo  } from 'react';
 import Select from 'react-select';
-import type { AllData, Vtuber, Movie, KaraokeList, AllJoinData, VtuberMovie } from '../types/singdata';
+import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '../types/vtuber_content';
 import dynamic from 'next/dynamic';
 import {domain} from '../../env'
 
@@ -42,9 +42,9 @@ type MovieOptions = {
 }
 
 type TopPagePosts = {
-  vtubers: Vtuber[];
-  movies: Movie[];
-  karaokes:KaraokeList[];
+  vtubers: ReceivedVtuber[];
+  movies: ReceivedMovie[];
+  karaokes:ReceivedKaraoke[];
 };
 
 type DropDownVt={
@@ -67,7 +67,7 @@ type DropDownVt={
   useEffect(() => {
     const fetchVtubers = () => { //適切な名前が思いつけば変える
       try {
-        let havingVt = posts.vtubers.map((vtuber:Vtuber) => ({
+        let havingVt = posts.vtubers.map((vtuber:ReceivedVtuber) => ({
           value: vtuber.VtuberId,
           label: vtuber.VtuberName
         }));
@@ -131,9 +131,9 @@ export const DropDownMo = ({ posts, selectedVtuber, onMovieSelect, onKaraokeClea
     const filterMoviesOfSelectedVtuber = async () => {
       try {
           console.log("selectedV=",selectedVtuber)
-          const choicesMovie = posts.movies.filter((movies:Movie) => movies.VtuberId === selectedVtuber);   
+          const choicesMovie = posts.movies.filter((movies:ReceivedMovie) => movies.VtuberId === selectedVtuber);   
           console.log("API Response Mo:choicesMovie:", choicesMovie);
-          let havingMovies = choicesMovie.map((movie:Movie) => ({
+          let havingMovies = choicesMovie.map((movie:ReceivedMovie) => ({
             value: movie.MovieUrl,
             label: movie.MovieTitle || ""
           }));
@@ -180,15 +180,15 @@ export const DropDownMo = ({ posts, selectedVtuber, onMovieSelect, onKaraokeClea
 };
 
 type DropDownKaProps = {
-  posts: AllData;
+  posts: ReceivedKaraoke[];
   selectedMovie: string;
   onKaraokeSelect:(value:number) => void ;
 };
 
 // karaoke_list用
-export const DropDownKa = ({ posts, selectedMovie, onKaraokeSelect }:DropDownKaProps) => {
-  // const [movies, setData2] = useState<KaraokeList[]>();
-  const [karaokeListOptions, setKaraokeOptions] = useState<Options[]>([]);
+export const DropDownKa = ({ posts: karaokes, selectedMovie, onKaraokeSelect }:DropDownKaProps) => {
+  // const [movies, setData2] = useState<Karaoke[]>();
+  const [karaokeOptions, setKaraokeOptions] = useState<Options[]>([]);
   const [selectedKaraoke, setSelectedKaraoke] = useState<number>(0);
 
   useEffect(() => {
@@ -203,31 +203,31 @@ export const DropDownKa = ({ posts, selectedMovie, onKaraokeSelect }:DropDownKaP
     const fetchKaraokes = async () => {
       try {
         console.log("selectedMovie=",selectedMovie)
-        console.log("karaokes=",posts.karaokes)
-        console.log("karaokes.MovieUrl=",posts.karaokes[0].MovieUrl)
+        console.log("karaokes=",karaokes)
+        console.log("karaokes.MovieUrl=",karaokes[0].MovieUrl)
         // const movieUrl = {selectedMovie}
-        const choiceKaraoke = posts.karaokes.filter((karaokes:KaraokeList) => karaokes.MovieUrl === selectedMovie);
+        const choiceKaraoke = karaokes.filter((karaokes:ReceivedKaraoke) => karaokes.MovieUrl === selectedMovie);
         console.log("API Response ka:", choiceKaraoke );
-        let havingkaraokeList = choiceKaraoke.map((karaoke:KaraokeList) => ({
-          value: karaoke.KaraokeListId,
+        let havingkaraoke = choiceKaraoke.map((karaoke:ReceivedKaraoke) => ({
+          value: karaoke.KaraokeId,
           label: karaoke.SongName || ""
         }));
-        if (havingkaraokeList){
-        setKaraokeOptions(havingkaraokeList);}
+        if (havingkaraoke){
+        setKaraokeOptions(havingkaraoke);}
       } catch (error) {
-        console.error("Error fetching KaraokeLists:", error);
+        console.error("Error fetching Karaokes:", error);
       }
       setSelectedKaraoke(0);
     };
     fetchKaraokes();
-  }, [selectedMovie, posts.karaokes]);
+  }, [selectedMovie, karaokes]);
   return (
     <>
       <Select
               id="selectbox"
               instanceId="selectbox"     
       placeholder="歌を検索/選択"  className="basic-single"  classNamePrefix="select"
-        isClearable={true}  isSearchable={true}   options={karaokeListOptions}
+        isClearable={true}  isSearchable={true}   options={karaokeOptions}
         // value={selectedKaraoke} 
         // isMulti={true}  backspaceRemovesValue={false}
         blurInputOnSelect={true} styles={dropStyle}
