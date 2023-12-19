@@ -42,7 +42,7 @@ func TakeListenerIdFromJWT(c *gin.Context) (domain.ListenerId, error) {
 		return []byte(os.Getenv("SECRET_KEY")), nil
 	})
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		// c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 		return 0, err
 	}
 	fmt.Printf("token= %v \n", token)
@@ -56,8 +56,8 @@ func TakeListenerIdFromJWT(c *gin.Context) (domain.ListenerId, error) {
 			}
 			listenerId = int(listenerIdFloat)
 		} else {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "token has no Listener Id"})
-			return 0, err
+			// c.JSON(http.StatusBadRequest, gin.H{"error": "token has no Listener Id"})
+			return 0, fmt.Errorf("token has no Listener Id")
 		}
 	}
 	return domain.ListenerId(listenerId), err

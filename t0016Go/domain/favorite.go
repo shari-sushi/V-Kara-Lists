@@ -2,7 +2,7 @@ package domain
 
 import "gorm.io/gorm"
 
-// like_reration
+//// like_reration
 type Favorite struct {
 	gorm.Model
 	ListenerId ListenerId `gorm:"type:int(11);uniqueIndex:favorite_uq;not null"`
@@ -17,8 +17,17 @@ type Follow struct {
 	FollowedListener int `gorm:"type:int(11);uniqueIndex:follow_uq"`
 }
 
+// appへ送信用 現状ではCount, IsFavの利用方法はない
+type TransmitVtuber struct {
+	Vtuber
+	Count int
+	IsFav bool
+}
+
 // appへ送信用
 type TransmitMovie struct {
+	// VtuberId
+	// MovieUrl string
 	Vtuber
 	Movie
 	Count int
@@ -33,7 +42,13 @@ type MovieFavoriteCount struct {
 
 // appへ送信用
 type TransmitKaraoke struct {
+	// VtuberId
+	// VtuberName       string
+	// VtuberKana       string
+	// IntroMovieUrl    string
+	// VtuberInputterId ListenerId
 	Vtuber
+	// MovieUrl string
 	Movie
 	Karaoke
 	Count int
@@ -42,6 +57,9 @@ type TransmitKaraoke struct {
 
 // dbからCount取得用
 type KaraokeFavoriteCount struct {
+	// VtuberId
+	// MovieUrl string
+	// KaraokeId
 	Karaoke
 	Count int
 }
