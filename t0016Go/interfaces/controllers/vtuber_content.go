@@ -11,13 +11,24 @@ import (
 
 func (controller *Controller) GetJoinVtubersMoviesKaraokes(c *gin.Context) {
 	// transmitKaraoke, err := controller.VtuberContentInteractor.GetVtubersMoviesKaraokes()
-	transmitKaraoke, err := controller.FavoriteInteractor.GetVtubersMoviesKaraokesWithFavCnts()
+	VtsMosKasWithFav, err := controller.FavoriteInteractor.GetVtubersMoviesKaraokesWithFavCnts()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"resultStsのerror": err.Error()})
 		return
 	}
+	listenerId, err := common.TakeListenerIdFromJWT(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Error fetching listener info",
+		})
+		return
+	}
+	myFav, err := controller.FavoriteInteractor.FindFavoritesCreatedByListenerId(listenerId)
+	fmt.Printf("myFav=%v\n", myFav)
+	transmitKaraokes := common.AddIsFavToKaraokeWithFav(VtsMosKasWithFav, myFav)
+
 	c.JSON(http.StatusOK, gin.H{
-		"vtubers_movies_karaokes": transmitKaraoke,
+		"vtubers_movies_karaokes": transmitKaraokes,
 	})
 	return
 }
@@ -352,7 +363,7 @@ func (controller *Controller) ReturnTopPageData(c *gin.Context) {
 	if err != nil {
 		errs = append(errs, err)
 	}
-
+	fmt.Printf("VtsMosKasWithFav=%v\v", VtsMosKasWithFav)
 	listenerId, err := common.TakeListenerIdFromJWT(c) //非ログイン時でも処理は続ける
 	fmt.Printf("listenerId=%v\n", listenerId)
 	if err != nil || listenerId == 0 {
@@ -369,6 +380,7 @@ func (controller *Controller) ReturnTopPageData(c *gin.Context) {
 	fmt.Printf("VtsMosWitFav=%+v", VtsMosWithFav)
 	fmt.Printf("VtsMosKasWitFav=%+v", VtsMosKasWithFav)
 	myFav, err := controller.FavoriteInteractor.FindFavoritesCreatedByListenerId(listenerId)
+	fmt.Printf("myFav=%v\n", myFav)
 	TransmitMovies := common.AddIsFavToMovieWithFav(VtsMosWithFav, myFav)
 	TransmitKaraokes := common.AddIsFavToKaraokeWithFav(VtsMosKasWithFav, myFav)
 
