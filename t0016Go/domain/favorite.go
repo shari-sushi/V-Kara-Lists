@@ -26,8 +26,8 @@ type TransmitVtuber struct {
 
 // appへ送信用
 type TransmitMovie struct {
-	// VtuberId
-	// MovieUrl string
+	VtuberId
+	MovieUrl string
 	Vtuber
 	Movie
 	Count int
@@ -42,14 +42,11 @@ type MovieFavoriteCount struct {
 
 // appへ送信用
 type TransmitKaraoke struct {
-	// VtuberId
-	// VtuberName       string
-	// VtuberKana       string
-	// IntroMovieUrl    string
-	// VtuberInputterId ListenerId
+	VtuberId
 	Vtuber
-	// MovieUrl string
+	MovieUrl string
 	Movie
+	KaraokeId
 	Karaoke
 	Count int
 	IsFav bool
