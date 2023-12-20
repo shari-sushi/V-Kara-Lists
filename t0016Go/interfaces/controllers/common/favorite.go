@@ -9,10 +9,12 @@ func AddIsFavToMovieWithFav(mosWithFavCnts []domain.TransmitMovie, myFavs []doma
 	for _, moWithFavCnt := range mosWithFavCnts {
 		isFav := returnIsFavEachMovieUrl(myFavs, moWithFavCnt.Movie.MovieUrl)
 		movieWithLikeCnt := domain.TransmitMovie{
-			Vtuber: moWithFavCnt.Vtuber,
-			Movie:  moWithFavCnt.Movie,
-			Count:  moWithFavCnt.Count,
-			IsFav:  isFav,
+			VtuberId: moWithFavCnt.VtuberId,
+			Vtuber:   moWithFavCnt.Vtuber,
+			MovieUrl: moWithFavCnt.MovieUrl,
+			Movie:    moWithFavCnt.Movie,
+			Count:    moWithFavCnt.Count,
+			IsFav:    isFav,
 		}
 		transmitData = append(transmitData, movieWithLikeCnt)
 	}
@@ -33,11 +35,14 @@ func AddIsFavToKaraokeWithFav(kasWithFavCnts []domain.TransmitKaraoke, myFavs []
 	for _, kaWithFavCnt := range kasWithFavCnts {
 		isFav := returnIsFavEachKaraokeIdByListenerId(myFavs, kaWithFavCnt.KaraokeId)
 		karaokeWithLikeCnt := domain.TransmitKaraoke{
-			Vtuber:  kaWithFavCnt.Vtuber,
-			Movie:   kaWithFavCnt.Movie,
-			Karaoke: kaWithFavCnt.Karaoke,
-			Count:   kaWithFavCnt.Count,
-			IsFav:   isFav,
+			VtuberId:  kaWithFavCnt.VtuberId,
+			MovieUrl:  kaWithFavCnt.MovieUrl,
+			KaraokeId: kaWithFavCnt.KaraokeId,
+			Vtuber:    kaWithFavCnt.Vtuber,
+			Movie:     kaWithFavCnt.Movie,
+			Karaoke:   kaWithFavCnt.Karaoke,
+			Count:     kaWithFavCnt.Count,
+			IsFav:     isFav,
 		}
 		transmitData = append(transmitData, karaokeWithLikeCnt)
 	}
