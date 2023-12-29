@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2023-12-25T13:37:24.365Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 OPR/105.0.0.0" etag="0mV04BUmzh5wS_w2b6xM" version="22.1.11" type="github">
+<mxfile host="app.diagrams.net" modified="2023-12-29T13:30:34.318Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 OPR/105.0.0.0" etag="GM4g6OqCyIjXh02WQxvq" version="22.1.11" type="github">
   <diagram name="Page-1" id="EkkEaCrMnFjlFCqMtYy3">
-    <mxGraphModel dx="882" dy="925" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+    <mxGraphModel dx="854" dy="925" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -156,7 +156,7 @@
             <mxRectangle width="30" height="110" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="K46y1GgOCIeUEtpBjdzW-39" value="listener_name     VARCHAR(50), NL&#xa;email                   VARCHAR(255),  UQ, NL &#xa;password             VARCHAR(100), NL&#xa;created_at           DATETIME DEFAULT, CURRENT_TIMESTAMP&#xa;updated_at          DATETIME DEFAULT, NULL&#xa;deleted_at           DATETIME DEFAULT ,NULL" style="shape=partialRectangle;overflow=hidden;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;verticalAlign=top;" parent="K46y1GgOCIeUEtpBjdzW-37" vertex="1">
+        <mxCell id="K46y1GgOCIeUEtpBjdzW-39" value="listener_name     VARCHAR(50), NN&#xa;email                   VARCHAR(255),  UQ, NN &#xa;password             VARCHAR(100), NN&#xa;created_at           DATETIME, DEFAULT CURRENT_TIMESTAMP&#xa;updated_at          DATETIME, DEFAULT NULL&#xa;deleted_at           DATETIME, DEFAULT NULL" style="shape=partialRectangle;overflow=hidden;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;verticalAlign=top;" parent="K46y1GgOCIeUEtpBjdzW-37" vertex="1">
           <mxGeometry x="30" width="360" height="110" as="geometry">
             <mxRectangle width="360" height="110" as="alternateBounds" />
           </mxGeometry>
@@ -399,8 +399,37 @@
             <mxRectangle width="270" height="100" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="s3xwAzugYM6U2FgJh_D_-1" value="&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;※&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;PK&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;: &lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;PRIMARY KEY&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;UN &lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;:&amp;nbsp;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;UNIQUE&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;NL &lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;:&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;NOT NULL&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fontSize=11;align=left;" vertex="1" parent="1">
+        <mxCell id="s3xwAzugYM6U2FgJh_D_-1" value="&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;※&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;PK&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;: &lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;PRIMARY KEY&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;UN &lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;:&amp;nbsp;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;UNIQUE&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;text-align: justify;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;NN &lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;:&lt;span style=&quot;white-space: pre;&quot;&gt;&#x9;&lt;/span&gt;NOT NULL&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fontSize=11;align=left;" vertex="1" parent="1">
           <mxGeometry x="10" y="34" width="240" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="s3xwAzugYM6U2FgJh_D_-2" value="covered_song" style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="700" y="929" width="290" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="s3xwAzugYM6U2FgJh_D_-3" value="" style="shape=partialRectangle;collapsible=0;dropTarget=0;pointerEvents=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=1;" vertex="1" parent="s3xwAzugYM6U2FgJh_D_-2">
+          <mxGeometry y="30" width="290" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="s3xwAzugYM6U2FgJh_D_-4" value="PK" style="shape=partialRectangle;overflow=hidden;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;fontStyle=1;" vertex="1" parent="s3xwAzugYM6U2FgJh_D_-3">
+          <mxGeometry width="30" height="30" as="geometry">
+            <mxRectangle width="30" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s3xwAzugYM6U2FgJh_D_-5" value="song_id                  INT" style="shape=partialRectangle;overflow=hidden;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;fontStyle=1;" vertex="1" parent="s3xwAzugYM6U2FgJh_D_-3">
+          <mxGeometry x="30" width="260" height="30" as="geometry">
+            <mxRectangle width="260" height="30" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s3xwAzugYM6U2FgJh_D_-6" value="" style="shape=partialRectangle;collapsible=0;dropTarget=0;pointerEvents=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" vertex="1" parent="s3xwAzugYM6U2FgJh_D_-2">
+          <mxGeometry y="60" width="290" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="s3xwAzugYM6U2FgJh_D_-7" value="" style="shape=partialRectangle;overflow=hidden;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;" vertex="1" parent="s3xwAzugYM6U2FgJh_D_-6">
+          <mxGeometry width="30" height="100" as="geometry">
+            <mxRectangle width="30" height="100" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="s3xwAzugYM6U2FgJh_D_-8" value="song_name             VARCHAR(100) UQ&#xa;covering_singer      INT&#xa;movie_url                VARCHAR(100) UQ&#xa;song_inputer_id      INT" style="shape=partialRectangle;overflow=hidden;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;verticalAlign=top;" vertex="1" parent="s3xwAzugYM6U2FgJh_D_-6">
+          <mxGeometry x="30" width="260" height="100" as="geometry">
+            <mxRectangle width="260" height="100" as="alternateBounds" />
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
