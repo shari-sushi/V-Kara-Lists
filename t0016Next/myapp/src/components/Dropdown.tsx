@@ -43,17 +43,38 @@ type MovieOptions = {
 
 type TopPagePosts = {
   vtubers: ReceivedVtuber[];
-  movies: ReceivedMovie[];
-  karaokes:ReceivedKaraoke[];
+  vtubers_movies: ReceivedMovie[];
+  vtubers_movies_karaokes:ReceivedKaraoke[];
 };
 
 type DropDownVt={
   posts:TopPagePosts;
   onVtuberSelect: (value: number) => void;  
-  onMovieClear: () => void;                 
+  onMovieClear: () => void;
   onKaraokeClear: () => void;               
 }
 
+type optionType ={
+  value: number,
+  label:string,
+} 
+
+
+
+const fetchVtubers = (posts:TopPagePosts) :optionType[]=> { //適切な名前が思いつけば変える
+  try {
+    let havingVt = posts.vtubers.map((vtuber:ReceivedVtuber) => ({
+      value: vtuber.VtuberId,
+      label: vtuber.VtuberName
+    }));
+    console.log("havingVt", havingVt)
+    // setVtuberOptions(havingVt);
+    return  havingVt
+  } catch (error) {
+    console.error("Error fetching vtubers:", error);
+    return []
+  }
+};
  //onVtuberSelectはVtuberが選択されたときに親コンポーネントへ通知するためのコールバック関数
  export const DropDownVt = ({posts, onVtuberSelect, onMovieClear, onKaraokeClear }:DropDownVt) => {
   // console.log("DropDownVt2のposts", posts)
@@ -62,25 +83,15 @@ type DropDownVt={
     onMovieClear();
     onKaraokeClear();
   };
-  const [vtuberOptions, setVtuberOptions] = useState<Options[]>([]); //配列の初期値が　[] となる。
+  // const [vtuberOptions, setVtuberOptions] = useState<Options[]>([]); 
 
-  useEffect(() => {
-    const fetchVtubers = () => { //適切な名前が思いつけば変える
-      try {
-        let havingVt = posts.vtubers.map((vtuber:ReceivedVtuber) => ({
-          value: vtuber.VtuberId,
-          label: vtuber.VtuberName
-        }));
-        console.log("havingVt", havingVt)
-        setVtuberOptions(havingVt);
-      } catch (error) {
-        console.error("Error fetching vtubers:", error);
-      }
-    };
-    fetchVtubers();
-  }, [posts.vtubers]);
+  // useEffect(() => {
+
+const  vtuberOptions=fetchVtubers(posts);
+  // }, [posts.vtubers]);
   return (
-    <><Select
+    <>
+      <Select
         id="selectbox"
         instanceId="selectbox"
         placeholder="Vtuber名を検索/選択"  //  defaultValue= で何か変わる
@@ -90,7 +101,6 @@ type DropDownVt={
         defaultMenuIsOpen={true}   blurInputOnSelect={true}    styles={dropStyle}
         // value={onVtuberSelect}
         onChange={option => { //ここでSelectで選んだものがoptionに格納されるのか？←挙動的に多分違う
-            // 要：選択中のmovieをクリアする関数
             onMovieClear(),
             onKaraokeClear()
           if (option) {
@@ -99,10 +109,14 @@ type DropDownVt={
           } else {
             handleVtuberClear();
           }
-        }}  />   </>  );};
+        }} />  
+    </> 
+  );
+};
 
 type DropDownMo = {
   posts:TopPagePosts;
+  // posts:ReceivedMovie[];
   selectedVtuber: number;
   onMovieSelect:(value: string) => void; 
   onKaraokeClear:(value: number) => void;  
@@ -115,6 +129,7 @@ type DropDownMo = {
 // 
 //  movie用
 export const DropDownMo = ({ posts, selectedVtuber, onMovieSelect, onKaraokeClear }:DropDownMo) => {
+  const movies = posts.vtubers_movies
   //const [selectedVtuber, setSelectedVtuber] = useState(null);
   const handleMovieClear = () => {
     onMovieSelect("");
@@ -131,7 +146,7 @@ export const DropDownMo = ({ posts, selectedVtuber, onMovieSelect, onKaraokeClea
     const filterMoviesOfSelectedVtuber = async () => {
       try {
           console.log("selectedV=",selectedVtuber)
-          const choicesMovie = posts.movies.filter((movies:ReceivedMovie) => movies.VtuberId === selectedVtuber);   
+          const choicesMovie = movies.filter((movies:ReceivedMovie) => movies.VtuberId === selectedVtuber);   
           console.log("API Response Mo:choicesMovie:", choicesMovie);
           let havingMovies = choicesMovie.map((movie:ReceivedMovie) => ({
             value: movie.MovieUrl,
@@ -146,7 +161,7 @@ export const DropDownMo = ({ posts, selectedVtuber, onMovieSelect, onKaraokeClea
       setSelectedMovieId("");
     };
     filterMoviesOfSelectedVtuber();
-  }, [selectedVtuber, posts.movies]);
+  }, [selectedVtuber, movies]);
 
   return (
     <><Select
@@ -180,13 +195,14 @@ export const DropDownMo = ({ posts, selectedVtuber, onMovieSelect, onKaraokeClea
 };
 
 type DropDownKaProps = {
-  posts: ReceivedKaraoke[];
+  posts:TopPagePosts;
   selectedMovie: string;
   onKaraokeSelect:(value:number) => void ;
 };
 
 // karaoke_list用
-export const DropDownKa = ({ posts: karaokes, selectedMovie, onKaraokeSelect }:DropDownKaProps) => {
+export const DropDownKa = ({ posts, selectedMovie, onKaraokeSelect }:DropDownKaProps) => {
+  const karaokes = posts.vtubers_movies_karaokes
   // const [movies, setData2] = useState<Karaoke[]>();
   const [karaokeOptions, setKaraokeOptions] = useState<Options[]>([]);
   const [selectedKaraoke, setSelectedKaraoke] = useState<number>(0);
@@ -224,14 +240,14 @@ export const DropDownKa = ({ posts: karaokes, selectedMovie, onKaraokeSelect }:D
   return (
     <>
       <Select
-              id="selectbox"
-              instanceId="selectbox"     
-      placeholder="歌を検索/選択"  className="basic-single"  classNamePrefix="select"
+        id="selectbox"
+        instanceId="selectbox"     
+        placeholder="歌を検索/選択"  className="basic-single"  classNamePrefix="select"
         isClearable={true}  isSearchable={true}   options={karaokeOptions}
         // value={selectedKaraoke} 
         // isMulti={true}  backspaceRemovesValue={false}
         blurInputOnSelect={true} styles={dropStyle}
-      onChange={option => {
+        onChange={option => {
         if (option){ //選んだ時にエラー吐く
           onKaraokeSelect(option.value);
           // setSelectedKaraoke(option);

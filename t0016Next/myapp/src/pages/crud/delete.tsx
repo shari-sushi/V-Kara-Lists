@@ -3,15 +3,15 @@ import { useRouter } from "next/router";
 import Link from 'next/link';
 import Router, { useEffect, useState } from 'react';
 // import style from '../Youtube.module.css';
-import type { CrudDate, ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '../types/vtuber_content'; //type{}で型情報のみインポート
+import type { CrudDate, ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '../../types/vtuber_content'; //type{}で型情報のみインポート
 // import DeleteButton from '../components/DeleteButton';
 import https from 'https';
 import axios from 'axios';
 import '@szhsin/react-menu/dist/index.css';
-import { DropDownVt, DropDownMo, DropDownKa } from '../components/Dropdown';
-import { YoutubePlayer } from '../components/YoutubePlayer'
-import { ConversionTime, ExtractVideoId } from '../components/Conversion'
-import { domain } from '../../env'
+import { DropDownVt, DropDownMo, DropDownKa } from '../../components/Dropdown';
+import { YoutubePlayer } from '../../components/YoutubePlayer'
+import { ConvertStringToTime, ExtractVideoId } from '../../components/Conversion'
+import { domain } from '../../../env'
 
 type TopPagePosts = {
     //   alljoindata: AllJoinData[];
@@ -59,7 +59,7 @@ export const AllDatePage = ({ posts, checkSignin }: AllDatePage) => {
             // console.log("foundKaraoke", foundKaraoke);  //karaokeの配列
 
             if (foundKaraoke) {
-                const foundSingStart = ConversionTime(foundKaraoke.Karaoke.SingStart);
+                const foundSingStart = ConvertStringToTime(foundKaraoke.Karaoke.SingStart);
                 setKaraokeStart(foundSingStart);
                 //   console.log("foundSingStart", foundSingStart)
             }
