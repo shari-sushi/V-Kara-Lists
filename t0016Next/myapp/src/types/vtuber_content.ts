@@ -142,3 +142,34 @@ export type ReceivedKaraoke = {
 	Count: number;
 	IsFav: boolean;
 }
+
+// export type AllDatePage = {
+// 	posts: {
+// 		vtubers: ReceivedVtuber[];
+// 		vtubers_and_movies: ReceivedMovie[];
+// 		vtubers_and_movies_karaokes: ReceivedKaraoke[];
+// 	},
+// 	checkSignin: boolean;
+// }
+
+// export type SelectedDate = {
+// 	// alljoindata: AllJoinData[];
+// 	// posts: TopPagePosts;
+// 	posts: {
+// 		vtubers: ReceivedVtuber[];
+// 		vtubers_and_movies: ReceivedMovie[];
+// 		vtubers_and_movies_karaokes: ReceivedKaraoke[];
+// 	},
+// 	selectedVtuber: number;
+// 	selectedMovie: string;
+// 	selectedKaraoke: number;
+// }
+
+export type FavoriteKaraoke = {
+	MovieUrl: string;
+	KaraokeId: number;
+}
+
+export type FavoriteMovie = {
+	MovieUrl: string;
+}
