@@ -37,6 +37,9 @@
   "devDependencies": {
     "@types/axios": "^0.14.0",
     "@types/react-table": "^7.7.18",
-    "@types/youtube": "^0.0.50"
+    "@types/youtube": "^0.0.50",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.0"
   }
 }
