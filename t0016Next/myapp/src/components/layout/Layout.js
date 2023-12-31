@@ -4,19 +4,17 @@ import Link from 'next/link';
 import { GestLogin, GetLogout } from '../authButton'
 // import { styles } from '../components/globals'
 import { domain } from '../../../env'
-// export const appName = "Sample App"
 
 export function Header({ pageName, children, checkSignin }) {
     // console.log("children", children)
     return (
         <div>
             <Head>
-                <link rel="icon" href="/favicon.ico" />
+                <link rel="icon" href="/shari.ico" />
             </Head>
             <header >
                 <h1 className={styles.title}>{pageName}   &nbsp;</h1>
                 <Link href="/test"><button >テスト</button></Link> &nbsp;
-                <Link href="/karaoke/singsTest"><button >歌テスト</button></Link> &nbsp;
                 <Link href="/"><button >TOP</button></Link> &nbsp;
                 {checkSignin &&
                     <>
@@ -46,7 +44,6 @@ export function Header({ pageName, children, checkSignin }) {
                         <GestLogin />
                     </>
                 }
-
             </header>
             <main className={styles.original}>
                 {children}
