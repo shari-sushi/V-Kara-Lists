@@ -8,10 +8,10 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
-import type { SignupListener } from "../types/user";
+import type { SignupListener } from "../../types/user";
 import Link from 'next/link';
-import { Checkbox } from '../components/SomeFunction';
-import { domain } from '../../env'
+import { Checkbox } from '../../components/SomeFunction';
+import { domain } from '../../../env'
 
 
 export function Signup() {
