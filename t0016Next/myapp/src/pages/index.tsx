@@ -1,16 +1,17 @@
-import { useEffect, useState } from 'react';
+import { domain } from '@/../env'
+import React, { useState } from 'react';
 import Link from 'next/link';
-import style from '../Youtube.module.css';
-import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke, VtuberId } from '../types/vtuber_content'; //type{}で型情報のみインポート
 import https from 'https';
-import axios from 'axios';
-import { YoutubePlayer, YoutubePlayListPlayer } from '../components/YoutubePlayer'
-import { ConversionTime, ExtractVideoId } from '../components/Conversion'
-// import { RandamTable } from '../components/Table'
-import { domain } from '../../env'
-import { AxiosRequestConfig } from 'axios';
-import Layout from '../components/Layout'
-import styles from '../styles/Home.module.css'
+import axios, { AxiosRequestConfig } from 'axios';
+import style from '@/Youtube.module.css';
+import styles from '@/styles/Home.module.css'
+import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '@/types/vtuber_content';
+import { YouTubePlayer } from '@/components/YoutubePlayer'
+import { ExtractVideoId } from '@/components/Conversion'
+import { Header } from '../components/layout/Layout'
+import { VtuberTable } from '@/components/table/Vtuber'
+import { MovieTable } from '@/components/table/Movie'
+import { RandamTable } from '@/components/table/Karaoke'
 
 type TopPage = {
   posts: {
@@ -21,167 +22,82 @@ type TopPage = {
   checkSignin: boolean;
 }
 
-//分割代入？
-// 型注釈IndexPage(posts: Post)
+export const YouTubePlayerContext = React.createContext({} as {
+  currentMovieId: string
+  setCurrentMovieId: React.Dispatch<React.SetStateAction<string>>
+  start: number
+  setStart: React.Dispatch<React.SetStateAction<number>>
+  handleMovieClickYouTube(movieId: string, time: number): void
+})
+
 const TopPage = ({ posts, checkSignin }: TopPage) => {
-  console.log("CheckSignin", checkSignin)
-  console.log("posts= ", posts)
-  // data1というステートを定義。streamerの配列を持つ。
   const vtubers = posts?.vtubers;
   const movies = posts?.vtubers_movies;
   const karaokes = posts?.vtubers_movies_karaokes;
   const [start, setStart] = useState<number>((36 * 60 + 41))
+  const [currentMovieId, setCurrentMovieId] = useState<string>("E7x2TZ1_Ys4");
   //qFVhnuIBGiQなら60*25か60*47かなー, 60*7+59, 60*8+29
   // E7x2TZ1_Ys4 なら43*60,36*60+34
-  const [currentMovieId, setCurrentMovieId] = useState<string>("E7x2TZ1_Ys4");
-  const handleMovieClick = (movieId: string) => {
-    setCurrentMovieId(movieId);
+
+  const handleMovieClickYouTube = (url: string, start: number) => {
+    // setCurrentMovieId(ExtractVideoId(url));
+    // setStart(start);
+    console.log("handleMovieClickYouTube")
+    if (currentMovieId == ExtractVideoId(url)) {
+      setStart(-1);
+      setStart(start);
+      console.log("同じ")
+    } else {
+      setCurrentMovieId(ExtractVideoId(url));
+      // setStart(start);
+      //以下をonReady発火させられれば、ユーザー環境による差を少なくできる気がする
+      setTimeout(function () {
+        setStart(-1);
+        setStart(start);
+        console.log("別")
+      }, 1300); //local環境で、1100ms 高確率で✖, 1300ms:✖が少なくない //短すぎるとエラーになる注意
+    }
   };
-
-  // const handleLikeToggle = async (vtuberId: VtuberId, isFav: boolean) => {
-  //   // サーバーにいいねの状態をトグルするためのリクエストを送信
-  //   try {
-  //     const response = await fetch(`/api/like-toggle/${vtuberId}`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({ isFav: !isFav }),
-  //     });
-  // 
-  //     if (response.ok) {
-  //       // いいねの状態が正常に更新された場合、画面上のデータも更新
-  //       const updatedVtubers = vtubers.map((v) =>
-  //         v.VtuberId === vtuberId ? { ...v, IsFav: !isFav, Count: isFav ? v.Count - 1 : v.Count + 1 } : v
-  //       );
-  //       setVtubers(updatedVtubers);
-  //     } else {
-  //       console.error("いいねの切り替えに失敗しました。");
-  //     }
-  //   } catch (error) {
-  //     console.error("ネットワークエラー:", error);
-  //   }
-  // };
-  //   <td>
-  //   <button onClick={() => handleLikeToggle(vtubers.VtuberId, vtubers.IsFav)}>
-  //     {vtubers.IsFav ? "解除" : "いいね"}
-  //   </button>
-  // </td>
-  // {vtubers.IsFav ? (
-  //   <td>{vtubers.Count + 1}</td>
-  // ) : (
-  //   <td>{vtubers.Count}</td>
-  // )}
-
 
   return (
     <div>
-      <Layout pageName="TOP">
-        <div>
-          <h1>V-kara (VTuber-karaoke-Lists) </h1>
-          <h3>「推し」の「歌枠」の聴きたい「歌」<br />
-            「ぱっと把握」、「さっと再生」、「ばばっと布教」<br /><br />
-            VTuberご本人様も歌った歌の把握や聞き返しにいかがでしょう。
-          </h3>
-          <YoutubePlayer videoId={currentMovieId} start={start} />
+      <Header pageName="TOP" checkSignin={checkSignin}>
+        <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube, currentMovieId, setCurrentMovieId, start, setStart }}>
+          <div>
+            <a>{checkSignin && "ログイン中" || '非ログイン中'}</a><br />
+            <br />
+            <a>videoId= {currentMovieId}, start= {start}秒 = {Math.floor(start / 60)}分 {Math.floor(start % 60)}秒</a >
+            <br /><br />
 
-          ！注意！Vtuber様や動画により音量差があります。 <br />
-          ！注意！特に、個人→大手の切り替え時に爆音となる傾向があります。
+            <h1>{"V-kara (VTuber-karaoke-Lists)"} </h1>
+            <h3>
+              {"「推し」の「歌枠」の聴きたい「歌」"}<br />
+              {"「ぱっと把握」、「さっと再生」、「ばばっと布教」"}<br />
+            </h3><br />
+            <YouTubePlayer videoId={currentMovieId} start={start} />
 
-          <br />
-          <Link href={`/create`} ><u>データ登録ページへ</u></Link>
+            {/* <YouTubePlayer videoId={currentMovieId} start={start} /> */}
+            {"！注意！　 動画ごとの音量差　個人→大手の音量差　！注意！"}
+            <br /><br />
 
-          {/* 配信者一覧 */}
-          <h2>★配信者</h2>
-          <h2>{checkSignin}</h2>
+            <h2>★配信者</h2>
+            <VtuberTable posts={vtubers}></VtuberTable><br />
 
-          <table border={4} >
-            <thead>{/* ← tabeleのhead */}
-              <tr>
-                <td>お名前</td>
-                <td>読み</td>
-                <td>紹介動画</td>
-                <td>ｻｲﾄ内</td>
-                <td>ｻｲﾄ内</td>
-                {/* <td>いいね</td> */}
-                {checkSignin && <td>編集</td>}
-              </tr>
-            </thead>
+            <h2>★歌枠(動画)</h2>
+            <MovieTable posts={movies} /><br />
 
-            <tbody>
-              {vtubers && vtubers.map((vtubers, index) => (
-                <tr key={index}>
-                  <td>{vtubers.VtuberName}</td>
-                  <td>{vtubers.VtuberKana}</td>
-                  {vtubers.IntroMovieUrl ? (
-                    <td><a href={`https://${vtubers.IntroMovieUrl}`} target="_blank" rel="noopener noreferrer">youtubeへ</a></td>
-                  ) : (
-                    <td>未登録</td>
-                  )}
-                  <td><Link href={`/movie?streamer_id=${vtubers.VtuberId}`}>歌枠</Link></td>
-                  <td><Link href={`/sing?streamer_id=${vtubers.VtuberId}`}>歌</Link></td>
-                  {checkSignin && <td><Link href={`/karaokelist/edit?Unique_id=${vtubers.VtuberId}`}>編集</Link></td>}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            <h2>★歌</h2>
+            <Link href={`/karaoke/sings`} ><u>全歌一覧へ</u></Link> <br />
+            <RandamTable posts={karaokes} />
 
-          {/*動画一覧  */}
-          <h2>★歌枠(動画)</h2>
-          <table border={4} >
-            <thead>
-              <tr>
-                <td>配信者名</td>
-                <td>動画名(ｻｲﾄ内ﾘﾝｸ：歌リスト一覧へ)</td>
-                <td>外部ﾘﾝｸ</td>
-                <td>いいね</td>
-                {checkSignin && <td>編集</td>}
-              </tr>
-            </thead>
-            <tbody>
-              {movies && movies.map((movies, index) => (
-                <tr key={index}>
-                  <td>{movies.VtuberName}</td>
-                  {movies.MovieUrl ? (
-                    <td><a href="#" onClick={(e) => {
-                      e.preventDefault();
-                      handleMovieClick(ExtractVideoId(movies.MovieUrl));
-                      setStart(1);
-                      console.log("start:", start)
-                    }}>{movies.MovieTitle}</a></td>
-                  ) : (
-                    <td>未登録</td>
-                  )}
-                  {movies.MovieUrl ? (
-                    <td><a href={`https://${movies.MovieUrl}`} target="_blank" rel="noopener noreferrer">YouTubeへ</a></td>
-                  ) : (
-                    <td>未登録</td>
-                  )}
-                  {movies.IsFav && <td>{movies.Count + 1}</td> || <td>{movies.Count || 0}</td>}
-                  {checkSignin && <td><Link href={`/edit?Unique_id=${movies.VtuberId}`}>編集</Link></td>}
-                </tr>
-              ))}
-            </tbody>
-          </table><br />
-
-          {/*歌一覧  */}
-
-          <h2>★歌</h2>
-          <Link href={`/karaokelist/sings`} ><u>全歌一覧</u></Link>
-          {/* <RandamTable
-        data={karaokes}
-        handleMovieClick={handleMovieClick}
-        setStart={setStart}
-      /> */}
-        </div >
-      </Layout>
+          </div >
+        </YouTubePlayerContext.Provider>
+      </Header>
 
     </div >
 
   )
 };
-
-
 
 type ContextType = {
   req: { headers: { cookie?: string; }; };
@@ -216,14 +132,7 @@ export async function getServerSideProps(context: ContextType) {
     resData = res.data;
   } catch (error) {
     console.log("erroe in axios.get:", error);
-    return {
-      props: {
-        posts: resData,
-        checkSignin: checkSignin,
-      }
-    };
   }
-  console.log("---------------------------------\n", checkSignin)
   return {
     props: {
       posts: resData,

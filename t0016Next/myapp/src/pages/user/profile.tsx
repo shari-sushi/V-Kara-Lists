@@ -1,14 +1,14 @@
 // import isLoggedIn from "../lib/auth"
 import { useEffect, useState } from "react"
-import type { User } from "../types/user"
+import type { User } from "../../types/user"
 import { useRouter } from "next/router";
 import Link from 'next/link';
 // import { getAllCookies } from "../lib/getallcookie";
 import https from 'https';
 import axios from 'axios';
 import { AxiosRequestConfig } from 'axios';
-import { GetLogout, Withdraw } from '../components/authButton';
-import { domain } from '../../env'
+import { GetLogout, Withdraw } from '../../components/authButton';
+import { domain } from '../../../env'
 
 type Mypage = {
     listener: User;
