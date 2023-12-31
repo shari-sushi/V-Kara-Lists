@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo  } from 'react';
 import Select from 'react-select';
-import type {  ReceivedVtuber, Movie, Karaoke } from '../types/vtuber_content';
+import type {  ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '../types/vtuber_content';
 import { NumbersOutlined } from '@mui/icons-material';
 // import Creatable from 'react-select/creatable' 後々の更新で歌検索として実装したい
 import {domain} from '../../env'
@@ -114,7 +114,7 @@ export const DropDownMo = ({ selectedVtuber, onMovieSelect, onKaraokeClear }:Dro
           })
         let data = await response.json();
         console.log("API Response Mo:", data);
-        let havingMovie = data.movies.map((movie:Movie) => ({
+        let havingMovie = data.movies.map((movie:ReceivedMovie) => ({
           value: movie.MovieUrl,
           label: movie.MovieTitle
         }));
@@ -190,7 +190,7 @@ export const DropDownKa = ({ selectedMovie, onKaraokeSelect }:DropDownKa) => {
           })
         let data = await response.json();
         console.log("API Response ka:", data);
-        let havingkaraokeList = data.karaoke_lists.map((karaoke:Karaoke) => ({
+        let havingkaraokeList = data.karaoke_lists.map((karaoke:ReceivedKaraoke) => ({
           value: karaoke.KaraokeId,
           label: karaoke.SongName
         }));
