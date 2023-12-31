@@ -1,0 +1,43 @@
+
+/* tansak table関連  */
+.btn {
+    background-color: rgb(210, 115, 67);
+    border-radius: 9999px;
+    padding: 0.05rem 0.05rem;
+    width: 50px; 
+    height: 23px;
+    /* 23が見やすい */
+    color: rgb(252, 252, 252);
+  }
+  
+  .table {
+    background-color: rgb(81, 81, 80);
+    border-color: #00000010;
+    padding: 0.1rem 10rem;
+    width: 800px;
+    color: rgb(252, 252, 252);
+  
+  }
+  
+  .tbody {
+    border-bottom: 1px solid lightgray;
+    border-inline: 100px ;
+  }
+  
+  
+  .th {
+    border-bottom: 1px solid lightgray;
+    padding: 4px;
+  }
+  
+  .td {
+    padding: 4px;
+  }
+  
+  .tfoot {
+    color: gray;
+  }
+  
+  .tfoot th {
+    font-weight: normal;
+  }
