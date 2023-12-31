@@ -55,7 +55,7 @@ func (interactor *FavoriteInteractor) FindFavoriteUnscopedByFavOrUnfavRegistry(f
 	return gotFav
 }
 
-func (interactor *FavoriteInteractor) FindFavoritesCreatedByListenerId(lid domain.ListenerId) ([]domain.Favorite, error) {
+func (interactor *FavoriteInteractor) FindFavoritesCreatedByListenerId(lid domain.ListenerId) ([]domain.ReceivedFavorite, error) {
 	foundFavs, err := interactor.FavoriteRepository.FindFavoritesCreatedByListenerId(lid)
 	return foundFavs, err
 }
@@ -111,11 +111,20 @@ func (interactor *FavoriteInteractor) FindKaraokesFavoritedByListenerId(lid doma
 	return x, err
 }
 
-func (interactor *FavoriteInteractor) FindEachRecordsCreatedByListenerId(lid domain.ListenerId) ([]domain.Vtuber, []domain.TransmitMovie, []domain.TransmitKaraoke, error) {
+func (interactor *FavoriteInteractor) FindEachRecordsCreatedByListenerId(lid domain.ListenerId) ([]domain.Vtuber, []domain.TransmitMovie, []domain.TransmitKaraoke, []error) {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
+	var errs []error
 	vts, err := interactor.FavoriteRepository.FindVtubersCreatedByListenerId(lid)
+	if err != nil {
+		errs = append(errs, err)
+	}
 	mos, err := interactor.FavoriteRepository.FindMoviesCreatedByListenerId(lid)
+	if err != nil {
+		errs = append(errs, err)
+	}
 	kas, err := interactor.FavoriteRepository.FindKaraokesCreatedByListenerId(lid)
-
-	return vts, mos, kas, err
+	if err != nil {
+		errs = append(errs, err)
+	}
+	return vts, mos, kas, errs
 }
