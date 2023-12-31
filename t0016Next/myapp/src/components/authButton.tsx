@@ -13,7 +13,7 @@ export const GetLogout = () => {
   const router = useRouter();
   const fetchLogout = async () => {
     try {
-      const response = await fetch(`${domain.backendHost}/logout`, {
+      const response = await fetch(`${domain.backendHost}/users/logout`, {
         method: 'PUT',
         credentials: "include",
         headers: {
@@ -40,7 +40,7 @@ export const Withdraw = () => {
   const [isToDecision, setIsToDecision] = useState<boolean>(false)
   const fetchWithdraw = async () => {
     try {
-      const response = await fetch(`${domain.backendHost}/withdraw`, {
+      const response = await fetch(`${domain.backendHost}/users/withdraw`, {
         method: 'DELETE',
         credentials: "include",
         headers: {
@@ -78,11 +78,10 @@ export const Withdraw = () => {
 };
 
 export const GestLogin = () => {
-  // /gestlogin
   const router = useRouter();
   const fetchWithdraw = async () => {
     try {
-      const response = await fetch(`${domain.backendHost}/gestlogin`, {
+      const response = await fetch(`${domain.backendHost}/users/gestlogin`, {
         method: 'get',
         credentials: "include",
         headers: {
@@ -98,41 +97,8 @@ export const GestLogin = () => {
     router.push(`/`)
   };
   return (
-    <div>
-      <div>
-        <button onClick={fetchWithdraw} style={{ background: 'brown' }}>
-          ゲストログイン</button>
-      </div>
-    </div>
+    <button onClick={fetchWithdraw} style={{ background: 'brown' }}>
+      ゲストログイン
+    </button>
   )
 };
-
-// *******memo********
-// エラー０で機能してたやつ
-// export const Withdraw = () => {
-//   const router = useRouter();
-//   const fetchLogout = async () => {
-//     try {
-//       const response = await fetch(`https://localhost:8080/withdraw`, {
-//           method: 'DELETE',
-//           credentials: "include",
-//           headers: {
-//               'Content-Type': 'application/json'
-//           },
-//       });
-//       console.log("withdraw response:", response);
-//       if (!response.ok) {
-//           throw new Error(response.statusText);
-//       }
-//     } catch (error) {
-//       console.error(error);
-//     }
-//       router.push(`/`)
-//   };
-//   return(
-//     <div>
-//     <button onClick={fetchLogout}>退会</button>
-// <a>aaa</a>
-//    </div>
-//     )
-// };
