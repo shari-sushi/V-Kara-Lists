@@ -65,7 +65,6 @@ const TopPage = ({ posts, checkSignin }: TopPage) => {
         <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube, currentMovieId, setCurrentMovieId, start, setStart }}>
           <div>
             <a>{checkSignin && "ログイン中" || '非ログイン中'}</a><br />
-            <br />
             <a>videoId= {currentMovieId}, start= {start}秒 = {Math.floor(start / 60)}分 {Math.floor(start % 60)}秒</a >
             <br /><br />
 
