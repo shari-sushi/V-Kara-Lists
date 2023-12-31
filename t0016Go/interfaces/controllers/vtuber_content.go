@@ -363,7 +363,7 @@ func (controller *Controller) ReturnTopPageData(c *gin.Context) {
 	if err != nil {
 		errs = append(errs, err)
 	}
-	fmt.Printf("VtsMosKasWithFav=%v\v", VtsMosKasWithFav)
+	fmt.Printf("VtsMosKasWithFav= \n%v\n", VtsMosKasWithFav)
 	listenerId, err := common.TakeListenerIdFromJWT(c) //非ログイン時でも処理は続ける
 	fmt.Printf("listenerId=%v\n", listenerId)
 	if err != nil || listenerId == 0 {
@@ -377,10 +377,10 @@ func (controller *Controller) ReturnTopPageData(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Printf("VtsMosWitFav=%+v", VtsMosWithFav)
-	fmt.Printf("VtsMosKasWitFav=%+v", VtsMosKasWithFav)
+	fmt.Printf("VtsMosWitFav= \n %+v\n", VtsMosWithFav)
+	fmt.Printf("VtsMosKasWitFav= \n %+v\n", VtsMosKasWithFav)
 	myFav, err := controller.FavoriteInteractor.FindFavoritesCreatedByListenerId(listenerId)
-	fmt.Printf("myFav=%v\n", myFav)
+	fmt.Printf("myFav= \n %v\n", myFav)
 	TransmitMovies := common.AddIsFavToMovieWithFav(VtsMosWithFav, myFav)
 	TransmitKaraokes := common.AddIsFavToKaraokeWithFav(VtsMosKasWithFav, myFav)
 
@@ -409,10 +409,10 @@ func (controller *Controller) GetVtuverMovieKaraoke(c *gin.Context) {
 		errs = append(errs, err)
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"vtubers":                         allVts,
-		"vtubers_and_movies":              allMos,
-		"vtubers_and_movies_and_karaokes": allKas,
-		"error":                           errs,
+		"vtubers":                 allVts,
+		"vtubers_movies":          allMos,
+		"vtubers_movies_karaokes": allKas,
+		"error":                   errs,
 	})
 }
 
@@ -449,12 +449,12 @@ func (controller *Controller) Enigma(c *gin.Context) {
 		errs = append(errs, err)
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"vtubers":                         allVts,
-		"movies":                          allMos,
-		"karaokes":                        allKas,
-		"vtubers_and_movies":              allVtsMos,
-		"vtubers_and_movies_and_karaokes": allVtsMosKas,
-		"all":                             all,
-		"error":                           errs,
+		"vtubers":                 allVts,
+		"movies":                  allMos,
+		"karaokes":                allKas,
+		"vtubers_movies":          allVtsMos,
+		"vtubers_movies_karaokes": allVtsMosKas,
+		"all":                     all,
+		"error":                   errs,
 	})
 }

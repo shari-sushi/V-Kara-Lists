@@ -10,7 +10,7 @@ import (
 func TestAddIsFavToMovieWithFav(t *testing.T) {
 	type args struct {
 		mosWithFavCnts []domain.TransmitMovie
-		myFavs         []domain.Favorite
+		myFavs         []domain.ReceivedFavorite
 	}
 	cases := map[string]struct {
 		args args
@@ -22,7 +22,7 @@ func TestAddIsFavToMovieWithFav(t *testing.T) {
 					{Vtuber: domain.Vtuber{VtuberName: "Vtuber1"}, Movie: domain.Movie{MovieUrl: "url1"}, Count: 1},
 					{Vtuber: domain.Vtuber{VtuberName: "Vtuber2"}, Movie: domain.Movie{MovieUrl: "url2"}, Count: 2},
 					{Vtuber: domain.Vtuber{VtuberName: "Vtuber3"}, Movie: domain.Movie{MovieUrl: "url3"}, Count: 3}},
-				myFavs: []domain.Favorite{
+				myFavs: []domain.ReceivedFavorite{
 					{MovieUrl: "url1"},
 					{MovieUrl: "url3"},
 				},
@@ -46,7 +46,7 @@ func TestAddIsFavToMovieWithFav(t *testing.T) {
 func TestAddIsFavToKaraokeWithFav(t *testing.T) {
 	type args struct {
 		kasWithFavCnts []domain.TransmitKaraoke
-		myFavs         []domain.Favorite
+		myFavs         []domain.ReceivedFavorite
 	}
 	cases := map[string]struct {
 		name string
@@ -60,7 +60,7 @@ func TestAddIsFavToKaraokeWithFav(t *testing.T) {
 					{Vtuber: domain.Vtuber{VtuberName: "Vtuber1"}, Movie: domain.Movie{MovieUrl: "url1"}, Karaoke: domain.Karaoke{KaraokeId: 11}, Count: 11},
 					{Vtuber: domain.Vtuber{VtuberName: "Vtuber2"}, Movie: domain.Movie{MovieUrl: "url2"}, Karaoke: domain.Karaoke{KaraokeId: 20}, Count: 2},
 					{Vtuber: domain.Vtuber{VtuberName: "Vtuber3"}, Movie: domain.Movie{MovieUrl: "url3"}, Karaoke: domain.Karaoke{KaraokeId: 30}, Count: 3}},
-				myFavs: []domain.Favorite{
+				myFavs: []domain.ReceivedFavorite{
 					{KaraokeId: 10},
 					{KaraokeId: 30},
 				},

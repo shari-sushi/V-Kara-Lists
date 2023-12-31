@@ -185,39 +185,27 @@ func (controller *Controller) GetListenerProfile(c *gin.Context) {
 	})
 }
 
-// 開発中
 func (controller *Controller) ListenerPage(c *gin.Context) {
 	// listenerId取得
-	ListenerId, err := common.TakeListenerIdFromJWT(c)
+	listenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Need Login"})
 		return
 	}
 	var errs []error
-	// listenerIdで作成した情報をゲット 3種
-	createdVts, createdVtsMos, createdVtsMosKas, err := controller.FavoriteInteractor.FindEachRecordsCreatedByListenerId(ListenerId)
+	createdVts, createdVtsMos, createdVtsMosKas, errs := controller.FavoriteInteractor.FindEachRecordsCreatedByListenerId(listenerId)
+	myFav, err := controller.FavoriteInteractor.FindFavoritesCreatedByListenerId(listenerId)
 	if err != nil {
 		errs = append(errs, err)
 	}
-	// listenerIdでいいねした情報をゲット 2種
-
-	// TransmitFavoriteMos, err := controller.FavoriteInteractor.FindMoviesFavoritedByListenerId(ListenerId)
-	// if err != nil {
-	// 	errs = append(errs, err)
-	// }
-	// TransmitFavoriteKas, err := controller.FavoriteInteractor.FindKaraokesFavoritedByListenerId(ListenerId)
-	// if err != nil {
-	// 	errs = append(errs, err)
-	// }
-
-	// 全部返す
+	fmt.Printf("myFav= \n %v\n", myFav)
+	TransmitMovies := common.AddIsFavToMovieWithFav(createdVtsMos, myFav)
+	TransmitKaraokes := common.AddIsFavToKaraokeWithFav(createdVtsMosKas, myFav)
 	c.JSON(http.StatusOK, gin.H{
 		"vtubers_u_created":                 createdVts,
-		"vtubers_movies_u_created":          createdVtsMos,
-		"vtubers_movies_karaokes_u_created": createdVtsMosKas,
-		// "vtubers_movies_u_favorited":          TransmitFavoriteMos,
-		// "vtubers_movies_karaokes_u_favorited": TransmitFavoriteKas,
-		"error": errs,
+		"vtubers_movies_u_created":          TransmitMovies,
+		"vtubers_movies_karaokes_u_created": TransmitKaraokes,
+		"error":                             errs,
 	})
 	return
 }

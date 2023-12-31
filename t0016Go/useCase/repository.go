@@ -52,8 +52,8 @@ type FavoriteRepository interface {
 	FindVtubersCreatedByListenerId(domain.ListenerId) ([]domain.Vtuber, error)
 	FindMoviesCreatedByListenerId(domain.ListenerId) ([]domain.TransmitMovie, error)
 	FindKaraokesCreatedByListenerId(domain.ListenerId) ([]domain.TransmitKaraoke, error)
-	FindFavoriteUnscopedByFavOrUnfavRegistry(domain.Favorite) domain.Favorite      //
-	FindFavoritesCreatedByListenerId(domain.ListenerId) ([]domain.Favorite, error) //
+	FindFavoriteUnscopedByFavOrUnfavRegistry(domain.Favorite) domain.Favorite              //
+	FindFavoritesCreatedByListenerId(domain.ListenerId) ([]domain.ReceivedFavorite, error) //
 
 	GetVtubersMoviesWithFavCnts() ([]domain.TransmitMovie, error)           //
 	GetVtubersMoviesKaraokesWithFavCnts() ([]domain.TransmitKaraoke, error) //
