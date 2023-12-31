@@ -11,6 +11,7 @@ export function Header({ pageName, children, checkSignin }) {
         <div>
             <Head>
                 <link rel="icon" href="/shari.ico" />
+                <title>V-kara/{pageName}</title>
             </Head>
             <header >
                 <h1 className={styles.title}>{pageName}   &nbsp;</h1>
