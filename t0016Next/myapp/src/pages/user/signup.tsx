@@ -1,10 +1,3 @@
-// const Signin: WithGetAccessControl<VFC> = (props) => {
-//     return
-//   }
-//   Signin.getAccessControl = () => {
-//     return isLoggedIn() ? { type: 'replace', destination: '/mypage' } : null
-//   }
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
@@ -12,7 +5,6 @@ import type { SignupListener } from "../../types/user";
 import Link from 'next/link';
 import { Checkbox } from '../../components/SomeFunction';
 import { domain } from '../../../env'
-
 
 export function Signup() {
   const defaultValues: SignupListener = {
@@ -95,7 +87,6 @@ export function Signup() {
         <button style={{ background: '' }}><Link href={`/mypage`}>mypageへ</Link></button>
       </div>
     </div>
-
   );
 }
 

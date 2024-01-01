@@ -75,8 +75,7 @@ const TopPage = ({ posts, checkSignin }: TopPage) => {
             </h3><br />
             <YouTubePlayer videoId={currentMovieId} start={start} />
 
-            {/* <YouTubePlayer videoId={currentMovieId} start={start} /> */}
-            {"！注意！　 動画ごとの音量差　個人→大手の音量差　！注意！"}
+            {"！注意！　 動画ごとの音量差（特に個人→大手）　！注意！"}
             <br /><br />
 
             <h2>★配信者</h2>
@@ -92,9 +91,7 @@ const TopPage = ({ posts, checkSignin }: TopPage) => {
           </div >
         </YouTubePlayerContext.Provider>
       </Header>
-
     </div >
-
   )
 };
 

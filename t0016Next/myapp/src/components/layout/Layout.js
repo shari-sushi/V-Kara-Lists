@@ -2,11 +2,13 @@ import Head from "next/head";
 import styles from '../../styles/Home.module.css'
 import Link from 'next/link';
 import { GestLogin, GetLogout } from '../authButton'
+import { usePathname, useSearchParams, useParams } from 'next/navigation';
 // import { styles } from '../components/globals'
-import { domain } from '../../../env'
 
 export function Header({ pageName, children, checkSignin }) {
-    // console.log("children", children)
+    const pathName = usePathname();
+    console.log(pathName)
+
     return (
         <div>
             <Head>
@@ -42,7 +44,8 @@ export function Header({ pageName, children, checkSignin }) {
                         <Link href="/user/mypage"><button style={{ background: 'brown' }}>
                             マイページ</button>
                         </Link> &nbsp;
-                        <GestLogin />
+                        <GestLogin /> &nbsp;
+                        {pathName === "/user/mypage" && <GetLogout />}
                     </>
                 }
             </header>
