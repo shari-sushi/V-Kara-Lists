@@ -1,13 +1,7 @@
-// import isLoggedIn from "../lib/auth"
 import React, { useEffect, useState } from "react"
-import type { User } from "../../types/user"
-import { useRouter } from "next/router";
-import Link from 'next/link';
-// import { getAllCookies } from "../lib/getallcookie";
 import https from 'https';
 import axios from 'axios';
 import { AxiosRequestConfig } from 'axios';
-import { GetLogout, Withdraw } from '../../components/authButton';
 import { domain } from '../../../env'
 import { Header } from "@/components/layout/Layout";
 import type { ReceivedKaraoke, ReceivedVtuber, ReceivedMovie } from '../../types/vtuber_content'; //type{}で型情報のみインポート
@@ -15,7 +9,7 @@ import { VtuberTable } from '@/components/table/Vtuber'
 import { MovieTable } from '@/components/table/Movie'
 import { KaraokePagenatoinTable } from '@/components/table/Karaoke'
 import { YouTubePlayer } from '@/components/YoutubePlayer'
-import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
+import { ExtractVideoId } from '@/components/Conversion'
 
 
 export const YouTubePlayerContext = React.createContext({} as {
@@ -42,8 +36,6 @@ const MyPage = ({ data, isSignin }: Mypage) => {
   const [start, setStart] = useState<number>((36 * 60 + 41))
 
   const handleMovieClickYouTube = (url: string, start: number) => {
-    // setCurrentMovieId(ExtractVideoId(url));
-    // setStart(start);
     console.log("handleMovieClickYouTube")
     if (currentMovieId == ExtractVideoId(url)) {
       setStart(-1);
@@ -51,17 +43,16 @@ const MyPage = ({ data, isSignin }: Mypage) => {
       console.log("同じ")
     } else {
       setCurrentMovieId(ExtractVideoId(url));
-      // setStart(start);
-      //以下をonReady発火させられれば、ユーザー環境による差を少なくできる気がする
       setTimeout(function () {
         setStart(-1);
         setStart(start);
         console.log("別")
-      }, 1300); //local環境で、1100ms 高確率で✖, 1300ms:✖が少なくない //短すぎるとエラーになる注意
+      }, 1300);
     }
   };
+
   return (
-    <Header pageName={MyPage} checkSignin={isSignin}>
+    <Header pageName={"MyPage"} checkSignin={isSignin}>
       <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube, currentMovieId, setCurrentMovieId, start, setStart }}>
         <div>
           <YouTubePlayer videoId={currentMovieId} start={start} />
@@ -131,12 +122,6 @@ export async function getServerSideProps(context: ContextType) {
     isSignin = true
   } catch (error) {
     console.log("erroe in axios.get:", error);
-    // return {
-    //   props: {
-    //     listener: resData,
-    //     checkAuth: isSignin,
-    //   }
-    // };
   }
   return {
     props: {
