@@ -7,6 +7,11 @@
   min-height: 100vh;
 }
 
+.original{
+  display: flex;
+  padding: 0rem 1.5rem;
+}
+
 /* editで使用 */
 .container {
   padding: 6rem; 

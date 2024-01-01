@@ -34,7 +34,7 @@ func (interactor *VtuberContentInteractor) GetVtubersMovies() ([]domain.VtuberMo
 	return VM, err
 }
 
-func (interactor *VtuberContentInteractor) GetVtubersMoviesKaraokes() ([]domain.VtuberMovieKaraoke, error) {
+func (interactor *VtuberContentInteractor) GetVtubersMoviesKaraokes() ([]domain.TransmitKaraoke, error) {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
 	allVtsMosKas, err := interactor.VtuberContentRepository.GetVtubersMoviesKaraokes()
 	return allVtsMosKas, err

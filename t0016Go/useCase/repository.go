@@ -12,14 +12,15 @@ type UserRepository interface {
 
 type VtuberContentRepository interface {
 	// 基本的なCRUd
-	GetVtubers() ([]domain.Vtuber, error)                           //
-	GetMovies() ([]domain.Movie, error)                             //
-	GetKaraokes() ([]domain.Karaoke, error)                         //
-	GetVtubersMovies() ([]domain.VtuberMovie, error)                //
-	GetVtubersMoviesKaraokes() ([]domain.VtuberMovieKaraoke, error) //
-	CreateVtuber(domain.Vtuber) error                               //
-	CreateMovie(domain.Movie) error                                 //
-	CreateKaraoke(domain.Karaoke) error                             //
+	GetVtubers() ([]domain.Vtuber, error)            //
+	GetMovies() ([]domain.Movie, error)              //
+	GetKaraokes() ([]domain.Karaoke, error)          //
+	GetVtubersMovies() ([]domain.VtuberMovie, error) //
+	// GetVtubersMoviesKaraokes() ([]domain.VtuberMovieKaraoke, error) //
+	GetVtubersMoviesKaraokes() ([]domain.TransmitKaraoke, error) //
+	CreateVtuber(domain.Vtuber) error                            //
+	CreateMovie(domain.Movie) error                              //
+	CreateKaraoke(domain.Karaoke) error                          //
 	// // CreateOrinalSong() (error) //実装予定
 	UpdateVtuber(domain.Vtuber) error   //
 	UpdateMovie(domain.Movie) error     //
@@ -51,8 +52,8 @@ type FavoriteRepository interface {
 	FindVtubersCreatedByListenerId(domain.ListenerId) ([]domain.Vtuber, error)
 	FindMoviesCreatedByListenerId(domain.ListenerId) ([]domain.TransmitMovie, error)
 	FindKaraokesCreatedByListenerId(domain.ListenerId) ([]domain.TransmitKaraoke, error)
-	FindFavoriteUnscopedByFavOrUnfavRegistry(domain.Favorite) domain.Favorite      //
-	FindFavoritesCreatedByListenerId(domain.ListenerId) ([]domain.Favorite, error) //
+	FindFavoriteUnscopedByFavOrUnfavRegistry(domain.Favorite) domain.Favorite              //
+	FindFavoritesCreatedByListenerId(domain.ListenerId) ([]domain.ReceivedFavorite, error) //
 
 	GetVtubersMoviesWithFavCnts() ([]domain.TransmitMovie, error)           //
 	GetVtubersMoviesKaraokesWithFavCnts() ([]domain.TransmitKaraoke, error) //

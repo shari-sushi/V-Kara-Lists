@@ -44,7 +44,6 @@ type VtuberMovie struct {
 }
 
 type VtuberMovieKaraoke struct {
-	Vtuber
 	Movie
 	Karaoke
 }
