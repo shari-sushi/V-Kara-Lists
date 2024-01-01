@@ -4,44 +4,44 @@ services:
   db:
     image: mysql
     platform: linux/amd64 #mac環境で必須なことがあるらしい
-    environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD : ${MYSQL_PASSWORD} 
-      MYSQL_USER: ${MYSQL_USER}
+    env_file: .env
     container_name: v_kara_db
     build:
-      context: .
+      context: ./db
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
     ports:
       - "3306:3306"
-    command: mysqld --character-set-server=utf8b4 --collation-server=utf8b4_unicode_ci --skip-character-set-client-handshake
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci 
     # command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci --skip-character-set-client-handshake
+  
   api:
     build: 
       context: ./t0016Go
-    environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD : ${MYSQL_PASSWORD} 
-      MYSQL_USER: ${MYSQL_USER}
+    container_name: v_kara_api
+    env_file: .env
     stdin_open: true
     tty: true
     volumes:
       - ./t0016Go:/api/src
     depends_on:
-      - "db"
+      db:
+        condition: service_healthy
     ports:
       - "8080:8080"
 
   app:
     build:
       context: ./t0016Next
+    container_name: v_kara_app
     stdin_open: true
     tty: true
     volumes:
       - ./t0016Next/myapp:/app/src
-    depends_on:
-       - "api" 
+    # depends_on:
+    #    - "api" 
     ports:
       - "80:80"
 

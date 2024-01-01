@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo  } from 'react';
 import Select from 'react-select';
-import type { AllJoinData, Vtuber, Movie, KaraokeList } from '../types/singdata';
+import type {  ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '../types/vtuber_content';
 import { NumbersOutlined } from '@mui/icons-material';
 // import Creatable from 'react-select/creatable' 後々の更新で歌検索として実装したい
 import {domain} from '../../env'
@@ -38,7 +38,7 @@ type DropDownVtType ={
         let response = await fetch(`${domain.backendHost}/getvtuber`);
         let data = await response.json();
         console.log("API Response Vt:", data);
-        let havingVt = data.vtubers.map((vtuber:Vtuber) => ({
+        let havingVt = data.vtubers.map((vtuber:ReceivedVtuber) => ({
           value: vtuber.VtuberId,
           label: vtuber.VtuberName
         }));
@@ -114,7 +114,7 @@ export const DropDownMo = ({ selectedVtuber, onMovieSelect, onKaraokeClear }:Dro
           })
         let data = await response.json();
         console.log("API Response Mo:", data);
-        let havingMovie = data.movies.map((movie:Movie) => ({
+        let havingMovie = data.movies.map((movie:ReceivedMovie) => ({
           value: movie.MovieUrl,
           label: movie.MovieTitle
         }));
@@ -169,7 +169,7 @@ type DropDownKa = {
 
 // karaoke_list用
 export const DropDownKa = ({ selectedMovie, onKaraokeSelect }:DropDownKa) => {
-  // const [movies, setData2] = useState<KaraokeList[]>();
+  // const [movies, setData2] = useState<Karaoke[]>();
   const [karaokeListOptions, setMovieOptions] = useState([]);
   const [selectedKaraoke, setSelectedKaraoke] = useState(0);
 
@@ -190,8 +190,8 @@ export const DropDownKa = ({ selectedMovie, onKaraokeSelect }:DropDownKa) => {
           })
         let data = await response.json();
         console.log("API Response ka:", data);
-        let havingkaraokeList = data.karaoke_lists.map((karaoke:KaraokeList) => ({
-          value: karaoke.KaraokeListId,
+        let havingkaraokeList = data.karaoke_lists.map((karaoke:ReceivedKaraoke) => ({
+          value: karaoke.KaraokeId,
           label: karaoke.SongName
         }));
         setMovieOptions(havingkaraokeList);

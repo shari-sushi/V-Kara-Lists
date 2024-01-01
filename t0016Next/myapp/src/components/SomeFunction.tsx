@@ -1,4 +1,4 @@
-import type { AllJoinData, Vtuber, VtuberMovie } from '../types/singdata'; //type{}で型情報のみインポート
+import type { ReceivedKaraoke, ReceivedVtuber, ReceivedMovie } from '../types/vtuber_content'; //type{}で型情報のみインポート
 
 
 
@@ -14,7 +14,7 @@ export function generateRandomNumber(max: number) {
   return Math.floor(Math.random() * max - 1) + 1
 }
 
-export function shuffleArray(array: AllJoinData[]) {
+export function shuffleArray(array: ReceivedKaraoke[]) {
   if (array == null) {
     return [];
   }
