@@ -65,7 +65,7 @@ const columns: Column<ReceivedMovie>[] = [
         Header: '歌枠 (click to play the video)', accessor: 'MovieTitle',
         Cell: ({ row }: { row: { original: ReceivedMovie } }) => {
             const { handleMovieClickYouTube } = useContext(YouTubePlayerContext) //表示ページにyoutubeのカレントデータを渡す
-            return <Link href="" onClick={() => handleMovieClickYouTube(row.original.MovieUrl, 1)}>{row.original.MovieTitle}</Link>
+            return <Link href="" onClick={() => handleMovieClickYouTube(row.original.MovieUrl, 1)}><u>{row.original.MovieTitle}</u></Link>
         },
     },
     {

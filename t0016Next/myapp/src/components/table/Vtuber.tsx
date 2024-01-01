@@ -64,7 +64,7 @@ const columns: Column<ReceivedVtuber>[] = [
         Header: '紹介動画(click to play the video)', accessor: 'IntroMovieUrl',
         Cell: ({ row }: { row: { original: ReceivedVtuber } }) => {
             return <Link href={`https://${row.original.IntroMovieUrl}`} target="_blank" rel="noopener noreferrer">
-                {row.original.IntroMovieUrl && "新規タブで開く" || "未登録"}
+                {row.original.IntroMovieUrl && <u>{"YouTubeに見に行く"}</u> || "未登録"}
             </Link>
         },
     },
