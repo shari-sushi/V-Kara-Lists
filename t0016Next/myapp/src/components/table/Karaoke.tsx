@@ -69,7 +69,7 @@ const columns: Column<ReceivedKaraoke>[] = [
     Header: '曲名(Click to Listen)', accessor: 'SongName',
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
       const { handleMovieClickYouTube } = useContext(YouTubePlayerContext) //表示ページにyoutubeのカレントデータを渡す
-      return <Link href="" onClick={() => handleMovieClickYouTube(row.original.MovieUrl, ConvertStringToTime(row.original.SingStart))}>{row.original.SongName}</Link>
+      return <Link href="" onClick={() => handleMovieClickYouTube(row.original.MovieUrl, ConvertStringToTime(row.original.SingStart))}><u>{row.original.SongName}</u></Link>
     },
   },
   {
@@ -292,8 +292,7 @@ export function RandamTable({ posts }: KaraokeTableProps) {
                             item.MovieUrl,
                             ConvertStringToTime(item.SingStart));
                         }}>
-                          {item.SongName}
-                          {/* {item.SongName}, <br />{item.MovieUrl} <br /> {ConvertStringToTime(item.SingStart)} */}
+                          <u> {item.SongName}</u>
                         </Link>
                       </td>
                       <td>
