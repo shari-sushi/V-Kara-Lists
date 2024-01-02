@@ -5,7 +5,6 @@ import Link from 'next/link'
 import TableStyle from '../../styles/table.module.css'
 import { YouTubePlayerContext } from '@/pages/karaoke/sings';
 
-
 type VtuberTableProps = {
     posts: ReceivedVtuber[];
 };

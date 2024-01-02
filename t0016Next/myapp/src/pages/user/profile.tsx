@@ -12,22 +12,22 @@ import { domain } from '../../../env'
 
 type Mypage = {
     listener: User;
-    checkAuth: boolean;
+    isSignin: boolean;
 }
 
 
 
-const MyPage = ({ listener, checkAuth }: Mypage) => {
-    // if (checkAuth === false) {
+const MyPage = ({ listener, isSignin }: Mypage) => {
+    // if (isSignin === false) {
     //   const message = "ログインしてください"
     //   window.alert(message)
     //   alert(message);
     // }; Node.js開発環境だとダメっぽい？
-    // console.log("listener, checkAuth",listener, checkAuth)
+    // console.log("listener, isSignin",listener, isSignin)
     return (
         <div>
             <h2>会員情報</h2>
-            {listener && checkAuth ? (
+            {listener && isSignin ? (
                 <ul>
                     <li>メンバーID: {listener?.ListenerId}</li>
                     <li>メンバー名: {listener?.ListenerName} </li>
@@ -70,7 +70,7 @@ type ContextType = {
 export async function getServerSideProps(context: ContextType) {
     const rawCookie = context.req.headers.cookie;
     console.log("rawCookie=", rawCookie, "\n")
-    var CheckSignin = false
+    let isSignin = false
 
     // Cookieが複数ある場合に必要？
     // cookie.trim()   cookieの文字列の前後の全ての空白文字(スペース、タブ、改行文字等)を除去する
@@ -91,19 +91,19 @@ export async function getServerSideProps(context: ContextType) {
     try {
         const res = await axios.get(`${domain.backendHost}/v1/users/profile`, options);
         resData = res.data;
-        CheckSignin = true
+        isSignin = true
     } catch (error) {
         console.log("erroe in axios.get:", error);
         return {
             props: {
                 listener: resData,
-                checkAuth: CheckSignin,
+                isSignin: isSignin,
             }
         };
     }
     return {
         props: {
-            listener: resData, checkAuth: CheckSignin,
+            listener: resData, isSignin: isSignin,
         }
     }
 }

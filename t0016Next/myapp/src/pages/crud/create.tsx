@@ -1,37 +1,36 @@
-import { domain } from '../../../env'
+import { domain } from '@/../env'
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import Link from 'next/link';
 import Router, { useEffect, useState } from 'react';
 // import style from '../Youtube.module.css';
-import type { CrudDate, ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '../../types/vtuber_content'; //type{}で型情報のみインポート
+import type { CrudDate, ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '@/types/vtuber_content'; //type{}で型情報のみインポート
 // import DeleteButton from '../components/DeleteButton';
 import https from 'https';
-import axios from 'axios';
-import '@szhsin/react-menu/dist/index.css';
-import { DropDownVt, DropDownMo, DropDownKa } from '../../components/Dropdown';
-import { YouTubePlayer } from '../../components/YoutubePlayer'
-import { ConvertStringToTime, ExtractVideoId } from '../../components/Conversion'
-import { Header } from '../../components/layout/Layout'
-
+import axios, { AxiosRequestConfig } from 'axios';
+import { DropDownVtuber } from '@/components/dropDown/Vtuber';
+import { DropDownMovie } from '@/components/dropDown/Movie';
+import { DropDownKaraoke } from '@/components/dropDown/Karaoke';
+import { YouTubePlayer } from '@/components/YoutubePlayer'
+import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
+import { Header } from '@/components/layout/Layout'
 
 type TopPagePosts = {
-    //   alljoindata: AllJoinData[];
     vtubers: ReceivedVtuber[];
     vtubers_movies: ReceivedMovie[];
     vtubers_movies_karaokes: ReceivedKaraoke[];
 };
 type AllDatePage = {
     posts: TopPagePosts;
-    checkSignin: boolean;
+    isSignin: boolean;
 }
 
-export const AllDatePage = ({ posts, checkSignin }: AllDatePage) => {
+export const AllDatePage = ({ posts, isSignin }: AllDatePage) => {
     console.log("posts", posts)
-    const vtubers = posts.vtubers
-    const movies = posts.vtubers_movies
-    const karaokes = posts.vtubers_movies
-    if (!checkSignin) {
+    const vtubers = posts?.vtubers || {};
+    const movies = posts?.vtubers_movies
+    const karaokes = posts?.vtubers_movies_karaokes
+    if (!isSignin) {
         // トーストか、新規タグで開いてuseContextでrouterを引き継がせて、ログイン後に元のページに戻す処理をしたい
         // さらに言えば、決定ボタン押下時にログイン状態を確認する処理も入れたい
         return (
@@ -71,7 +70,7 @@ export const AllDatePage = ({ posts, checkSignin }: AllDatePage) => {
     useEffect(() => {
         if (selectedVtuber && selectedMovie && selectedKaraoke) {
             const foundMovies = karaokes.filter(karaoke => karaoke.MovieUrl === selectedMovie);
-            const foundKaraoke = foundMovies.find(foundMovie => foundMovie.KaraokeId === selectedKaraoke)
+            const foundKaraoke = karaokes.find(karaoke => karaoke.KaraokeId === selectedKaraoke)
 
             if (foundKaraoke) {
                 const foundSingStart = ConvertStringToTime(foundKaraoke.SingStart);
@@ -99,18 +98,13 @@ export const AllDatePage = ({ posts, checkSignin }: AllDatePage) => {
         handleMovieClear();
         //   setSelectedKaraoke(0); //20231026 後付け　これがあると消えなくなる
     };
-    useEffect(() => {
-        if (posts) {
-            //   console.log("checkSignin=", checkSignin)
-        }
-    }, [posts]);
 
     return (
-        <Header pageName="データベース登録">
+        <Header pageName="データベース登録" isSignin={isSignin}>
             <div>
                 <br />
 
-                <DropDownVt
+                <DropDownVtuber
                     posts={posts}
                     onVtuberSelect={setSelectedVtuber}
                     //onChangeにより、onVtuber~にoptiobn.valueが渡され、=setSelectedVtuberに。
@@ -118,13 +112,13 @@ export const AllDatePage = ({ posts, checkSignin }: AllDatePage) => {
                     onMovieClear={handleMovieClear}
                     onKaraokeClear={handleVtuberClear}
                 />
-                <DropDownMo
+                <DropDownMovie
                     posts={posts}
                     selectedVtuber={selectedVtuber}
                     onMovieSelect={setSelectedMovie}
                     onKaraokeClear={handleMovieClear}
                 />
-                <DropDownKa
+                <DropDownKaraoke
                     posts={posts}
                     selectedMovie={selectedMovie}
                     onKaraokeSelect={setSelectedKaraoke}
@@ -152,15 +146,15 @@ type selectedDate = {
 }
 
 export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke }: selectedDate) {
-    const vtubers = posts.vtubers
-    const movies = posts.vtubers_movies
-    const karaokes = posts.vtubers_movies
+    const vtubers = posts?.vtubers
+    const movies = posts?.vtubers_movies
+    const karaokes = posts?.vtubers_movies_karaokes
     const router = useRouter()
     const foundVtuber = vtubers?.find(vtuber => vtuber.VtuberId === selectedVtuber);
     const foundMovie = movies?.find(movie => movie.MovieUrl === selectedMovie);
     console.log("selectedMovie=", selectedMovie)
     const foundMovies = karaokes?.filter(karaoke => karaoke.MovieUrl === selectedMovie);
-    const foundKaraoke = foundMovies?.find(foundMovie => foundMovie.KaraokeId === selectedKaraoke)
+    const foundKaraoke = karaokes?.find(karaoke => karaoke.KaraokeId === selectedKaraoke)
     // console.log("foundKaraoke",foundKaraoke);
     // console.log("selectedKaraoke",selectedKaraoke);
 
@@ -345,31 +339,47 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
 }
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
-export async function getServerSideProps(context: { req: { headers: { cookie: string }; }; }) {
-    const httpsAgent = new https.Agent({ rejectUnauthorized: false });
-    let resData;
-    try {
-        const response = await axios.get(`${domain.backendHost}/vcontents/getalldata`, {
-            // 0019だとnullでサーバー起動、undefinedはダメだとエラーが出る。
-            httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
-        });
-        resData = response.data;
-    } catch (error) {
-        console.log("axios.getでerroe:", error)
-    }
+/////////////////////////////////////////////////////////////////////////////////////////
 
+type ContextType = {
+    req: { headers: { cookie?: string; }; };
+    res: {
+        writeHead: (statusCode: number, headers: Record<string, string>) => void;
+        end: () => void;
+    };
+};
+
+export async function getServerSideProps(context: ContextType) {
     const rawCookie = context.req.headers.cookie;
     const sessionToken = rawCookie?.split(';').find((cookie: string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];
-    let checkSignin = false
-    if (sessionToken) { checkSignin = true }
-    console.log("resData=", resData)
+    console.log("sessionToken", sessionToken)
+    let isSignin = false
+    if (sessionToken) {
+        isSignin = true
+    }
+    // サーバーの証明書が認証されない自己証明書でもHTTPSリクエストを継続する
+    const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+    const options: AxiosRequestConfig = {
+        headers: {
+            'Cache-Control': 'no-store', //cache(キャッシュ)を無効にする様だが、必要性理解してない
+            cookie: `auth-token=${sessionToken}`,
+        },
+        withCredentials: true,  //HttpヘッダーにCookieを含める
+        httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
+    };
+
+    let resData = null;
+    try {
+        const res = await axios.get(`${domain.backendHost}/vcontents/`, options);
+        resData = res.data;
+    } catch (error) {
+        console.log("erroe in axios.get:", error);
+    }
     return {
         props: {
             posts: resData,
-            checkSignin: checkSignin
+            isSignin: isSignin,
         }
-    };
+    }
 }
-
 export default AllDatePage;
