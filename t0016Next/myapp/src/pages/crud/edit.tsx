@@ -2,30 +2,32 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import Link from 'next/link';
 import Router, { useEffect, useState } from 'react';
-// import style from '../Youtube.module.css';
-import type { CrudDate, ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '../../types/vtuber_content'; //type{}で型情報のみインポート
+import style from '../Youtube.module.css';
+import type { CrudDate, ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '@/types/vtuber_content'; //type{}で型情報のみインポート
 // import DeleteButton from '../components/DeleteButton';
 import https from 'https';
-import axios from 'axios';
-import '@szhsin/react-menu/dist/index.css';
-import { DropDownVt, DropDownMo, DropDownKa } from '../../components/Dropdown';
-import { YouTubePlayer } from '../../components/YoutubePlayer'
-import { ConvertStringToTime, ExtractVideoId } from '../../components/Conversion'
-import { domain } from '../../../env'
+import axios, { AxiosRequestConfig } from 'axios';
+import { DropDownVtuber } from '@/components/dropDown/Vtuber';
+import { DropDownMovie } from '@/components/dropDown/Movie';
+import { DropDownKaraoke } from '@/components/dropDown/Karaoke';
+import { YouTubePlayer } from '@/components/YoutubePlayer'
+import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
+import { domain } from '@/../env'
 
 type TopPagePosts = {
-    //   alljoindata: AllJoinData[];
     vtubers: ReceivedVtuber[];
-    movies: ReceivedMovie[];
-    karaokes: ReceivedKaraoke[];
-    vtubers_and_movies: ReceivedMovie[];
+    vtubers_movies: ReceivedMovie[];
+    vtubers_movies_karaokes: ReceivedKaraoke[];
 };
-type AllDatePage = {
+type EditPageProps = {
     posts: TopPagePosts;
-    checkSignin: boolean;
+    isSignin: boolean;
 }
 
-export const AllDatePage = ({ posts, checkSignin }: AllDatePage) => {
+export const EditPage = ({ posts, isSignin }: EditPageProps) => {
+    const vtubers = posts?.vtubers
+    const movies = posts?.vtubers_movies
+    const karaokes = posts?.vtubers_movies_karaokes
     const [selectedVtuber, setSelectedVtuber] = useState<number>(0);
     const [selectedMovie, setSelectedMovie] = useState<string>("");
     const [selectedKaraoke, setSelectedKaraoke] = useState<number>(0);
@@ -39,7 +41,7 @@ export const AllDatePage = ({ posts, checkSignin }: AllDatePage) => {
             // setKaraokeStart(4)
         }
         if (selectedVtuber && selectedMovie) {
-            const foundMovie = posts.movies.find(movies => movies.MovieUrl === selectedMovie);
+            const foundMovie = movies.find(movies => movies.MovieUrl === selectedMovie);
             // console.log("foundMovieUrl",foundMovie?.MovieUrl);
             if (foundMovie) {
                 const foundYoutubeId = ExtractVideoId(foundMovie.MovieUrl);
@@ -48,13 +50,13 @@ export const AllDatePage = ({ posts, checkSignin }: AllDatePage) => {
                 //   console.log("foundYoutubeId", foundYoutubeId)
             }
         }
-    }, [selectedVtuber, selectedMovie, posts.movies]);
+    }, [selectedVtuber, selectedMovie, movies]);
 
     useEffect(() => {
         if (selectedVtuber && selectedMovie && selectedKaraoke) {
-            const foundMovies = posts.karaokes.filter(karaoke => karaoke.MovieUrl === selectedMovie);
+            const foundMovies = karaokes.filter(karaoke => karaoke.MovieUrl === selectedMovie);
             const foundKaraoke = foundMovies.find(foundMovie => foundMovie.KaraokeId === selectedKaraoke)
-            // console.log("posts.karaokes", posts.karaokes) //karaoke_listsテーブルの全データをオブジェクトの配列で
+            // console.log("posts.karaokes",karaokes) //karaoke_listsテーブルの全データをオブジェクトの配列で
             // console.log("foundMovies", foundMovies)     //どういつURLのオブジェクトの配列
             // console.log("foundKaraoke", foundKaraoke);  //karaokeの配列
 
@@ -64,7 +66,7 @@ export const AllDatePage = ({ posts, checkSignin }: AllDatePage) => {
                 //   console.log("foundSingStart", foundSingStart)
             }
         }
-    }, [selectedVtuber, selectedMovie, selectedKaraoke, posts.karaokes]);
+    }, [selectedVtuber, selectedMovie, selectedKaraoke, karaokes]);
 
     // 親選択クリア時に子もクリアするuseEffect 2つ
     useEffect(() => {
@@ -85,14 +87,14 @@ export const AllDatePage = ({ posts, checkSignin }: AllDatePage) => {
     };
     useEffect(() => {
         if (posts) {
-            //   console.log("checkSignin=", checkSignin)
+            //   console.log("isSignin=", isSignin)
         }
     }, [posts]);
 
     return (
         <div>
             <h1>データベース編集</h1>
-            <DropDownVt
+            <DropDownVtuber
                 posts={posts}
                 onVtuberSelect={setSelectedVtuber}
                 //onChangeにより、onVtuber~にoptiobn.valueが渡され、=setSelectedVtuberに。
@@ -100,14 +102,14 @@ export const AllDatePage = ({ posts, checkSignin }: AllDatePage) => {
                 onMovieClear={handleMovieClear}
                 onKaraokeClear={handleVtuberClear}
             />
-            <DropDownMo
+            <DropDownMovie
                 posts={posts}
                 selectedVtuber={selectedVtuber}
                 onMovieSelect={setSelectedMovie} //このファイルではstringになってる
                 onKaraokeClear={handleMovieClear}
             />
-            <DropDownKa
-                posts={posts.karaokes}
+            <DropDownKaraoke
+                posts={posts}
                 selectedMovie={selectedMovie}
                 onKaraokeSelect={setSelectedKaraoke}
             />
@@ -122,19 +124,20 @@ export const AllDatePage = ({ posts, checkSignin }: AllDatePage) => {
         </div>
     )
 };
-///////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
 
-type selectedDate = {
-    // alljoindata: AllJoinData[];
+type SelectedDate = {
     posts: TopPagePosts;
     selectedVtuber: number;
     selectedMovie: string;
     selectedKaraoke: number;
 }
 
-export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke }: selectedDate) {
-    const router = useRouter()
-    var defaultValues: CrudDate = {
+export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke }: SelectedDate) {
+    const vtubers = posts?.vtubers
+    const movies = posts?.vtubers_movies
+    const karaokes = posts?.vtubers_movies_karaokes
+    let defaultValues: CrudDate = {
         VtuberId: selectedVtuber,//入力不可とする
         VtuberName: "",
         VtuberKana: "",
@@ -146,10 +149,9 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
         SongName: "",
     }
 
-    // type  CrudDate:
-    const foundVtuber = posts?.vtubers?.find(vtuber => vtuber.VtuberId === selectedVtuber);
-    const foundMovie = posts?.movies?.find(movie => movie.MovieUrl === selectedMovie);
-    const foundMovies = posts?.karaokes?.filter(karaoke => karaoke.MovieUrl === selectedMovie);
+    const foundVtuber = vtubers?.find(vtuber => vtuber.VtuberId === selectedVtuber);
+    const foundMovie = movies?.find(movie => movie.MovieUrl === selectedMovie);
+    const foundMovies = karaokes?.filter(karaoke => karaoke.MovieUrl === selectedMovie);
     const foundKaraoke = foundMovies?.find(foundMovie => foundMovie.KaraokeId === selectedKaraoke)
     console.log("selectedVtuber=", selectedVtuber)
     console.log("selectedMovie=", selectedMovie)
@@ -188,7 +190,7 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
     }
 
     const axiosClient = axios.create({
-        baseURL: "https://localhost:8080",
+        baseURL: `${domain.backendHost}/vcontents`,
         withCredentials: true,
         headers: {
             'Content-Type': 'application/json'
@@ -348,34 +350,48 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
 }
 
 
+/////////////////////////////////////////////////////////////////////////////////////////
 
-export async function getServerSideProps(context: { req: { headers: { cookie: any; }; }; }) {
-    const httpsAgent = new https.Agent({
-        rejectUnauthorized: false
-    });
-    let resData;
-    try {
-        const response = await axios.get(`${domain.backendHost}/vcontents/getalldata`, {
-            // 0019だとnullでサーバー起動、undefinedはダメだとエラーが出る。
-            httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
-        });
-        resData = response.data;
-    } catch (error) {
-        console.log("axios.getでerroe:", error)
-    }
+type ContextType = {
+    req: { headers: { cookie?: string; }; };
+    res: {
+        writeHead: (statusCode: number, headers: Record<string, string>) => void;
+        end: () => void;
+    };
+};
 
-    // Signinしていればtrueを返す
+export async function getServerSideProps(context: ContextType) {
     const rawCookie = context.req.headers.cookie;
     const sessionToken = rawCookie?.split(';').find((cookie: string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];
-    var CheckSignin = false
-    if (sessionToken) { CheckSignin = true }
+    console.log("sessionToken", sessionToken)
+    let isSignin = false
+    if (sessionToken) {
+        isSignin = true
+    }
+    // サーバーの証明書が認証されない自己証明書でもHTTPSリクエストを継続する
+    const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+    const options: AxiosRequestConfig = {
+        headers: {
+            'Cache-Control': 'no-store', //cache(キャッシュ)を無効にする様だが、必要性理解してない
+            cookie: `auth-token=${sessionToken}`,
+        },
+        withCredentials: true,  //HttpヘッダーにCookieを含める
+        httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
+    };
 
+    let resData = null;
+    try {
+        const res = await axios.get(`${domain.backendHost}/vcontents/`, options);
+        resData = res.data;
+    } catch (error) {
+        console.log("erroe in axios.get:", error);
+    }
     return {
         props: {
             posts: resData,
-            checkSignin: CheckSignin
+            isSignin: isSignin,
         }
-    };
+    }
 }
 
-export default AllDatePage;
+export default EditPage;

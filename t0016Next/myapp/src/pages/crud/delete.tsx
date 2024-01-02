@@ -1,31 +1,37 @@
-import { useForm } from "react-hook-form";
 import { useRouter } from "next/router";
 import Link from 'next/link';
 import Router, { useEffect, useState } from 'react';
-// import style from '../Youtube.module.css';
-import type { CrudDate, ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '../../types/vtuber_content'; //type{}で型情報のみインポート
+import style from '../Youtube.module.css';
+import type { CrudDate, ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '@/types/vtuber_content'; //type{}で型情報のみインポート
 // import DeleteButton from '../components/DeleteButton';
 import https from 'https';
-import axios from 'axios';
-import '@szhsin/react-menu/dist/index.css';
-import { DropDownVt, DropDownMo, DropDownKa } from '../../components/Dropdown';
-import { YoutubePlayer } from '../../components/YoutubePlayer'
-import { ConvertStringToTime, ExtractVideoId } from '../../components/Conversion'
-import { domain } from '../../../env'
+import axios, { AxiosRequestConfig } from 'axios';
+import { DropDownVtuber } from '@/components/dropDown/Vtuber';
+import { DropDownMovie } from '@/components/dropDown/Movie';
+import { DropDownKaraoke } from '@/components/dropDown/Karaoke';
+import { YouTubePlayer } from '@/components/YoutubePlayer'
+import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
+import { domain } from '@/../env'
 
+//////////////////////////////////////////
+//////////////////////////////////////////
+/////ボタン化したほうが良いのでは？///////
+//////////////////////////////////////////
+//////////////////////////////////////////
 type TopPagePosts = {
-    //   alljoindata: AllJoinData[];
     vtubers: ReceivedVtuber[];
-    movies: ReceivedMovie[];
-    karaokes: ReceivedKaraoke[];
-    vtubers_and_movies: ReceivedMovie[];
+    vtubers_movies: ReceivedMovie[];
+    vtubers_movies_karaokes: ReceivedKaraoke[];
 };
-type AllDatePage = {
+type DeletePageProps = {
     posts: TopPagePosts;
-    checkSignin: boolean;
+    isSignin: boolean;
 }
 
-export const AllDatePage = ({ posts, checkSignin }: AllDatePage) => {
+export const DeletePage = ({ posts, isSignin }: DeletePageProps) => {
+    const vtubers = posts.vtubers
+    const movies = posts.vtubers_movies
+    const karaokes = posts.vtubers_movies_karaokes
     const [selectedVtuber, setSelectedVtuber] = useState<number>(0);
     const [selectedMovie, setSelectedMovie] = useState<string>("");
     const [selectedKaraoke, setSelectedKaraoke] = useState<number>(0);
@@ -39,32 +45,32 @@ export const AllDatePage = ({ posts, checkSignin }: AllDatePage) => {
             // setKaraokeStart(4)
         }
         if (selectedVtuber && selectedMovie) {
-            const foundMovie = posts.movies.find(movies => movies.Movie.MovieUrl === selectedMovie);
+            const foundMovie = movies.find(movies => movies.MovieUrl === selectedMovie);
             // console.log("foundMovieUrl",foundMovie?.MovieUrl);
             if (foundMovie) {
-                const foundYoutubeId = ExtractVideoId(foundMovie.Movie.MovieUrl);
+                const foundYoutubeId = ExtractVideoId(foundMovie.MovieUrl);
                 setfoundMovie(foundYoutubeId);
                 setKaraokeStart(1)
                 //   console.log("foundYoutubeId", foundYoutubeId)
             }
         }
-    }, [selectedVtuber, selectedMovie, posts.movies]);
+    }, [selectedVtuber, selectedMovie, movies]);
 
     useEffect(() => {
         if (selectedVtuber && selectedMovie && selectedKaraoke) {
-            const foundMovies = posts.karaokes.filter(karaoke => karaoke.Movie.MovieUrl === selectedMovie);
-            const foundKaraoke = foundMovies.find(foundMovie => foundMovie.Karaoke.KaraokeId === selectedKaraoke)
-            // console.log("posts.karaokes", posts.karaokes) //karaoke_listsテーブルの全データをオブジェクトの配列で
+            const foundMovies = movies.filter(karaoke => karaoke.MovieUrl === selectedMovie);
+            const foundKaraoke = karaokes.find(karaoke => karaoke.KaraokeId === selectedKaraoke)
+            // console.log("movies", movies) //karaoke_listsテーブルの全データをオブジェクトの配列で
             // console.log("foundMovies", foundMovies)     //どういつURLのオブジェクトの配列
             // console.log("foundKaraoke", foundKaraoke);  //karaokeの配列
 
             if (foundKaraoke) {
-                const foundSingStart = ConvertStringToTime(foundKaraoke.Karaoke.SingStart);
+                const foundSingStart = ConvertStringToTime(foundKaraoke.SingStart);
                 setKaraokeStart(foundSingStart);
                 //   console.log("foundSingStart", foundSingStart)
             }
         }
-    }, [selectedVtuber, selectedMovie, selectedKaraoke, posts.karaokes]);
+    }, [selectedVtuber, selectedMovie, selectedKaraoke, movies]);
 
     // 親選択クリア時に子もクリアするuseEffect 2つ
     useEffect(() => {
@@ -85,14 +91,14 @@ export const AllDatePage = ({ posts, checkSignin }: AllDatePage) => {
     };
     useEffect(() => {
         if (posts) {
-            //   console.log("checkSignin=", checkSignin)
+            //   console.log("isSignin=", isSignin)
         }
     }, [posts]);
 
     return (
         <div>
             <h1>データベース削除</h1>
-            <DropDownVt
+            <DropDownVtuber
                 posts={posts}
                 onVtuberSelect={setSelectedVtuber}
                 //onChangeにより、onVtuber~にoptiobn.valueが渡され、=setSelectedVtuberに。
@@ -100,18 +106,18 @@ export const AllDatePage = ({ posts, checkSignin }: AllDatePage) => {
                 onMovieClear={handleMovieClear}
                 onKaraokeClear={handleVtuberClear}
             />
-            <DropDownMo
+            <DropDownMovie
                 posts={posts}
                 selectedVtuber={selectedVtuber}
                 onMovieSelect={setSelectedMovie} //このファイルではstringになってる
                 onKaraokeClear={handleMovieClear}
             />
-            <DropDownKa
+            <DropDownKaraoke
                 posts={posts}
                 selectedMovie={selectedMovie}
                 onKaraokeSelect={setSelectedKaraoke}
             />
-            <YoutubePlayer videoId={foundMovie} start={foundKaraokeStart} />
+            <YouTubePlayer videoId={foundMovie} start={foundKaraokeStart} />
             <Link href="/"><button>TOPへ</button></Link>
             <DeleteForm
                 posts={posts}
@@ -122,39 +128,9 @@ export const AllDatePage = ({ posts, checkSignin }: AllDatePage) => {
         </div>
     )
 };
-///////////////////////////////////////////////////////////////////////////////////////////////////
-export async function getServerSideProps(context: { req: { headers: { cookie: any; }; }; }) {
-    const httpsAgent = new https.Agent({
-        rejectUnauthorized: false
-    });
-    let resData;
-    try {
-        const response = await axios.get(`${domain.backendHost}/vcontents/getalldata`, {
-            // 0019だとnullでサーバー起動、undefinedはダメだとエラーが出る。
-            httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
-        });
-        resData = response.data;
-    } catch (error) {
-        console.log("axios.getでerroe:", error)
-    }
 
-    // Signinしていればtrueを返す
-    const rawCookie = context.req.headers.cookie;
-    const sessionToken = rawCookie?.split(';').find((cookie: string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];
-    var CheckSignin = false
-    if (sessionToken) { CheckSignin = true }
-
-    return {
-        props: {
-            posts: resData,
-            checkSignin: CheckSignin
-        }
-    };
-}
-
-export default AllDatePage;
-
-/////////////////////////////////////////////////////////////////////////////////////
+export default DeletePage;
+/////////////////////////////////////////////////////////////////////////////////////////
 type selectedDate = {
     // alljoindata: AllJoinData[];
     posts: TopPagePosts;
@@ -164,37 +140,32 @@ type selectedDate = {
 }
 
 export function DeleteForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke }: selectedDate) {
+    const vtubers = posts?.vtubers
+    const movies = posts?.vtubers_movies
+    const karaokes = posts?.vtubers_movies_karaokes
     const router = useRouter()
-    var defaultValues: CrudDate = {
-        VtuberId: selectedVtuber,//入力不可とする
+    let defaultValues: CrudDate = {
+        VtuberId: selectedVtuber, //入力不可とする
         VtuberName: "",
         VtuberKana: "",
         IntroMovieUrl: "",
         MovieUrl: "",
         MovieTitle: "",
-        KaraokeId: selectedKaraoke,//入力不可とする
+        KaraokeId: selectedKaraoke, //入力不可とする
         SingStart: "",
         SongName: "",
     }
 
-    const foundVtuber = posts?.vtubers?.find(vtuber => vtuber.Vtuber.VtuberId === selectedVtuber);
-    const foundMovie = posts?.movies?.find(movie => movie.Movie.MovieUrl === selectedMovie);
-    const foundMovies = posts?.karaokes?.filter(karaoke => karaoke.Karaoke.MovieUrl === selectedMovie); //movieの配列
-    const foundKaraoke = foundMovies?.find(foundMovie => foundMovie.Karaoke.KaraokeId === selectedKaraoke)
-    // console.log("selectedVtuber=", selectedVtuber)
-    // console.log("selectedMovie=", selectedMovie)
-    // console.log("selectedKaraoke",selectedKaraoke);
-    // console.log("foundVtuber",foundVtuber);
-    // console.log("foundMovie",foundMovie);
-    // console.log("foundMovies",foundMovies);
-    // console.log("foundKaraoke",foundKaraoke);
+    const foundVtuber = vtubers.find(vtuber => vtuber.VtuberId === selectedVtuber);
+    const foundMovie = movies.find(movie => movie.MovieUrl === selectedMovie);
+    const foundMovies = karaokes.filter(karaoke => karaoke.MovieUrl === selectedMovie);
+    const foundKaraoke = karaokes.find(karaoke => karaoke.KaraokeId === selectedKaraoke)
 
     const [crudContentType, setCrudContentType] = useState<string>("")
 
     type DeleteVtuber = {
         VtuberId: number;
         VtuberName: string | undefined;
-
     }
     type DeleteMovie = {
         VtuberId: number | undefined;
@@ -206,10 +177,8 @@ export function DeleteForm({ posts, selectedVtuber, selectedMovie, selectedKarao
         SongName: string;
     }
 
-    // const reqBody:any={}
-
     const axiosClient = axios.create({
-        baseURL: "https://localhost:8080/v1",
+        baseURL: `${domain.backendHost}/vcontents`,
         withCredentials: true,
         headers: {
             'Content-Type': 'application/json'
@@ -220,11 +189,11 @@ export function DeleteForm({ posts, selectedVtuber, selectedMovie, selectedKarao
         console.log("決定押下")
         console.log("choiceCrudType=", crudContentType, "\n selectedVtuber=",
             selectedVtuber, "\n selectedKaraoke", selectedKaraoke);
-        if (crudContentType === "vtuber" && foundVtuber?.Vtuber.VtuberName) {
+        if (crudContentType === "vtuber" && foundVtuber?.VtuberName) {
             try {
                 const reqBody: DeleteVtuber = {
                     VtuberId: selectedVtuber,        //deleteで必須
-                    VtuberName: foundVtuber.Vtuber.VtuberName,   //deleteで必須
+                    VtuberName: foundVtuber.VtuberName,   //deleteで必須
                 };
                 const response = await axiosClient.delete("/delete/vtuber", {
                     data: reqBody,
@@ -235,11 +204,11 @@ export function DeleteForm({ posts, selectedVtuber, selectedMovie, selectedKarao
             } catch (err) {
                 console.error(err);
             }
-        } else if (crudContentType === "movie" && foundMovie?.Movie.MovieUrl) {
+        } else if (crudContentType === "movie" && foundMovie?.MovieUrl) {
             try {
                 const reqBody: DeleteMovie = {
                     VtuberId: selectedVtuber,     //deleteで必須
-                    MovieUrl: foundMovie.Movie.MovieUrl,  //deleteで必須
+                    MovieUrl: foundMovie.MovieUrl,  //deleteで必須
                 };
                 const response = await axiosClient.delete("/delete/movie", {
                     data: reqBody,
@@ -250,12 +219,12 @@ export function DeleteForm({ posts, selectedVtuber, selectedMovie, selectedKarao
             } catch (err) {
                 console.error(err);
             }
-        } else if (crudContentType === "karaoke" && foundKaraoke?.Karaoke.SongName) {
+        } else if (crudContentType === "karaoke" && foundKaraoke?.SongName) {
             try {
                 const reqBody: DeleteKaraoke = {
                     MovieUrl: selectedMovie,      //deleteで必須
                     KaraokeId: selectedKaraoke,    //deleteで必須
-                    SongName: foundKaraoke.Karaoke.SongName,  //deleteで必須
+                    SongName: foundKaraoke.SongName,  //deleteで必須
                 };
                 const response = await axiosClient.delete("/delete/karaoke", {
                     data: reqBody,
@@ -285,23 +254,23 @@ export function DeleteForm({ posts, selectedVtuber, selectedMovie, selectedKarao
             <br /><br />
             {crudContentType === "vtuber" &&
                 <div>
-                    VTuber：{foundVtuber?.Vtuber.VtuberName}<br />
+                    VTuber：{foundVtuber?.VtuberName}<br />
                     &nbsp;&nbsp; の登録を削除しまか？
                 </div>}
             {crudContentType === "movie" &&
                 <div>
-                    VTuber：{foundVtuber?.Vtuber.VtuberName && foundVtuber?.Vtuber.VtuberName}<br />
+                    VTuber：{foundVtuber?.VtuberName && foundVtuber?.VtuberName}<br />
                     の<br />
-                    歌枠動画：{foundMovie?.Movie.MovieTitle}
+                    歌枠動画：{foundMovie?.MovieTitle}
                     を削除しますか？
                 </div>}
             {crudContentType === "karaoke" &&
                 <div>
-                    VTuber：{foundVtuber?.Vtuber.VtuberName && foundVtuber?.Vtuber.VtuberName}<br />
-                    歌枠動画：{foundMovie?.Movie.MovieTitle}<br />
+                    VTuber：{foundVtuber?.VtuberName && foundVtuber?.VtuberName}<br />
+                    歌枠動画：{foundMovie?.MovieTitle}<br />
                     の<br />
-                    曲名：{foundKaraoke?.Karaoke.SongName}<br />
-                    (再生時間：{foundKaraoke?.Karaoke.SingStart})<br />
+                    曲名：{foundKaraoke?.SongName}<br />
+                    (再生時間：{foundKaraoke?.SingStart})<br />
                     &nbsp;&nbsp; の登録を削除します？
                 </div>}<br />
             {crudContentType &&
@@ -310,4 +279,48 @@ export function DeleteForm({ posts, selectedVtuber, selectedMovie, selectedKarao
                 </div>}
         </div>
     );
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+
+type ContextType = {
+    req: { headers: { cookie?: string; }; };
+    res: {
+        writeHead: (statusCode: number, headers: Record<string, string>) => void;
+        end: () => void;
+    };
+};
+
+export async function getServerSideProps(context: ContextType) {
+    const rawCookie = context.req.headers.cookie;
+    const sessionToken = rawCookie?.split(';').find((cookie: string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];
+    console.log("sessionToken", sessionToken)
+    let isSignin = false
+    if (sessionToken) {
+        isSignin = true
+    }
+    // サーバーの証明書が認証されない自己証明書でもHTTPSリクエストを継続する
+    const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+    const options: AxiosRequestConfig = {
+        headers: {
+            'Cache-Control': 'no-store', //cache(キャッシュ)を無効にする様だが、必要性理解してない
+            cookie: `auth-token=${sessionToken}`,
+        },
+        withCredentials: true,  //HttpヘッダーにCookieを含める
+        httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
+    };
+
+    let resData = null;
+    try {
+        const res = await axios.get(`${domain.backendHost}/vcontents/`, options);
+        resData = res.data;
+    } catch (error) {
+        console.log("erroe in axios.get:", error);
+    }
+    return {
+        props: {
+            posts: resData,
+            isSignin: isSignin,
+        }
+    }
 }
