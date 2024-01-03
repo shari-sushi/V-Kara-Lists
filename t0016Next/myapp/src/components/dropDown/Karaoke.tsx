@@ -19,7 +19,7 @@ type DropDownKaraokeProps = {
 
 // karaoke_list用
 export const DropDownKaraoke = ({ posts, selectedMovie, onKaraokeSelect }:DropDownKaraokeProps) => {
-  const karaokes = posts?.vtubers_movies_karaokes
+  const karaokes = posts?.vtubers_movies_karaokes || [{}as ReceivedKaraoke]
   // const [movies, setData2] = useState<Karaoke[]>();
   const [karaokeOptions, setKaraokeOptions] = useState<Options[]>([]);
   const [selectedKaraoke, setSelectedKaraoke] = useState<number>(0);
