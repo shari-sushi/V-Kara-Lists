@@ -12,7 +12,7 @@ import { DropDownMovie } from '@/components/dropDown/Movie';
 import { DropDownKaraoke } from '@/components/dropDown/Karaoke';
 import { YouTubePlayer } from '@/components/YoutubePlayer'
 import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
-import { GestLogin, } from '@/components/authButton'
+import { GestLogin, } from '@/components/button/User'
 import {
     ValidateEditVtuberName,
     ValidateEditVtuberKana,

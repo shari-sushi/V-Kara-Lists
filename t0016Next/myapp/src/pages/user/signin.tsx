@@ -1,16 +1,11 @@
 import React,{ useState } from "react";
 import { useForm } from 'react-hook-form';
-import { useRouter } from "next/router";
-import type { LoginUser as LoginListener } from "../../types/user";
 import Link from 'next/link';
-import {Checkbox} from '../../components/SomeFunction';
-import {domain} from '../../../env'
+import { useRouter } from "next/router";
 
-
-
-// var1.5~2.0でやりたい
-// 送信する前にバリデーションチェック　
-// https://yutaro-blog.net/2021/10/22/react-state-tips/
+import {domain} from '@/../env'
+import type { LoginUser as LoginListener } from "@/types/user";
+import {Checkbox} from '@/components/SomeFunction';
 
 export function SigninPage() {
   const defaultValues: LoginListener = {
