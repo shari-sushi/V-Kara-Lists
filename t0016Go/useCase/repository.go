@@ -32,9 +32,9 @@ type VtuberContentRepository interface {
 	// // DeleteSong() (domain.OriginalSong, error) //実装予定
 
 	// データ登録者の確認lId
-	VerifyUserModifyVtuber(int, domain.Vtuber) (bool, error)   //
-	VerifyUserModifyMovie(int, domain.Movie) (bool, error)     //
-	VerifyUserModifyKaraoke(int, domain.Karaoke) (bool, error) //
+	VerifyUserModifyVtuber(domain.ListenerId, domain.Vtuber) (bool, error)   //
+	VerifyUserModifyMovie(domain.ListenerId, domain.Movie) (bool, error)     //
+	VerifyUserModifyKaraoke(domain.ListenerId, domain.Karaoke) (bool, error) //
 
 }
 

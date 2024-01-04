@@ -5,7 +5,7 @@ import { GestLogin, GetLogout } from '../authButton'
 import { usePathname, useSearchParams, useParams } from 'next/navigation';
 // import { styles } from '../components/globals'
 
-export function Header({ pageName, children, checkSignin }) {
+export function Header({ pageName, children, isSignin }) {
     const pathName = usePathname();
     console.log(pathName)
 
@@ -19,16 +19,16 @@ export function Header({ pageName, children, checkSignin }) {
                 <h1 className={styles.title}>{pageName}   &nbsp;</h1>
                 <Link href="/test"><button >テスト</button></Link> &nbsp;
                 <Link href="/"><button >TOP</button></Link> &nbsp;
-                {checkSignin &&
+                <Link href="/karaoke/sings"><button >歌</button></Link> &nbsp;
+                {isSignin &&
                     <>
-                        <Link href="/karaoke/sings"><button >歌</button></Link> &nbsp;
                         <Link href="/crud/create"><button >CREATE</button></Link> &nbsp;
                         <Link href="/crud/edit"><button >EDIT</button></Link> &nbsp;
                         <Link href="/crud/delete"><button >DALETE</button></Link> &nbsp;
                     </>
                 }
                 <br />
-                {!checkSignin &&
+                {!isSignin &&
                     <>
                         <Link href="/user/signup"><button style={{ background: 'brown' }}>
                             会員登録</button>
@@ -39,7 +39,7 @@ export function Header({ pageName, children, checkSignin }) {
                         <GestLogin />
                     </>
                 } &nbsp;
-                {checkSignin &&
+                {isSignin &&
                     <>
                         <Link href="/user/mypage"><button style={{ background: 'brown' }}>
                             マイページ</button>

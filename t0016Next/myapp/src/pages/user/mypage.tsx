@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react"
 import https from 'https';
-import axios from 'axios';
-import { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import { domain } from '../../../env'
 import { Header } from "@/components/layout/Layout";
 import type { ReceivedKaraoke, ReceivedVtuber, ReceivedMovie } from '../../types/vtuber_content'; //type{}で型情報のみインポート
@@ -52,7 +51,7 @@ const MyPage = ({ data, isSignin }: Mypage) => {
   };
 
   return (
-    <Header pageName={"MyPage"} checkSignin={isSignin}>
+    <Header pageName={"MyPage"} isSignin={isSignin}>
       <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube, currentMovieId, setCurrentMovieId, start, setStart }}>
         <div>
           <YouTubePlayer videoId={currentMovieId} start={start} />
@@ -85,7 +84,7 @@ const MyPage = ({ data, isSignin }: Mypage) => {
 
 export default MyPage;
 
-
+//////////////////////////////////////////////////////
 type ContextType = {
   req: { headers: { cookie?: string; }; };
   res: {
@@ -97,7 +96,7 @@ type ContextType = {
 export async function getServerSideProps(context: ContextType) {
   const rawCookie = context.req.headers.cookie;
   console.log("rawCookie=", rawCookie, "\n")
-  var isSignin = false
+  let isSignin = false
 
   // Cookieが複数ある場合に必要？
   // cookie.trim()   cookieの文字列の前後の全ての空白文字(スペース、タブ、改行文字等)を除去する

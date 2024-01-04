@@ -7,6 +7,7 @@ import { ExtractVideoId } from "@/components/Conversion"
 import axios from 'axios';
 import { domain } from '../../../env'
 import { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke, FavoriteMovie } from "@/types/vtuber_content";
+import { ToDeleteContext } from '@/pages/crud/delete'
 
 
 // topページ用
@@ -128,35 +129,6 @@ export function MovieTableForMyPage({ data }: MovieTableForMyPageProps) {
     );
 }
 
-
-const columnsForMyPage: Column<ReceivedMovie>[] = [
-    { Header: 'VTuber', accessor: 'VtuberName' },
-    {
-        Header: '歌枠 (click to play the video)', accessor: 'MovieTitle',
-        Cell: ({ row }: { row: { original: ReceivedMovie } }) => {
-            const { handleMovieClickYouTube } = useContext(YouTubePlayerContext) //表示ページにyoutubeのカレントデータを渡す
-
-            return <Link href="" onClick={() => handleMovieClickYouTube(row.original.MovieUrl, 1)}>{row.original.MovieTitle}</Link>
-        },
-    },
-    {
-        Header: '歌枠 (click to play the video)', accessor: 'MovieTitle',
-        Cell: ({ row }: { row: { original: ReceivedMovie } }) => {
-            const { handleMovieClickYouTube } = useContext(YouTubePlayerContext) //表示ページにyoutubeのカレントデータを渡す
-
-            return <Link href="" onClick={() => handleMovieClickYouTube(row.original.MovieUrl, 1)}>{row.original.MovieTitle}</Link>
-        },
-    },
-    {
-        Header: 'いいね',
-        accessor: 'Count',
-        Cell: ({ row }: { row: { original: ReceivedMovie } }) => {
-            return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} movie={row.original.MovieUrl} />;
-        }
-    }
-];
-
-
 type FavoriteColumn = {
     count: number
     isFav: boolean
@@ -205,3 +177,85 @@ function FavoriteColumn({ count, isFav, movie }: FavoriteColumn) {
         </>
     );
 };
+//////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+// topページ用
+type MovieDeleteTableProps = {
+    posts: ReceivedMovie[];
+};
+
+export function MovieDeleteTable({ posts }: MovieDeleteTableProps) {
+    const data = posts || {}
+    console.log("MovieTable.data", data)
+    const {
+        getTableProps,
+        getTableBodyProps,
+        headerGroups,
+        rows,
+        prepareRow,
+    } = useTable({ columns: deleteColumns, data }, useSortBy, useRowSelect);
+
+    return (
+        <>
+            <table {...getTableProps()} className={TableStyle.table}>
+                <thead className={TableStyle.th}>
+                    {headerGroups.map((headerGroup) => (
+                        <tr {...headerGroup.getHeaderGroupProps()}>
+                            {headerGroup.headers.map((column) => (
+                                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                    {column.render('Header')}
+                                    <span>
+                                        {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
+                                    </span>
+                                </th>
+                            ))}
+                        </tr>
+                    ))}
+                </thead>
+                <tbody {...getTableBodyProps()}>
+                    {rows.map((row, i) => {
+                        prepareRow(row);
+                        return (
+                            <tr {...row.getRowProps()}>
+                                {row.cells.map((cell) => {
+                                    return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                })}
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
+        </>
+    );
+}
+
+const deleteColumns: Column<ReceivedMovie>[] = [
+    { Header: 'VTuber', accessor: 'VtuberName' },
+    {
+        Header: '歌枠 (click to play the video)', accessor: 'MovieTitle',
+        Cell: ({ row }: { row: { original: ReceivedMovie } }) => {
+            const { setCurrentVideoId, setCurrentStart } = useContext(ToDeleteContext);
+            const clickHandler = (url: string) => {
+                setCurrentVideoId(ExtractVideoId(url));
+                setCurrentStart(1);
+            }
+            return <Link href="" onClick={() => clickHandler(row.original.MovieUrl)}><u>{row.original.MovieTitle}</u></Link>
+        },
+    },
+    {
+        Header: '削除', accessor: 'VtuberId',
+        Cell: ({ row }: { row: { original: ReceivedMovie } }) => {
+            const { setToDeleteMovieUrl } = useContext(ToDeleteContext);
+            const clickHandler = () => {
+                setToDeleteMovieUrl(row.original.MovieUrl)
+            }
+            return (<>
+                {row.original.MovieUrl != undefined && <button onClick={() => clickHandler()}><u>削除</u></button>}
+            </>)
+        },
+    }
+];
+

@@ -16,7 +16,7 @@ import { Header } from '../../components/layout/Layout'
 
 type PostsAndCheckSignin = {
     posts: { vtubers_movies_karaokes: ReceivedKaraoke[] };
-    checkSignin: boolean;
+    isSignin: boolean;
 }
 
 export const YouTubePlayerContext = React.createContext({} as {
@@ -27,7 +27,7 @@ export const YouTubePlayerContext = React.createContext({} as {
     handleMovieClickYouTube(movieId: string, time: number): void
 })
 
-export default function AllDatePage({ posts, checkSignin }: PostsAndCheckSignin) {
+export default function SingsPage({ posts, isSignin }: PostsAndCheckSignin) {
     const karaokes = posts.vtubers_movies_karaokes || {}
 
     // ようつべ用
@@ -59,9 +59,9 @@ export default function AllDatePage({ posts, checkSignin }: PostsAndCheckSignin)
 
     return (
         <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube, currentMovieId, setCurrentMovieId, start, setStart }}>
-            <Header pageName="Sings" checkSignin={checkSignin}>
+            <Header pageName="Sings" isSignin={isSignin}>
                 <div>
-                    <a>{checkSignin && "ログイン中" || '非ログイン中'}</a><br />
+                    <a>{isSignin && "ログイン中" || '非ログイン中'}</a><br />
                     <br />
                     <button onClick={() => setStart(600)}>10分</button>
                     <button onClick={() => setStart(900)}>15分</button> <br />
@@ -95,9 +95,9 @@ export async function getServerSideProps(context: ContextType) {
     const rawCookie = context.req.headers.cookie;
     const sessionToken = rawCookie?.split(';').find((cookie: string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];
     console.log("sessionToken", sessionToken)
-    var checkSignin = false
+    let isSignin = false
     if (sessionToken) {
-        checkSignin = true
+        isSignin = true
     }
     // サーバーの証明書が認証されない自己証明書でもHTTPSリクエストを継続する
     const httpsAgent = new https.Agent({ rejectUnauthorized: false });
@@ -120,7 +120,7 @@ export async function getServerSideProps(context: ContextType) {
     return {
         props: {
             posts: resData,
-            checkSignin: checkSignin,
+            isSignin: isSignin,
         }
     }
 }
