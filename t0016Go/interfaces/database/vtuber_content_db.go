@@ -127,8 +127,8 @@ func (db *VtuberContentRepository) UpdateKaraoke(K domain.Karaoke) error {
 func (db *VtuberContentRepository) DeleteVtuber(V domain.Vtuber) error {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var Mo domain.Movie
-	Mo.VtuberId = V.VtuberId
-	db.First(&Mo)
+	db.Where("vtuber_id = ? ", V.VtuberId).First(&Mo)
+	fmt.Print("Mo", Mo, "\n")
 	if Mo.MovieUrl != "" {
 		return fmt.Errorf("Delete Vtuber after its Movie ")
 	}
@@ -154,20 +154,20 @@ func (db *VtuberContentRepository) DeleteKaraoke(K domain.Karaoke) error {
 	return result.Error
 }
 
-func (db *VtuberContentRepository) VerifyUserModifyVtuber(id int, V domain.Vtuber) (bool, error) {
+func (db *VtuberContentRepository) VerifyUserModifyVtuber(id domain.ListenerId, V domain.Vtuber) (bool, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
-	result := db.Where("vtuber_Inputter_id=?", id).First(V, V.VtuberId)
-	return V.VtuberInputterId != 0, result.Error
+	result := db.Where("vtuber_Inputter_id=?", id).First(&V)
+	return V.VtuberInputterId == id, result.Error
 }
-func (db *VtuberContentRepository) VerifyUserModifyMovie(id int, M domain.Movie) (bool, error) {
+func (db *VtuberContentRepository) VerifyUserModifyMovie(id domain.ListenerId, M domain.Movie) (bool, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
-	result := db.Where("movie_Inputter_id=?", id).First(M, M.MovieUrl)
-	return M.MovieInputterId != 0, result.Error
+	result := db.Where("movie_Inputter_id=?", id).First(&M, M.MovieUrl)
+	return M.MovieInputterId == id, result.Error
 }
-func (db *VtuberContentRepository) VerifyUserModifyKaraoke(id int, K domain.Karaoke) (bool, error) {
+func (db *VtuberContentRepository) VerifyUserModifyKaraoke(id domain.ListenerId, K domain.Karaoke) (bool, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
-	result := db.Where("karaoke_Inputter_id=?", id).First(K, K.KaraokeId)
-	return K.KaraokeInputterId != 0, result.Error
+	result := db.Where("karaoke_Inputter_id=?", id).First(&K, K.KaraokeId)
+	return K.KaraokeInputterId == id, result.Error
 }
 
 func (db *VtuberContentRepository) GetRecordsCreatedByThisListerId(Lid domain.ListenerId) ([]domain.Vtuber, []domain.VtuberMovie, []domain.VtuberMovieKaraoke, error) {

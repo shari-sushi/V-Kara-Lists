@@ -88,17 +88,17 @@ func (interactor *VtuberContentInteractor) DeleteKaraoke(k domain.Karaoke) error
 	return err
 }
 
-func (interactor *VtuberContentInteractor) VerifyUserModifyVtuber(id int, v domain.Vtuber) (bool, error) {
+func (interactor *VtuberContentInteractor) VerifyUserModifyVtuber(id domain.ListenerId, v domain.Vtuber) (bool, error) {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
 	isAuth, err := interactor.VtuberContentRepository.VerifyUserModifyVtuber(id, v)
 	return isAuth, err
 }
-func (interactor *VtuberContentInteractor) VerifyUserModifyMovie(id int, m domain.Movie) (bool, error) {
+func (interactor *VtuberContentInteractor) VerifyUserModifyMovie(id domain.ListenerId, m domain.Movie) (bool, error) {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
 	isAuth, err := interactor.VtuberContentRepository.VerifyUserModifyMovie(id, m)
 	return isAuth, err
 }
-func (interactor *VtuberContentInteractor) VerifyUserModifyKaraoke(id int, k domain.Karaoke) (bool, error) {
+func (interactor *VtuberContentInteractor) VerifyUserModifyKaraoke(id domain.ListenerId, k domain.Karaoke) (bool, error) {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
 	isAuth, err := interactor.VtuberContentRepository.VerifyUserModifyKaraoke(id, k)
 	return isAuth, err
