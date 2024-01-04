@@ -19,7 +19,7 @@ type TopPage = {
     vtubers_movies: ReceivedMovie[];
     vtubers_movies_karaokes: ReceivedKaraoke[];
   };
-  checkSignin: boolean;
+  isSignin: boolean;
 }
 
 export const YouTubePlayerContext = React.createContext({} as {
@@ -30,7 +30,7 @@ export const YouTubePlayerContext = React.createContext({} as {
   handleMovieClickYouTube(movieId: string, time: number): void
 })
 
-const TopPage = ({ posts, checkSignin }: TopPage) => {
+const TopPage = ({ posts, isSignin }: TopPage) => {
   const vtubers = posts?.vtubers;
   const movies = posts?.vtubers_movies;
   const karaokes = posts?.vtubers_movies_karaokes;
@@ -61,10 +61,10 @@ const TopPage = ({ posts, checkSignin }: TopPage) => {
 
   return (
     <div>
-      <Header pageName="TOP" checkSignin={checkSignin}>
+      <Header pageName="TOP" isSignin={isSignin}>
         <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube, currentMovieId, setCurrentMovieId, start, setStart }}>
           <div>
-            <a>{checkSignin && "ログイン中" || '非ログイン中'}</a><br />
+            <a>{isSignin && "ログイン中" || '非ログイン中'}</a><br />
             <a>videoId= {currentMovieId}, start= {start}秒 = {Math.floor(start / 60)}分 {Math.floor(start % 60)}秒</a >
             <br /><br />
 
@@ -95,6 +95,7 @@ const TopPage = ({ posts, checkSignin }: TopPage) => {
   )
 };
 
+/////////////////////////////////////////////////////////////////////////////////////////
 type ContextType = {
   req: { headers: { cookie?: string; }; };
   res: {
@@ -107,9 +108,9 @@ export async function getServerSideProps(context: ContextType) {
   const rawCookie = context.req.headers.cookie;
   const sessionToken = rawCookie?.split(';').find((cookie: string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];
   console.log("sessionToken", sessionToken)
-  var checkSignin = false
+  let isSignin = false
   if (sessionToken) {
-    checkSignin = true
+    isSignin = true
   }
   // サーバーの証明書が認証されない自己証明書でもHTTPSリクエストを継続する
   const httpsAgent = new https.Agent({ rejectUnauthorized: false });
@@ -132,7 +133,7 @@ export async function getServerSideProps(context: ContextType) {
   return {
     props: {
       posts: resData,
-      checkSignin: checkSignin,
+      isSignin: isSignin,
     }
   }
 }

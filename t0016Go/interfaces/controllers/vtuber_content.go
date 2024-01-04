@@ -118,7 +118,7 @@ func (controller *Controller) CreateKaraoke(c *gin.Context) {
 	return
 }
 func (controller *Controller) EditVtuber(c *gin.Context) {
-	listenerID, err := common.TakeListenerIdFromJWT(c)
+	listenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Error fetching listener info",
@@ -132,8 +132,8 @@ func (controller *Controller) EditVtuber(c *gin.Context) {
 		})
 		return
 	}
-	vtuber.VtuberInputterId = listenerID
-	if isAuth, err := controller.VtuberContentInteractor.VerifyUserModifyVtuber(int(listenerID), vtuber); err != nil {
+	vtuber.VtuberInputterId = listenerId
+	if isAuth, err := controller.VtuberContentInteractor.VerifyUserModifyVtuber(listenerId, vtuber); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Auth Check is failed.(we could not Verify)",
 		})
@@ -171,7 +171,7 @@ func (controller *Controller) EditMovie(c *gin.Context) {
 		return
 	}
 	Movie.MovieInputterId = listenerId
-	if isAuth, err := controller.VtuberContentInteractor.VerifyUserModifyMovie(int(listenerId), Movie); err != nil {
+	if isAuth, err := controller.VtuberContentInteractor.VerifyUserModifyMovie(listenerId, Movie); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Auth Check is failed.(we could not Verify)",
 		})
@@ -209,7 +209,7 @@ func (controller *Controller) EditKaraoke(c *gin.Context) {
 		return
 	}
 	Karaoke.KaraokeInputterId = listenerId
-	if isAuth, err := controller.VtuberContentInteractor.VerifyUserModifyKaraoke(int(listenerId), Karaoke); err != nil {
+	if isAuth, err := controller.VtuberContentInteractor.VerifyUserModifyKaraoke(listenerId, Karaoke); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Auth Check is failed.(we could not Verify)",
 		})
@@ -231,6 +231,7 @@ func (controller *Controller) EditKaraoke(c *gin.Context) {
 	})
 	return
 }
+
 func (controller *Controller) DeleteVtuber(c *gin.Context) {
 	listenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
@@ -239,15 +240,15 @@ func (controller *Controller) DeleteVtuber(c *gin.Context) {
 		})
 		return
 	}
-	var Vtuber domain.Vtuber
-	if err := c.ShouldBind(&Vtuber); err != nil {
+	var selectedVtuber domain.Vtuber
+	if err := c.ShouldBind(&selectedVtuber); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid request body",
 		})
 		return
 	}
-	Vtuber.VtuberInputterId = listenerId
-	if isAuth, err := controller.VtuberContentInteractor.VerifyUserModifyVtuber(int(listenerId), Vtuber); err != nil {
+	fmt.Print("Vtuber", selectedVtuber, "\n")
+	if isAuth, err := controller.VtuberContentInteractor.VerifyUserModifyVtuber(listenerId, selectedVtuber); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Auth Check is failed.(we could not Verify)",
 		})
@@ -258,9 +259,10 @@ func (controller *Controller) DeleteVtuber(c *gin.Context) {
 		})
 		return
 	}
-	if err := controller.VtuberContentInteractor.DeleteVtuber(Vtuber); err != nil {
+	if err := controller.VtuberContentInteractor.DeleteVtuber(selectedVtuber); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Inputter can modify each data",
+			"message": "Only Inputter can modify each data",
+			"error":   err,
 		})
 		return
 	}
@@ -285,8 +287,7 @@ func (controller *Controller) DeleteMovie(c *gin.Context) {
 		})
 		return
 	}
-	Movie.MovieInputterId = listenerId
-	if isAuth, err := controller.VtuberContentInteractor.VerifyUserModifyMovie(int(listenerId), Movie); err != nil {
+	if isAuth, err := controller.VtuberContentInteractor.VerifyUserModifyMovie(listenerId, Movie); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Auth Check is failed.(we could not Verify)",
 		})
@@ -299,7 +300,7 @@ func (controller *Controller) DeleteMovie(c *gin.Context) {
 	}
 	if err := controller.VtuberContentInteractor.DeleteMovie(Movie); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Inputter can modify each data",
+			"message": "Only Inputter can modify each data",
 		})
 		return
 	}
@@ -324,8 +325,8 @@ func (controller *Controller) DeleteKaraoke(c *gin.Context) {
 		})
 		return
 	}
-	Karaoke.KaraokeInputterId = listenerId
-	if isAuth, err := controller.VtuberContentInteractor.VerifyUserModifyKaraoke(int(listenerId), Karaoke); err != nil {
+
+	if isAuth, err := controller.VtuberContentInteractor.VerifyUserModifyKaraoke(listenerId, Karaoke); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Auth Check is failed.(we could not Verify)",
 		})
@@ -338,7 +339,7 @@ func (controller *Controller) DeleteKaraoke(c *gin.Context) {
 	}
 	if err := controller.VtuberContentInteractor.DeleteKaraoke(Karaoke); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Inputter can modify each data",
+			"message": "Only Inputter can modify each data",
 		})
 		return
 	}

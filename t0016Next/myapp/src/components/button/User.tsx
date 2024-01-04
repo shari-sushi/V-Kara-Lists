@@ -1,14 +1,9 @@
 import { useRouter } from 'next/router';
 import React, { useState } from "react";
-import { useForm } from 'react-hook-form';
-import type { LoginUser } from "../types/user";
 import Link from 'next/link';
-import { Checkbox } from '../components/SomeFunction';
-import { domain } from '../../env'
 
+import { domain } from '@/../env'
 
-
-// ver1.5でsessoin管理に切り替える
 export const GetLogout = () => {
   const router = useRouter();
   const fetchLogout = async () => {
@@ -19,7 +14,6 @@ export const GetLogout = () => {
         headers: {
           'Content-Type': 'application/json'
         },
-        // body: JSON.stringify(data)    
       });
       console.log("logout response:", response);
       if (!response.ok) {
@@ -31,7 +25,9 @@ export const GetLogout = () => {
     router.push(`/`)
   };
   return (
-    <button onClick={fetchLogout}>ログアウト</button>
+    <Link href="">
+      <button onClick={fetchLogout}>ログアウト</button>
+    </Link>
   )
 };
 
@@ -61,17 +57,17 @@ export const Withdraw = () => {
       {!isToDecision &&
         <div>
           <button onClick={() => setIsToDecision(!isToDecision)} >
-            退会手続きへ</button>
+            退会ボタンを開く</button>
         </div>}
       {isToDecision && <div> <br />
-        <button onClick={() => setIsToDecision(!isToDecision)} >
-          キャンセル</button>
         <h2>退会について</h2>
-        <li>あなたのメールアドレス、パスワードが本サイトから削除されます。</li>
-        <li>上述の情報は３０日後に自動で完全削除されます。</li>
-        <li>あなたが登録したアカウント情報以外のデータは削除されません。</li>
-        <li>なお、ゲストアカウントは退会できません。</li>
-        <button onClick={fetchWithdraw}>！！！退会確定！！！</button>
+        <li>・メールアドレスとパスワードは30日間の保管の後、完全に削除されます。</li>
+        <li>・保管期間中はアカウントを復元できます。</li>
+        <li>・削除されたアカウントが登録したVtuberや動画等の登録データはサイト運営によって管理されます。</li>
+        <li>・ゲストアカウントは退会できません。</li>
+        <br />
+        <button onClick={() => setIsToDecision(!isToDecision)} >キャンセル</button>
+        <button onClick={fetchWithdraw}>退会確定</button>
       </div>}
     </div>
   )
@@ -97,8 +93,10 @@ export const GestLogin = () => {
     router.push(`/`)
   };
   return (
-    <button onClick={fetchWithdraw} style={{ background: 'brown' }}>
-      ゲストログイン
-    </button>
+    <Link href="">
+      <button onClick={fetchWithdraw} style={{ background: 'brown' }}>
+        ゲストログイン
+      </button>
+    </Link>
   )
 };
