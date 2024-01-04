@@ -1,30 +1,31 @@
 import Head from "next/head";
-import styles from '../../styles/Home.module.css'
 import Link from 'next/link';
-import { GestLogin, GetLogout } from '../authButton'
-import { usePathname, useSearchParams, useParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
+
+import styles from '@/styles/Home.module.css'
+import { GestLogin } from '../button/User'
 // import { styles } from '../components/globals'
 
 export function Header({ pageName, children, isSignin }) {
     const pathName = usePathname();
-    console.log(pathName)
-
     return (
         <div>
             <Head>
                 <link rel="icon" href="/shari.ico" />
                 <title>V-kara/{pageName}</title>
             </Head>
-            <header >
-                <h1 className={styles.title}>{pageName}   &nbsp;</h1>
-                <Link href="/test"><button >テスト</button></Link> &nbsp;
+            <header className={styles.header}>
+                <h1 className={styles.title}>{pageName} &nbsp;</h1>
+                <Link href="/test"><button >テスト</button></Link>/ &nbsp;
                 <Link href="/"><button >TOP</button></Link> &nbsp;
-                <Link href="/karaoke/sings"><button >歌</button></Link> &nbsp;
+                <Link href="/karaoke/sings"><button >歌</button></Link>/ &nbsp;
                 {isSignin &&
                     <>
-                        <Link href="/crud/create"><button >CREATE</button></Link> &nbsp;
-                        <Link href="/crud/edit"><button >EDIT</button></Link> &nbsp;
-                        <Link href="/crud/delete"><button >DALETE</button></Link> &nbsp;
+                        データの
+                        <Link href="/crud/create"><button >登録</button></Link>:
+                        <Link href="/crud/edit"><button >編集</button></Link>:
+                        <Link href="/crud/delete"><button >削除</button></Link> &nbsp;
+                        /
                     </>
                 }
                 <br />
@@ -44,11 +45,18 @@ export function Header({ pageName, children, isSignin }) {
                         <Link href="/user/mypage"><button style={{ background: 'brown' }}>
                             マイページ</button>
                         </Link> &nbsp;
-                        <GestLogin /> &nbsp;
-                        {pathName === "/user/mypage" && <GetLogout />}
+
+                        {pathName === "/user/mypage" &&
+                            <>
+                                <Link href="/user/profile"><button style={{ background: 'brown' }}>
+                                    プロフィール</button>
+                                </Link> &nbsp;
+                            </>}
+                        <GestLogin />
+
                     </>
                 }
-            </header>
+            </header >
             <main className={styles.original}>
                 {children}
             </main>

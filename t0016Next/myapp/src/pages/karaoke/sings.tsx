@@ -28,7 +28,7 @@ export const YouTubePlayerContext = React.createContext({} as {
 })
 
 export default function SingsPage({ posts, isSignin }: PostsAndCheckSignin) {
-    const karaokes = posts.vtubers_movies_karaokes || {}
+    const karaokes = posts.vtubers_movies_karaokes != null ? posts.vtubers_movies_karaokes : [{} as ReceivedKaraoke];
 
     // ようつべ用
     const primaryYoutubeUrl = "kORHSmXcYNc"
