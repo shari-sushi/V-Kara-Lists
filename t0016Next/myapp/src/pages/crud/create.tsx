@@ -1,11 +1,10 @@
-import { domain } from '@/../env'
+import { useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
 import Link from 'next/link';
-import Router, { useEffect, useState } from 'react';
 import https from 'https';
 import axios, { AxiosRequestConfig } from 'axios';
 
-// import style from '../Youtube.module.css';
+import { domain } from '@/../env'
 import type { CrudDate, ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '@/types/vtuber_content'; //type{}で型情報のみインポート
 import { Header } from '@/components/layout/Layout'
 import { DropDownVtuber } from '@/components/dropDown/Vtuber';
@@ -35,8 +34,6 @@ type CreatePageProps = {
 }
 
 export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
-    console.log("posts", posts)
-    // const vtubers = posts?.vtubers;
     const movies = posts?.vtubers_movies || [{} as ReceivedMovie];
     const karaokes = posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke];
     if (!isSignin) {
@@ -60,13 +57,6 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
     const [currentStart, setCurrentStart] = useState<number>(0);
 
     useEffect(() => {
-        if (!selectedVtuber) {
-
-        }
-    }, [selectedVtuber])
-
-
-    useEffect(() => {
         const foundMovie = movies.find(movies => movies.MovieUrl === selectedMovie)
         if (foundMovie) {
             const foundYoutubeId = ExtractVideoId(foundMovie.MovieUrl);
@@ -75,7 +65,10 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
         }
     }, [selectedMovie]);
 
-    const clearMovieHandler = () => { //中身空でもKaraokeのoptinosを空にしてくれるんだが…
+    const clearMovieHandler = () => {
+        //中身空でもKaraokeのoptinosを空にしてくれるんだが…
+        // でもこの関数をまるっと消すとダメ…？
+
         // setSelectedKaraoke(0);
     };
 
@@ -96,7 +89,6 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
                 {"※現在、データの編集・削除はデータ登録者とサイト管理者しかできないようにロックしています。"} <br />
                 {"他ユーザーも利用しやすいように正確に登録してください。"} <br />
                 {"ご自身の登録データはmypageで確認できます"}
-
                 <br />
                 <DropDownVtuber
                     posts={posts != null ? posts : {} as TopPagePosts}
@@ -104,9 +96,9 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
                 />
                 <DropDownMovie
                     posts={posts}
-                    selectedVtuber={selectedVtuber} //選んだvを渡す
-                    setSelectedMovie={setSelectedMovie} //m選ぶ: karaokeに渡す
-                    clearMovieHandler={clearMovieHandler} //mクリア: karaokeに空を渡す
+                    selectedVtuber={selectedVtuber}
+                    setSelectedMovie={setSelectedMovie}
+                    clearMovieHandler={clearMovieHandler}
                 />
                 <DropDownKaraoke
                     posts={posts}
@@ -124,6 +116,7 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
         </Header>
     )
 };
+/////////////////////////////////////////////////////////////////////////////////////////
 
 type selectedDate = {
     posts: TopPagePosts;
@@ -224,7 +217,6 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
             console.log("登録するデータの種類(vtuber, movie, karaoke)の選択で想定外のエラーが発生しました。")
         }
     };
-    console.log("ValidateVtuberName", ValidateCreateVtuberName)
 
     return (
         <div>
@@ -232,7 +224,7 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
             <button type="button" onClick={() => setCrudContentType("vtuber")} >
                 ＜VTuber＞</button>
             <button type="button" onClick={() => setCrudContentType("movie")}>
-                ＜歌枠動画＞</button>
+                ＜歌枠(動画)＞</button>
             <button type="button" onClick={() => setCrudContentType("karaoke")}>
                 ＜歌(karaoke)＞</button>
             <br /><br />
@@ -265,6 +257,7 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
                         /><br />
                         {errors.VtuberName?.message}
                         <br />
+
                         &nbsp;&nbsp;読み(kana)*:
                         <input {...register("VtuberKana", ValidateCreateVtuberKana,)
                         } placeholder={foundVtuber?.VtuberKana || "例:imomochi_oimo"}
@@ -272,6 +265,7 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
                         /><br />
                         {errors.VtuberKana?.message}
                         <br />
+
                         &nbsp;&nbsp;紹介動画URL(時間指定可**):
                         <input {...register("IntroMovieUrl", ValidateCreateIntroMovieUrl)}
                             placeholder={foundVtuber?.IntroMovieUrl || "例:www.youtube.com/watch?v=AlHRqSsF--8"}
@@ -279,6 +273,7 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
                         /><br />
                         {errors.IntroMovieUrl?.message} <br />
                     </div>}
+
                 {crudContentType === "movie" &&
                     <div>
                         ★歌枠動画: <br />
@@ -289,6 +284,7 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
                         /><br />
                         {errors.MovieTitle?.message}
                         <br />
+
                         &nbsp;&nbsp;URL*:
                         <input {...register("MovieUrl", ValidateCreateMovieUrl)}
                             placeholder={foundMovie?.MovieUrl || "例: www.youtube.com/watch?v=AlHRqSsF--8"}
@@ -296,8 +292,8 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
                         /><br />
                         {errors.MovieUrl?.message}
                         {!selectedVtuber && <div><br />プルダウンメニューからVtuberを選択してください</div>}
-
                     </div>}
+
                 {crudContentType === "karaoke" &&
                     <div>
                         ★歌: <br />
@@ -308,6 +304,7 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
                         /><br />
                         {errors.SongName?.message}
                         <br />
+
                         &nbsp;&nbsp;開始時間*:
                         <input {...register("SingStart", ValidateCreateSingStart)}
                             placeholder={foundKaraoke?.SingStart || "例 00:05:30"}
@@ -359,16 +356,21 @@ export async function getServerSideProps(context: ContextType) {
         httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
     };
 
-    let resData = null;
     try {
         const res = await axios.get(`${domain.backendHost}/vcontents/`, options);
-        resData = res.data;
+        const resData = res.data;
+        return {
+            props: {
+                posts: resData,
+                isSignin: isSignin,
+            }
+        }
     } catch (error) {
         console.log("erroe in axios.get:", error);
     }
     return {
         props: {
-            posts: resData,
+            posts: null,
             isSignin: isSignin,
         }
     }
