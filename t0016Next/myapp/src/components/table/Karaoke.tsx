@@ -12,6 +12,7 @@ import { Favorite } from '@mui/icons-material';
 import { YouTubePlayerContext } from '@/pages/karaoke/sings';
 import { YouTubePlayerContext as TopPageContext } from '@/pages/index';
 import { pages } from 'next/dist/build/templates/app-page';
+import { ToDeleteContext } from '@/pages/crud/delete'
 
 type KaraokeTableProps = {
   posts: ReceivedKaraoke[];
@@ -135,7 +136,7 @@ function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumn) {
 // /karaoke/sings ページネーション
 
 export function KaraokePagenatoinTable({ posts }: KaraokeTableProps) {
-  const data = posts || {}
+  const data = posts != null ? posts : [{} as ReceivedKaraoke];
   const maxPageSize = 99999
   const {
     getTableProps,
@@ -225,7 +226,7 @@ export function KaraokePagenatoinTable({ posts }: KaraokeTableProps) {
 // // 全件からランダムで10件表示
 
 export function RandamTable({ posts }: KaraokeTableProps) {
-  const data = posts || {}
+  const data = posts != null ? posts : [{} as ReceivedKaraoke];
   const [hasWindow, setHasWindow] = useState(false);
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -390,3 +391,122 @@ export const KaraokeRandamTable = ({ posts }: KaraokeTableProps) => {
     </div>
   );
 };
+
+///////////////////////////
+// /karaoke/sings ページネーション
+
+export function KaraokeDeleteTable({ posts }: KaraokeTableProps) {
+  const data = posts != null ? posts : [{} as ReceivedKaraoke];
+  const maxPageSize = 99999
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+    page,
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    setPageSize,
+    state: { pageIndex, pageSize }
+  } = useTable({
+    columns: deleteColumns,
+    data,
+    initialState: { pageIndex: 0, pageSize: 15 }
+  },
+    usePagination);
+
+  return (
+    <> <br />
+      <div>
+        <button className="" onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+          {"<<"}
+        </button> &nbsp;
+        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+          {"<"}
+        </button> &nbsp;
+        <span>
+          <strong>
+            {pageIndex + 1} / {pageOptions.length}
+          </strong>{" "}
+        </span>
+        <button onClick={() => nextPage()} disabled={!canNextPage}>
+          {">"}
+        </button> &nbsp;
+        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+          {">>"}
+        </button> &nbsp;
+        <select
+          value={pageSize}
+          onChange={(e) => setPageSize(Number(e.target.value))}
+        >
+          {[5, 10, 25, 50, 100, maxPageSize].map((pageSize) => (
+
+            <option key={pageSize} value={pageSize}>
+              {pageSize !== maxPageSize ? `Show ${pageSize}` : `Show all`}
+            </option>
+          ))}
+        </select>
+      </div>
+      <table {...getTableProps()} className={TableStyle.table}>
+        <thead>
+          {headerGroups.map((headerGroup) => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column) => (
+                <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {page.map((row) => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()}>
+                {row.cells.map((cell) => (
+                  <td {...cell.getCellProps()}>
+                    {cell.render("Cell")}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </>
+  );
+};
+
+const deleteColumns: Column<ReceivedKaraoke>[] = [
+  { Header: 'VTuber', accessor: 'VtuberName' },
+  {
+    Header: '歌枠 (click to play the video)', accessor: 'MovieTitle',
+    Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
+      const { setCurrentVideoId, setCurrentStart } = useContext(ToDeleteContext);
+      const clickHandler = (url: string, SingStart: string) => {
+        setCurrentVideoId(ExtractVideoId(url));
+        setCurrentStart(ConvertStringToTime(SingStart));
+      }
+      return <Link href="" onClick={() => clickHandler(row.original.MovieUrl, row.original.SingStart)}><u>{row.original.MovieTitle}</u></Link>
+    },
+  },
+  {
+    Header: '削除', accessor: 'KaraokeId',
+    Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
+      const { setToDeleteKaraokeId } = useContext(ToDeleteContext);
+      const clickHandler = () => {
+        setToDeleteKaraokeId(row.original.KaraokeId)
+        console.log("発火")
+        console.log("row", row.original.KaraokeId)
+      }
+      return (<>
+        {row.original.KaraokeId != undefined && <button onClick={() => clickHandler()}><u>削除</u></button>}
+      </>)
+    },
+  }
+];
