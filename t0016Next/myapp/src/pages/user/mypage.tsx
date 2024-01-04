@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react"
 import https from 'https';
 import axios, { AxiosRequestConfig } from 'axios';
-import { domain } from '../../../env'
+
+import { domain } from '@/../env'
 import { Header } from "@/components/layout/Layout";
 import type { ReceivedKaraoke, ReceivedVtuber, ReceivedMovie } from '../../types/vtuber_content'; //type{}で型情報のみインポート
 import { VtuberTable } from '@/components/table/Vtuber'
@@ -28,9 +29,18 @@ type Mypage = {
 }
 
 const MyPage = ({ data, isSignin }: Mypage) => {
-  const vtubers = data.vtubers_u_created || {}
-  const movies = data.vtubers_movies_u_created || {}
-  const karaokes = data.vtubers_movies_karaokes_u_created || {}
+  if (!isSignin) {
+    return (
+      <Header pageName={"MyPage"} isSignin={isSignin}>
+        <br />
+        <>ログインが必要なコンテンツです</>
+      </Header>
+
+    )
+  };
+  const vtubers = data.vtubers_u_created != null ? data.vtubers_u_created : [{} as ReceivedVtuber];
+  const movies = data.vtubers_movies_u_created != null ? data.vtubers_movies_u_created : [{} as ReceivedMovie];
+  const karaokes = data.vtubers_movies_karaokes_u_created != null ? data.vtubers_movies_karaokes_u_created : [{} as ReceivedKaraoke];
   const [currentMovieId, setCurrentMovieId] = useState<string>("E7x2TZ1_Ys4");
   const [start, setStart] = useState<number>((36 * 60 + 41))
 
@@ -66,10 +76,9 @@ const MyPage = ({ data, isSignin }: Mypage) => {
               <h2>★歌枠(動画)</h2>登録数{movies.length}
               < MovieTable posts={movies} /><br />
 
-              <h2>★歌</h2> 登録数{karaokes.length}
+              <h2>★歌</h2> 登録数{karaokes != null ? karaokes.length : 0}
               <KaraokePagenatoinTable posts={karaokes} />
             </>
-
           ) : (
             <div>
               自分で登録したデータが無いようです...TT
@@ -95,12 +104,14 @@ type ContextType = {
 
 export async function getServerSideProps(context: ContextType) {
   const rawCookie = context.req.headers.cookie;
-  console.log("rawCookie=", rawCookie, "\n")
-  let isSignin = false
 
   // Cookieが複数ある場合に必要？
   // cookie.trim()   cookieの文字列の前後の全ての空白文字(スペース、タブ、改行文字等)を除去する
   const sessionToken = rawCookie?.split(';').find((cookie: string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];
+  let isSignin = false
+  if (sessionToken) {
+    isSignin = true
+  }
 
   // サーバーの証明書が認証されない自己証明書でもHTTPSリクエストを継続する
   const httpsAgent = new https.Agent({ rejectUnauthorized: false });
@@ -113,18 +124,22 @@ export async function getServerSideProps(context: ContextType) {
     httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
   };
 
-  let resData = null;
   try {
     const res = await axios.get(`${domain.backendHost}/users/mypage`, options);
-    resData = res.data;
-    console.log()
-    isSignin = true
+    const resData = res.data;
+
+    return {
+      props: {
+        data: resData,
+        isSignin: isSignin,
+      }
+    }
   } catch (error) {
     console.log("erroe in axios.get:", error);
   }
   return {
     props: {
-      data: resData,
+      data: null,
       isSignin: isSignin,
     }
   }

@@ -1,8 +1,9 @@
-import { domain } from '@/../env'
 import React, { useState } from 'react';
 import Link from 'next/link';
 import https from 'https';
 import axios, { AxiosRequestConfig } from 'axios';
+
+import { domain } from '@/../env'
 import style from '@/Youtube.module.css';
 import styles from '@/styles/Home.module.css'
 import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '@/types/vtuber_content';
@@ -31,9 +32,9 @@ export const YouTubePlayerContext = React.createContext({} as {
 })
 
 const TopPage = ({ posts, isSignin }: TopPage) => {
-  const vtubers = posts?.vtubers;
-  const movies = posts?.vtubers_movies;
-  const karaokes = posts?.vtubers_movies_karaokes;
+  const vtubers = posts.vtubers != null ? posts.vtubers : [{} as ReceivedVtuber]
+  const movies = posts.vtubers_movies != null ? posts.vtubers_movies : [{} as ReceivedMovie];
+  const karaokes = posts.vtubers_movies_karaokes != null ? posts.vtubers_movies_karaokes : [{} as ReceivedKaraoke];
   const [start, setStart] = useState<number>((36 * 60 + 41))
   const [currentMovieId, setCurrentMovieId] = useState<string>("E7x2TZ1_Ys4");
   //qFVhnuIBGiQなら60*25か60*47かなー, 60*7+59, 60*8+29
