@@ -42,7 +42,7 @@ export function Header({ pageName, children, isSignin }) {
                 } &nbsp;
                 {isSignin &&
                     <>
-                        <Link href="/user/mypage"><button class="bg-indigo-700 font-semibold text-white py-2 px-4 rounded">
+                        <Link href="/user/mypage"><button class="bg-indigo-600 font-semibold text-white py-2 px-2 rounded">
                             マイページ</button>
                         </Link> &nbsp;
 
@@ -56,10 +56,13 @@ export function Header({ pageName, children, isSignin }) {
 
                     </>
                 }
+                <a>{isSignin && "ログイン中" || '非ログイン中'}</a><br />
+
             </header >
             <main className={styles.original}>
                 {children}
             </main>
+
         </div >
     );
 }
