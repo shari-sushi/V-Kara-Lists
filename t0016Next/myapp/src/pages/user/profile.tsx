@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react"
 import https from 'https';
+import axios, { AxiosRequestConfig } from "axios";
 
 import { domain } from '@/../env'
 import type { User } from "@/types/user"
 import { GetLogout, Withdraw } from '@/components/button/User';
 import { Header } from "@/components/layout/Layout";
-import { HolidayVillage } from "@mui/icons-material";
 
 type Mypage = {
     listener: User;

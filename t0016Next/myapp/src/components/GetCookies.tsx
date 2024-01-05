@@ -4,7 +4,7 @@ export const getAllCookies = (): string => {
   const cookieStore = cookies();
   const cookie = cookieStore
     .getAll()
-    .map((cookie) => `${cookie.name}=${cookie.value}`)
+    .map((cookie: any) => `${cookie.name}=${cookie.value}`)
     .join(";");
   return cookie;
 };

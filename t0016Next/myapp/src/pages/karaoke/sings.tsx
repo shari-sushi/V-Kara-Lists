@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { CellProps } from 'react-table';
 import https from 'https';
 import axios, { AxiosRequestConfig } from 'axios';
-import style from '../../style/Youtube.module.css';
+// import style from '../../style/Youtube.module.css';
 import type { ReceivedKaraoke, ReceivedVtuber, ReceivedMovie } from '../../types/vtuber_content'; //type{}で型情報のみインポート
 import { YouTubePlayer } from '../../components/YoutubePlayer'
 import { ConvertStringToTime, ExtractVideoId } from '../../components/Conversion'
