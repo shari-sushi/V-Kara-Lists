@@ -1,11 +1,3 @@
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import style from '../Youtube.module.css';
-import type { ReceivedVtuber, ReceivedMovie } from '../types/vtuber_content'; //type{}で型情報のみインポート
-import https from 'https';
-import axios from 'axios';
-import { domain } from '../../env'
-
 export const ConvertStringToTime = (SingStart: string): number => {
   console.log(SingStart)
   const match = SingStart.match(/\d+/g);

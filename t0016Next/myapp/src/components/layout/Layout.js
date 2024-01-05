@@ -42,7 +42,7 @@ export function Header({ pageName, children, isSignin }) {
                 } &nbsp;
                 {isSignin &&
                     <>
-                        <Link href="/user/mypage"><button style={{ background: 'brown' }}>
+                        <Link href="/user/mypage"><button class="bg-indigo-700 font-semibold text-white py-2 px-4 rounded">
                             マイページ</button>
                         </Link> &nbsp;
 

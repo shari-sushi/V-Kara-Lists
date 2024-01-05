@@ -4,8 +4,8 @@ import https from 'https';
 import axios, { AxiosRequestConfig } from 'axios';
 
 import { domain } from '@/../env'
-import style from '@/Youtube.module.css';
-import styles from '@/styles/Home.module.css'
+// import style from '@/Youtube.module.css';
+// import styles from '@/styles/Home.module.css'
 import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '@/types/vtuber_content';
 import { YouTubePlayer } from '@/components/YoutubePlayer'
 import { ExtractVideoId } from '@/components/Conversion'
@@ -32,9 +32,10 @@ export const YouTubePlayerContext = React.createContext({} as {
 })
 
 const TopPage = ({ posts, isSignin }: TopPage) => {
-  const vtubers = posts.vtubers != null ? posts.vtubers : [{} as ReceivedVtuber]
-  const movies = posts.vtubers_movies != null ? posts.vtubers_movies : [{} as ReceivedMovie];
-  const karaokes = posts.vtubers_movies_karaokes != null ? posts.vtubers_movies_karaokes : [{} as ReceivedKaraoke];
+  console.log("posts", posts)
+  const vtubers = posts?.vtubers != null ? posts.vtubers : [{} as ReceivedVtuber]
+  const movies = posts?.vtubers_movies != null ? posts.vtubers_movies : [{} as ReceivedMovie];
+  const karaokes = posts?.vtubers_movies_karaokes != null ? posts.vtubers_movies_karaokes : [{} as ReceivedKaraoke];
   const [start, setStart] = useState<number>((36 * 60 + 41))
   const [currentMovieId, setCurrentMovieId] = useState<string>("E7x2TZ1_Ys4");
   //qFVhnuIBGiQなら60*25か60*47かなー, 60*7+59, 60*8+29
@@ -65,14 +66,21 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
       <Header pageName="TOP" isSignin={isSignin}>
         <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube, currentMovieId, setCurrentMovieId, start, setStart }}>
           <div>
+
+
+            <h1 className="text-3xl font-bold underline">
+              You can use Tailwind
+            </h1>
+
+
             <a>{isSignin && "ログイン中" || '非ログイン中'}</a><br />
             <a>videoId= {currentMovieId}, start= {start}秒 = {Math.floor(start / 60)}分 {Math.floor(start % 60)}秒</a >
             <br /><br />
 
-            <h1>{"V-kara (VTuber-karaoke-Lists)"} </h1>
+            <h1 className="text-3xl font-bold underline">V-kara (VTuber-karaoke-Lists) </h1>
             <h3>
-              {"「推し」の「歌枠」の聴きたい「歌」"}<br />
-              {"「ぱっと把握」、「さっと再生」、「ばばっと布教」"}<br />
+              「推し」の「歌枠」の聴きたい「歌」<br />
+              「ぱっと把握」、「さっと再生」、「ばばっと布教」<br />
             </h3><br />
             <YouTubePlayer videoId={currentMovieId} start={start} />
 

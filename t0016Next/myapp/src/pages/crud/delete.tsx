@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import Link from 'next/link';
 import React, { useContext, useEffect, useState } from 'react';
-import style from '../Youtube.module.css';
+// import style from '../Youtube.module.css';
 import type { CrudDate, ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '@/types/vtuber_content'; //type{}で型情報のみインポート
 // import DeleteButton from '../components/DeleteButton';
 import https from 'https';
