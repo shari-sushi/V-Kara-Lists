@@ -304,81 +304,78 @@ export function KaraokePagenatoinTable({ posts, handleMovieClickYouTube, setSele
   return (
     <SeletctPostContext.Provider value={{ setSelectedPost }}>
       <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
-        <div id="tableComp" className={'block md:w-[800px] w-full'}> {/* 本当はmd以上でも横幅を動的にしたい */}
-          <div id="tab" className="md:inline-block  mt-2 ">
-            <div className="bg-[#B7A692] mt-1 p-1 rounded-t-2xl">
-              <button className="ml-1 px-2 bg-[#657261] rounded-2xl hover:bg-[#B7A692]"
-                onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-                {"<<"}
-              </button>
-              <button className="mx-1 px-2 md:px-3 bg-[#657261] rounded-2xl hover:bg-[#B7A692]"
-                onClick={() => previousPage()} disabled={!canPreviousPage}>
-                {"<"}
-              </button>
-              <span>
-                <strong className="mx-0 md:mx-1">
-                  {pageIndex + 1} / {pageOptions.length}
-                </strong>{" "}
-              </span>
-              <button className={`px-2 ml-0 md:px-3  md:ml-1 bg-[#657261] rounded-2xl hover:bg-[#B7A692]`}
-                onClick={() => nextPage()} disabled={!canNextPage}>
-                {">"}
-              </button> &nbsp;
-              <button className={`px-2 mr-0 md:mr-1 bg-[#657261] rounded-2xl hover:bg-[#B7A692]`}
-                onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-                {">>"}
-              </button>
-              <select className='text-right'
-                value={pageSize}
-                onChange={(e) => setPageSize(Number(e.target.value))}
-              >
-                {[5, 10, 25, 50, 100, maxPageSize].map((pageSize) => (
+        <div id="tab" className=" ">
+          <div className="flex bg-[#B7A692] mt-1 py-1 px-3 rounded-t-2xl max-w-[400px] ">
+            <button className="ml-1 px-2 bg-[#657261] rounded-2xl hover:bg-[#B7A692]"
+              onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+              {"<<"}
+            </button>
+            <button className="mx-1 px-2 md:px-3 bg-[#657261] rounded-2xl hover:bg-[#B7A692]"
+              onClick={() => previousPage()} disabled={!canPreviousPage}>
+              {"<"}
+            </button>
+            <span>
+              <strong className="mx-0 md:mx-1">
+                {pageIndex + 1} / {pageOptions.length}
+              </strong>{" "}
+            </span>
+            <button className={`px-2 ml-0 md:px-3  md:ml-1 bg-[#657261] rounded-2xl hover:bg-[#B7A692]`}
+              onClick={() => nextPage()} disabled={!canNextPage}>
+              {">"}
+            </button> &nbsp;
+            <button className={`px-2 mr-0 md:mr-1 bg-[#657261] rounded-2xl hover:bg-[#B7A692]`}
+              onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+              {">>"}
+            </button>
 
-                  <option key={pageSize} value={pageSize}>
-                    {pageSize !== maxPageSize ? `Show ${pageSize}` : `Show all`}
-                  </option>
-                ))}
-              </select>
-              <span className='mx-1'>全{posts.length}件</span>
-            </div>
-          </div>
-          <div className="w-full">
-            <div id="table" className=' overflow-x-scroll'>
-              <table {...getTableProps()} className={`${TableCss.regular}`}>
-                <thead>
-                  {headerGroups.map((headerGroup) => (
-                    <tr {...headerGroup.getHeaderGroupProps()}>
-                      {headerGroup.headers.map((column) => (
-                        <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                          {column.render('Header')}
-                          <span>
-                            {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
-                          </span>
-                        </th>
-                      ))}
-                    </tr>
-                  ))}
-                </thead>
-                <tbody {...getTableBodyProps()}>
-                  {page.map((row) => {
-                    prepareRow(row);
-                    return (
-                      <tr {...row.getRowProps()} className={`${TableCss.regularTr}`}>
-                        {row.cells.map((cell) => (
-                          <td {...cell.getCellProps()}>
-                            {cell.render("Cell")}
-                          </td>
-                        ))}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table >
-            </div>
+            <select className='text-right'
+              value={pageSize}
+              onChange={(e) => setPageSize(Number(e.target.value))}
+            >
+              {[5, 10, 25, 50, 100, maxPageSize].map((pageSize) => (
+
+                <option key={pageSize} value={pageSize}>
+                  {pageSize !== maxPageSize ? `Show ${pageSize}` : `Show all`}
+                </option>
+              ))}
+            </select>
+            <span className='mx-1'>全{posts.length}件</span>
           </div>
         </div>
+        <div className="w-full overflow-scroll md:overflow-hidden">
+          <table {...getTableProps()} className={`${TableCss.regular}`}>
+            <thead>
+              {headerGroups.map((headerGroup) => (
+                <tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((column) => (
+                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                      {column.render('Header')}
+                      <span>
+                        {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
+                      </span>
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody {...getTableBodyProps()}>
+              {page.map((row) => {
+                prepareRow(row);
+                return (
+                  <tr {...row.getRowProps()} className={`${TableCss.regularTr}`}>
+                    {row.cells.map((cell) => (
+                      <td {...cell.getCellProps()}>
+                        {cell.render("Cell")}
+                      </td>
+                    ))}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table >
+        </div>
       </YouTubePlayerContext.Provider >
-    </SeletctPostContext.Provider>
+    </SeletctPostContext.Provider >
   );
 };
 
@@ -622,11 +619,11 @@ export function KaraokeDeleteTable({ posts, handleMovieClickYouTube }: KaraokeTa
               {pageIndex + 1} / {pageOptions.length}
             </strong>{" "}
           </span>
-          <button className={`px-2 ml-0 md:px-3  md:ml-1 bg-[#657261] rounded-2xl hover:bg-[#B7A692]`}
+          <button className={`px-2 ml-0 md:px-3  md:ml-1 bg-[#657261] rounded-2 hover:bg-[#B7A692]`}
             onClick={() => nextPage()} disabled={!canNextPage}>
             {">"}
           </button> &nbsp;
-          <button className={`px-2 mr-0 md:mr-1 bg-[#657261] rounded-2xl hover:bg-[#B7A692]`}
+          <button className={`px-2 mr-0 md:mr-1 bg-[#657261] rounded-2x1 hover:bg-[#B7A692]`}
             onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
             {">>"}
           </button>
@@ -830,7 +827,7 @@ export const KaraokeMinRandamTable = ({ posts, handleMovieClickYouTube }: Karaok
               className={`${ToClickCss.regular} flex py-0 h-6`} >更新</button> */}
           </div>
           <div className='overflow-scroll md:overflow-hidden'>
-            <table {...getTableProps()} className={`${TableCss.minRandum} `}>
+            <table {...getTableProps()} className={`${TableCss.minRandom} `}>
               <thead className={`${TableCss.regularThead}`}>
                 {headerGroups.map((headerGroup) => (
                   <tr {...headerGroup.getHeaderGroupProps()}>

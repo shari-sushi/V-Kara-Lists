@@ -57,9 +57,10 @@ const MyPage = ({ data, isSignin }: Mypage) => {
 
   return (
     <Layout pageName={"MyPage"} isSignin={isSignin}>
-      <div>
-        <YouTubePlayer videoId={currentMovieId} start={start} />
-        <br />
+      <div className="flex flex-col">
+        <div className="flex mx-auto mt-6">
+          <YouTubePlayer videoId={currentMovieId} start={start} />
+        </div>
         <div id="feature"
           className={`flex-col md:flex-row justify-center
                 max-w-[1000px] w-full mx-auto inline-block
@@ -67,16 +68,25 @@ const MyPage = ({ data, isSignin }: Mypage) => {
                 `}
         >
           <div className='mt-4 max-w-[1000px] '>
-            <h2>自分の登録したデータ一覧</h2>
+            <h1 className="font-bold text-lg"><u>自分の登録したデータ一覧</u></h1>
             {isSignin ? (
               <div>
-                <h2>★配信者</h2>登録数{vtubers.length}
+                <div className='flex'>
+                  <img src="/content/human_white.svg" className='h-5 mr-1' />
+                  <h2>配信者: 登録数{vtubers.length}</h2>
+                </div>
                 <VtuberTable posts={vtubers} /><br />
 
-                <h2>★歌枠(動画)</h2>登録数{movies.length}
+                <div className='flex'>
+                  <img src="/content/movie.svg" className='h-5 mr-1' />
+                  <h2>歌枠(動画): 登録数{movies.length}</h2>
+                </div>
                 < MovieTable posts={movies} handleMovieClickYouTube={handleMovieClickYouTube} /><br />
 
-                <h2>★歌</h2> 登録数{karaokes != null ? karaokes.length : 0}
+                <div className='flex'>
+                  <img src="/content/note.svg" className='h-5 mr-1' />
+                  <h2>歌: 登録数{karaokes != null ? karaokes.length : 0}</h2>
+                </div>
                 <KaraokePagenatoinTable
                   posts={karaokes}
                   handleMovieClickYouTube={handleMovieClickYouTube}

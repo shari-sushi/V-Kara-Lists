@@ -65,11 +65,13 @@ export default function SingsPage({ posts, isSignin }: PostsAndCheckSignin) {
                         </div>
                     </div> */}
                     </div>
-                    <KaraokePagenatoinTable
-                        posts={karaokes}
-                        handleMovieClickYouTube={handleMovieClickYouTube}
-                        setSelectedPost={setSelectedPost}
-                    />
+                    <div className="flex flex-col w-full">
+                        <KaraokePagenatoinTable
+                            posts={karaokes}
+                            handleMovieClickYouTube={handleMovieClickYouTube}
+                            setSelectedPost={setSelectedPost}
+                        />
+                    </div>
                 </div>
             </div>
         </Layout>
