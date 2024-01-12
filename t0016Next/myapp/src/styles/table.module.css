@@ -11,19 +11,18 @@
   }
   
   .table {
-    background-color: rgb(81, 81, 80);
-    border-color: #00000010;
-    padding: 0.1rem 10rem;
+    background-color: #515150;
+    border-color: #ff0000;
+    padding: 0.1rem 100rem;
     width: 800px;
-    color: rgb(252, 252, 252);
+    color: rgb(255, 255, 255);
   
   }
   
   .tbody {
-    border-bottom: 1px solid lightgray;
+    border-bottom: 1px solid rgb(255, 255, 255);
     border-inline: 100px ;
-  }
-  
+  }  
   
   .th {
     border-bottom: 1px solid lightgray;
@@ -31,7 +30,7 @@
   }
   
   .td {
-    padding: 4px;
+    padding: 0px;
   }
   
   .tfoot {
