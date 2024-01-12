@@ -99,11 +99,17 @@ func (handler *SqlHandler) Group(column string) *gorm.DB {
 func (handler *SqlHandler) Joins(query string, value ...interface{}) *gorm.DB {
 	return handler.Conn.Joins(query, value...)
 }
+func (handler *SqlHandler) Limit(limit int) *gorm.DB {
+	return handler.Conn.Limit(limit)
+}
 func (handler *SqlHandler) Model(value interface{}) *gorm.DB {
 	return handler.Conn.Model(value)
 }
 func (handler *SqlHandler) Omit(columns ...string) *gorm.DB {
 	return handler.Conn.Omit(columns...)
+}
+func (handler *SqlHandler) Order(value interface{}) *gorm.DB {
+	return handler.Conn.Order(value)
 }
 func (handler *SqlHandler) Save(value interface{}) *gorm.DB {
 	return handler.Conn.Save(value)

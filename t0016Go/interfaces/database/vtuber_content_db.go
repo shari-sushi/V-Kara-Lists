@@ -51,17 +51,6 @@ func (db *VtuberContentRepository) GetVtubersMovies() ([]domain.VtuberMovie, err
 	return VtsMos, nil
 }
 
-// func (db *VtuberContentRepository) GetVtubersMoviesKaraokes() ([]domain.VtuberMovieKaraoke, error) {
-// 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
-// 	var Kas []domain.Karaoke
-// 	var VtsMosKas []domain.VtuberMovieKaraoke
-// 	joinsQ := "LEFT JOIN movies USING(movie_url) LEFT JOIN vtubers USING(vtuber_id)"
-// 	err := db.Model(Kas).Joins(joinsQ).Scan(&VtsMosKas).Error
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return VtsMosKas, nil
-// }
 func (db *VtuberContentRepository) GetVtubersMoviesKaraokes() ([]domain.TransmitKaraoke, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var Kas []domain.Karaoke

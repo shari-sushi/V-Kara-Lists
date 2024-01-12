@@ -12,7 +12,9 @@ type SqlHandler interface {
 	First(interface{}, ...interface{}) *gorm.DB
 	Group(string) *gorm.DB
 	Joins(string, ...interface{}) *gorm.DB
+	Limit(int) *gorm.DB
 	Model(interface{}) *gorm.DB
+	Order(interface{}) *gorm.DB
 	Omit(...string) *gorm.DB
 	Save(interface{}) *gorm.DB
 	Select(interface{}, ...interface{}) *gorm.DB
