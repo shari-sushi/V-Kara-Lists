@@ -13,7 +13,7 @@ export const MainTW = {
 export const TableCss = {
     // whole
     regular: "bg-[#FFF6E4] text-black w-full md:max-w-[1000px] text-left whitespace-nowrap",
-    minRandum: "bg-[#FFF6E4] text-black w-full text-left whitespace-nowrap",
+    minRandom: "bg-[#FFF6E4] text-black w-full text-left whitespace-nowrap",
 
     // tr, td
     regularTd: "",

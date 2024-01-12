@@ -89,7 +89,7 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
                 <div id="feature"
                     className={`flex flex-col w-full max-w-[1000px] mx-auto`}>
                     <div className='inline-block flex-col top-0 mx-auto '>
-                        <div className='inline-block mx-auto md:mx-0 md:min-h-[255px] p-0 md:p-3'>
+                        <div className='inline-block mx-auto md:mx-0 md:min-h-[255px] p-0 md:px-3'>
                             <YouTubePlayer videoId={currentVideoId} start={currentStart} />
                         </div>
                     </div>
@@ -98,16 +98,18 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
                        inline-block flex-col top-0 max-w-[1000px] h-[600px]
                     `}
                     >
-                        <CreateForm
-                            posts={posts}
-                            selectedVtuber={selectedVtuber}
-                            selectedMovie={selectedMovie}
-                            selectedKaraoke={selectedKaraoke}
-                            setSelectedVtuber={setSelectedVtuber}
-                            setSelectedMovie={setSelectedMovie}
-                            setSelectedKaraoke={setSelectedKaraoke}
-                            clearMovieHandler={clearMovieHandler}
-                        />
+                        <div className='mt-1'>
+                            <CreateForm
+                                posts={posts}
+                                selectedVtuber={selectedVtuber}
+                                selectedMovie={selectedMovie}
+                                selectedKaraoke={selectedKaraoke}
+                                setSelectedVtuber={setSelectedVtuber}
+                                setSelectedMovie={setSelectedMovie}
+                                setSelectedKaraoke={setSelectedKaraoke}
+                                clearMovieHandler={clearMovieHandler}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

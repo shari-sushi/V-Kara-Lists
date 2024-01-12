@@ -46,11 +46,11 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
       setCurrentMovieId(ExtractVideoId(url));
       // setStart(start);
       //以下をonReady発火させられれば、ユーザー環境による差を少なくできる気がする
-      setTimeout(function () {
-        setStart(-1);
-        setStart(start);
-        console.log("別")
-      }, 1400); //local環境で、1100ms 高確率で✖, 1300ms:✖が少なくない //短すぎるとエラーになる注意
+      // setTimeout(function () {
+      // setStart(-1);
+      setStart(start);
+      // console.log("別")
+      // }, 1400); //local環境で、1100ms 高確率で✖, 1300ms:✖が少なくない //短すぎるとエラーになる注意
     }
   };
 
@@ -119,19 +119,19 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
             <div className='mt-4 max-w-[1000px] '>
               <div className='flex '>
                 <img src="/content/human_white.svg" className='h-5 mr-1' />
-                <span className='h-5 flex-1 mb-1'>配信者</span>
+                <h2 className='h-5 flex-1 mb-1'>配信者</h2>
               </div>
               <VtuberTable posts={vtubers} /><br />
 
-              <div className='flex'>
+              <h2 className='flex'>
                 <img src="/content/movie.svg" className='h-5 mr-1' />
                 歌枠(動画)
-              </div >
+              </h2 >
               <MovieTable posts={movies} handleMovieClickYouTube={handleMovieClickYouTube} /><br />
-              <div className='flex'>
+              <h2 className='flex'>
                 <img src="/content/note.svg" className='h-5 mr-1' />
                 歌
-              </div>
+              </h2>
               <KaraokeMinRandamTable
                 posts={karaokes}
                 handleMovieClickYouTube={handleMovieClickYouTube}
