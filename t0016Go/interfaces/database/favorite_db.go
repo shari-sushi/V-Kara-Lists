@@ -107,6 +107,35 @@ func (db *FavoriteRepository) GetVtubersMoviesKaraokesWithFavCnts() ([]domain.Tr
 	return TmKas, nil
 }
 
+func (db *FavoriteRepository) GetLatest50VtubersMoviesKaraokesWithFavCnts(guestId domain.ListenerId) ([]domain.TransmitKaraoke, error) {
+	fmt.Print("interfaces/database/favorite.go \n")
+	var TmKas []domain.TransmitKaraoke
+	var err error
+
+	var vt domain.Vtuber
+	selectQu1 := "vtubers.vtuber_id, vtubers.vtuber_name, vtubers.vtuber_kana, vtubers.intro_movie_url, vtubers.vtuber_inputter_id "
+	selectQu2 := "m.movie_url, m.movie_title, m.movie_inputter_id "
+	selectQu3 := "k.karaoke_id, k.sing_start, k.song_name, k.karaoke_inputter_id "
+	selectQu4 := "COUNT(f.karaoke_id) AS count"
+	joinQuA := "LEFT JOIN movies as m USING(vtuber_id) "
+	joinQuB := "LEFT JOIN karaokes as k ON m.movie_url = k.movie_url "
+	joinQuC := "LEFT JOIN favorites as f ON k.karaoke_id = f.karaoke_id AND f.karaoke_id != 0  AND f.deleted_at IS NULL"
+	joinQu1 := fmt.Sprint(joinQuA, joinQuB)
+	joinQu2 := fmt.Sprint(joinQuC)
+	whereQu1 := fmt.Sprint("k.karaoke_inputter_id != ", guestId)
+	whereQu2 := "m.movie_url IS NOT NULL AND k.karaoke_id != 0 "
+	groupQu := "k.karaoke_id"
+	orderQu := "`k`.`karaoke_id` DESC"
+	limitQu := 50
+	err = db.Model(vt).Select(selectQu1, selectQu2, selectQu3, selectQu4).
+		Joins(joinQu1).Where(whereQu1).Joins(joinQu2).Where(whereQu2).Group(groupQu).Order(orderQu).Limit(limitQu).
+		Scan(&TmKas).Error
+	if err != nil {
+		return nil, err
+	}
+	return TmKas, nil
+}
+
 func (db *FavoriteRepository) FindFavoritesCreatedByListenerId(lId domain.ListenerId) ([]domain.ReceivedFavorite, error) {
 	fmt.Print("interfaces/database/favorite_db.go \n")
 	// 期待するクエリ
