@@ -1,24 +1,18 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import https from 'https';
 import axios, { AxiosRequestConfig } from 'axios';
+import Link from 'next/link';
 
 import { domain } from '@/../env'
-import { Header } from "@/components/layout/Layout";
+import { Layout } from "@/components/layout/Layout";
 import type { ReceivedKaraoke, ReceivedVtuber, ReceivedMovie } from '../../types/vtuber_content'; //type{}で型情報のみインポート
 import { VtuberTable } from '@/components/table/Vtuber'
 import { MovieTable } from '@/components/table/Movie'
 import { KaraokePagenatoinTable } from '@/components/table/Karaoke'
-import { YouTubePlayer } from '@/components/YoutubePlayer'
+import { YouTubePlayer } from '@/components/moviePlayer/YoutubePlayer'
 import { ExtractVideoId } from '@/components/Conversion'
+import { ToClickTW } from '@/styles/tailwiind'
 
-
-export const YouTubePlayerContext = React.createContext({} as {
-  currentMovieId: string
-  setCurrentMovieId: React.Dispatch<React.SetStateAction<string>>
-  start: number
-  setStart: React.Dispatch<React.SetStateAction<number>>
-  handleMovieClickYouTube(movieId: string, time: number): void
-})
 type Mypage = {
   data: {
     vtubers_movies_karaokes_u_created: ReceivedKaraoke[];
@@ -31,10 +25,10 @@ type Mypage = {
 const MyPage = ({ data, isSignin }: Mypage) => {
   if (!isSignin) {
     return (
-      <Header pageName={"MyPage"} isSignin={isSignin}>
+      <Layout pageName={"MyPage"} isSignin={isSignin}>
         <br />
         <>ログインが必要なコンテンツです</>
-      </Header>
+      </Layout>
 
     )
   };
@@ -59,48 +53,58 @@ const MyPage = ({ data, isSignin }: Mypage) => {
       }, 1300);
     }
   };
+  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
 
   return (
-    <Header pageName={"MyPage"} isSignin={isSignin}>
-      <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube, currentMovieId, setCurrentMovieId, start, setStart }}>
-        <div>
-          <YouTubePlayer videoId={currentMovieId} start={start} />
-          <br />
+    <Layout pageName={"MyPage"} isSignin={isSignin}>
+      <div>
+        <YouTubePlayer videoId={currentMovieId} start={start} />
+        <br />
+        <div id="feature"
+          className={`flex-col md:flex-row justify-center
+                max-w-[1000px] w-full mx-auto inline-block
+                top-0 p-1
+                `}
+        >
+          <div className='mt-4 max-w-[1000px] '>
+            <h2>自分の登録したデータ一覧</h2>
+            {isSignin ? (
+              <div>
+                <h2>★配信者</h2>登録数{vtubers.length}
+                <VtuberTable posts={vtubers} /><br />
 
-          <h2>自分の登録したデータ一覧</h2>
-          {isSignin ? (
-            <>
-              <h2>★配信者</h2>登録数{vtubers.length}
-              <VtuberTable posts={vtubers} /><br />
+                <h2>★歌枠(動画)</h2>登録数{movies.length}
+                < MovieTable posts={movies} handleMovieClickYouTube={handleMovieClickYouTube} /><br />
 
-              <h2>★歌枠(動画)</h2>登録数{movies.length}
-              < MovieTable posts={movies} /><br />
-
-              <h2>★歌</h2> 登録数{karaokes != null ? karaokes.length : 0}
-              <KaraokePagenatoinTable posts={karaokes} />
-            </>
-          ) : (
-            <div>
-              自分で登録したデータが無いようです...TT
-            </div>
-          )}
-          <br />
+                <h2>★歌</h2> 登録数{karaokes != null ? karaokes.length : 0}
+                <KaraokePagenatoinTable
+                  posts={karaokes}
+                  handleMovieClickYouTube={handleMovieClickYouTube}
+                  setSelectedPost={setSelectedPost}
+                />
+              </div>
+            ) : (
+              <div>
+                自分で登録したデータが無いようです...TT
+              </div>
+            )}
+            <br />
+          </div>
+          <span className={`w-auto`}>
+            <Link href="/user/profile" className={`${ToClickTW.regular} w-auto`}>
+              プロフィール
+            </Link>
+          </span>
         </div>
-      </YouTubePlayerContext.Provider>
-    </Header>
+      </div>
+    </Layout >
   );
 }
 
 export default MyPage;
 
-//////////////////////////////////////////////////////
-type ContextType = {
-  req: { headers: { cookie?: string; }; };
-  res: {
-    writeHead: (statusCode: number, headers: Record<string, string>) => void;
-    end: () => void;
-  };
-};
+/////////////////////////////////////////////////////////////////////////////
+import { ContextType } from '@/types/server'
 
 export async function getServerSideProps(context: ContextType) {
   const rawCookie = context.req.headers.cookie;

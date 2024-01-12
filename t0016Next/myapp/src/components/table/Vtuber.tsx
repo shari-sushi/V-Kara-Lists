@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { ReceivedVtuber } from "@/types/vtuber_content";
 import TableStyle from '@/styles/table.module.css'
 import { ToDeleteContext } from '@/pages/crud/delete'
+import { TableCss } from '@/styles/tailwiind'
 
 type VtuberTableProps = {
     posts: ReceivedVtuber[];
@@ -20,9 +21,9 @@ export function VtuberTable({ posts }: VtuberTableProps) {
     } = useTable({ columns, data }, useSortBy, useRowSelect);
 
     return (
-        <>
-            <table {...getTableProps()} className={TableStyle.table}>
-                <thead className={TableStyle.th}>
+        <div className="w-full overflow-scroll md:overflow-hidden">
+            <table {...getTableProps()} className={`${TableCss.regular} caption-bottom`}>
+                <thead className={`${TableCss.regularThead}`}>
                     {headerGroups.map((headerGroup) => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
                             {headerGroup.headers.map((column) => (
@@ -36,33 +37,45 @@ export function VtuberTable({ posts }: VtuberTableProps) {
                         </tr>
                     ))}
                 </thead>
-                <tbody {...getTableBodyProps()}>
+                <tbody {...getTableBodyProps()} className="">
                     {rows.map((row, i) => {
                         prepareRow(row);
                         return (
-                            <tr {...row.getRowProps()}>
+                            <tr {...row.getRowProps()} className={`${TableCss.regularTr}`}>
                                 {row.cells.map((cell) => {
-                                    return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                    return <td {...cell.getCellProps()} className={TableStyle.td} >{cell.render('Cell')}</td>
                                 })}
                             </tr>
                         );
                     })}
                 </tbody>
             </table>
-        </>
+        </div>
     );
 }
 
 
 const columns: Column<ReceivedVtuber>[] = [
     { Header: 'VTuber', accessor: 'VtuberName' },
-    { Header: 'VtuberKana', accessor: 'VtuberKana' },
+    { Header: 'kana', accessor: 'VtuberKana' },
     {
-        Header: '紹介動画(click to play the video)', accessor: 'IntroMovieUrl',
+        Header: '紹介動画( link to YouTube)', accessor: 'IntroMovieUrl',
         Cell: ({ row }: { row: { original: ReceivedVtuber } }) => {
-            return <Link href={`https://${row.original.IntroMovieUrl}`} target="_blank" rel="noopener noreferrer">
-                {row.original.IntroMovieUrl && <u>{"YouTubeに見に行く"}</u> || "未登録"}
-            </Link>
+            return (
+                <span className="relative">
+                    <>
+                        {row.original.IntroMovieUrl &&
+                            <Link href={`https://${row.original.IntroMovieUrl}`} className="flex"
+                                target="_blank" rel="noopener noreferrer">
+                                <img src="/content/play_black.svg" className='w-5 mr-2' />
+                                YouTubeへ
+                            </Link>
+                            || <span className={`pl-7`}>未登録</span>
+
+                        }
+                    </>
+                </span>
+            )
         },
     },
 ];
@@ -83,9 +96,9 @@ export function VtuberDeleteTable({ posts }: VtuberDeleteTableProps) {
     } = useTable({ columns: deleteColumns, data }, useSortBy, useRowSelect);
 
     return (
-        <>
-            <table {...getTableProps()} className={TableStyle.table}>
-                <thead className={TableStyle.th}>
+        <div className="w-full overflow-scroll md:overflow-hidden">
+            <table {...getTableProps()} className={TableCss.regular}>
+                <thead className={`${TableCss.regularThead}`}>
                     {headerGroups.map((headerGroup) => (
                         <tr {...headerGroup.getHeaderGroupProps()}>
                             {headerGroup.headers.map((column) => (
@@ -103,7 +116,7 @@ export function VtuberDeleteTable({ posts }: VtuberDeleteTableProps) {
                     {rows.map((row, i) => {
                         prepareRow(row);
                         return (
-                            <tr {...row.getRowProps()}>
+                            <tr {...row.getRowProps()} className={`${TableCss.regularTr}`}>
                                 {row.cells.map((cell) => {
                                     return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                                 })}
@@ -112,19 +125,31 @@ export function VtuberDeleteTable({ posts }: VtuberDeleteTableProps) {
                     })}
                 </tbody>
             </table>
-        </>
+        </div>
     );
 }
 
 const deleteColumns: Column<ReceivedVtuber>[] = [
     { Header: 'VTuber', accessor: 'VtuberName' },
-    { Header: 'VtuberKana', accessor: 'VtuberKana' },
+    { Header: 'kana', accessor: 'VtuberKana' },
     {
-        Header: '紹介動画(click to play the video)', accessor: 'IntroMovieUrl',
+        Header: '紹介動画( link to YouTube)', accessor: 'IntroMovieUrl',
         Cell: ({ row }: { row: { original: ReceivedVtuber } }) => {
-            return <Link href={`https://${row.original.IntroMovieUrl}`} target="_blank" rel="noopener noreferrer">
-                {row.original.IntroMovieUrl && <u>{row.original.IntroMovieUrl}</u> || "未登録"}
-            </Link>
+            return (
+                <span className="relative">
+                    <>
+                        {row.original.IntroMovieUrl &&
+                            <Link href={`https://${row.original.IntroMovieUrl}`} className="flex"
+                                target="_blank" rel="noopener noreferrer">
+                                <img src="/content/play_black.svg" className='w-5 mr-2' />
+                                YouTubeへ
+                            </Link>
+                            || <span className={`pl-7`}>未登録</span>
+
+                        }
+                    </>
+                </span>
+            )
         },
     },
     {
