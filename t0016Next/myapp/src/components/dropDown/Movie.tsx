@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
-import type { ReceivedMovie } from '@/types/vtuber_content';
-import { DropStyle, TopPagePosts } from './common'
+import type { BasicDataProps, ReceivedMovie } from '@/types/vtuber_content';
+import { DropStyle } from './common'
 
 // DropDinwMo, Kaについは、on~~Seletがnillとか0なら処理を止めべき
 type MovieOptions = {
@@ -10,7 +10,7 @@ type MovieOptions = {
 }
 
 type DropDownMovieProps = {
-    posts: TopPagePosts;
+    posts: BasicDataProps;
     selectedVtuber: number;
     setSelectedMovie: (value: string) => void;
     clearMovieHandler: () => void;
@@ -48,7 +48,7 @@ export const DropDownMovie = ({ posts, selectedVtuber, setSelectedMovie, clearMo
     }, [selectedVtuber, movies]);
 
     return (
-        <><Select
+        <Select
             id="selectbox"
             instanceId="selectbox"
             placeholder="動画タイトルを検索/選択"
@@ -70,6 +70,5 @@ export const DropDownMovie = ({ posts, selectedVtuber, setSelectedMovie, clearMo
                 }
             }}
         />
-        </>
     );
 };

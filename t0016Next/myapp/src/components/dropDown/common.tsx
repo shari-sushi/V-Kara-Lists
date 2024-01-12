@@ -1,20 +1,39 @@
+import { getWindowSize } from '@/features/layout/Layout';
 import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '@/types/vtuber_content';
+import { CSSObjectWithLabel } from 'react-select';
 
+// (alias) const DropStyle: {
+//   container: (base: any) => any;
+//   control: (base: any) => any;
+// }
+
+// https://zenn.dev/morit4ryo/articles/1897b2296b8f1c
 export const DropStyle = ({
-  container: (base: any) => ({
-    ...base,
-    width: '300px'
+  control: (provided: any, state: any) => ({
+    ...provided,
+    width: '100%',
+    borderRadius: 'none',
+    border: '1px solid gray',
+    backgroundColor: '#eee',
+    fontSize: '16px',
+    option: '14px',
+    textAlign: 'left',
+    '&:hover': {
+      border: '2px solid #FFF6E4',
+      cursor: 'pointer',
+    },
   }),
-  control: (base: any) => ({ //controlでholder、optionで選択肢の文字サイズを指定
-    ...base,
-    fontSize: '12px'  // ここで文字サイズを指定
-
+  option: (provided: any, state: { isSelected: any; }) => ({
+    ...provided,
+    backgroundColor: state.isSelected ? '#657261' : '#eee',
+    color: state.isSelected ? 'white' : 'black',
+    '&:hover': {
+      backgroundColor: '#888',
+    },
   }),
-}
-)
+  menu: (provided: any) => ({
+    ...provided,
+    backgroundColor: '#eee',
+  }),
+});
 
-export type TopPagePosts = {
-  vtubers: ReceivedVtuber[];
-  vtubers_movies: ReceivedMovie[];
-  vtubers_movies_karaokes: ReceivedKaraoke[];
-};

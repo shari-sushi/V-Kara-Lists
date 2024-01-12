@@ -5,7 +5,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import { domain } from '@/../env'
 import type { User } from "@/types/user"
 import { GetLogout, Withdraw } from '@/components/button/User';
-import { Header } from "@/components/layout/Layout";
+import { Layout } from "@/components/layout/Layout";
 
 type Mypage = {
     listener: User;
@@ -15,16 +15,16 @@ type Mypage = {
 const Profile = ({ listener, isSignin }: Mypage) => {
     if (!isSignin) {
         return (
-            <Header pageName={"MyPage"} isSignin={isSignin}>
+            <Layout pageName={"MyPage"} isSignin={isSignin}>
                 <br />
                 <>ログインが必要なコンテンツです</> <br />
-            </Header>
+            </Layout>
         )
     };
 
     return (
-        <Header pageName={"MyPage"} isSignin={isSignin}>
-            <div>
+        <Layout pageName={"MyPage"} isSignin={isSignin}>
+            <div className="mt-6">
                 <h2>会員情報</h2>
                 <ul>
                     <li>メンバー名: {listener?.ListenerName} </li>
@@ -35,20 +35,15 @@ const Profile = ({ listener, isSignin }: Mypage) => {
                     <Withdraw />
                 </ul>
             </div>
-        </Header>
+        </Layout>
     );
 }
 
 export default Profile;
 
 
-type ContextType = {
-    req: { headers: { cookie?: string; }; };
-    res: {
-        writeHead: (statusCode: number, headers: Record<string, string>) => void;
-        end: () => void;
-    };
-};
+/////////////////////////////////////////////////////////////////////////////
+import { ContextType } from '@/types/server'
 
 export async function getServerSideProps(context: ContextType) {
     const rawCookie = context.req.headers.cookie;
