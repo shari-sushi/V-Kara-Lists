@@ -1,19 +1,79 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import YouTube from 'react-youtube';
-// import '../Youtube.module.css';
 
-type YouTubePlayerProps = {
+import { YouTubeTW } from '@/styles/tailwiind'
+import { getWindowSize } from '@/features/layout/Layout';
+
+export const YouTubePlayer = ({ videoId, start }: { videoId: string, start: number }) => {
+  const [hasWindow, setHasWindow] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setHasWindow(true);
+    }
+  }, []);
+
+  const { height: preHeight, width: preWidth } = getWindowSize();
+  const aspectRatio = 9 / 16
+  if (preWidth >= 950) {
+    const height = 255;
+    const width = Math.round(height / aspectRatio);
+    return (
+      <div className=''>
+        {hasWindow &&
+          < PreYouTubePlayer
+            videoId={videoId}
+            start={start}
+            windowSize={{ height, width }}
+          />
+        }
+      </div>
+    )
+  } else if (preWidth > 500) {
+    const width = Math.round(0.48 * preWidth);
+    const height = Math.round(0.48 * preWidth * aspectRatio);
+    return (
+      <div>
+        {hasWindow &&
+          < PreYouTubePlayer
+            videoId={videoId}
+            start={start}
+            windowSize={{ height, width }}
+          />
+        }
+      </div>
+    )
+  } else {
+    const width = Math.round(preWidth - 40);
+    const height = Math.round((preWidth - 40) * aspectRatio);
+    return (
+      <div>
+        {hasWindow &&
+          < PreYouTubePlayer
+            videoId={videoId}
+            start={start}
+            windowSize={{ height, width }
+            }
+          />
+        }
+      </div>
+    )
+  }
+}
+
+/////////////////////////////////////
+type PreYouTubePlayerProps = {
   videoId: string;
   start: number;
+  windowSize: { width: number; height: number; }
 }
 
 interface YouTubePlayerState {
   player: any;
 }
 
-export class YouTubePlayer extends React.Component<YouTubePlayerProps, YouTubePlayerState> {
+export class PreYouTubePlayer extends React.Component<PreYouTubePlayerProps, YouTubePlayerState> {
   private playerRef: React.RefObject<YouTube>;
-  constructor(props: YouTubePlayerProps) {
+  constructor(props: PreYouTubePlayerProps) {
     super(props);
     this.state = {
       player: null,
@@ -28,11 +88,12 @@ export class YouTubePlayer extends React.Component<YouTubePlayerProps, YouTubePl
       // ↓(動画指定と同時になるので)効果なし。機能しないの意味わからん
       this.state.player.seekTo(this.props.start);
     }
+
     // this.state.player.event.onReady()
   }
 
   // renderメソッドよりも後で呼び出される
-  componentDidUpdate(prevProps: YouTubePlayerProps) {
+  componentDidUpdate(prevProps: PreYouTubePlayerProps) {
     console.log("prevProps", prevProps)
     if (prevProps.start !== this.props.start) {
       this.changeTime(this.props.start); //必須
@@ -85,8 +146,10 @@ export class YouTubePlayer extends React.Component<YouTubePlayerProps, YouTubePl
     const { start: start } = this.props;
     // console.log("this.props", this.props)
     const opts: any = {
-      width: '560',
-      height: '315',
+      height: `${this.props.windowSize.height}`,
+      // height: '198',
+      width: `${this.props.windowSize.width}`,
+      // width: '320',
       playerVars: {
         // https://developers.google.com/youtube/player_parameters
         autoplay: 1, //自動再生に必須だが、これだけだとダメな時もある様子…。
@@ -97,17 +160,17 @@ export class YouTubePlayer extends React.Component<YouTubePlayerProps, YouTubePl
     };
 
     return (
-      <div>
-        <YouTube
-          videoId={videoId}
-          opts={opts}
-          onReady={this.onReady}
-          ref={this.playerRef}
-        />
-      </div>
+      <YouTube
+        videoId={videoId}
+        opts={opts}
+        onReady={this.onReady}
+        ref={this.playerRef}
+        className={`${YouTubeTW} w-[100%]`}
+      />
     );
   }
 }
+
 
 ////////////////////////////////////// 本来あるべき姿(バグなのか動かない) //////////////////////////////////
 // type Options = React.ComponentProps<typeof YouTube>['opts'];

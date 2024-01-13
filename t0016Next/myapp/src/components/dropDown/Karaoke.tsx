@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useMemo  } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Select from 'react-select';
-import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '@/types/vtuber_content';
-import {domain} from '../../../env'
-import { DropStyle, TopPagePosts } from './common'
+import type { BasicDataProps, ReceivedKaraoke } from '@/types/vtuber_content';
+import { DropStyle } from './common'
 
 // DropDinwMo, Kaについは、on~~Seletがnillとか0なら処理を止めべき
 
@@ -12,15 +11,14 @@ type Options = {
 }
 
 type DropDownKaraokeProps = {
-  posts:TopPagePosts;
+  posts: BasicDataProps;
   selectedMovie: string;
-  onKaraokeSelect:(value:number) => void ;
+  onKaraokeSelect: (value: number) => void;
 };
 
 // karaoke_list用
-export const DropDownKaraoke = ({ posts, selectedMovie, onKaraokeSelect }:DropDownKaraokeProps) => {
-  const karaokes = posts?.vtubers_movies_karaokes || [{}as ReceivedKaraoke]
-  // const [movies, setData2] = useState<Karaoke[]>();
+export const DropDownKaraoke = ({ posts, selectedMovie, onKaraokeSelect }: DropDownKaraokeProps) => {
+  const karaokes = posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke]
   const [karaokeOptions, setKaraokeOptions] = useState<Options[]>([]);
   const [selectedKaraoke, setSelectedKaraoke] = useState<number>(0);
 
@@ -35,18 +33,15 @@ export const DropDownKaraoke = ({ posts, selectedMovie, onKaraokeSelect }:DropDo
     // }
     const fetchKaraokes = async () => {
       try {
-        console.log("selectedMovie=",selectedMovie)
-        console.log("karaokes=",karaokes)
-        console.log("karaokes.MovieUrl=",karaokes[0].MovieUrl)
-        // const movieUrl = {selectedMovie}
-        const choiceKaraoke = karaokes.filter((karaokes:ReceivedKaraoke) => karaokes.MovieUrl === selectedMovie);
-        console.log("API Response ka:", choiceKaraoke );
-        let havingkaraoke = choiceKaraoke.map((karaoke:ReceivedKaraoke) => ({
+        const choiceKaraoke = karaokes.filter((karaokes: ReceivedKaraoke) => karaokes.MovieUrl === selectedMovie);
+        console.log("API Response ka:", choiceKaraoke);
+        let havingkaraoke = choiceKaraoke.map((karaoke: ReceivedKaraoke) => ({
           value: karaoke.KaraokeId,
           label: karaoke.SongName || ""
         }));
-        if (havingkaraoke){
-        setKaraokeOptions(havingkaraoke);}
+        if (havingkaraoke) {
+          setKaraokeOptions(havingkaraoke);
+        }
       } catch (error) {
         console.error("Error fetching Karaokes:", error);
       }
@@ -58,32 +53,33 @@ export const DropDownKaraoke = ({ posts, selectedMovie, onKaraokeSelect }:DropDo
     <>
       <Select
         id="selectbox"
-        instanceId="selectbox"     
-        placeholder="歌を検索/選択" 
+        instanceId="selectbox"
+        placeholder="歌を検索/選択"
         className="basic-single"
-         classNamePrefix="select"
-        isClearable={true}  isSearchable={true}   options={karaokeOptions}
+        classNamePrefix="select"
+        isClearable={true} isSearchable={true} options={karaokeOptions}
         // value={selectedKaraoke} 
         // isMulti={true}  backspaceRemovesValue={false}
         blurInputOnSelect={true} styles={DropStyle}
         onChange={option => {
-        if (option){ //選んだ時にエラー吐く
-          onKaraokeSelect(option.value);
-          // setSelectedKaraoke(option);
-        // } else {
-        //   handleKaraokeClear();
-        //   setMovieOptions([]);
-        }    
-      }}
+          if (option) { //選んだ時にエラー吐く
+            onKaraokeSelect(option.value);
+            // setSelectedKaraoke(option);
+            // } else {
+            //   handleKaraokeClear();
+            //   setMovieOptions([]);
+          }
+        }}
       />
     </>
   );
 };
 
+const memo = { //ファイルのtopレベルに置いておくとESLintの自動整形が機能しなくなる
+  //// 公式
+  // https://react-select.com/home
 
-    // 公式
-    // https://react-select.com/home
-
-    // <select  value={hoge} 
-    //これがあると、その値が変化したときのみUIが変化する
-    // ない場合は「制御されないコンポーネント」となり、どんな変更でもUIが変化する
+  // <select  value={hoge} 
+  //これがあると、その値が変化したときのみUIが変化する
+  // ない場合は「制御されないコンポーネント」となり、どんな変更でもUIが変化する
+}

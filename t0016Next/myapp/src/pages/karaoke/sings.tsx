@@ -1,96 +1,85 @@
-import { domain } from '../../../env'
-import React, { useEffect, useState, StrictMode, createContext } from 'react';
-import { createRoot } from 'react-dom/client';
-import Link from 'next/link';
-import { CellProps } from 'react-table';
+import React, { useState } from 'react';
 import https from 'https';
 import axios, { AxiosRequestConfig } from 'axios';
-import style from '../../style/Youtube.module.css';
-import type { ReceivedKaraoke, ReceivedVtuber, ReceivedMovie } from '../../types/vtuber_content'; //type{}で型情報のみインポート
-import { YouTubePlayer } from '../../components/YoutubePlayer'
-import { ConvertStringToTime, ExtractVideoId } from '../../components/Conversion'
-import { Checkbox } from '../../components/SomeFunction';
-import { KaraokeTable, KaraokePagenatoinTable } from '../../components/table/Karaoke';
-import { Header } from '../../components/layout/Layout'
 
+import { domain } from '@/../env'
+import type { ReceivedKaraoke } from '@/types/vtuber_content';
+import { YouTubePlayer } from '@/components/moviePlayer/YoutubePlayer'
+import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
+import { KaraokePagenatoinTable } from '@/components/table/Karaoke';
+import { Layout } from '@/components/layout/Layout'
+import { ContextType } from '@/types/server'
 
 type PostsAndCheckSignin = {
     posts: { vtubers_movies_karaokes: ReceivedKaraoke[] };
     isSignin: boolean;
 }
 
-export const YouTubePlayerContext = React.createContext({} as {
-    currentMovieId: string
-    setCurrentMovieId: React.Dispatch<React.SetStateAction<string>>
-    start: number
-    setStart: React.Dispatch<React.SetStateAction<number>>
-    handleMovieClickYouTube(movieId: string, time: number): void
-})
-
 export default function SingsPage({ posts, isSignin }: PostsAndCheckSignin) {
-    const karaokes = posts.vtubers_movies_karaokes || {}
+    const karaokes = posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke];
 
     // ようつべ用
     const primaryYoutubeUrl = "kORHSmXcYNc"
-    const primaryYoutubeStartTime = ConvertStringToTime("00:08:29")// 60 * 8 + 29 //60*25か60*47かなー, 60*7+59, 60*8+29
+    const primaryYoutubeStartTime = ConvertStringToTime("00:08:29")
     const [currentMovieId, setCurrentMovieId] = useState<string>(primaryYoutubeUrl);
     const [start, setStart] = useState<number>(primaryYoutubeStartTime)
-    const [isRandomOrAll, setIsRandomOrAll] = useState(false);
     const handleMovieClickYouTube = (url: string, start: number) => {
+        console.log("handleMovieClickYouTube")
         // setCurrentMovieId(ExtractVideoId(url));
         // setStart(start);
-        console.log("handleMovieClickYouTube")
+
         if (currentMovieId == ExtractVideoId(url)) {
             setStart(-1); //timeに変化が無いと受け付けてもらえないので、苦肉の策
             setStart(start);
-            console.log("同じ")
+            console.log("同")
         } else {
             setCurrentMovieId(ExtractVideoId(url));
-            // setStart(start);
-            //以下をonReady発火させられれば、ユーザー環境による差を少なくできる気がする
+            setStart(start);
+            //以下をonReady発火させられれば、ユーザー環境による差を少なくできるかも
             setStart(-1);
             setTimeout(function () {
                 setStart(start);
                 console.log("別")
-            }, 1300); //local環境で、1100ms 高確率で✖, 1300ms:✖が少なくない //短すぎるとエラーになる注意
+            }, 1400); //短すぎるとエラーになる注意
         }
     };
 
+    const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
 
     return (
-        <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube, currentMovieId, setCurrentMovieId, start, setStart }}>
-            <Header pageName="Sings" isSignin={isSignin}>
-                <div>
-                    <a>{isSignin && "ログイン中" || '非ログイン中'}</a><br />
-                    <br />
-                    <button onClick={() => setStart(600)}>10分</button>
-                    <button onClick={() => setStart(900)}>15分</button> <br />
-                    <a>videoId= {currentMovieId}, start= {start}秒 = {Math.floor(start / 60)}分 {Math.floor(start % 60)}秒</a >
-                    <br /><br />
-                    <YouTubePlayer videoId={currentMovieId} start={start} />
-                    <Checkbox checked={isRandomOrAll}
-                        onChange={() => setIsRandomOrAll((state) => !state)} >：分割表示⇔全件表示(全{karaokes?.length}件)
-                        &nbsp; {isRandomOrAll && "全件表示中(昇順/降順 可)" || "分割表示中"}
-                    </Checkbox>
-
-                    {isRandomOrAll
-                        && <KaraokeTable posts={karaokes} />
-                        || <KaraokePagenatoinTable posts={karaokes} />
-                    }
+        <Layout pageName="Sings" isSignin={isSignin}>
+            {/* <div>videoId= {currentMovieId}, start= {start}秒 = {Math.floor(start / 60)}分 {Math.floor(start % 60)}秒</div > */}
+            <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
+                <div className={`pt-6 flex flex-col items-center`}>
+                    <div className={`flex `}>
+                        <YouTubePlayer videoId={currentMovieId} start={start} />
+                        {/* <div className='flex '>
+                        <div className='bg-[#B7A692] text-black min-w-[350px] max-w-[300px] h-44 '>
+                            <h2 className=' font-bold  '>選択した楽曲</h2>
+                            <hr className='border-black ' />
+                            Vtubre: {selectedPost.VtuberName} <br />
+                            動画: {selectedPost.MovieTitle} <br />
+                            URL: {selectedPost.MovieUrl} <br />
+                            曲名: {selectedPost.SongName} <br />
+                            歌開始: {selectedPost.SingStart} <br />
+                        </div>
+                    </div> */}
+                    </div>
+                    <div className="flex flex-col w-full">
+                        <KaraokePagenatoinTable
+                            posts={karaokes}
+                            handleMovieClickYouTube={handleMovieClickYouTube}
+                            setSelectedPost={setSelectedPost}
+                        />
+                    </div>
                 </div>
-            </Header>
-        </YouTubePlayerContext.Provider>
+            </div>
+        </Layout>
     )
 };
 
-type ContextType = {
-    req: { headers: { cookie?: string; }; };
-    res: {
-        writeHead: (statusCode: number, headers: Record<string, string>) => void;
-        end: () => void;
-    };
-};
 
+/////////////////////////////////////////////////////////////////////////////
 export async function getServerSideProps(context: ContextType) {
     const rawCookie = context.req.headers.cookie;
     const sessionToken = rawCookie?.split(';').find((cookie: string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];

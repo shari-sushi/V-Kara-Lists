@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Link from 'next/link';
 
 import { domain } from '@/../env'
+import { ToClickTW } from '@/styles/tailwiind'
 
 export const GetLogout = () => {
   const router = useRouter();
@@ -26,7 +27,7 @@ export const GetLogout = () => {
   };
   return (
     <Link href="">
-      <button onClick={fetchLogout}>ログアウト</button>
+      <button onClick={fetchLogout} className={`${ToClickTW.regular}`}>ログアウト</button>
     </Link>
   )
 };
@@ -56,7 +57,9 @@ export const Withdraw = () => {
     <div>
       {!isToDecision &&
         <div>
-          <button onClick={() => setIsToDecision(!isToDecision)} >
+          <button className={`${ToClickTW.regular}`}
+            onClick={() => setIsToDecision(!isToDecision)}
+          >
             退会ボタンを開く</button>
         </div>}
       {isToDecision && <div> <br />
@@ -66,10 +69,41 @@ export const Withdraw = () => {
         <li>・削除されたアカウントが登録したVtuberや動画等の登録データはサイト運営によって管理されます。</li>
         <li>・ゲストアカウントは退会できません。</li>
         <br />
-        <button onClick={() => setIsToDecision(!isToDecision)} >キャンセル</button>
-        <button onClick={fetchWithdraw}>退会確定</button>
+        <button onClick={fetchWithdraw} className={`${ToClickTW.regular}`}>
+          退会確定
+        </button>
+        <button onClick={() => setIsToDecision(!isToDecision)} className={`${ToClickTW.regular} mx-1`} >
+          キャンセル
+        </button>
       </div>}
     </div>
+  )
+};
+
+export const GestLoginWithStyle = (decoration: { decoration: string }) => {
+  const router = useRouter();
+  const fetchWithdraw = async () => {
+    try {
+      const response = await fetch(`${domain.backendHost}/users/gestlogin`, {
+        method: 'get',
+        credentials: "include",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+      if (response.status != 200) {
+        throw new Error(response.statusText);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    router.push(`/`)
+  };
+  return (
+    <button className={decoration.decoration}
+      onClick={fetchWithdraw} >
+      ゲストログイン
+    </button>
   )
 };
 
@@ -93,10 +127,38 @@ export const GestLogin = () => {
     router.push(`/`)
   };
   return (
-    <Link href="">
-      <button onClick={fetchWithdraw} style={{ background: 'brown' }}>
+    <button className={`${ToClickTW.regular} `}
+      onClick={fetchWithdraw} >
+      ゲストログイン
+    </button >
+  )
+};
+
+export const GestLoginForHamburger = () => {
+  const router = useRouter();
+  const fetchWithdraw = async () => {
+    try {
+      const response = await fetch(`${domain.backendHost}/users/gestlogin`, {
+        method: 'get',
+        credentials: "include",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+      if (response.status != 200) {
+        throw new Error(response.statusText);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+    router.push(`/`)
+  };
+  return (
+    <button className={`${ToClickTW.hamburger} my-1 `}
+      onClick={fetchWithdraw} >
+      <div className={`flex ml-5 sm:my-2 my-[4px] `} >
         ゲストログイン
-      </button>
-    </Link>
+      </div>
+    </button >
   )
 };

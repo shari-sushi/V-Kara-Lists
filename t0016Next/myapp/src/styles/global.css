@@ -47,8 +47,11 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 65, 75, 35;
-    /* --background-end-rgb: 80, 90, 30; */
+    /* --background-start-rgb: 65, 75, 35; */
+    --background-start-rgb: 31,39,36;
+    /* --background-start-rgb: 253,248,229; */
+    /* --background-end-rgb: 111,92,75; */
+    
 
     --primary-glow: radial-gradient(rgba(1, 65, 255, 0.4), rgba(1, 65, 255, 0));
     --secondary-glow: linear-gradient(
