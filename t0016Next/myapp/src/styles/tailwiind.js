@@ -22,7 +22,9 @@ export const TableCss = {
 
     // data in column
     favoriteColumn: "rounded-full w-10 bg-[#fbd5d2] text-black ",
-    deleteColumn: ""
+    deleteColumn: "",
+    pageNationSingle: "px-1 md:px-2 bg-[#657261] rounded-2xl hover:bg-[#B7A692]",
+    pageNationDouble: "px-1 md:px-2 bg-[#657261] rounded-2xl hover:bg-[#B7A692]",
 }
 
 export const ToClickTW = {
