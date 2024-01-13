@@ -11,6 +11,7 @@ import { ValidateCreate } from '@/features/regularExpression/VtuberContent'
 import { FormTW, ToClickTW } from '@/styles/tailwiind'
 import { NeedBox } from '@/components/box/Box';
 import { SelectCrudContent } from '@/components/form/Common';
+import router from 'next/router';
 
 
 export type CreatePageProps = {
@@ -74,6 +75,12 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
         },
     });
 
+    const [isDisplay, setIsDisPlay] = useState<boolean>(false);
+    const handleOpen = () => {
+        setIsDisPlay(true)
+        setTimeout(() => setIsDisPlay(false), 4500);
+    }
+
     const { register, handleSubmit, formState: { errors } } = useForm<CrudDate>({ reValidateMode: 'onChange' });
 
     const onSubmit = async (CrudData: CrudDate) => {
@@ -87,10 +94,13 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
                     IntroMovieUrl: CrudData.IntroMovieUrl,
                 };
                 const response = await axiosClient.post("/create/vtuber", reqBody);
-                if (!response.status) {
+                if (response.status) {
+                    handleOpen()
+                } else {
                     throw new Error(response.statusText);
                 }
             } catch (err) {
+                alert("登録失敗");
                 console.error(err);
             }
         } else if (crudContentType === "movie") {
@@ -101,10 +111,13 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
                     MovieUrl: CrudData.MovieUrl,
                 };
                 const response = await axiosClient.post("/create/movie", reqBody);
-                if (!response.status) {
+                if (response.status) {
+                    handleOpen()
+                } else {
                     throw new Error(response.statusText);
                 }
             } catch (err) {
+                alert("登録失敗");
                 console.error(err);
             }
         } else if (crudContentType === "karaoke") {
@@ -115,10 +128,13 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
                     SingStart: CrudData.SingStart,
                 };
                 const response = await axiosClient.post("/create/karaoke", reqBody);
-                if (!response.status) {
+                if (response.status) {
+                    handleOpen()
+                } else {
                     throw new Error(response.statusText);
                 }
             } catch (err) {
+                alert("登録失敗");
                 console.error(err);
             }
         } else {
@@ -129,6 +145,7 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
     return (
         <div className="flex flex-col justify-center w-full bg-[#FFF6E4]
               shadow-md rounded px-1 md:px-4 pt-4 mb-4">
+
             <div id="selectContent" className="w-full mx-1 md:mx-3">
                 <div className="flex flex-col justify-center w-full text-black font-bold" >
                     <SelectCrudContent
@@ -196,144 +213,176 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
                             </div>}
                     </div>
 
+
+                    <div>
+                        {crudContentType === "karaoke" &&
+                            // <div id="decide" className="flex flex-col justify-center my-3 ">
+                            <div id="decide" className=" ">
+                                <div className='flex flex-col  mt-1 my-4'>
+                                    <span className='mx-auto text-black'>
+                                        登録しようとしている歌が登録済みでないことを確認してください。 <br />
+                                        （この欄は入力データに影響はありませんが、選択すると再生が始まります）<br />
+                                        同じ動画で同じ曲を歌った場合は、「曲(〇回目)」としてください。 </span>
+                                    <DropDownKaraoke
+                                        posts={posts}
+                                        selectedMovie={selectedMovie}
+                                        onKaraokeSelect={setSelectedKaraoke}
+                                    />
+                                </div>
+                                <hr className={`${FormTW.horizon}`} />
+                            </div>
+                        }
+                    </div>
+
                     <div className='flex flex-col'>
+                        <h2 className='text-black mx-auto'>登録するデータを入力してください</h2>
                         <div>
-                            {crudContentType === "karaoke" &&
-                                // <div id="decide" className="flex flex-col justify-center my-3 ">
-                                <div id="decide" className=" ">
-                                    <div className='flex flex-col  mt-1 my-4'>
-                                        <span className='mx-auto text-black'>
-                                            登録しようとしている歌が登録済みでないことを確認してください。 <br />
-                                            同動画内で複数回歌った場合は、「曲名(〇回目)」と入力してください。 <br />
-                                            （この欄は入力データに影響はありませんが、選択すると再生が始まります）</span>
-                                        <DropDownKaraoke
-                                            posts={posts}
-                                            selectedMovie={selectedMovie}
-                                            onKaraokeSelect={setSelectedKaraoke}
+                            {crudContentType === "vtuber" &&
+                                <div>
+                                    <div className='mb-3'>
+                                        <div className=''>
+                                            <span className={`${FormTW.label}`} >
+                                                VTuber
+                                                <NeedBox />
+                                            </span>
+                                        </div>
+                                        <input className={`${ToClickTW.input}`}
+                                            {...register("VtuberName", ValidateCreate.VtuberName,)
+                                            } placeholder={foundVtuber?.VtuberName || "例:妹望おいも"}
+                                            onChange={e => setVtuberNameInput(e.target.value)}
                                         />
+                                        <span className='text-black'>{errors.VtuberName?.message}</span>
                                     </div>
-                                    <hr className={`${FormTW.horizon}`} />
+
+                                    <div className='mb-3'>
+                                        <span className={`${FormTW.label}`} >
+                                            読み(kana)
+                                            <NeedBox />
+                                        </span>
+                                        <input className={`${ToClickTW.input}`}
+                                            {...register("VtuberKana", ValidateCreate.VtuberKana,)
+                                            } placeholder={foundVtuber?.VtuberKana || "例:imomochi_oimo"}
+                                            onChange={e => setVtuberKanaInput(e.target.value)}
+                                        />
+                                        <span className='text-black'>{errors.VtuberKana?.message}</span>
+                                    </div>
+                                    <div>
+                                        <span className={`${FormTW.label}`} >
+                                            紹介動画URL(*):
+                                        </span>
+                                        <input className={`${ToClickTW.input}`}
+                                            {...register("IntroMovieUrl", ValidateCreate.IntroMovieUrl)}
+                                            placeholder={foundVtuber?.IntroMovieUrl || "例:www.youtube.com/watch?v=AlHRqSsF--8&t=75"}
+                                            onChange={e => setIntroMovieUrInput(e.target.value)}
+                                        />
+                                        <span className='text-black'>{errors.IntroMovieUrl?.message}</span>
+                                    </div>
+                                    <div className='flex flex-col text-black'>
+                                        <span>* クエリで時間指定可能</span>
+                                        <span className='ml-4'>例:www.youtube.com/watch?v=7QStB569mto<u>&t=290</u></span>
+                                    </div>
+                                </div>
+                            }
+
+                            {crudContentType === "movie" &&
+                                <div className='pt-3'>
+                                    <div className='mb-3'>
+                                        <div className=''>
+                                            <span className="block text-gray-700 text-sm font-bold" >
+                                                動画タイトル
+                                                <NeedBox />
+                                            </span>
+                                        </div>
+                                        <input className={`${ToClickTW.input}`}
+                                            {...register("MovieTitle", ValidateCreate.MovieTitle)}
+                                            placeholder={foundMovie?.MovieTitle || "動画タイトル"}
+                                            onChange={e => setMovieTitleInput(e.target.value)}
+                                        />
+                                        <span className='text-black'>{errors.MovieTitle?.message}</span>
+                                    </div>
+                                    <div className='flex'>
+                                        <span className={`${FormTW.label}`} >
+                                            URL
+                                            <NeedBox />
+                                        </span>
+                                    </div>
+                                    <input className={`${ToClickTW.input}`}
+                                        {...register("MovieUrl", ValidateCreate.MovieUrl)}
+                                        placeholder={foundMovie?.MovieUrl || "例: www.youtube.com/watch?v=AlHRqSsF--8"}
+                                        onChange={e => setMovieUrlInput(e.target.value)}
+                                    /><br />
+                                    <span className='text-black'>{errors.MovieUrl?.message}</span>
+                                </div>}
+
+                            {crudContentType === "karaoke" &&
+                                <div className='pt-3'>
+                                    <div className='flex'>
+                                        <span className={`${FormTW.label}`} >
+                                            曲
+                                            <NeedBox />
+                                        </span>
+                                    </div>
+                                    <input className={`${ToClickTW.input}`}
+                                        {...register("SongName", ValidateCreate.SongName)}
+                                        placeholder={foundKaraoke?.SongName || "曲"}
+                                        onChange={e => setSongNameInput(e.target.value)}
+                                    />
+                                    <span className='text-black'>{errors.SongName?.message}</span>
+                                    <div className='flex mt-3'>
+                                        <span className={`${FormTW.label}`} >
+                                            開始時間
+                                            <NeedBox />
+                                        </span>
+                                    </div>
+                                    <input className={`${ToClickTW.input}`}
+                                        type="time" step="1"
+                                        {...register("SingStart", ValidateCreate.SingStart)}
+                                        placeholder={foundKaraoke?.SingStart || "例 00:05:30"}
+                                        onChange={e => setSingStartInput(e.target.value)}
+                                    />
+                                    <span className='text-black'>{errors.SingStart?.message}</span>
                                 </div>
                             }
                         </div>
-
-                        <h2 className='text-black mx-auto'>登録するデータを入力してください</h2>
-                        {crudContentType === "vtuber" &&
-                            <div>
-                                <div className='mb-3'>
-                                    <div className=''>
-                                        <span className={`${FormTW.label}`} >
-                                            VTuber
-                                            <NeedBox />
-                                        </span>
-                                    </div>
-                                    <input className={`${ToClickTW.input}`}
-                                        {...register("VtuberName", ValidateCreate.VtuberName,)
-                                        } placeholder={foundVtuber?.VtuberName || "例:妹望おいも"}
-                                        onChange={e => setVtuberNameInput(e.target.value)}
-                                    />
-                                    <span className='text-black'>{errors.VtuberName?.message}</span>
-                                </div>
-
-                                <div className='mb-3'>
-                                    <span className={`${FormTW.label}`} >
-                                        読み(kana)
-                                        <NeedBox />
-                                    </span>
-                                    <input className={`${ToClickTW.input}`}
-                                        {...register("VtuberKana", ValidateCreate.VtuberKana,)
-                                        } placeholder={foundVtuber?.VtuberKana || "例:imomochi_oimo"}
-                                        onChange={e => setVtuberKanaInput(e.target.value)}
-                                    />
-                                    <span className='text-black'>{errors.VtuberKana?.message}</span>
-                                </div>
-                                <div>
-                                    <span className={`${FormTW.label}`} >
-                                        紹介動画URL(*):
-                                    </span>
-                                    <input className={`${ToClickTW.input}`}
-                                        {...register("IntroMovieUrl", ValidateCreate.IntroMovieUrl)}
-                                        placeholder={foundVtuber?.IntroMovieUrl || "例:www.youtube.com/watch?v=AlHRqSsF--8&t=75"}
-                                        onChange={e => setIntroMovieUrInput(e.target.value)}
-                                    />
-                                    <span className='text-black'>{errors.IntroMovieUrl?.message}</span>
-                                </div>
-                                <div className='flex flex-col text-black'>
-                                    <span>* クエリで時間指定可能</span>
-                                    <span className='ml-4'>例:www.youtube.com/watch?v=7QStB569mto<u>&t=290</u></span>
-                                </div>
-                            </div>
-                        }
-
-                        {crudContentType === "movie" &&
-                            <div className='pt-3'>
-                                <div className='mb-3'>
-                                    <div className=''>
-                                        <span className="block text-gray-700 text-sm font-bold" >
-                                            動画タイトル
-                                            <NeedBox />
-                                        </span>
-                                    </div>
-                                    <input className={`${ToClickTW.input}`}
-                                        {...register("MovieTitle", ValidateCreate.MovieTitle)}
-                                        placeholder={foundMovie?.MovieTitle || "動画タイトル"}
-                                        onChange={e => setMovieTitleInput(e.target.value)}
-                                    />
-                                    <span className='text-black'>{errors.MovieTitle?.message}</span>
-                                </div>
-                                <div className='flex'>
-                                    <span className={`${FormTW.label}`} >
-                                        URL
-                                        <NeedBox />
-                                    </span>
-                                </div>
-                                <input className={`${ToClickTW.input}`}
-                                    {...register("MovieUrl", ValidateCreate.MovieUrl)}
-                                    placeholder={foundMovie?.MovieUrl || "例: www.youtube.com/watch?v=AlHRqSsF--8"}
-                                    onChange={e => setMovieUrlInput(e.target.value)}
-                                /><br />
-                                <span className='text-black'>{errors.MovieUrl?.message}</span>
-                            </div>}
-
-                        {crudContentType === "karaoke" &&
-                            <div className='pt-3'>
-                                <div className='flex'>
-                                    <span className={`${FormTW.label}`} >
-                                        曲
-                                        <NeedBox />
-                                    </span>
-                                </div>
-                                <input className={`${ToClickTW.input}`}
-                                    {...register("SongName", ValidateCreate.SongName)}
-                                    placeholder={foundKaraoke?.SongName || "曲"}
-                                    onChange={e => setSongNameInput(e.target.value)}
-                                />
-                                <span className='text-black'>{errors.SongName?.message}</span>
-                                <div className='flex mt-3'>
-                                    <span className={`${FormTW.label}`} >
-                                        開始時間
-                                        <NeedBox />
-                                    </span>
-                                </div>
-                                <input className={`${ToClickTW.input}`}
-                                    type="time" step="1"
-                                    {...register("SingStart", ValidateCreate.SingStart)}
-                                    placeholder={foundKaraoke?.SingStart || "例 00:05:30"}
-                                    onChange={e => setSingStartInput(e.target.value)}
-                                />
-                                <span className='text-black'>{errors.SingStart?.message}</span>
-                            </div>
-                        }
-
-                        <hr className={`${FormTW.horizon}`} />
-                        <div className='flex justify-center'>
-                            <button type="submit"
-                                className={`${ToClickTW.decide} m-4 w-[80px] `}
-                            >
-                                確定
-                            </button>
-                        </div>
                     </div>
+
+                    <hr className={`${FormTW.horizon}`} />
+
+                    <div className='flex relative justify-center'>
+
+                        {isDisplay &&
+                            <div className='absolute z-40 top-[-150px] h-52 w-[86%] md:w-96  bg-[#B7A692]
+                                p-2 pt-5 rounded-2xl shadow-lg shadow-black'>
+                                <div className='flex flex-col item-center md:text-2xl font-bold'>
+                                    <span className="mx-auto">
+                                        登録完了しました。
+                                    </span>
+                                    <span className="flex mx-auto">
+                                        ページ内のリストを更新しますか？
+                                    </span>
+                                </div>
+                                <div className='flex flex-col md:flex-row md:text-xl mt-2 md:mt-6'>
+                                    <button onClick={() => router.reload()}
+                                        className={`${ToClickTW.boldChoice} p-2 mx-auto`}
+                                    >
+                                        更新する
+                                    </button>
+                                    <button onClick={() => setIsDisPlay(false)}
+                                        className={`${ToClickTW.boldChoice} p-2 mx-auto mt-4 md:my-0 font-bold`}
+                                    >
+                                        入力を維持するために <br />
+                                        更新しない
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                        <button type="submit"
+                            className={`${ToClickTW.decide} m-4 w-[80px] `}
+                        >
+                            確定
+                        </button>
+                    </div>
+
                 </form>
             </div>
         </div >
