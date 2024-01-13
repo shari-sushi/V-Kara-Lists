@@ -10,6 +10,7 @@ import { ValidateEdit } from '@/features/regularExpression/VtuberContent'
 import { FormTW, ToClickTW } from '@/styles/tailwiind';
 import { DropDownKaraoke } from '../dropDown/Karaoke';
 import { SelectCrudContent } from '@/components/form/Common'
+import router from 'next/router';
 
 export type EditPageProps = {
     posts: BasicDataProps;
@@ -28,20 +29,20 @@ type EditDataProps = {
 }
 type EditVtuber = {
     VtuberId: number;
-    VtuberName: string | null;
-    VtuberKana: string | null;
-    IntroMovieUrl: string | null;
+    VtuberName: string | undefined;
+    VtuberKana: string | undefined;
+    IntroMovieUrl: string | null | undefined;
 }
 type EditMovie = {
     VtuberId: number;
-    MovieTitle: string | null;
+    MovieTitle: string | undefined;
     MovieUrl: string;
 }
 type EditKaraoke = {
     MovieUrl: string;
     KaraokeId: number;
-    SongName: string | null;
-    SingStart: string | null;
+    SongName: string | undefined;
+    SingStart: string | undefined;
 }
 
 
@@ -75,6 +76,13 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
 
     const { register, handleSubmit, formState: { errors } } = useForm<CrudDate>({ reValidateMode: 'onChange' });
 
+    const resultDisplay = () => {
+        let result = window.confirm("編集完了しました。\nページを更新しますか？");
+        if (result) {
+            router.reload()
+        }
+    }
+
     const onSubmit = async (CrudData: CrudDate) => {
         console.log("crudContentType", crudContentType)
         if (crudContentType === "vtuber") {
@@ -82,29 +90,35 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
             try {
                 const reqBody: EditVtuber = {
                     VtuberId: selectedVtuber, //既存値
-                    VtuberName: CrudData.VtuberName,
-                    VtuberKana: CrudData.VtuberKana,
-                    IntroMovieUrl: CrudData.IntroMovieUrl,
+                    VtuberName: CrudData.VtuberName || foundVtuber?.VtuberName,
+                    VtuberKana: CrudData.VtuberKana || foundVtuber?.VtuberKana,
+                    IntroMovieUrl: CrudData.IntroMovieUrl || foundVtuber?.IntroMovieUrl,
                 };
-                const response = await axiosClient.post("/Edit/vtuber", reqBody);
-                if (!response.status) {
+                const response = await axiosClient.post("/edit/vtuber", reqBody);
+                if (response.status) {
+                    resultDisplay()
+                } else {
                     throw new Error(response.statusText);
                 }
             } catch (err) {
+                alert("編集失敗\nご自身で登録したデータなのかマイページで確認してください。\n解決しない場合は開発者へお知らせいただけると幸いです。");
                 console.error(err);
             }
         } else if (crudContentType === "movie") {
             try {
                 const reqBody: EditMovie = {
                     VtuberId: selectedVtuber, //既存値
-                    MovieUrl: CrudData.MovieUrl,
-                    MovieTitle: CrudData.MovieTitle,
+                    MovieUrl: selectedMovie, //既存値
+                    MovieTitle: CrudData.MovieTitle || foundMovie?.MovieTitle,
                 };
-                const response = await axiosClient.post("/Edit/movie", reqBody);
-                if (!response.status) {
+                const response = await axiosClient.post("/edit/movie", reqBody);
+                if (response.status) {
+                    resultDisplay()
+                } else {
                     throw new Error(response.statusText);
                 }
             } catch (err) {
+                alert("編集失敗 \n ご自身で登録したデータなのかマイページで確認してください。\n解決しない場合は開発者へお知らせいただけると幸いです。");
                 console.error(err);
             }
         } else if (crudContentType === "karaoke") {
@@ -112,14 +126,17 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
                 const reqBody: EditKaraoke = {
                     MovieUrl: selectedMovie, //既存値
                     KaraokeId: selectedKaraoke, //既存値
-                    SongName: CrudData.SongName,
-                    SingStart: CrudData.SingStart,
+                    SongName: CrudData.SongName || foundKaraoke?.SongName,
+                    SingStart: CrudData.SingStart || foundKaraoke?.SingStart,
                 };
-                const response = await axiosClient.post("/Edit/karaoke", reqBody);
-                if (!response.status) {
+                const response = await axiosClient.post("/edit/karaoke", reqBody);
+                if (response.status) {
+                    resultDisplay()
+                } else {
                     throw new Error(response.statusText);
                 }
             } catch (err) {
+                alert("編集失敗\nご自身で登録したデータなのかマイページで確認してください。\n解決しない場合は開発者へお知らせいただけると幸いです。");
                 console.error(err);
             }
         } else {
