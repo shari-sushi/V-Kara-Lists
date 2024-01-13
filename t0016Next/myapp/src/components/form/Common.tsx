@@ -9,19 +9,19 @@ export const SelectCrudContent = ({ crudContentType, setCrudContentType }: any) 
             <div id="button_group" className='flex justify-center '>
                 <button onClick={() => setCrudContentType("vtuber")}
                     className={`${ToClickTW.choice}  mx-2 
-                    ${crudContentType === "vtuber" ? "bg-[#65cf45]" : ""} 
+                    ${crudContentType === "vtuber" ? "bg-[#66a962]" : "bg-[#776D5C]"} 
                     `}>
                     VTuber
                 </button>
                 <button onClick={() => setCrudContentType("movie")}
                     className={`${ToClickTW.choice} mx-2
-                    ${crudContentType === "movie" ? "bg-[#65cf45]" : ""}
+                    ${crudContentType === "movie" ? "bg-[#66a962]" : "bg-[#776D5C]"}
                     `}>
                     動画(歌枠)
                 </button>
                 <button onClick={() => setCrudContentType("karaoke")}
                     className={`${ToClickTW.choice} mx-2
-                    ${crudContentType === "karaoke" ? "bg-[#65cf45]" : ""}
+                    ${crudContentType === "karaoke" ? "bg-[#66a962]" : "bg-[#776D5C]"}
                     `}>
                     歌(karaoke)
                 </button>

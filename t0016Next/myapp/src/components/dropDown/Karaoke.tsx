@@ -50,7 +50,7 @@ export const DropDownKaraoke = ({ posts, selectedMovie, onKaraokeSelect }: DropD
     fetchKaraokes();
   }, [selectedMovie, karaokes]);
   return (
-    <>
+    <div>
       <Select
         id="selectbox"
         instanceId="selectbox"
@@ -71,7 +71,7 @@ export const DropDownKaraoke = ({ posts, selectedMovie, onKaraokeSelect }: DropD
           }
         }}
       />
-    </>
+    </div>
   );
 };
 

@@ -296,7 +296,7 @@ export function KaraokePagenatoinTable({ posts, handleMovieClickYouTube, setSele
   } = useTable({
     columns: PagenationReturnPostcolumns,
     data,
-    initialState: { pageIndex: 0, pageSize: 15 }
+    initialState: { pageIndex: 0, pageSize: 25 }
   },
     useSortBy, usePagination, useRowSelect);
 
@@ -331,8 +331,7 @@ export function KaraokePagenatoinTable({ posts, handleMovieClickYouTube, setSele
               value={pageSize}
               onChange={(e) => setPageSize(Number(e.target.value))}
             >
-              {[5, 10, 25, 50, 100, maxPageSize].map((pageSize) => (
-
+              {[25, 50, 75, 100, maxPageSize].map((pageSize) => (
                 <option key={pageSize} value={pageSize}>
                   {pageSize !== maxPageSize ? `Show ${pageSize}` : `Show all`}
                 </option>
@@ -597,7 +596,7 @@ export function KaraokeDeleteTable({ posts, handleMovieClickYouTube }: KaraokeTa
   } = useTable({
     columns: deleteColumns,
     data,
-    initialState: { pageIndex: 0, pageSize: 15 }
+    initialState: { pageIndex: 0, pageSize: 25 }
   },
     usePagination);
 
@@ -630,7 +629,7 @@ export function KaraokeDeleteTable({ posts, handleMovieClickYouTube }: KaraokeTa
             value={pageSize}
             onChange={(e) => setPageSize(Number(e.target.value))}
           >
-            {[5, 10, 25, 50, 100, maxPageSize].map((pageSize) => (
+            {[10, 25, 50, 75, 100, maxPageSize].map((pageSize) => (
 
               <option key={pageSize} value={pageSize}>
                 {pageSize !== maxPageSize ? `Show ${pageSize}` : `Show all`}
