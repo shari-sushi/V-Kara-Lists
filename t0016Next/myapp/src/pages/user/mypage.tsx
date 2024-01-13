@@ -39,19 +39,19 @@ const MyPage = ({ data, isSignin }: Mypage) => {
   const [start, setStart] = useState<number>((36 * 60 + 41))
 
   const handleMovieClickYouTube = (url: string, start: number) => {
-    console.log("handleMovieClickYouTube")
-    if (currentMovieId == ExtractVideoId(url)) {
-      setStart(-1);
-      setStart(start);
-      console.log("同じ")
-    } else {
-      setCurrentMovieId(ExtractVideoId(url));
-      setTimeout(function () {
-        setStart(-1);
-        setStart(start);
-        console.log("別")
-      }, 1300);
-    }
+    // console.log("handleMovieClickYouTube")
+    // if (currentMovieId == ExtractVideoId(url)) {
+    // setStart(-1);
+    // setStart(start);
+    // console.log("同じ")
+    // } else {
+    setCurrentMovieId(ExtractVideoId(url));
+    // setTimeout(function () {
+    // setStart(-1);
+    setStart(start);
+    // console.log("別")
+    // }, 1300);
+    // }
   };
   const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
 
@@ -68,7 +68,7 @@ const MyPage = ({ data, isSignin }: Mypage) => {
                 `}
         >
           <div className='mt-4 max-w-[1000px] '>
-            <h1 className="font-bold text-lg"><u>自分の登録したデータ一覧</u></h1>
+            <h1 className="font-bold text-lg"><u></u>自分の登録したデータ一覧</h1>
             {isSignin ? (
               <div>
                 <div className='flex'>

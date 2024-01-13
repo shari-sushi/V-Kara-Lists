@@ -90,7 +90,7 @@ const columns: Column<ReceivedKaraoke>[] = [
             {row.original.SongName}
           </button>
 
-          <span className="absolute right-0">
+          <div id="clip url" className="absolute right-0">
             <button className="flex"
               onClick={() => handleClick()}
             >
@@ -101,7 +101,7 @@ const columns: Column<ReceivedKaraoke>[] = [
                 URL was copied
               </div>
             }
-          </span>
+          </div>
         </div >
       )
     },
@@ -212,7 +212,6 @@ const PagenationReturnPostcolumns: Column<ReceivedKaraoke>[] = [
         setSelectedPost(post)
       };
 
-
       const [isDisplay, setIsDisplay] = useState<boolean>(false);
       const handleClick = async () => {
         const url = "https://" + row.original.MovieUrl + "&t=" + ConvertStringToTime(row.original.SingStart)
@@ -305,25 +304,25 @@ export function KaraokePagenatoinTable({ posts, handleMovieClickYouTube, setSele
     <SeletctPostContext.Provider value={{ setSelectedPost }}>
       <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
         <div id="tab" className=" ">
-          <div className="flex bg-[#B7A692] mt-1 py-1 px-3 rounded-t-2xl max-w-[400px] ">
-            <button className="ml-1 px-2 bg-[#657261] rounded-2xl hover:bg-[#B7A692]"
+          <div className="flex bg-[#B7A692] mt-1 py-1 px-2 md:px-3 rounded-t-xl md:rounded-t-2xl max-w-[400px] ">
+            <button className={`${TableCss.pageNationDouble} md:mx-1`}
               onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
               {"<<"}
             </button>
-            <button className="mx-1 px-2 md:px-3 bg-[#657261] rounded-2xl hover:bg-[#B7A692]"
+            <button className={`${TableCss.pageNationSingle} sm:mx-0.5 md:mx-1`}
               onClick={() => previousPage()} disabled={!canPreviousPage}>
               {"<"}
             </button>
             <span>
-              <strong className="mx-0 md:mx-1">
+              <strong className="sm:mx-0.5 ">
                 {pageIndex + 1} / {pageOptions.length}
-              </strong>{" "}
+              </strong>
             </span>
-            <button className={`px-2 ml-0 md:px-3  md:ml-1 bg-[#657261] rounded-2xl hover:bg-[#B7A692]`}
+            <button className={`${TableCss.pageNationSingle} sm:mx-1`}
               onClick={() => nextPage()} disabled={!canNextPage}>
               {">"}
-            </button> &nbsp;
-            <button className={`px-2 mr-0 md:mr-1 bg-[#657261] rounded-2xl hover:bg-[#B7A692]`}
+            </button>
+            <button className={`${TableCss.pageNationDouble} md:mx-1`}
               onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
               {">>"}
             </button>
@@ -339,7 +338,7 @@ export function KaraokePagenatoinTable({ posts, handleMovieClickYouTube, setSele
                 </option>
               ))}
             </select>
-            <span className='mx-1'>全{posts.length}件</span>
+            <span className='mx-0.5 sm:mx-2 '>全{posts.length}件</span>
           </div>
         </div>
         <div className="w-full overflow-scroll md:overflow-hidden">
@@ -605,25 +604,25 @@ export function KaraokeDeleteTable({ posts, handleMovieClickYouTube }: KaraokeTa
   return (
     <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
       <div id="tab" className=" ">
-        <div className="flex bg-[#B7A692] mt-1 py-1 px-3 rounded-t-2xl max-w-[340px] ">
-          <button className="ml-1 px-2 bg-[#657261] rounded-2xl hover:bg-[#B7A692]"
+        <div className="flex bg-[#B7A692] mt-1 py-1 px-2 md:px-3 rounded-t-xl md:rounded-t-2xl max-w-[400px] ">
+          <button className={`${TableCss.pageNationDouble} md:mx-1`}
             onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
             {"<<"}
           </button>
-          <button className="mx-1 px-2 md:px-3 bg-[#657261] rounded-2xl hover:bg-[#B7A692]"
+          <button className={`${TableCss.pageNationSingle} mx-1`}
             onClick={() => previousPage()} disabled={!canPreviousPage}>
             {"<"}
           </button>
           <span>
-            <strong className="mx-0 md:mx-1">
+            <strong className="sm:mx-0.5 ">
               {pageIndex + 1} / {pageOptions.length}
-            </strong>{" "}
+            </strong>
           </span>
-          <button className={`px-2 ml-0 md:px-3  md:ml-1 bg-[#657261] rounded-2 hover:bg-[#B7A692]`}
+          <button className={`${TableCss.pageNationSingle} mx-1`}
             onClick={() => nextPage()} disabled={!canNextPage}>
             {">"}
-          </button> &nbsp;
-          <button className={`px-2 mr-0 md:mr-1 bg-[#657261] rounded-2x1 hover:bg-[#B7A692]`}
+          </button>
+          <button className={`${TableCss.pageNationDouble} md:mx-1`}
             onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
             {">>"}
           </button>
@@ -642,7 +641,7 @@ export function KaraokeDeleteTable({ posts, handleMovieClickYouTube }: KaraokeTa
       </div>
       <div className="w-full overflow-scroll md:overflow-hidden">
         <table {...getTableProps()} className={`${TableCss.regular} `}>
-          <thead>
+          <thead className={`${TableCss.regularThead}`}>
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()} >
                 {headerGroup.headers.map((column) => (
@@ -679,7 +678,9 @@ const deleteColumns: Column<ReceivedKaraoke>[] = [
       const { setCurrentVideoId, setCurrentStart } = useContext(ToDeleteContext);
       const clickHandler = (url: string, SingStart: string) => {
         setCurrentVideoId(ExtractVideoId(url));
-        setTimeout(() => setCurrentStart(ConvertStringToTime(SingStart)), 1450)
+        // setTimeout(() => setCurrentStart(
+        ConvertStringToTime(SingStart)
+        // ), 1450);
       }
       return (
         <span className="relative" >
@@ -727,8 +728,15 @@ const randam5columns: Column<ReceivedKaraoke>[] = [
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
       const { handleMovieClickYouTube } = useContext(YouTubePlayerContext) //表示ページにyoutubeのカレントデータを渡す
 
+      const handleClickSongName = (post: ReceivedKaraoke) => {
+        handleMovieClickYouTube(
+          post.MovieUrl,
+          ConvertStringToTime(post.SingStart)
+        );
+      }
+
       const [isDisplay, setIsDisplay] = useState<boolean>(false);
-      const handleClick = async () => {
+      const handleClickClipUrl = async () => {
         const url = "https://" + row.original.MovieUrl + "&t=" + ConvertStringToTime(row.original.SingStart)
         await navigator.clipboard.writeText(url);
         setIsDisplay(true)
@@ -736,24 +744,22 @@ const randam5columns: Column<ReceivedKaraoke>[] = [
       }
 
       return (
-        <span className="relative flex w-auto" >
-          <button className="flex"
-            onClick={() => handleMovieClickYouTube(row.original.MovieUrl, ConvertStringToTime(row.original.SingStart))}
-          >
-            <img src="/content/play_black.svg" className='w-5 mr-1 bottom-0' />
-            {row.original.SongName}
-          </button>
+        <div className="relative flex" >
+          <div className="flex flex-row">
+            <button className="flex" onClick={() => handleClickSongName(row.original)} >
+              <img src="/content/play_black.svg" className='w-5 mr-1 ' />
+              {row.original.SongName}
+            </button>
+          </div>
 
-          <span className="absolute right-0">
-            <button className="flex"
-              onClick={() => handleClick()}
-            >
+          <div className="flex flex-row">
+            <button className="absolute right-0" onClick={() => handleClickClipUrl()} >
               <img src="/content/copy_gray.svg" className='h-4 mr-2' />
             </button>
             {isDisplay &&
               <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">URL was copied</div>}
-          </span>
-        </span >
+          </div>
+        </div >
       )
     },
   },
@@ -826,7 +832,7 @@ export const KaraokeMinRandamTable = ({ posts, handleMovieClickYouTube }: Karaok
               // onClick={() => alert('clicked')} //発火する
               className={`${ToClickCss.regular} flex py-0 h-6`} >更新</button> */}
           </div>
-          <div className='overflow-scroll md:overflow-hidden'>
+          <div className='w-full overflow-scroll md:overflow-hidden'>
             <table {...getTableProps()} className={`${TableCss.minRandom} `}>
               <thead className={`${TableCss.regularThead}`}>
                 {headerGroups.map((headerGroup) => (
