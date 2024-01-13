@@ -12,6 +12,16 @@
   padding: 0rem 1.5rem;
 }
 
+.header{
+  display: flex;
+  /* flex-direction: column; */
+  /* justify-content: space-between; */
+  /* align-items: center; */
+  padding: 2px;
+  /* min-height: 100vh; */
+  background-color: #0b1507;
+}
+
 /* editで使用 */
 .container {
   padding: 6rem; 

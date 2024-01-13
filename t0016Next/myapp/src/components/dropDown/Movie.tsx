@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
-import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '@/types/vtuber_content';
-import { DropStyle, TopPagePosts } from './common'
+import type { BasicDataProps, ReceivedMovie } from '@/types/vtuber_content';
+import { DropStyle } from './common'
 
 // DropDinwMo, Kaについは、on~~Seletがnillとか0なら処理を止めべき
 type MovieOptions = {
@@ -10,7 +10,7 @@ type MovieOptions = {
 }
 
 type DropDownMovieProps = {
-    posts: TopPagePosts;
+    posts: BasicDataProps;
     selectedVtuber: number;
     setSelectedMovie: (value: string) => void;
     clearMovieHandler: () => void;
@@ -23,11 +23,11 @@ export const DropDownMovie = ({ posts, selectedVtuber, setSelectedMovie, clearMo
         clearMovieHandler();
     };
     const [movieOptions, setMovieOptions] = useState<MovieOptions[]>([]);
-    const [selectedMovieId, setSelectedMovieId] = useState<string>("");
 
     useEffect(() => {
         if (!selectedVtuber) {
             setMovieOptions([]);
+            setSelectedMovie("")
             // ここで表示も消したい。消し方不明
             return;
         } else {
@@ -40,16 +40,15 @@ export const DropDownMovie = ({ posts, selectedVtuber, setSelectedMovie, clearMo
                     }));
                     setMovieOptions(movieOptions);
                 } catch (error) {
-                    console.error("Error: failed to filter Movies By Selected Vtuber:", error);
+                    console.error("Error: failed to filter Movies By Selected Vtuber in /dropDown/:", error);
                 };
-                setSelectedMovieId("");
             };
             filterMoviesBySelectedVtuber();
         }
     }, [selectedVtuber, movies]);
 
     return (
-        <><Select
+        <Select
             id="selectbox"
             instanceId="selectbox"
             placeholder="動画タイトルを検索/選択"
@@ -66,13 +65,10 @@ export const DropDownMovie = ({ posts, selectedVtuber, setSelectedMovie, clearMo
             onChange={option => {
                 if (option) {
                     setSelectedMovie(option.value);
-                    setSelectedMovieId(option.value);
                 } else {
                     handleMovieClear();
-                    setMovieOptions([]);
                 }
             }}
         />
-        </>
     );
 };

@@ -1,29 +1,10 @@
 import { ListenerId } from './user'
 
-// 初期の遺物　削除したい
-export type SingData = {
-	vtuber_id: number;
-	movie: string;
-	url: string;
-	singStart: string;
-	song: string;
+export type BasicDataProps = {
+	vtubers: ReceivedVtuber[];
+	vtubers_movies: ReceivedMovie[];
+	vtubers_movies_karaokes: ReceivedKaraoke[];
 };
-
-//   import { SingData } from './types'
-
-// export type AllJoinData = {
-// 	VtuberId: number;
-// 	VtuberName: string;
-// 	VtuberKana: string;
-// 	IntroMovieUrl: string | null;
-// 	VtuberInputterId: string;
-// 	MovieUrl: string;
-// 	MovieTitle: string;
-// 	KaraokeId: number;
-// 	SingStart: string;
-// 	SongName: string;
-// 	SongInputterId: string | null;
-// }
 
 export type CrudDate = {
 	VtuberId: number;
@@ -36,25 +17,6 @@ export type CrudDate = {
 	SingStart: string;
 	SongName: string;
 }
-
-// export type AllData = {
-// 	karaokes: Karaoke[];
-// 	movies: Movie[];
-// 	vtubers: Vtuber[];
-// };
-
-// export type VtuberMovie = {
-// 	VtuberID: Vtuber['VtuberId'] //USING
-// 	VtuberName: Vtuber['VtuberName']
-
-// 	// Movies:Movie[] ではmapがうまくいかなかった
-// 	VtuberId: Movie['VtuberId'];
-// 	MovieId: Movie['MovieId'];
-// 	MovieUrl: Movie['MovieUrl'];
-// 	MovieTitle: Movie['MovieTitle'];
-// }
-
-
 //以下、基礎の型３つ
 
 export type VtuberId = number;
@@ -142,29 +104,6 @@ export type ReceivedKaraoke = {
 	Count: number;
 	IsFav: boolean;
 }
-
-// export type AllDatePage = {
-// 	posts: {
-// 		vtubers: ReceivedVtuber[];
-// 		vtubers_and_movies: ReceivedMovie[];
-// 		vtubers_and_movies_karaokes: ReceivedKaraoke[];
-// 	},
-// 	checkSignin: boolean;
-// }
-
-// export type SelectedDate = {
-// 	// alljoindata: AllJoinData[];
-// 	// posts: TopPagePosts;
-// 	posts: {
-// 		vtubers: ReceivedVtuber[];
-// 		vtubers_and_movies: ReceivedMovie[];
-// 		vtubers_and_movies_karaokes: ReceivedKaraoke[];
-// 	},
-// 	selectedVtuber: number;
-// 	selectedMovie: string;
-// 	selectedKaraoke: number;
-// }
-
 export type FavoriteKaraoke = {
 	MovieUrl: string;
 	KaraokeId: number;
@@ -173,3 +112,4 @@ export type FavoriteKaraoke = {
 export type FavoriteMovie = {
 	MovieUrl: string;
 }
+

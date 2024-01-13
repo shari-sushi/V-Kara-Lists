@@ -3,6 +3,8 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sharin-sushi/0016go_next_relation/domain"
@@ -12,7 +14,8 @@ import (
 var guest domain.Listener
 
 func init() {
-	guest.ListenerId = 2
+	stringGuestId, _ := strconv.Atoi(os.Getenv("GEST_USER_ID"))
+	guest.ListenerId = domain.ListenerId(stringGuestId)
 }
 
 func (controller *Controller) CreateUser(c *gin.Context) {

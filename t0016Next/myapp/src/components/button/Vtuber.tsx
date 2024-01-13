@@ -3,11 +3,10 @@ import { useRouter } from "next/router";
 import axios from 'axios';
 
 import { domain } from '@/../env'
-import { TopPagePosts } from "../dropDown/common"
-import { CrudDate } from "@/types/vtuber_content";
+import { BasicDataProps, CrudDate } from "@/types/vtuber_content";
 
 type selectedDate = {
-    posts: TopPagePosts;
+    posts: BasicDataProps;
     selectedVtuber: number;
     selectedMovie: string;
     selectedKaraoke: number;
