@@ -35,23 +35,22 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
   const { height, width } = getWindowSize();
 
   const handleMovieClickYouTube = (url: string, start: number) => {
-    // setCurrentMovieId(ExtractVideoId(url));
-    // setStart(start);
     console.log("handleMovieClickYouTube")
-    if (currentMovieId == ExtractVideoId(url)) {
-      setStart(-1);
-      setStart(start);
-      console.log("同じ")
-    } else {
-      setCurrentMovieId(ExtractVideoId(url));
-      // setStart(start);
-      //以下をonReady発火させられれば、ユーザー環境による差を少なくできる気がする
-      // setTimeout(function () {
-      // setStart(-1);
-      setStart(start);
-      // console.log("別")
-      // }, 1400); //local環境で、1100ms 高確率で✖, 1300ms:✖が少なくない //短すぎるとエラーになる注意
-    }
+    //クリティカルな環境バグなので再発時用に残しておく
+    // if (currentMovieId == ExtractVideoId(url)) {
+    // setStart(-1);
+    // setStart(start);
+    // console.log("同じ")
+    // } else {
+    setCurrentMovieId(ExtractVideoId(url));
+    // setStart(start);
+    //以下をonReady発火させられれば、ユーザー環境による差を少なくできる気がする
+    // setTimeout(function () {　
+    // setStart(-1);
+    setStart(start);
+    // console.log("別")
+    // }, 1400); //local環境で、1100ms 高確率で✖, 1300ms:✖が少なくない //短すぎるとエラーになる注意
+    // }
   };
 
   return (
@@ -81,8 +80,10 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
           >
             {/* 左側の要素 */}
             <div className='flex flex-col mr-1 '>
-              <YouTubePlayer videoId={currentMovieId} start={start} />
-              <span className='relative flex top-2 justify-center mb-3'>
+              <div className='relative flex  justify-center'>
+                <YouTubePlayer videoId={currentMovieId} start={start} />
+              </div>
+              <span className='relative flex md:top-2 justify-center md:mb-3'>
                 {"音量差 注意（特に個人→大手）"}
               </span>
             </div>

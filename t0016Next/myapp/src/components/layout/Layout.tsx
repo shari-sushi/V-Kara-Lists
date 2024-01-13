@@ -149,7 +149,7 @@ const Header = ({ pageName }: HeaderProps) => {
                             歌リスト
                         </Link>
                         <button onClick={() => setIsOpen(!isOpen)}
-                            className="hover:bg-[#657261] rounded-lg  "
+                            className="hover:bg-[#657261] rounded-lg "
                         >
                             <img src="/user/hamburger.svg" className="h-7 " />
                         </button>

@@ -25,35 +25,32 @@ export default function SingsPage({ posts, isSignin }: PostsAndCheckSignin) {
     const [start, setStart] = useState<number>(primaryYoutubeStartTime)
     const handleMovieClickYouTube = (url: string, start: number) => {
         console.log("handleMovieClickYouTube")
-        // setCurrentMovieId(ExtractVideoId(url));
+        // if (currentMovieId == ExtractVideoId(url)) {
+        // setStart(-1); //timeに変化が無いと受け付けてもらえないので、苦肉の策
         // setStart(start);
+        // console.log("同")
+        // } else {
+        setCurrentMovieId(ExtractVideoId(url));
+        // setStart(start);
+        //以下をonReady発火させられれば、ユーザー環境による差を少なくできるかも
+        // setStart(-1);
+        // setTimeout(function () {
+        setStart(start);
+        // console.log("別")
+        // }, 1400); //短すぎるとエラーになる注意
+    }
+};
 
-        if (currentMovieId == ExtractVideoId(url)) {
-            setStart(-1); //timeに変化が無いと受け付けてもらえないので、苦肉の策
-            setStart(start);
-            console.log("同")
-        } else {
-            setCurrentMovieId(ExtractVideoId(url));
-            setStart(start);
-            //以下をonReady発火させられれば、ユーザー環境による差を少なくできるかも
-            setStart(-1);
-            setTimeout(function () {
-                setStart(start);
-                console.log("別")
-            }, 1400); //短すぎるとエラーになる注意
-        }
-    };
+const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
 
-    const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
-
-    return (
-        <Layout pageName="Sings" isSignin={isSignin}>
-            {/* <div>videoId= {currentMovieId}, start= {start}秒 = {Math.floor(start / 60)}分 {Math.floor(start % 60)}秒</div > */}
-            <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
-                <div className={`pt-6 flex flex-col items-center`}>
-                    <div className={`flex `}>
-                        <YouTubePlayer videoId={currentMovieId} start={start} />
-                        {/* <div className='flex '>
+return (
+    <Layout pageName="Sings" isSignin={isSignin}>
+        {/* <div>videoId= {currentMovieId}, start= {start}秒 = {Math.floor(start / 60)}分 {Math.floor(start % 60)}秒</div > */}
+        <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
+            <div className={`pt-6 flex flex-col items-center`}>
+                <div className={`flex `}>
+                    <YouTubePlayer videoId={currentMovieId} start={start} />
+                    {/* <div className='flex '>
                         <div className='bg-[#B7A692] text-black min-w-[350px] max-w-[300px] h-44 '>
                             <h2 className=' font-bold  '>選択した楽曲</h2>
                             <hr className='border-black ' />
@@ -64,18 +61,18 @@ export default function SingsPage({ posts, isSignin }: PostsAndCheckSignin) {
                             歌開始: {selectedPost.SingStart} <br />
                         </div>
                     </div> */}
-                    </div>
-                    <div className="flex flex-col w-full">
-                        <KaraokePagenatoinTable
-                            posts={karaokes}
-                            handleMovieClickYouTube={handleMovieClickYouTube}
-                            setSelectedPost={setSelectedPost}
-                        />
-                    </div>
+                </div>
+                <div className="flex flex-col w-full">
+                    <KaraokePagenatoinTable
+                        posts={karaokes}
+                        handleMovieClickYouTube={handleMovieClickYouTube}
+                        setSelectedPost={setSelectedPost}
+                    />
                 </div>
             </div>
-        </Layout>
-    )
+        </div>
+    </Layout>
+)
 };
 
 
