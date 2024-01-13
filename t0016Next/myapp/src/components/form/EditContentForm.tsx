@@ -319,6 +319,7 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
                     }
 
                     <hr className={`${FormTW.horizon}`} />
+
                     <div className='flex justify-center'>
                         <button type="submit"
                             className={`${ToClickTW.decide} m-4 w-[80px] `}
