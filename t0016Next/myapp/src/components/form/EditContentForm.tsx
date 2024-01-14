@@ -148,7 +148,7 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
         <div className="flex flex-col justify-center w-full bg-[#FFF6E4]
          shadow-md rounded px-1 md:px-4 pt-4 mb-4">
 
-            <div id="selectContent" className="w-full mx-1 md:mx-3">
+            <div id="selectContent" className="w-full mx-1 md:mx-3 ">
                 <div className="flex flex-col justify-center w-full text-black font-bold" >
                     <SelectCrudContent
                         crudContentType={crudContentType}
