@@ -7,7 +7,7 @@ import { ConvertStringToTime, ExtractVideoId } from '../Conversion'
 import { shuffleArray } from '../SomeFunction'
 import { ReceivedKaraoke, FavoriteKaraoke } from "@/types/vtuber_content";
 import { ToDeleteContext } from '@/pages/crud/delete'
-import { TableCss } from '@/styles/tailwiind'
+import { TableCss as TableTW } from '@/styles/tailwiind'
 import { ToClickTW } from '@/styles/tailwiind'
 import { SigninContext } from '@/components/layout/Layout'
 
@@ -34,8 +34,8 @@ export function KaraokeTable({ posts, handleMovieClickYouTube }: KaraokeTablePro
 
   return (
     <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
-      <table {...getTableProps()} className={`${TableCss.regular}`}>
-        <thead className={`${TableCss.regularThead}`}>
+      <table {...getTableProps()} className={`${TableTW.regular}`}>
+        <thead className={`${TableTW.regularThead}`}>
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => (
@@ -53,7 +53,7 @@ export function KaraokeTable({ posts, handleMovieClickYouTube }: KaraokeTablePro
           {rows.map((row, i) => {
             prepareRow(row);
             return (
-              <tr {...row.getRowProps()} className={`${TableCss.regularTr}`}>
+              <tr {...row.getRowProps()} className={`${TableTW.regularTr}`}>
                 {row.cells.map((cell) => {
                   return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                 })}
@@ -177,7 +177,7 @@ function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumn) {
   };
   return (
     <div>
-      <button className={`${TableCss.favoriteColumn} relative flex`} onClick={handleClick}>
+      <button className={`${TableTW.favoriteColumn} relative flex`} onClick={handleClick}>
         {isFavNow ?
           <img src="/content/heart_pink.png" className='flex w-5 m-1 mr-0' />
           : <img src="/content/heart_white.png" className='flex w-5 m-1 mr-0' />
@@ -305,11 +305,11 @@ export function KaraokePagenatoinTable({ posts, handleMovieClickYouTube, setSele
       <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
         <div id="tab" className=" ">
           <div className="flex bg-[#B7A692] mt-1 py-1 px-2 md:px-3 rounded-t-xl md:rounded-t-2xl max-w-[400px] ">
-            <button className={`${TableCss.pageNationDouble} md:mx-1`}
+            <button className={`${TableTW.pageNationDouble} md:mx-1`}
               onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
               {"<<"}
             </button>
-            <button className={`${TableCss.pageNationSingle} sm:mx-0.5 md:mx-1`}
+            <button className={`${TableTW.pageNationSingle} sm:mx-0.5 md:mx-1`}
               onClick={() => previousPage()} disabled={!canPreviousPage}>
               {"<"}
             </button>
@@ -318,11 +318,11 @@ export function KaraokePagenatoinTable({ posts, handleMovieClickYouTube, setSele
                 {pageIndex + 1} / {pageOptions.length}
               </strong>
             </span>
-            <button className={`${TableCss.pageNationSingle} sm:mx-1`}
+            <button className={`${TableTW.pageNationSingle} sm:mx-1`}
               onClick={() => nextPage()} disabled={!canNextPage}>
               {">"}
             </button>
-            <button className={`${TableCss.pageNationDouble} md:mx-1`}
+            <button className={`${TableTW.pageNationDouble} md:mx-1`}
               onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
               {">>"}
             </button>
@@ -341,7 +341,7 @@ export function KaraokePagenatoinTable({ posts, handleMovieClickYouTube, setSele
           </div>
         </div>
         <div className="w-full overflow-scroll md:overflow-hidden">
-          <table {...getTableProps()} className={`${TableCss.regular}`}>
+          <table {...getTableProps()} className={`${TableTW.regular}`}>
             <thead>
               {headerGroups.map((headerGroup) => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
@@ -360,7 +360,7 @@ export function KaraokePagenatoinTable({ posts, handleMovieClickYouTube, setSele
               {page.map((row) => {
                 prepareRow(row);
                 return (
-                  <tr {...row.getRowProps()} className={`${TableCss.regularTr}`}>
+                  <tr {...row.getRowProps()} className={`${TableTW.regularTr}`}>
                     {row.cells.map((cell) => (
                       <td {...cell.getCellProps()}>
                         {cell.render("Cell")}
@@ -431,8 +431,8 @@ export function RandamTable({ posts }: KaraokeTableProps) {
                   (全{data.length}件)
                 </ div>
                 <div>
-                  <table className={`${TableCss.regular}`}>
-                    <thead className={`${TableCss.regularThead}`}>
+                  <table className={`${TableTW.regular}`}>
+                    <thead className={`${TableTW.regularThead}`}>
                       <tr className={``}>
                         <th>VTuber</th>
                         <th>動画</th>
@@ -442,7 +442,7 @@ export function RandamTable({ posts }: KaraokeTableProps) {
                     </thead>
                     <tbody >
                       {getCurrentData.map(item => (
-                        <tr key={item.KaraokeId} className={`${TableCss.regularTr}`}>
+                        <tr key={item.KaraokeId} className={`${TableTW.regularTr}`}>
                           <td>{item.VtuberName}</td>
                           <td>{item.MovieTitle}</td>
                           <td >
@@ -539,8 +539,8 @@ export const KaraokeThinTable = ({ posts, handleMovieClickYouTube }: KaraokeTabl
   return (
     <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
       <div className="w-full overflow-scroll md:overflow-hidden">
-        <table {...getTableProps()} className={`${TableCss.regular} `}>
-          <thead className={`${TableCss.regularThead}`}>
+        <table {...getTableProps()} className={`${TableTW.regular} `}>
+          <thead className={`${TableTW.regularThead}`}>
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
@@ -558,7 +558,7 @@ export const KaraokeThinTable = ({ posts, handleMovieClickYouTube }: KaraokeTabl
             {rows.map((row, i) => {
               prepareRow(row);
               return (
-                <tr {...row.getRowProps()} className={`${TableCss.regularTr}`}>
+                <tr {...row.getRowProps()} className={`${TableTW.regularTr}`}>
                   {row.cells.map((cell) => {
                     return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                   })}
@@ -604,11 +604,11 @@ export function KaraokeDeleteTable({ posts, handleMovieClickYouTube }: KaraokeTa
     <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
       <div id="tab" className=" ">
         <div className="flex bg-[#B7A692] mt-1 py-1 px-2 md:px-3 rounded-t-xl md:rounded-t-2xl max-w-[400px] ">
-          <button className={`${TableCss.pageNationDouble} md:mx-1`}
+          <button className={`${TableTW.pageNationDouble} md:mx-1`}
             onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
             {"<<"}
           </button>
-          <button className={`${TableCss.pageNationSingle} mx-1`}
+          <button className={`${TableTW.pageNationSingle} mx-1`}
             onClick={() => previousPage()} disabled={!canPreviousPage}>
             {"<"}
           </button>
@@ -617,11 +617,11 @@ export function KaraokeDeleteTable({ posts, handleMovieClickYouTube }: KaraokeTa
               {pageIndex + 1} / {pageOptions.length}
             </strong>
           </span>
-          <button className={`${TableCss.pageNationSingle} mx-1`}
+          <button className={`${TableTW.pageNationSingle} mx-1`}
             onClick={() => nextPage()} disabled={!canNextPage}>
             {">"}
           </button>
-          <button className={`${TableCss.pageNationDouble} md:mx-1`}
+          <button className={`${TableTW.pageNationDouble} md:mx-1`}
             onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
             {">>"}
           </button>
@@ -639,8 +639,8 @@ export function KaraokeDeleteTable({ posts, handleMovieClickYouTube }: KaraokeTa
         </div>
       </div>
       <div className="w-full overflow-scroll md:overflow-hidden">
-        <table {...getTableProps()} className={`${TableCss.regular} `}>
-          <thead className={`${TableCss.regularThead}`}>
+        <table {...getTableProps()} className={`${TableTW.regular} `}>
+          <thead className={`${TableTW.regularThead}`}>
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()} >
                 {headerGroup.headers.map((column) => (
@@ -653,7 +653,7 @@ export function KaraokeDeleteTable({ posts, handleMovieClickYouTube }: KaraokeTa
             {page.map((row) => {
               prepareRow(row);
               return (
-                <tr {...row.getRowProps()} className={`${TableCss.regularTr}`}>
+                <tr {...row.getRowProps()} className={`${TableTW.regularTr}`}>
                   {row.cells.map((cell) => (
                     <td {...cell.getCellProps()}>
                       {cell.render("Cell")}
@@ -832,10 +832,10 @@ export const KaraokeMinRandamTable = ({ posts, handleMovieClickYouTube }: Karaok
               className={`${ToClickCss.regular} flex py-0 h-6`} >更新</button> */}
           </div>
           <div className='w-full overflow-scroll md:overflow-hidden'>
-            <table {...getTableProps()} className={`${TableCss.minRandom} `}>
-              <thead className={`${TableCss.regularThead}`}>
+            <table {...getTableProps()} className={`${TableTW.minRandom} `}>
+              <thead className={`${TableTW.regularThead}`}>
                 {headerGroups.map((headerGroup) => (
-                  <tr {...headerGroup.getHeaderGroupProps()}>
+                  <tr {...headerGroup.getHeaderGroupProps()} >
                     {headerGroup.headers.map((column) => (
                       <th {...column.getHeaderProps()}>{column.render("Header")}</th>
                     ))}
@@ -846,7 +846,7 @@ export const KaraokeMinRandamTable = ({ posts, handleMovieClickYouTube }: Karaok
                 {page.map((row) => {
                   prepareRow(row);
                   return (
-                    <tr {...row.getRowProps()} className={`${TableCss.regularTr}`}>
+                    <tr {...row.getRowProps()} className={`${TableTW.regularTr}`}>
                       {row.cells.map((cell) => (
                         <td {...cell.getCellProps()}>
                           {cell.render("Cell")}
