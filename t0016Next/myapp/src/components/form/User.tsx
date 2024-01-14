@@ -91,8 +91,8 @@ export const SigninForm = () => {
         <Link href="/" className={`${ToClickTW.form} flex w-[40%] justify-center mx-auto`}>
           TOPへ戻る
         </Link>
-        <Link href="/user/signin" className={`${ToClickTW.form} flex  w-[40%] justify-center mx-auto`}>
-          ログイン
+        <Link href="/user/signup" className={`${ToClickTW.form} flex  w-[40%] justify-center mx-auto`}>
+          ログインへ
         </Link>
       </div>
     </form>
@@ -193,8 +193,12 @@ export function SignupForm() {
         </button>
       </div>
       <div className="flex mx-atuo ">
-        <Link href="/" className={`${ToClickTW.form} flex w-[40%] justify-center mx-auto`}>TOPへ戻る</Link>
-        <Link href="/user/signin" className={`${ToClickTW.form} flex  w-[40%] justify-center mx-auto`}>ログイン</Link>
+        <Link href="/" className={`${ToClickTW.form} flex w-[40%] justify-center mx-auto`}>
+          TOPへ戻る
+        </Link>
+        <Link href="/user/signin" className={`${ToClickTW.form} flex  w-[40%] justify-center mx-auto`}>
+          ログインへ
+        </Link>
       </div>
     </form>
   );
