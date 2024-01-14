@@ -281,7 +281,7 @@ export function DeleteDecideButton({ posts, selectedVtuberId, selectedMovieUrl, 
                     <div className='h-screen w-screen opacity-85 inset-0 bg-[#1f2724] z-30' />
                 }
             </div>
-            <div className='fixed top-1/2 left-12 right-12 md:left-[10%] md:right-[10%]'>
+            <div className='fixed top-1/2 mx-auto md:left-[10%] md:right-[10%] max-w-[600px]'>
                 {crudContentType &&
                     <div className='bg-[#FFF6E4] text-black p-5 sm:p-20 md:p-[10%] px-auto rounded-md '>
                         {crudContentType === "vtuber" &&
