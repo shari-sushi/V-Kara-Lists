@@ -32,9 +32,9 @@ const MyPage = ({ data, isSignin }: Mypage) => {
 
     )
   };
-  const vtubers = data.vtubers_u_created != null ? data.vtubers_u_created : [{} as ReceivedVtuber];
-  const movies = data.vtubers_movies_u_created != null ? data.vtubers_movies_u_created : [{} as ReceivedMovie];
-  const karaokes = data.vtubers_movies_karaokes_u_created != null ? data.vtubers_movies_karaokes_u_created : [{} as ReceivedKaraoke];
+  const vtubers = data?.vtubers_u_created || [{} as ReceivedVtuber];
+  const movies = data?.vtubers_movies_u_created || [{} as ReceivedMovie];
+  const karaokes = data?.vtubers_movies_karaokes_u_created || [{} as ReceivedKaraoke];
   const [currentMovieId, setCurrentMovieId] = useState<string>("E7x2TZ1_Ys4");
   const [start, setStart] = useState<number>((36 * 60 + 41))
 
