@@ -92,7 +92,7 @@ export const SigninForm = () => {
           TOPへ戻る
         </Link>
         <Link href="/user/signup" className={`${ToClickTW.form} flex  w-[40%] justify-center mx-auto`}>
-          ログインへ
+          会員登録へ
         </Link>
       </div>
     </form>
