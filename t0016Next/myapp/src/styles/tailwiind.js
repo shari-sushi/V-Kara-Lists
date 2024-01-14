@@ -12,13 +12,13 @@ export const MainTW = {
 
 export const TableCss = {
     // whole
-    regular: "bg-[#FFF6E4] text-black w-full md:max-w-[1000px] text-left whitespace-nowrap",
+    regular: "bg-[#FFF6E4] text-black w-full md:max-w-[1000px] text-left whitespace-nowrap ",
     minRandom: "bg-[#FFF6E4] text-black w-full text-left whitespace-nowrap",
 
     // tr, td
     regularTd: "",
-    regularThead: "border-b border-[#776D5C]",
-    regularTr: "border-b border-[#B7A692]",
+    regularThead: "border-b border-[#776D5C] ",
+    regularTr: "border-b border-[#B7A692]  odd:bg-[#f9f3e9] md:odd:bg-[#FFF6E4]",
 
     // data in column
     favoriteColumn: "rounded-full w-10 bg-[#fbd5d2] text-black ",
@@ -63,4 +63,5 @@ export const FormTW = {
 // #FFF6E4 頬の肌色(だっけ?)
 // #776D5C たぬき耳の先
 // #B7A692 しっぽの中央
-// #fbd5d2 頬のピンク 
+// #fbd5d2 頬のピンク
+// #B7A893 ロゴ、髪
