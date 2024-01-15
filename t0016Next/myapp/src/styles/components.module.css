@@ -1,17 +1,1 @@
-/* t0016Next\myapp\src\components\components.module.css */
-
-.tableStyle {
-    width: 100%;
-    border-collapse: collapse;
-    /* border: 4px double rgba(138, 138, 138, 0.534); */
-}
-
-.header, .cell {
-    padding: 4px 4px;
-    text-align: left;
-    border: 4px double black;
-}
-
-.header {
-    background-color: #f2f2f2;
-}
+/* 
