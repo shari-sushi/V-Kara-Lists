@@ -2,9 +2,9 @@
 
 const vtuberNamePattern = /^.{2,100}$/;
 const vtuberKanaPattern = /^[a-z]+(_[a-z]*)?$/;
-const introMovieUrlPattern = /^(https?:\/\/)?(www\.)?youtube\.com\/watch\?v=[a-zA-Z0-9\-]{11}(&t=[0-9]+[s]?)?$/;
+const introMovieUrlPattern = /^(https?:\/\/)?(www\.)?youtube\.com\/watch\?v=[a-zA-Z0-9_\-]{11}(&t=[0-9]+[s]?)?$/;
 const movieTitlePattern = /^.{2,100}$/;
-const MovieUrlPattern = /^(https?:\/\/)?(www\.)?youtube\.com\/watch\?v=[a-zA-Z0-9\-]{11}$/;
+const MovieUrlPattern = /^(https?:\/\/)?(www\.)?youtube\.com\/watch\?v=[a-zA-Z0-9_\-]{11}$/;
 // const VideoIdPattern = /^[a-zA-Z0-9]{11}$/;
 const songNamePattern = /^.{2,100}$/;
 const singStartPattern = /^[0-9]{2}:[0-9]{2}:[0-9]{2}$/;
@@ -91,14 +91,14 @@ const AdjustMovieUrl = (input: string) => {
 
 export const ValidateEdit = {
     VtuberName: {
-        required: true,
+        required: false,
         pattern: {
             value: new RegExp(`(${vtuberNamePattern.source})`),
             message: "2文字以上必要です。1文字のVTueber様がいる場合はサイト運営へご連絡ください。",
         }
     },
     VtuberKana: {
-        required: true,
+        required: false,
         pattern: {
             value: new RegExp(`(${vtuberKanaPattern.source})`),
             message: "半角アルファベット小文字および _ １回のみ使用してください。 例: chumu_note, sumeshi",
@@ -122,14 +122,14 @@ export const ValidateEdit = {
         },
     },
     MovieTitle: {
-        required: true,
+        required: false,
         pattern: {
             value: new RegExp(`(${movieTitlePattern.source})`),
             message: "動画タイトルを修正してください。(文字数エラー)",
         }
     },
     MovieUrl: {
-        required: true,
+        required: false,
         pattern: {
             value: new RegExp(`(${MovieUrlPattern.source})`),
             // value: new RegExp(`(${YouTubeUrlPattern.source})|(${VideoIdPattern.source})`),
@@ -138,14 +138,14 @@ export const ValidateEdit = {
         },
     },
     SongName: {
-        required: true,
+        required: false,
         pattern: {
             value: new RegExp(`(${songNamePattern.source})`),
             message: "2文字以上必要です。不都合がある場合はサイト運営へご連絡ください。",
         }
     },
     SingStart: {
-        required: true,
+        required: false,
         pattern: {
             value: singStartPattern,
             // message: "hh:mm:ss, mm:ss, ss,のいずれかで入力してください。\n 例: 01:23:45, 25:01, 49 等",
