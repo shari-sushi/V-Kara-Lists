@@ -377,9 +377,9 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
                             </div>
                         }
                         <button type="submit"
-                            className={`${ToClickTW.decide} m-4 w-[80px] `}
+                            className={`${ToClickTW.decide} m-4 w-[100px] `}
                         >
-                            確定
+                            登録確定
                         </button>
                     </div>
 
