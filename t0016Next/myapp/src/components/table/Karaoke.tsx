@@ -719,6 +719,7 @@ const deleteColumns: Column<ReceivedKaraoke>[] = [
 ///////////////////////////////////////////////////
 // // top youtube横　
 // 全件取得してフロント側でランダムにしてるけど、バック側でランダム５件+α取得すべき
+// (+αはフロント側でランダム更新するため)
 
 const randam5columns: Column<ReceivedKaraoke>[] = [
   { Header: 'VTuber', accessor: 'VtuberName' },

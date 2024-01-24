@@ -322,9 +322,9 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
 
                     <div className='flex justify-center'>
                         <button type="submit"
-                            className={`${ToClickTW.decide} m-4 w-[80px] `}
+                            className={`${ToClickTW.decide} m-4 w-[100px] `}
                         >
-                            確定
+                            編集確定
                         </button>
                     </div>
                 </form >
