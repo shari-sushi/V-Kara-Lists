@@ -7,7 +7,7 @@ import { GestLogin, GestLoginForHamburger } from '../button/User'
 import { HeaderCss, FooterTW } from '@/styles/tailwiind'
 import { ToClickTW } from '@/styles/tailwiind'
 import { getWindowSize } from "@/features/layout/Layout";
-import { CreateLink, DeleteLink, EditLink, KaraokeLink, LoginLink, MyPageLink, ProfileLink, SignUpLink, TitleLink, TopLink } from "../button/link/Humbarger";
+import { CreateLink, DeleteLink, EditLink, KaraokeLink, OriginalSongLink, LoginLink, MyPageLink, ProfileLink, SignUpLink, TitleLink, TopLink } from "../button/link/Humbarger";
 
 type LayoutProps = {
     pageName: string;
@@ -68,8 +68,13 @@ const Header = ({ pageName }: HeaderProps) => {
                             </Link>
                         </span>
                         <span >
-                            <Link href="/karaoke/sings" className={`${ToClickTW.regular} mr-1`}>
-                                歌リスト
+                            <Link href="/sings/karaoke" className={`${ToClickTW.regular} mr-1`}>
+                                カラオケ
+                            </Link>
+                        </ span>
+                        <span >
+                            <Link href="/sings/original-song" className={`${ToClickTW.regular} mr-1`}>
+                                オリ曲
                             </Link>
                         </span>/
                     </span >
@@ -140,13 +145,18 @@ const Header = ({ pageName }: HeaderProps) => {
                 <a href="#pageTop" />
                 <TitleLink />
                 <span className={``}>
-
                     <div className=" h-6 flex float-right justify-end z-30  items-center ">
-                        <Link href="/" className={`${ToClickTW.regular} mr-1 w-10 h-[28px]`}>
+                        <Link href="/" className={`${ToClickTW.regular} mr-1 w-10 `}>
                             TOP
                         </Link>
-                        <Link href="/karaoke/sings" className={`${ToClickTW.regular} mr-1 w-18 h-[28px]`}>
+                        <Link href="/sings/karaoke" className={`${ToClickTW.regular} mr-1`}>
+                            カラオケ
+                        </Link>
+                        <Link href="/sings/karaoke" className={`${ToClickTW.regular} mr-1`}>
                             歌リスト
+                        </Link>
+                        <Link href="/sings/original-song" className={`${ToClickTW.regular} mr-1`}>
+                            オリ曲
                         </Link>
                         <button onClick={() => setIsOpen(!isOpen)}
                             className="hover:bg-[#657261] rounded-lg "
@@ -175,6 +185,7 @@ const Header = ({ pageName }: HeaderProps) => {
                                         <div className=" flex flex-col ">
                                             <TopLink />
                                             <KaraokeLink />
+                                            <OriginalSongLink />
                                         </div>
                                         <hr className="w-[60%] top-10 right-0 my-3" />
                                         {!isSignin &&
@@ -226,10 +237,10 @@ const Footer = () => {
 
             <span className="flex float-right">
                 <Link href="/" className="mx-1">TOP</Link>:
-                <Link href="/karaoke/sings" className="mx-1">歌リスト</Link>/
+                <Link href="/sings/karaoke" className="mx-1">   カラオケ</Link>/
+                <Link href="/sings/original-song" className="mx-1">  オリ曲</Link>/
                 {isSignin &&
                     <span className="mx-1">
-                        データの
                         <Link href="/crud/create" className="mx-1">登録</Link>:
                         <Link href="/crud/edit" className="mx-1">編集</Link>:
                         <Link href="/crud/delete" className="mx-1">削除</Link>
