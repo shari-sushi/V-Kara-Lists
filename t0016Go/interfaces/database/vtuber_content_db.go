@@ -102,13 +102,13 @@ func (db *VtuberContentRepository) UpdateVtuber(V domain.Vtuber) error {
 func (db *VtuberContentRepository) UpdateMovie(M domain.Movie) error {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var Mo domain.Vtuber
-	result := db.Model(&Mo).Where("Movie_title = ?", M.MovieTitle).Updates(&M)
+	result := db.Model(&Mo).Where("Movie_url = ?", M.MovieUrl).Updates(&M)
 	return result.Error
 }
 
 func (db *VtuberContentRepository) UpdateKaraoke(K domain.Karaoke) error {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
-	var Ka domain.Vtuber
+	var Ka domain.Karaoke
 	result := db.Model(&Ka).Where("karaoke_id = ?", K.KaraokeId).Updates(&K)
 	return result.Error
 }
@@ -155,7 +155,9 @@ func (db *VtuberContentRepository) VerifyUserModifyMovie(id domain.ListenerId, M
 }
 func (db *VtuberContentRepository) VerifyUserModifyKaraoke(id domain.ListenerId, K domain.Karaoke) (bool, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
-	result := db.Where("karaoke_Inputter_id=?", id).First(&K, K.KaraokeId)
+	fmt.Printf("k: %v\n", K)
+	result := db.Where("karaoke_Inputter_id=?", id).First(&K)
+	fmt.Printf("k: %v", K)
 	return K.KaraokeInputterId == id, result.Error
 }
 
