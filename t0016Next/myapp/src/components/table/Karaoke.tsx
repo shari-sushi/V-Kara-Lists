@@ -42,7 +42,7 @@ export function KaraokeTable({ posts, handleMovieClickYouTube }: KaraokeTablePro
                 <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                   {column.render('Header')}
                   <span>
-                    {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
+                    {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <img src="/content/sort.svg" className='inline mx-1 h-5' />}
                   </span>
                 </th>
               ))}
@@ -349,7 +349,7 @@ export function KaraokePagenatoinTable({ posts, handleMovieClickYouTube, setSele
                     <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                       {column.render('Header')}
                       <span>
-                        {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
+                        {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <img src="/content/sort.svg" className='inline mx-1 h-5' />}
                       </span>
                     </th>
                   ))}
@@ -547,7 +547,7 @@ export const KaraokeThinTable = ({ posts, handleMovieClickYouTube }: KaraokeTabl
                   <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                     {column.render('Header')}
                     <span>
-                      {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
+                      {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <img src="/content/sort.svg" className='inline mx-1 h-5' />}
                     </span>
                   </th>
                 ))}
