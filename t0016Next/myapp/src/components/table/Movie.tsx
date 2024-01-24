@@ -41,7 +41,7 @@ export function MovieTable({ posts, handleMovieClickYouTube }: MovieTableProps) 
                                     <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                                         {column.render('Header')}
                                         <span>
-                                            {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
+                                            {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <img src="/content/sort.svg" className='inline mx-1 h-5' />}
                                         </span>
                                     </th>
                                 ))}
@@ -195,7 +195,7 @@ export function MovieTableForMyPage({ data, handleMovieClickYouTube }: MovieTabl
                                     <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                                         {column.render('Header')}
                                         <span>
-                                            {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
+                                            {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <img src="/content/sort.svg" className='inline mx-1 h-5' />}
                                         </span>
                                     </th>
                                 ))}
@@ -248,7 +248,7 @@ export function MovieDeleteTable({ posts, handleMovieClickYouTube }: MovieDelete
                                     <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                                         {column.render('Header')}
                                         <span>
-                                            {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
+                                            {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <img src="/content/sort.svg" className='inline mx-1 h-5' />}
                                         </span>
                                     </th>
                                 ))}
