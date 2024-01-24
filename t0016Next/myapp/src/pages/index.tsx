@@ -101,7 +101,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
               </Link>
 
               <div id="table"
-                className='absolute overflow-scroll mt-7 h-[82%] md:h-[88%] w-[98%] md:w-[99%] '>
+                className='absolute  mt-7 h-[82%] md:h-[88%] w-[98%] md:w-[99%] '>
                 <KaraokeThinTable
                   posts={latestKaraokes}
                   handleMovieClickYouTube={handleMovieClickYouTube}
