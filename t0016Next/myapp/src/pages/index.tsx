@@ -92,7 +92,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
             <div id="right" className={`relative w-full h-full border px-1 rounded `}>
               <span className='mx-2 mt-1 absolute w-[70%]'>最近登録された50曲</span>
 
-              <Link href={`/karaoke/sings`}
+              <Link href={`/sings/karaoke`}
                 className={
                   `${ToClickTW.regular}
                      absolute flex right-1 top-[1px]  `}>

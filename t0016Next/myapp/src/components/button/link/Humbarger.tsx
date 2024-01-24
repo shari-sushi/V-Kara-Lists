@@ -24,7 +24,17 @@ export const KaraokeLink = () => {
     return (
         <Link href="/karaoke/sings" className={`${ToClickTW.hamburger} mt-1`}>
             <div className={` ml-5 sm:my-2 my-[4px]  `} >
-                歌リスト
+                カラオケ
+            </div>
+        </Link>
+    )
+}
+
+export const OriginalSongLink = () => {
+    return (
+        <Link href="/karaoke/sings" className={`${ToClickTW.hamburger} mt-1`}>
+            <div className={` ml-5 sm:my-2 my-[4px]  `} >
+                オリ曲
             </div>
         </Link>
     )

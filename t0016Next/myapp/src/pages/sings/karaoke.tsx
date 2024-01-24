@@ -19,8 +19,8 @@ export default function SingsPage({ posts, isSignin }: PostsAndCheckSignin) {
     const karaokes = posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke];
 
     // ようつべ用
-    const primaryYoutubeUrl = "kORHSmXcYNc"
-    const primaryYoutubeStartTime = ConvertStringToTime("00:08:29")
+    const primaryYoutubeUrl = "5WzeYsoGCZc" //船長　kORHSmXcYNc, 00:08:29
+    const primaryYoutubeStartTime = ConvertStringToTime("00:22:04")
     const [currentMovieId, setCurrentMovieId] = useState<string>(primaryYoutubeUrl);
     const [start, setStart] = useState<number>(primaryYoutubeStartTime)
     const handleMovieClickYouTube = (url: string, start: number) => {
@@ -43,7 +43,7 @@ export default function SingsPage({ posts, isSignin }: PostsAndCheckSignin) {
     const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
 
     return (
-        <Layout pageName="Sings" isSignin={isSignin}>
+        <Layout pageName="カラオケ" isSignin={isSignin}>
             {/* <div>videoId= {currentMovieId}, start= {start}秒 = {Math.floor(start / 60)}分 {Math.floor(start % 60)}秒</div > */}
             <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
                 <div className={`pt-6 flex flex-col items-center`}>
