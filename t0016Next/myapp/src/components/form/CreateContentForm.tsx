@@ -213,7 +213,6 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
                             </div>}
                     </div>
 
-
                     <div>
                         {crudContentType === "karaoke" &&
                             // <div id="decide" className="flex flex-col justify-center my-3 ">
@@ -362,12 +361,12 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
                                     </span>
                                 </div>
                                 <div className='flex flex-col md:flex-row md:text-xl mt-2 md:mt-6'>
-                                    <button onClick={() => router.reload()}
+                                    <button type="button" onClick={() => router.reload()}
                                         className={`${ToClickTW.boldChoice} p-2 mx-auto`}
                                     >
                                         更新する
                                     </button>
-                                    <button onClick={() => setIsDisPlay(false)}
+                                    <button type="button" onClick={() => setIsDisPlay(false)}
                                         className={`${ToClickTW.boldChoice} p-2 mx-auto mt-4 md:my-0 font-bold`}
                                     >
                                         入力を維持するために <br />

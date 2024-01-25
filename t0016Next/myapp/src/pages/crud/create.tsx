@@ -4,10 +4,12 @@ import https from 'https';
 import axios, { AxiosRequestConfig } from 'axios';
 
 import { domain } from '@/../env'
-import type { ReceivedMovie, ReceivedKaraoke } from '@/types/vtuber_content'; //type{}で型情報のみインポート
+import type { ReceivedMovie, ReceivedKaraoke } from '@/types/vtuber_content';
+import type { ContextType } from '@/types/server'
 import { Layout } from '@/components/layout/Layout'
 import { YouTubePlayer } from '@/components/moviePlayer/YoutubePlayer'
 import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
+import { CreateForm, CreatePageProps } from '@/components/form/CreateContentForm';
 
 export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
     const movies = posts?.vtubers_movies || [{} as ReceivedMovie];
@@ -118,9 +120,6 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
 };
 
 /////////////////////////////////////////////////////////////////////////////
-import { ContextType } from '@/types/server'
-import { CreateForm, CreatePageProps } from '@/components/form/CreateContentForm';
-
 export async function getServerSideProps(context: ContextType) {
     const rawCookie = context.req.headers.cookie;
     const sessionToken = rawCookie?.split(';').find((cookie: string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];
