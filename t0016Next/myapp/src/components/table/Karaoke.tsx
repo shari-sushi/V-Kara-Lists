@@ -179,8 +179,8 @@ function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumn) {
     <div>
       <button className={`${TableTW.favoriteColumn} relative flex`} onClick={handleClick}>
         {isFavNow ?
-          <img src="/content/heart_pink.png" className='flex w-5 m-1 mr-0' />
-          : <img src="/content/heart_white.png" className='flex w-5 m-1 mr-0' />
+          <img src="/content/heart_pink.svg" className='flex w-5 m-1 mr-0' />
+          : <img src="/content/heart_white.svg" className='flex w-5 m-1 mr-0' />
         }
 
         {isFavNow == isFav ? count : isFavNow ? count + 1 : count - 1}
