@@ -11,9 +11,12 @@ import (
 
 func main() {
 	r := gin.Default()
-	r.Use(requestLogger()) //開発用。本番環境ではコメントアウトする。
+	r.Use(requestLogger()) //開発用。本番稼動時はコメントアウトする。
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://localhost", "http://localhost"},
+		AllowOrigins: []string{
+			"http://localhost", "https://localhost",
+			"http://v-karaoke.com",
+		},
 		AllowMethods:     []string{"POST", "GET", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Cookie"},
 		AllowCredentials: true,
@@ -21,8 +24,8 @@ func main() {
 
 	infra.Routing(r)
 
-	r.Run("localhost:8080")
-	// r.RunTLS(":8080", "../../key/server.pem", "../../key/server_unencrypted.key")
+	r.Run(":8080")
+	// r.RunTLS(":8080", "../../key/server.pem", "../../key/server_unencrypted.key") //開発用
 }
 
 func requestLogger() gin.HandlerFunc {
