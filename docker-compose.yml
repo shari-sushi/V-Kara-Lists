@@ -2,9 +2,9 @@ version: '3.8'
 
 services:
   db:
-    image: mysql
+    image: mysql:8.0.32
     platform: linux/amd64 #mac環境で必須なことがあるらしい
-    env_file: .env
+    env_file: ./db/.env
     container_name: v_kara_db
     build:
       context: ./db
@@ -15,13 +15,14 @@ services:
     ports:
       - "3306:3306"
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci 
-    # command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci --skip-character-set-client-handshake
   
   api:
     build: 
       context: ./t0016Go
     container_name: v_kara_api
-    env_file: .env
+    env_file: ./t0016Go/.env
+    environment:
+      - IS_DOCKER_COMPOSE=true 
     stdin_open: true
     tty: true
     volumes:
@@ -36,16 +37,12 @@ services:
     build:
       context: ./t0016Next
     container_name: v_kara_app
+    env_file: ./t0016Next/.env
+    environment:
+      - IS_DOCKER_COMPOSE=true 
     stdin_open: true
     tty: true
     volumes:
       - ./t0016Next/myapp:/app/src
-    # depends_on:
-    #    - "api" 
     ports:
       - "80:80"
-
-# INSERT INTO karaoke_lists 
-# (movie_url,  sing_start, song_name, karaoke_list_inputter_id) 
-# VALUE
-# ('www.youtube.com/watch?v=5WzeYsoGCZc', '00:08:07', 'aaa', 1);
