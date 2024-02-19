@@ -2,7 +2,6 @@ package infra
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -18,40 +17,67 @@ type SqlHandler struct {
 	Conn *gorm.DB
 }
 
-func init() { //共通化したい……interfaces/controllers/commonと
-	//docker外ではPCのGO_ENVを取得し、godotenvが.dnvを取得する。
-	//docker上ではdockercomposeが.envを取得する。
-	goEnv := os.Getenv("GO_ENV")
-	if goEnv == "development" {
-		fmt.Printf("goEnc=%v \n", goEnv)
-	}
-	err := godotenv.Load("../.env")
-	if err == nil {
-		checkFile := os.Getenv("GO_ENV")
-		fmt.Printf("got .env file is %v \n", checkFile)
-	} else {
-		fmt.Print("godotenvによる.envファイル取得失敗。dockercompose.yamlから取得 \n")
+func init() {
+	getEnvVar()
+}
+
+func getEnvVar() {
+	goEnv := os.Getenv("GO_ENV") //ローカルpc上でのみ設定
+	isDockerCompose := os.Getenv("IS_DOCKER_COMPOSE")
+	if goEnv == "" && isDockerCompose == "" {
+		//クラウド環境
+		fmt.Println("クラウド環境で起動")
+		envCheck(goEnv, isDockerCompose)
+	} else if goEnv == "" && isDockerCompose == "true" {
+		// ローカルのdocker上(compose使用)
+		fmt.Println("ローカルのdockerコンテナ内で起動")
+		envCheck(goEnv, isDockerCompose)
+	} else if goEnv == "development" && isDockerCompose == "" {
+		//VSCodeで起動
+		fmt.Println("VSCodeで起動。godotenv.Load使用")
+		err := godotenv.Load("../.env")
+		if err == nil {
+			fmt.Println("got .env file sucussesly. retry os.Getenv")
+			goEnv := os.Getenv("GO_ENV")
+			envCheck(goEnv, isDockerCompose)
+		} else {
+			fmt.Println("godotenvで.envファイル取得失敗")
+			envCheck(goEnv, isDockerCompose)
+		}
 	}
 }
 
-func DbInit() database.SqlHandler {
+func envCheck(goEnv, isDockerCompose string) {
+	fmt.Printf("goEnv == %v && isDocker == %v \n", goEnv, isDockerCompose)
+
+	guest := os.Getenv("GUEST_USER_NAME")
+	fmt.Printf("GUEST_USER_NAME=%v \n", guest)
+}
+
+func dbInit() database.SqlHandler {
 	user := os.Getenv("MYSQL_USER")
 	pw := os.Getenv("MYSQL_PASSWORD")
-	db_name := os.Getenv("MYSQL_DATABASE")
+	db_name := ""
 	// db_name := "migration_test" //migrationテスト用
-	// port := "v_kara_db" //docker用
-	var port string
-	checkFile := os.Getenv("GO_ENV")
-	if checkFile == "development" {
-		port = "localhost:3306" //docker不使用時
-	} else if checkFile == "" {
-		port = "v_kara_db" //docker不使用用時
-	} else {
-		log.Fatal("GO_ENVに想定外の値が入力されています。")
+	port := "3306"
+	dbUrL := ""
+	path := ""
 
+	isDockerCompose := os.Getenv("IS_DOCKER_COMPOSE")
+	goEnv := os.Getenv("GO_ENV")
+
+	if goEnv == "" && isDockerCompose == "" {
+		//クラウド環境
+		dbUrL = os.Getenv("RDS_END_PIONT")
+		db_name = os.Getenv("AWS_DATABASE")
+	} else if (goEnv == "" && isDockerCompose == "true") || (goEnv == "development" && isDockerCompose == "") {
+		// ローカルのdocker上(compose使用) or  VSCodeで起動
+		dbUrL = "localhost"
+		db_name = os.Getenv("MYSQL_DATABASE")
 	}
-	// db_name := "test"
-	path := fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=true", user, pw, port, db_name)
+
+	path = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=true", user, pw, dbUrL, port, db_name)
+
 	fmt.Printf("path=%v \n", path)
 	var err error
 	gormDB, err := gorm.Open(mysql.Open(path), &gorm.Config{})
@@ -61,7 +87,10 @@ func DbInit() database.SqlHandler {
 	}
 	sqlHandler := new(SqlHandler)
 	sqlHandler.Conn = gormDB
-	sqlHandler.migration()
+
+	if err == nil {
+		sqlHandler.migration()
+	}
 
 	return sqlHandler
 }
