@@ -28,6 +28,7 @@ func Routing(r *gin.Engine) {
 		vcontents := ver.Group("/vcontents")
 		{
 			vcontents.GET("/", Controller.ReturnTopPageData)
+			vcontents.GET("/dummy-top-page", Controller.ReturnDummyTopPage)
 			vcontents.GET("/sings", Controller.GetJoinVtubersMoviesKaraokes)
 			vcontents.GET("/original-song", Controller.ReturnOriginalSongPage)
 			// /vtuber, /movie, /karaokeの文字列はフロント側で比較演算に使われてる
