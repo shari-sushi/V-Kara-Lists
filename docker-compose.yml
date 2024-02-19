@@ -4,7 +4,7 @@ services:
   db:
     image: mysql:8.0.32
     platform: linux/amd64 #mac環境で必須なことがあるらしい
-    env_file: .env
+    env_file: ./db/.env
     container_name: v_kara_db
     build:
       context: ./db
@@ -20,7 +20,9 @@ services:
     build: 
       context: ./t0016Go
     container_name: v_kara_api
-    env_file: .env
+    env_file: ./t0016Go/.env
+    environment:
+      - IS_DOCKER_COMPOSE=true 
     stdin_open: true
     tty: true
     volumes:
@@ -35,6 +37,9 @@ services:
     build:
       context: ./t0016Next
     container_name: v_kara_app
+    env_file: ./t0016Next/.env
+    environment:
+      - IS_DOCKER_COMPOSE=true 
     stdin_open: true
     tty: true
     volumes:

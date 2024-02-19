@@ -1,4 +1,4 @@
-FROM node:18
+FROM node:18-alpine
 
 WORKDIR /app/src 
 
@@ -9,5 +9,7 @@ RUN npm install
 COPY ./myapp .
 
 RUN npm run build
+
+EXPOSE 80
 
 CMD ["npm", "run", "start"]

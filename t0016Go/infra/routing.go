@@ -9,7 +9,7 @@ import (
 // https://github.com/sharin-sushi/0016go_next_relation/issues/71#issuecomment-1843543763
 
 func Routing(r *gin.Engine) {
-	Controller := controllers.NewController(DbInit())
+	Controller := controllers.NewController(dbInit())
 
 	ver := r.Group("/v1")
 	{
@@ -28,7 +28,6 @@ func Routing(r *gin.Engine) {
 		vcontents := ver.Group("/vcontents")
 		{
 			vcontents.GET("/", Controller.ReturnTopPageData)
-			vcontents.GET("/dummy-top-page", Controller.ReturnDummyTopPage)
 			vcontents.GET("/sings", Controller.GetJoinVtubersMoviesKaraokes)
 			vcontents.GET("/original-song", Controller.ReturnOriginalSongPage)
 			// /vtuber, /movie, /karaokeの文字列はフロント側で比較演算に使われてる
@@ -55,6 +54,8 @@ func Routing(r *gin.Engine) {
 			vcontents.GET("/getalldata", Controller.GetVtuverMovieKaraoke)
 			vcontents.GET("/oimomochimochiimomochioimo", Controller.Enigma) // 管理者用
 
+			// テスト用
+			vcontents.GET("/dummy-top-page", Controller.ReturnDummyTopPage)
 		}
 		fav := ver.Group("/fav")
 		{
