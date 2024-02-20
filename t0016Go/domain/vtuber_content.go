@@ -22,7 +22,7 @@ type Movie struct {
 type KaraokeId int
 type Karaoke struct {
 	KaraokeId         KaraokeId  `gorm:"primaryKey;type:int(11);"`                          //`json:"id"`
-	MovieUrl          string     `gorm:"type:varchar(100);uniqueIndex:karaoke_uq:not null"` //`json:"movie_url"`
+	MovieUrl          string     `gorm:"type:varchar(100);uniqueIndex:karaoke_uq;not null"` //`json:"movie_url"`
 	SingStart         string     `gorm:"type:time(0);uniqueIndex:karaoke_uq"`               //`json:"sing_start"`
 	SongName          string     `gorm:"type:varchar(100)"`                                 //`json:"song_name"`
 	KaraokeInputterId ListenerId `gorm:"type:int(11)"`                                      //`json:"inputter_id"`
