@@ -7,7 +7,6 @@ export const Checkbox = ({ children, ...props }: JSX.IntrinsicElements['input'])
   </label>
 );
 
-
 export function generateRandomNumber(max: number) {
   return Math.floor(Math.random() * max - 1) + 1
 }
@@ -22,6 +21,6 @@ export function shuffleArray(array: ReceivedKaraoke[]) {
     const j = Math.floor(Math.random() * (i + 1)); //ランダムな数値jを生成
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
-  console.log("shuffle is finish")
+  // console.log("shuffle is finish")
   return shuffled;
 }
