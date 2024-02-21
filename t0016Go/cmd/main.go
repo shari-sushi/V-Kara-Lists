@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -22,9 +23,13 @@ func main() {
 		AllowCredentials: true,
 	}))
 
-	fmt.Println("hallow api server in AWS 02.20")
+	fmt.Println("hallow api server in AWS 02.21")
 
 	infra.Routing(r)
+
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{})
+	})
 
 	r.Run(":8080")
 }

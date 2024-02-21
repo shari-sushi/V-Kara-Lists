@@ -80,17 +80,32 @@ func dbInit() database.SqlHandler {
 
 	fmt.Printf("path=%v \n", path)
 	var err error
+	var sqlHandler *SqlHandler
 	gormDB, err := gorm.Open(mysql.Open(path), &gorm.Config{})
 	gormDB = gormDB.Debug()
-	if err != nil {
+	if err == nil {
+		sqlHandler := new(SqlHandler)
+		sqlHandler.Conn = gormDB
+		sqlHandler.migration()
+	} else {
 		panic("failed to connect database")
 	}
-	sqlHandler := new(SqlHandler)
-	sqlHandler.Conn = gormDB
 
-	if err == nil {
-		sqlHandler.migration()
-	}
+	// rows, err := gormDB.Raw("SHOW DATABASES").Rows()
+	// if err != nil {
+	// 	fmt.Printf("show databases get err: %v\n", err)
+	// }
+	// defer rows.Close()
+
+	// fmt.Printf("result of \"show databases\" is \n")
+	// for rows.Next() {
+	// 	var database string
+	// 	if err := rows.Scan(&database); err != nil {
+	// 		panic(err.Error())
+	// 	}
+	// 	fmt.Printf("%v\n", database)
+	// }
+	// fmt.Printf("That's all\n")
 
 	return sqlHandler
 }
