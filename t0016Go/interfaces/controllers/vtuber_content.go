@@ -117,6 +117,7 @@ func (controller *Controller) CreateKaraoke(c *gin.Context) {
 	})
 	return
 }
+
 func (controller *Controller) EditVtuber(c *gin.Context) {
 	listenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
@@ -155,6 +156,7 @@ func (controller *Controller) EditVtuber(c *gin.Context) {
 	})
 	return
 }
+
 func (controller *Controller) EditMovie(c *gin.Context) {
 	listenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
@@ -170,6 +172,7 @@ func (controller *Controller) EditMovie(c *gin.Context) {
 		})
 		return
 	}
+	fmt.Printf("shouldBind Movie:%v \n ", Movie)
 	Movie.MovieInputterId = listenerId
 	if isAuth, err := controller.VtuberContentInteractor.VerifyUserModifyMovie(listenerId, Movie); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -193,6 +196,7 @@ func (controller *Controller) EditMovie(c *gin.Context) {
 	})
 	return
 }
+
 func (controller *Controller) EditKaraoke(c *gin.Context) {
 	listenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
@@ -214,17 +218,19 @@ func (controller *Controller) EditKaraoke(c *gin.Context) {
 			"message": "Auth Check is failed.(we could not Verify)",
 		})
 		return
-	} else if isAuth == false {
+	} else if isAuth != true {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Only The Inputter can modify each data",
 		})
 		return
-	}
-	if err := controller.VtuberContentInteractor.UpdateKaraoke(Karaoke); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Inputter can modify each data",
-		})
-		return
+	} else {
+		fmt.Printf("isAuth%v :\n", isAuth)
+		if err := controller.VtuberContentInteractor.UpdateKaraoke(Karaoke); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "Inputter can modify each data",
+			})
+			return
+		}
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully Update",
