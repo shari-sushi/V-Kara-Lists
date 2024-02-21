@@ -9,19 +9,18 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/joho/godotenv"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func init() { //共通化したい……infraと
-	err := godotenv.Load("../.env")
-	if err == nil {
-		checkFile := os.Getenv("GO_ENV")
-		fmt.Printf("got .env file is %v \n", checkFile)
-	} else {
-		fmt.Print("godotenvによる.envファイル取得失敗。dockercompose.yamlから取得 \n")
-	}
-}
+// func init() { //共通化予定……infraと
+// 	err := godotenv.Load("../.env")
+// 	if err == nil {
+// 		checkFile := os.Getenv("GO_ENV")
+// 		fmt.Printf("got .env file is %v \n", checkFile)
+// 	} else {
+// 		fmt.Print("godotenvによる.envファイル取得失敗 \n")
+// 	}
+// }
 
 var bcryotCost int
 var aesKey []byte
