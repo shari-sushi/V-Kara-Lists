@@ -31,7 +31,7 @@ func SetListenerIdintoCookie(c *gin.Context, ListenerId domain.ListenerId) (err 
 		SameSite: http.SameSiteNoneMode, //本番環境ではNone禁止
 	}
 	http.SetCookie(c.Writer, cookie)
-	fmt.Printf("発行したcookie= %v /n", cookie)
+	fmt.Printf("発行したcookie= %v \n", cookie)
 	return
 }
 
