@@ -16,7 +16,8 @@
 
 Vtuber本人は自身が歌ったこと歌を把握し、活動に役立てられる。  
 
-  サイトリンク：[V-kara-List](https://v-karaoke.com)
+  サイトリンク：[V-kara-List](https://v-karaoke.com) <br/>
+  サイトデモ動画：[YouTubeリンク](https://youtu.be/4JIbhFoOMOc)
 
 ## 技術
 
