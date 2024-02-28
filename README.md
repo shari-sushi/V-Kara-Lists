@@ -72,6 +72,13 @@ Vtuber本人は自身が歌ったこと歌を把握し、活動に役立てら�
 | [原寸画像](https://user-images.githubusercontent.com/127638412/273976430-29856108-a613-493e-b024-bb9ad7ac88d9.png) | [原寸画像](https://user-images.githubusercontent.com/127638412/273976533-1d5db155-c5a6-403c-95db-f05b6fefb3f0.png) | [原寸画像](https://user-images.githubusercontent.com/127638412/273976737-17eb88c9-dfb0-4a99-a5ba-bf909c268ada.png) |
 | ![80%](https://github.com/sharin-sushi/0016go_next_relation/assets/127638412/b3a57a97-41e3-42e4-882c-177a2e317127) | ![273976533-1d5db155-c5a6-403c-95db-f05b6fefb3f0](https://github.com/sharin-sushi/0016go_next_relation/assets/127638412/b4eda633-a6b4-4d30-b446-77a0062ad79a) | ![273976737-17eb88c9-dfb0-4a99-a5ba-bf909c268ada](https://github.com/sharin-sushi/0016go_next_relation/assets/127638412/71a4338f-84d3-4e7f-ab08-c5af83207308)|
 
+AWS構成図 <br />
+<image src="https://github.com/sharin-sushi/V-Kara-Lists/blob/develop/AWS構成図.drawio.png" width="500px" /> <br />
+- ※備考※
+  - GitHub Actions CIは構築済みです。
+  - GitHub Actions CD, apiのprivate subnet化にも取り組んでいます。
+  - EC2インタンスは通常時停止です。 
+
 ## 機能
   - ログイン（ゲストログイン機能有り、JWT使用）、ログアウト、退会の機能
   - 登録データを表やドロップダウンで閲覧できる
