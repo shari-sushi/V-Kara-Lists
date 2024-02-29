@@ -26,10 +26,10 @@ type TopPage = {
 }
 
 const TopPage = ({ posts, isSignin }: TopPage) => {
-  const vtubers = posts?.vtubers || [{} as ReceivedVtuber];
-  const movies = posts?.vtubers_movies || [{} as ReceivedMovie];
-  const karaokes = posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke];
-  const latestKaraokes = posts?.latest_karaokes || [{} as ReceivedKaraoke];
+  const vtubers = posts?.vtubers || [] as ReceivedVtuber[];
+  const movies = posts?.vtubers_movies || [] as ReceivedMovie[];
+  const karaokes = posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[];
+  const latestKaraokes = posts?.latest_karaokes || [] as ReceivedKaraoke[];
   const [start, setStart] = useState<number>((36 * 60 + 41))
   const [currentMovieId, setCurrentMovieId] = useState<string>("E7x2TZ1_Ys4");
   const { height, width } = getWindowSize();

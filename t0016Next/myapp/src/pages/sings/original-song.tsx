@@ -16,7 +16,7 @@ type PostsAndCheckSignin = {
 }
 
 export default function SingsPage({ posts, isSignin }: PostsAndCheckSignin) {
-    const karaokes = posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke];
+    const karaokes = posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[];
 
     // ようつべ用
     const primaryYoutubeUrl = "5WzeYsoGCZc" //船長　kORHSmXcYNc, 00:08:29
