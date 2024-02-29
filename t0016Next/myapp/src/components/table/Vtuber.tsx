@@ -60,7 +60,7 @@ const columns: Column<ReceivedVtuber>[] = [
     { Header: 'VTuber', accessor: 'VtuberName' },
     { Header: 'kana', accessor: 'VtuberKana' },
     {
-        Header: '紹介動画( link to YouTube)', accessor: 'IntroMovieUrl',
+        Header: '紹介動画', accessor: 'IntroMovieUrl',
         Cell: ({ row }: { row: { original: ReceivedVtuber } }) => {
             return (
                 <span className="relative">
@@ -68,7 +68,7 @@ const columns: Column<ReceivedVtuber>[] = [
                         {row.original.IntroMovieUrl &&
                             <Link href={`https://${row.original.IntroMovieUrl}`} className="flex"
                                 target="_blank" rel="noopener noreferrer">
-                                <img src="/content/play_black.svg" className='w-5 mr-2' />
+                                <img src="/content/external_link.svg" className='w-5 mr-2' />
                                 YouTubeへ
                             </Link>
                             || <span className={`pl-7`}>未登録</span>
@@ -134,7 +134,7 @@ const deleteColumns: Column<ReceivedVtuber>[] = [
     { Header: 'VTuber', accessor: 'VtuberName' },
     { Header: 'kana', accessor: 'VtuberKana' },
     {
-        Header: '紹介動画( link to YouTube)', accessor: 'IntroMovieUrl',
+        Header: '紹介動画', accessor: 'IntroMovieUrl',
         Cell: ({ row }: { row: { original: ReceivedVtuber } }) => {
             return (
                 <span className="relative">
