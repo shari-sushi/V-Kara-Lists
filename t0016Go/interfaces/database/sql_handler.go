@@ -16,6 +16,7 @@ type SqlHandler interface {
 	Model(interface{}) *gorm.DB
 	Order(interface{}) *gorm.DB
 	Omit(...string) *gorm.DB
+	Raw(string) *gorm.DB
 	Save(interface{}) *gorm.DB
 	Select(interface{}, ...interface{}) *gorm.DB
 	Unscoped() *gorm.DB

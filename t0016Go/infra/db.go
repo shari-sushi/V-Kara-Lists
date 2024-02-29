@@ -156,6 +156,9 @@ func (handler *SqlHandler) Omit(columns ...string) *gorm.DB {
 func (handler *SqlHandler) Order(value interface{}) *gorm.DB {
 	return handler.Conn.Order(value)
 }
+func (handler *SqlHandler) Raw(sql string) *gorm.DB {
+	return handler.Conn.Raw(sql)
+}
 func (handler *SqlHandler) Save(value interface{}) *gorm.DB {
 	return handler.Conn.Save(value)
 }

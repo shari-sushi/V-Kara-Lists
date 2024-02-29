@@ -63,3 +63,7 @@ type FavoriteRepository interface {
 	FindMoviesFavoritedByListenerId(domain.ListenerId) ([]domain.TransmitMovie, error)
 	FindKaraokesFavoritedByListenerId(domain.ListenerId) ([]domain.TransmitKaraoke, error)
 }
+
+type OtherRepository interface {
+	ExecRawQuery(string) error
+}
