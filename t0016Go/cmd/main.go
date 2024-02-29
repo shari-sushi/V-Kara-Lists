@@ -8,7 +8,8 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/sharin-sushi/0016go_next_relation/infra"
-	"github.com/sharin-sushi/0016go_next_relation/interfaces/controllers"
+
+	// "github.com/sharin-sushi/0016go_next_relation/interfaces/controllers"
 	"github.com/sharin-sushi/0016go_next_relation/interfaces/controllers/common"
 )
 
@@ -44,7 +45,7 @@ func main() {
 	var host string
 	if env == "on cloud" {
 		//クラウド環境
-		fmt.Println("hallow api server in AWS" + controllers.UpdateData)
+		// fmt.Println("hallow api server in AWS" + controllers.UpdateData)
 		// host = "v-karaoke.com"
 	} else if env == "on local" {
 		// ローカルのdocker上(compose使用) or  VSCodeで起動
