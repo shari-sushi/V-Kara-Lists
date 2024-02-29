@@ -13,8 +13,8 @@ import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
 import { GestLogin, } from '@/components/button/User'
 
 export const EditPage = ({ posts, isSignin }: EditPageProps) => {
-    const movies = posts?.vtubers_movies || [{} as ReceivedMovie];
-    const karaokes = posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke];
+    const movies = posts?.vtubers_movies || [] as ReceivedMovie[];
+    const karaokes = posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[];
     if (!isSignin) {
         return (
             <div className="by-3 mx-auto">

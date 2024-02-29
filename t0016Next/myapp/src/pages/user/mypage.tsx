@@ -32,12 +32,16 @@ const MyPage = ({ data, isSignin }: Mypage) => {
 
     )
   };
-  const vtubers = data?.vtubers_u_created || [{} as ReceivedVtuber];
-  const movies = data?.vtubers_movies_u_created || [{} as ReceivedMovie];
-  const karaokes = data?.vtubers_movies_karaokes_u_created || [{} as ReceivedKaraoke];
+  const vtubers = data?.vtubers_u_created || [] as ReceivedVtuber[];
+  const movies = data?.vtubers_movies_u_created || [] as ReceivedMovie[];
+  const karaokes = data?.vtubers_movies_karaokes_u_created || [] as ReceivedKaraoke[];
   const [currentMovieId, setCurrentMovieId] = useState<string>("E7x2TZ1_Ys4");
   const [start, setStart] = useState<number>((36 * 60 + 41))
 
+  console.log("vtubers", vtubers)
+  console.log("data.vtubers", data.vtubers_u_created)
+  console.log("movies", movies)
+  console.log("data.vtubers_movies_u_created", data.vtubers_movies_u_created)
   const handleMovieClickYouTube = (url: string, start: number) => {
     // console.log("handleMovieClickYouTube")
     // if (currentMovieId == ExtractVideoId(url)) {
@@ -85,7 +89,7 @@ const MyPage = ({ data, isSignin }: Mypage) => {
 
                 <div className='flex'>
                   <img src="/content/note.svg" className='h-5 mr-1' />
-                  <h2>歌: 登録数{karaokes != null ? karaokes.length : 0}</h2>
+                  <h2>歌: 登録数{karaokes.length}</h2>
                 </div>
                 <KaraokePagenatoinTable
                   posts={karaokes}
