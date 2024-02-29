@@ -152,9 +152,6 @@ const Header = ({ pageName }: HeaderProps) => {
                         <Link href="/sings/karaoke" className={`${ToClickTW.regular} mr-1`}>
                             カラオケ
                         </Link>
-                        <Link href="/sings/karaoke" className={`${ToClickTW.regular} mr-1`}>
-                            歌リスト
-                        </Link>
                         <Link href="/sings/original-song" className={`${ToClickTW.regular} mr-1`}>
                             オリ曲
                         </Link>
@@ -237,7 +234,7 @@ const Footer = () => {
 
             <span className="flex float-right">
                 <Link href="/" className="mx-1">TOP</Link>:
-                <Link href="/sings/karaoke" className="mx-1">   カラオケ</Link>/
+                <Link href="/sings/karaoke" className="mx-1">   カラオケ</Link>:
                 <Link href="/sings/original-song" className="mx-1">  オリ曲</Link>/
                 {isSignin &&
                     <span className="mx-1">

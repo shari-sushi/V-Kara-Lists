@@ -22,7 +22,7 @@ export const TopLink = () => {
 
 export const KaraokeLink = () => {
     return (
-        <Link href="/karaoke/sings" className={`${ToClickTW.hamburger} mt-1`}>
+        <Link href="/sings/karaoke" className={`${ToClickTW.hamburger} mt-1`}>
             <div className={` ml-5 sm:my-2 my-[4px]  `} >
                 カラオケ
             </div>
@@ -32,7 +32,7 @@ export const KaraokeLink = () => {
 
 export const OriginalSongLink = () => {
     return (
-        <Link href="/karaoke/sings" className={`${ToClickTW.hamburger} mt-1`}>
+        <Link href="/sings/original-song" className={`${ToClickTW.hamburger} mt-1`}>
             <div className={` ml-5 sm:my-2 my-[4px]  `} >
                 オリ曲
             </div>
