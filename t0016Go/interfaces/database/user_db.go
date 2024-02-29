@@ -22,8 +22,7 @@ func (db *UserRepository) CreateUser(user domain.Listener) (domain.Listener, err
 func (db *UserRepository) FindUserByEmail(email string) (domain.Listener, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var user domain.Listener
-	query := "email = '" + email + "'"
-	err := db.Where(query).First(&user).Error
+	err := db.Where("email = ?", email).First(&user).Error
 	if err != nil {
 		return user, err
 	}
