@@ -2,11 +2,15 @@ package main
 
 import (
 	"fmt"
+
 	"net/http"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/sharin-sushi/0016go_next_relation/infra"
+
+	// "github.com/sharin-sushi/0016go_next_relation/interfaces/controllers"
+	"github.com/sharin-sushi/0016go_next_relation/interfaces/controllers/common"
 )
 
 func main() {
@@ -18,20 +22,36 @@ func main() {
 			"http://v-karaoke.com", "https://v-karaoke.com",
 			"http://backend.v-karaoke.com", "https://backend.v-karaoke.com",
 		},
-		AllowMethods:     []string{"POST", "GET", "PUT", "DELETE"},
-		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Cookie"},
+		AllowMethods: []string{"POST", "GET", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders: []string{
+			"Origin", "Content-Length", "Content-Type", "Cookie",
+			"Access-Control-Allow-Credentials",
+			"Access-Control-Allow-Headers",
+			"Accept-Encoding",
+			"Authorization",
+			"access-control-allow-origin",
+			"Access-Control-Allow-Origin",
+		},
 		AllowCredentials: true,
 	}))
-
-	fmt.Println("hallow api server in AWS 02.21")
-
-	infra.Routing(r)
 
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{})
 	})
 
-	r.Run(":8080")
+	infra.Routing(r)
+
+	env := common.ReturnEvnCloudorLocal()
+	var host string
+	if env == "on cloud" {
+		//クラウド環境
+		// fmt.Println("hallow api server in AWS" + controllers.UpdateData)
+		// host = "v-karaoke.com"
+	} else if env == "on local" {
+		// ローカルのdocker上(compose使用) or  VSCodeで起動
+		host = "localhost"
+	}
+	r.Run(host + ":8080")
 }
 
 func requestLogger() gin.HandlerFunc {
