@@ -10,6 +10,7 @@ type UserInteractor struct {
 	UserRepository          UserRepository
 	VtuberContentRepository VtuberContentRepository
 	FavoriteRepository      FavoriteRepository
+	OtherRepository         OtherRepository
 }
 
 func (interactor *UserInteractor) CreateUser(user domain.Listener) (newUser domain.Listener, err error) {

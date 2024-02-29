@@ -9,6 +9,7 @@ type Controller struct {
 	UserInteractor          useCase.UserInteractor
 	VtuberContentInteractor useCase.VtuberContentInteractor
 	FavoriteInteractor      useCase.FavoriteInteractor
+	OtherInteractor         useCase.OtherInteractor
 }
 
 func NewController(sqlHandler database.SqlHandler) *Controller {
@@ -25,6 +26,11 @@ func NewController(sqlHandler database.SqlHandler) *Controller {
 		},
 		FavoriteInteractor: useCase.FavoriteInteractor{
 			FavoriteRepository: &database.FavoriteRepository{
+				SqlHandler: sqlHandler,
+			},
+		},
+		OtherInteractor: useCase.OtherInteractor{
+			OtherRepository: &database.OtherRepository{
 				SqlHandler: sqlHandler,
 			},
 		},

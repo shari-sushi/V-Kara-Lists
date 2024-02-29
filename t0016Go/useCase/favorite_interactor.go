@@ -10,6 +10,7 @@ type FavoriteInteractor struct {
 	FavoriteRepository      FavoriteRepository
 	VtuberContentRepository VtuberContentRepository
 	UserRepository          UserRepository
+	OtherRepository         OtherRepository
 }
 
 func (interactor *FavoriteInteractor) CountMovieFavorites() ([]domain.TransmitMovie, error) {
