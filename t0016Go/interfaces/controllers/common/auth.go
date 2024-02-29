@@ -13,6 +13,23 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
+var hostDomain string
+
+func getEnvHostDomain() {
+	goEnv := os.Getenv("GO_ENV") //ローカルpc上でのみ設定
+	isDockerCompose := os.Getenv("IS_DOCKER_COMPOSE")
+	if goEnv == "" && isDockerCompose == "" {
+		//クラウド環境
+		hostDomain = "v-karaoke.com"
+	} else if goEnv == "" && isDockerCompose == "true" {
+		// ローカルのdocker上(compose使用)
+		hostDomain = "localhost"
+	} else if goEnv == "development" && isDockerCompose == "" {
+		//VSCodeで起動
+		hostDomain = "localhost"
+	}
+}
+
 func SetListenerIdintoCookie(c *gin.Context, ListenerId domain.ListenerId) (err error) {
 	var token string
 	token, err = GenerateToken(int(ListenerId))
@@ -20,16 +37,36 @@ func SetListenerIdintoCookie(c *gin.Context, ListenerId domain.ListenerId) (err 
 		return
 	}
 	cookieMaxAge := 60 * 60 * 12 * 12 //開発中につき長時間化中
+	getEnvHostDomain()
 	cookie := &http.Cookie{
 		Name:     "auth-token",
 		Value:    token,
 		Path:     "/",
-		Domain:   "localhost",
+		Domain:   hostDomain,
 		MaxAge:   cookieMaxAge,
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteNoneMode, //本番環境ではNone禁止
 	}
+
+	http.SetCookie(c.Writer, cookie)
+	fmt.Printf("発行したcookie= %v \n", cookie)
+	return
+}
+
+func UnsetAuthCookie(c *gin.Context) (err error) {
+	getEnvHostDomain()
+	cookie := &http.Cookie{
+		Name:     "auth-token",
+		Value:    "",
+		Path:     "/",
+		Domain:   hostDomain,
+		MaxAge:   -1,
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteNoneMode, //本番環境ではNone禁止
+	}
+
 	http.SetCookie(c.Writer, cookie)
 	fmt.Printf("発行したcookie= %v \n", cookie)
 	return
