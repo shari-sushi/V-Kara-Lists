@@ -21,6 +21,7 @@ func init() {
 	getEnvVar()
 }
 
+// 似たような処理がSetListenerIdintoCookie()にもあるので、envを変更するときは注意
 func getEnvVar() {
 	goEnv := os.Getenv("GO_ENV") //ローカルpc上でのみ設定
 	isDockerCompose := os.Getenv("IS_DOCKER_COMPOSE")
@@ -84,7 +85,7 @@ func dbInit() database.SqlHandler {
 	gormDB, err := gorm.Open(mysql.Open(path), &gorm.Config{})
 	gormDB = gormDB.Debug()
 	if err == nil {
-		sqlHandler := new(SqlHandler)
+		sqlHandler = new(SqlHandler)
 		sqlHandler.Conn = gormDB
 		sqlHandler.migration()
 	} else {
