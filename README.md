@@ -1,4 +1,4 @@
-# V-kara (VTbuer-Karaoke-Lists)
+# V-kara-List (VTuber-Karaoke-Lists)
 
 ※README作成中※
 
@@ -16,7 +16,8 @@
 
 Vtuber本人は自身が歌ったこと歌を把握し、活動に役立てられる。  
 
-    サイトリンク：完成後に掲載予定
+  サイトリンク：[V-kara-List](https://v-karaoke.com) <br/>
+  サイトデモ動画：[YouTubeリンク](https://youtu.be/4JIbhFoOMOc)
 
 ## 技術
 
@@ -29,7 +30,6 @@ Vtuber本人は自身が歌ったこと歌を把握し、活動に役立てら�
 |MySQL v8.0.32| - |
 
 その他：AWS, Docker, Github,GitHub Acitons(CI), Postman, Figma, draw.io
-アーキテクチャ：Go:クリーンアーキテクチャ、Next.js:[reactの流儀](https://ja.react.dev/learn/thinking-in-react)を基本とし、機能ごとにフォルダ分けすることで既存コードを探し出しやすい構成にした。
 
 ### 技術選定理由
 
@@ -43,12 +43,26 @@ Vtuber本人は自身が歌ったこと歌を把握し、活動に役立てら�
     - 開発を中長期まで続けた際にも、加筆・改修しやすい
     - 他人のコードを読んだ際に学びやすい
   - 比較的後発ながらメルカリ、Docker、twitch等の使用実績があり、求人件数が多く今後の需要を見込んだ
+- Gin
+  - 比較対象：echo等
+  - セキュリティ面が強く、Goの国内案件数が最多だった。
 
 - Next.js
   - 比較対象：Vue.js等
-  - より普及しているReactベースのフレームワークである
-  - SPA、特にSSRを簡単に実装できる
+  - より普及しているReactベースのフレームワークであり、SPA、特にSSRを簡単に実装できる
   - 基本的にTypeScriptと共に採用されるため静的型付け言語であるGoと平衡で学びやすいと考えた
+
+- MySQL
+　- NoSQLと比較して
+  - RDBであり正規化さえすれば扱いやすい。（？）
+  - PostgresQLと比較し機能が少ない分、易しい
+
+- アーキテクチャ
+  - バックエンド
+    クリーンアーキテクチャ: 拡張性やバグ修正をやりやすくし長期間のサイト運営でも開発コストを抑えられることを期待した。
+  - フロント
+    アトミックデザインの考え方を適宜取り込みつつ`Reactの流儀`を模倣するに留め、機能ごとにフォルダ分けすることで既存コードを探し出しやすい構成にした。
+    ページ構成やcssも関わってくることから学習初期段階でクリーンアーキテクチャや完璧なアトミックデザイン等を導入しても適切に運営するのは将来を通して開発コストが増加してしまうものと考えた。
 
 ## 設計図
 
@@ -57,6 +71,13 @@ Vtuber本人は自身が歌ったこと歌を把握し、活動に役立てら�
 | :---: | :---: | :---: |
 | [原寸画像](https://user-images.githubusercontent.com/127638412/273976430-29856108-a613-493e-b024-bb9ad7ac88d9.png) | [原寸画像](https://user-images.githubusercontent.com/127638412/273976533-1d5db155-c5a6-403c-95db-f05b6fefb3f0.png) | [原寸画像](https://user-images.githubusercontent.com/127638412/273976737-17eb88c9-dfb0-4a99-a5ba-bf909c268ada.png) |
 | ![80%](https://github.com/sharin-sushi/0016go_next_relation/assets/127638412/b3a57a97-41e3-42e4-882c-177a2e317127) | ![273976533-1d5db155-c5a6-403c-95db-f05b6fefb3f0](https://github.com/sharin-sushi/0016go_next_relation/assets/127638412/b4eda633-a6b4-4d30-b446-77a0062ad79a) | ![273976737-17eb88c9-dfb0-4a99-a5ba-bf909c268ada](https://github.com/sharin-sushi/0016go_next_relation/assets/127638412/71a4338f-84d3-4e7f-ab08-c5af83207308)|
+
+AWS構成図 <br />
+<image src="https://github.com/sharin-sushi/V-Kara-Lists/blob/develop/AWS構成図.drawio.png" width="500px" /> <br />
+- ※備考※
+  - GitHub Actions CIは構築済みです。
+  - GitHub Actions CD, apiのprivate subnet化にも取り組んでいます。
+  - EC2インタンスは通常時停止です。 
 
 ## 機能
   - ログイン（ゲストログイン機能有り、JWT使用）、ログアウト、退会の機能
