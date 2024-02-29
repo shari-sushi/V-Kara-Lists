@@ -9,29 +9,38 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/joho/godotenv"
 	"golang.org/x/crypto/bcrypt"
 )
-
-// func init() { //共通化予定……infraと
-// 	err := godotenv.Load("../.env")
-// 	if err == nil {
-// 		checkFile := os.Getenv("GO_ENV")
-// 		fmt.Printf("got .env file is %v \n", checkFile)
-// 	} else {
-// 		fmt.Print("godotenvによる.envファイル取得失敗 \n")
-// 	}
-// }
 
 var bcryotCost int
 var aesKey []byte
 var aesIv []byte
 
 func init() {
-	costString := os.Getenv("BCRYPT_COST")
+	var costString string
+
+	env := ReturnEvnCloudorLocal()
+	if env == "on cloud" {
+		costString = os.Getenv("BCRYPT_COST")
+		aesKey = []byte(os.Getenv("AES_KEY"))
+		aesIv, _ = hex.DecodeString(os.Getenv("AES_IV"))
+	} else if env == "on local" {
+		err := godotenv.Load("../.env")
+		if err == nil {
+			costString = os.Getenv("BCRYPT_COST")
+			aesKey = []byte(os.Getenv("AES_KEY"))
+			aesIv, _ = hex.DecodeString(os.Getenv("AES_IV"))
+			fmt.Println("sucussesly got .env file by godotenv. and retried os.Getenv")
+		} else {
+			fmt.Println("failed to get .env file by godotenv")
+		}
+	} else {
+		fmt.Printf("interfaces/controllers/common, env err \n")
+	}
 	bcryotCost, _ = strconv.Atoi(costString)
 
-	aesKey = []byte(os.Getenv("AES_KEY"))
-	aesIv, _ = hex.DecodeString(os.Getenv("AES_IV"))
+	fmt.Printf("aesKey = %v, \naesIv =%v \n", aesKey, aesIv)
 
 }
 
@@ -53,16 +62,16 @@ func EncryptByAES(plain string) (encrypted string, err error) {
 
 	block, err := aes.NewCipher(aesKey)
 	if err != nil {
-		return "", err
+		return "err of encrypt to aes:", err
 	}
 	padded := pkcs7Pad(bytePlain)
 	byteEncrypted := make([]byte, len(padded))
-	fmt.Printf("byteEncrypted= %v\n", byteEncrypted)
+
 	cbcEncrypter := cipher.NewCBCEncrypter(block, aesIv)
 	cbcEncrypter.CryptBlocks(byteEncrypted, padded)
 	convertedHexString := hex.EncodeToString(byteEncrypted) // 9361c5df196aaef2fb621b66c18657b7
 	encrypted = convertedHexString
-	fmt.Println(encrypted)
+
 	return encrypted, nil
 }
 
