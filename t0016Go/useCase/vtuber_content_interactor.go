@@ -10,6 +10,7 @@ type VtuberContentInteractor struct {
 	VtuberContentRepository VtuberContentRepository
 	UserRepository          UserRepository
 	FavoriteRepository      FavoriteRepository
+	OtherRepository         OtherRepository
 }
 
 func (interactor *VtuberContentInteractor) GetVtubers() ([]domain.Vtuber, error) {
