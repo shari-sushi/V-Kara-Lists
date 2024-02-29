@@ -530,10 +530,10 @@ func (controller *Controller) Enigma(c *gin.Context) {
 }
 
 func (controller *Controller) ReturnDummyTopPage(c *gin.Context) {
-	ReturnTestpage(c)
+	controller.ReturnTestpage(c)
 }
 
-func ReturnTestpage(c *gin.Context) {
+func (controller *Controller) ReturnTestpage(c *gin.Context) {
 	var errs []error
 	var allVts []domain.Vtuber
 	var VtsMosWithFav []domain.TransmitMovie
@@ -553,7 +553,7 @@ func ReturnTestpage(c *gin.Context) {
 		{
 			VtuberId: 1,
 			Vtuber: domain.Vtuber{
-				VtuberName:       "接続確認",
+				VtuberName:       "サイト更新",
 				VtuberKana:       "sucsessefuly_connect",
 				IntroMovieUrl:    "",
 				VtuberInputterId: 1,
@@ -573,8 +573,8 @@ func ReturnTestpage(c *gin.Context) {
 		{
 			VtuberId: 1,
 			Vtuber: domain.Vtuber{
-				VtuberName:       "接続確認",
-				VtuberKana:       "sucsessefuly_connect",
+				VtuberName:       UpdateData,
+				VtuberKana:       "",
 				IntroMovieUrl:    "",
 				VtuberInputterId: 1,
 			},
@@ -605,3 +605,5 @@ func ReturnTestpage(c *gin.Context) {
 	return
 
 }
+
+var UpdateData = "2024/02/29 1418"

@@ -16,9 +16,11 @@ var guest domain.Listener
 func init() {
 	stringGuestId, _ := strconv.Atoi(os.Getenv("GEST_USER_ID"))
 	guest.ListenerId = domain.ListenerId(stringGuestId)
+	fmt.Printf("guest.ListenerId:%v\n", guest.ListenerId)
 }
 
 func (controller *Controller) CreateUser(c *gin.Context) {
+	fmt.Printf("CreateUser開始 at interfaces/controllers/users.go \n")
 	var user domain.Listener
 	if err := c.ShouldBind(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -41,6 +43,10 @@ func (controller *Controller) CreateUser(c *gin.Context) {
 		})
 		return
 	}
+	// 稼動テスト用
+	// planEmail, err := common.DecryptFromAES(emailAES)
+	// fmt.Printf("planEmail:%v\n", planEmail)
+
 	if _, err := controller.UserInteractor.FindUserByEmail(emailAES); err == nil { //er==nilであってる。nilならリクエスト却下するから
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":   "error",
@@ -147,7 +153,7 @@ func (controller *Controller) LogIn(c *gin.Context) {
 }
 
 func Logout(c *gin.Context) {
-	c.SetCookie("auth-token", "none", -1, "/", "localhost", false, true)
+	common.UnsetAuthCookie(c)
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully Withdrawn",
 	})
