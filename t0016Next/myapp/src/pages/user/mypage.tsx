@@ -35,13 +35,9 @@ const MyPage = ({ data, isSignin }: Mypage) => {
   const vtubers = data?.vtubers_u_created || [] as ReceivedVtuber[];
   const movies = data?.vtubers_movies_u_created || [] as ReceivedMovie[];
   const karaokes = data?.vtubers_movies_karaokes_u_created || [] as ReceivedKaraoke[];
-  const [currentMovieId, setCurrentMovieId] = useState<string>("E7x2TZ1_Ys4");
-  const [start, setStart] = useState<number>((36 * 60 + 41))
+  const [currentMovieId, setCurrentMovieId] = useState<string>("Bjsn-QpwmvU13584");
+  const [start, setStart] = useState<number>((13584))
 
-  console.log("vtubers", vtubers)
-  console.log("data.vtubers", data.vtubers_u_created)
-  console.log("movies", movies)
-  console.log("data.vtubers_movies_u_created", data.vtubers_movies_u_created)
   const handleMovieClickYouTube = (url: string, start: number) => {
     // console.log("handleMovieClickYouTube")
     // if (currentMovieId == ExtractVideoId(url)) {
@@ -58,22 +54,63 @@ const MyPage = ({ data, isSignin }: Mypage) => {
     // }
   };
   const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
+  const handleMovieClickYouTubeDemoMovie = () => {
+    const demoUrl = "4JIbhFoOMOc"
+    const startTimeCreateOfDemo = 130
+    setCurrentMovieId(demoUrl);
+    setStart(startTimeCreateOfDemo);
+  };
 
   return (
     <Layout pageName={"MyPage"} isSignin={isSignin}>
-      <div className="flex flex-col">
+      <div className="flex flex-col max-w-[1000px] justify-ite">
         <div className="flex mx-auto mt-6">
           <YouTubePlayer videoId={currentMovieId} start={start} />
         </div>
-        <div id="feature"
-          className={`flex-col md:flex-row justify-center
+
+
+
+        {vtubers.length + movies.length + karaokes.length === 0 ? (
+          <div id="feature"
+            className={`bg-[#657261] rounded top-0 p-1
+          max-w-[1000px]  md:h-[290px] h-[400px] w-full mx-auto
+                `}
+          >
+            <div className='mt-4 '>
+              <h1 className="flex flex-col font-bold text-lg ">
+                <span className="mx-auto">
+                  自分の登録したデータ一覧
+                </span>
+              </h1>
+
+              <div className='flex flex-col p-5'>
+                <div className="mx-auto">
+                  自分で登録したデータが無いようです...TT
+                </div>
+                <button className={`${ToClickTW.regular} flex max-w-40 mt-8 mx-auto`}
+                  onClick={() => handleMovieClickYouTubeDemoMovie()}>
+                  データ登録方法を <br />
+                  動画で見る
+                </button>
+                <div className="flex justify-center">
+                  <span className="py-5">
+                    <Link href="/crud/create" className={`${ToClickTW.regular} `}>
+                      データ登録する
+                    </Link>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div id="feature"
+            className={`flex-col md:flex-row justify-center
                 max-w-[1000px] w-full mx-auto inline-block
                 top-0 p-1
                 `}
-        >
-          <div className='mt-4 max-w-[1000px] '>
-            <h1 className="font-bold text-lg"><u></u>自分の登録したデータ一覧</h1>
-            {isSignin ? (
+          >
+            <div className='mt-4 max-w-[1000px] '>
+              <h1 className="font-bold text-lg"><u></u>自分の登録したデータ一覧</h1>
               <div>
                 <div className='flex'>
                   <img src="/content/human_white.svg" className='h-5 mr-1' />
@@ -97,20 +134,16 @@ const MyPage = ({ data, isSignin }: Mypage) => {
                   setSelectedPost={setSelectedPost}
                 />
               </div>
-            ) : (
-              <div>
-                自分で登録したデータが無いようです...TT
-              </div>
-            )}
-            <br />
+            </div>
           </div>
-          <span className={`w-auto`}>
-            <Link href="/user/profile" className={`${ToClickTW.regular} w-auto`}>
-              プロフィール
-            </Link>
-          </span>
+        )}
+        <br />
+        <div className={`w-auto`}>
+          <Link href="/user/profile" className={`${ToClickTW.regular} w-auto`}>
+            プロフィール
+          </Link>
         </div>
-      </div>
+      </div >
     </Layout >
   );
 }
