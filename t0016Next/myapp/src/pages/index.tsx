@@ -26,10 +26,10 @@ type TopPage = {
 }
 
 const TopPage = ({ posts, isSignin }: TopPage) => {
-  const vtubers = posts?.vtubers || [{} as ReceivedVtuber];
-  const movies = posts?.vtubers_movies || [{} as ReceivedMovie];
-  const karaokes = posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke];
-  const latestKaraokes = posts?.latest_karaokes || [{} as ReceivedKaraoke];
+  const vtubers = posts?.vtubers || [] as ReceivedVtuber[];
+  const movies = posts?.vtubers_movies || [] as ReceivedMovie[];
+  const karaokes = posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[];
+  const latestKaraokes = posts?.latest_karaokes || [] as ReceivedKaraoke[];
   const [start, setStart] = useState<number>((36 * 60 + 41))
   const [currentMovieId, setCurrentMovieId] = useState<string>("E7x2TZ1_Ys4");
   const { height, width } = getWindowSize();
@@ -101,7 +101,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
               </Link>
 
               <div id="table"
-                className='absolute  mt-7 h-[82%] md:h-[88%] w-[98%] md:w-[99%] '>
+                className='absolute  mt-7 m w-[98%] md:w-[99%] overflow-scroll h-[82%] md:h-[88%] '>
                 <KaraokeThinTable
                   posts={latestKaraokes}
                   handleMovieClickYouTube={handleMovieClickYouTube}

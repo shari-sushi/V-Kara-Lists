@@ -38,9 +38,9 @@ type Mypage = {
 }
 
 export const DeletePage = ({ posts, isSignin }: Mypage) => {
-    const vtubers = posts?.vtubers_u_created != null ? posts.vtubers_u_created : [{} as ReceivedVtuber];
-    const movies = posts?.vtubers_movies_u_created != null ? posts.vtubers_movies_u_created : [{} as ReceivedMovie];
-    const karaokes = posts?.vtubers_movies_karaokes_u_created != null ? posts.vtubers_movies_karaokes_u_created : [{} as ReceivedKaraoke];
+    const vtubers = posts?.vtubers_u_created != null ? posts.vtubers_u_created : [] as ReceivedVtuber[];
+    const movies = posts?.vtubers_movies_u_created != null ? posts.vtubers_movies_u_created : [] as ReceivedMovie[];
+    const karaokes = posts?.vtubers_movies_karaokes_u_created != null ? posts.vtubers_movies_karaokes_u_created : [] as ReceivedKaraoke[];
 
     const [toDeleteVtuberId, setToDeleteVtuberId] = useState<number>(0);
     const [toDeleteMovieUrl, setToDeleteMovieUrl] = useState<string>("");

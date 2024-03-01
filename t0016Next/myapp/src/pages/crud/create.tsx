@@ -12,8 +12,8 @@ import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
 import { CreateForm, CreatePageProps } from '@/components/form/CreateContentForm';
 
 export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
-    const movies = posts?.vtubers_movies || [{} as ReceivedMovie];
-    const karaokes = posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke];
+    const movies = posts?.vtubers_movies || [] as ReceivedMovie[];
+    const karaokes = posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[];
 
     // if (!isSignin) {
     //     // トーストか、新規タグで開いてuseContextでrouterを引き継がせて、ログイン後に元のページに戻す処理をしたい
