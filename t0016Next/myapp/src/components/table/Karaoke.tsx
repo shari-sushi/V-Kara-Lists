@@ -538,17 +538,15 @@ export const KaraokeThinTable = ({ posts, handleMovieClickYouTube }: KaraokeTabl
 
   return (
     <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
-      <div className="w-full overflow-scroll md:overflow-hidden">
+      <div className="w-full ">
         <table {...getTableProps()} className={`${TableTW.regular} `}>
           <thead className={`${TableTW.regularThead}`}>
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                  <th {...column.getHeaderProps(column.getSortByToggleProps())} className="px-2">
                     {column.render('Header')}
-                    <span>
-                      {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <img src="/content/sort.svg" className='inline mx-1 h-5' />}
-                    </span>
+                    {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <img src="/content/sort.svg" className='inline-block w-6 h-5' />}
                   </th>
                 ))}
               </tr>
