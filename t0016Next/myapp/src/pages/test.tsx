@@ -59,7 +59,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
                     process.env.EXSAMPLE_TEST={process.env.EXSAMPLE_TEST}
                     <br /><br />
                     ※取得できないとき、"process.env.EXSAMPLE_TEST="と空となる
-                    ※2/22 19時時点ではEXSAMPLE_TESTを設定してない
+                    ※3/1 18時時点ではEXSAMPLE_TESTを設定してない
                     <br /><br />
                 </div>
             </div>
