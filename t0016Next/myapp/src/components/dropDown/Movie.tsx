@@ -72,3 +72,47 @@ export const DropDownMovie = ({ posts, selectedVtuber, setSelectedMovie, clearMo
         />
     );
 };
+
+type DropDownAllMovieProps = {
+    posts: BasicDataProps;
+    setSelectedMovie: (value: string) => void;
+    clearMovieHandler: () => void;
+};
+
+export const DropDownAllMovie = ({ posts, setSelectedMovie, clearMovieHandler }: DropDownAllMovieProps) => {
+    const movies = posts?.vtubers_movies || [{} as ReceivedMovie]
+    const handleMovieClear = () => {
+        setSelectedMovie("");
+        clearMovieHandler();
+    };
+
+    const movieOptions = movies.map((movie: ReceivedMovie) => ({
+        value: movie.MovieUrl,
+        label: movie.MovieTitle
+    }));
+
+    return (
+        <Select
+            id="selectbox"
+            instanceId="selectbox"
+            placeholder="動画タイトルを検索/選択"
+            className="basic-single"
+            classNamePrefix="select"
+            // value={""} //何を入れても選択したものが表示されないだけ
+            isClearable={true}
+            isSearchable={true}
+            name="movie"
+            blurInputOnSelect={true}  //defaultでtrueなら不要。スマホでアクセスしないと確認できないと思う。
+            captureMenuScroll={true} //スマホ、タブレット用。使ってみてからt/f判断。
+            styles={DropStyle}
+            options={movieOptions}
+            onChange={option => {
+                if (option) {
+                    setSelectedMovie(option.value);
+                } else {
+                    handleMovieClear();
+                }
+            }}
+        />
+    );
+};
