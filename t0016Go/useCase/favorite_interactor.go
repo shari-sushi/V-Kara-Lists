@@ -71,6 +71,13 @@ func (interactor *FavoriteInteractor) GetVtubersMoviesKaraokesWithFavCnts() ([]d
 	VtsMosKasWitFav, err := interactor.FavoriteRepository.GetVtubersMoviesKaraokesWithFavCnts()
 	return VtsMosKasWitFav, err
 }
+
+func (interactor *FavoriteInteractor) GetVtubersMoviesKaraokesByVtuerWithFavCnts(id domain.VtuberId) ([]domain.TransmitKaraoke, error) {
+	fmt.Print("useCase/favorite_interactor.go \n")
+	VtsMosKasWitFav, err := interactor.FavoriteRepository.GetVtubersMoviesKaraokesByVtuerWithFavCnts(id)
+	return VtsMosKasWitFav, err
+}
+
 func (interactor *FavoriteInteractor) GetLatest50VtubersMoviesKaraokesWithFavCnts(guestId domain.ListenerId) ([]domain.TransmitKaraoke, error) {
 	fmt.Print("useCase/favorite_interactor.go \n")
 	VtsMosKasWitFav, err := interactor.FavoriteRepository.GetLatest50VtubersMoviesKaraokesWithFavCnts(guestId)
