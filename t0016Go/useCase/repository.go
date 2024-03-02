@@ -58,7 +58,7 @@ type FavoriteRepository interface {
 
 	GetVtubersMoviesWithFavCnts() ([]domain.TransmitMovie, error)           //
 	GetVtubersMoviesKaraokesWithFavCnts() ([]domain.TransmitKaraoke, error) //
-	GetVtubersMoviesKaraokesByVtuerWithFavCnts(domain.VtuberId) ([]domain.TransmitKaraoke, error)
+	GetVtubersMoviesKaraokesByVtuerKanaWithFavCnts(string) ([]domain.TransmitKaraoke, error)
 	GetLatest50VtubersMoviesKaraokesWithFavCnts(domain.ListenerId) ([]domain.TransmitKaraoke, error) //
 	// 以下、開発中
 	FindMoviesFavoritedByListenerId(domain.ListenerId) ([]domain.TransmitMovie, error)
