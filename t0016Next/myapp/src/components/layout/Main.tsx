@@ -35,3 +35,20 @@ export function NotLoggedIn() {
         </div >
     );
 }
+
+export function NotFoundVtuber() {
+    return (
+        <div className="h-full ">
+            <h1 className="text-lg pt-1">Vtuberが見つかりません</h1> <br />
+            <div className="flex flex-col md:flex-none">
+                <span className="pl-2 pb-4">
+                    Vtuberを登録してみませんか？
+                </span>
+                <Link className={`${ToClickTW.regular} justify-center float-right px-3 mr-2 w-24`}
+                    href="/crud/create" >
+                    登録ページ
+                </Link>
+            </div>
+        </div >
+    );
+}

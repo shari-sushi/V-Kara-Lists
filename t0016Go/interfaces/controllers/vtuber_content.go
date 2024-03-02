@@ -32,6 +32,47 @@ func (controller *Controller) GetJoinVtubersMoviesKaraokes(c *gin.Context) {
 	})
 	return
 }
+
+func (controller *Controller) ReturnVtuberPageData(c *gin.Context) {
+	kana := c.Param("kana")
+	fmt.Println("kana", kana)
+	var errs []error
+
+	VtsMosKasWithFavofVtu, err := controller.FavoriteInteractor.GetVtubersMoviesKaraokesByVtuerKanaWithFavCnts(kana)
+	if err != nil {
+		fmt.Print("err:", err)
+		errs = append(errs, err)
+	}
+	vtuberId := VtsMosKasWithFavofVtu[0].VtuberId
+	MosOfVtu, err := controller.VtuberContentInteractor.GetMoviesUrlTitlebyVtuber(vtuberId)
+	if err != nil {
+		fmt.Print("err:", err)
+		errs = append(errs, err)
+	}
+
+	listenerId, err := common.TakeListenerIdFromJWT(c) //非ログイン時でもデータは送付する
+	if err != nil || listenerId == 0 {
+		errs = append(errs, err)
+		c.JSON(http.StatusOK, gin.H{
+			"vtubers_movies":          MosOfVtu,
+			"vtubers_movies_karaokes": VtsMosKasWithFavofVtu,
+			"error":                   errs,
+			"message":                 "dont you Loged in ?",
+		})
+		return
+	}
+	myFav, err := controller.FavoriteInteractor.FindFavoritesCreatedByListenerId(listenerId)
+	// fmt.Printf("myFav= \n %v\n", myFav)
+	TransmitKaraokes := common.AddIsFavToKaraokeWithFav(VtsMosKasWithFavofVtu, myFav)
+
+	c.JSON(http.StatusOK, gin.H{
+		"vtubers_movies":          MosOfVtu,
+		"vtubers_movies_karaokes": TransmitKaraokes,
+		"error":                   errs,
+	})
+	return
+}
+
 func (controller *Controller) CreateVtuber(c *gin.Context) {
 	listenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {

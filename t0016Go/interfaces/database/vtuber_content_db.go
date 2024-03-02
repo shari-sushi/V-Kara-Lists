@@ -38,6 +38,18 @@ func (db *VtuberContentRepository) GetKaraokes() ([]domain.Karaoke, error) {
 	return Kas, nil
 }
 
+func (db *VtuberContentRepository) GetMoviesUrlTitleByVtuber(id domain.VtuberId) ([]domain.Movie, error) {
+	fmt.Print("interfaces/database/vtuber_content_db.go \n")
+	var Mos []domain.Movie
+	selectQ := fmt.Sprint("movie_url, movie_title")
+	whereQ := fmt.Sprint("vtuber_id = ", id)
+	err := db.Select(selectQ).Where(whereQ).Find(&Mos).Error
+	if err != nil {
+		return nil, err
+	}
+	return Mos, nil
+}
+
 func (db *VtuberContentRepository) GetVtubersMovies() ([]domain.VtuberMovie, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var Mos []domain.Movie
