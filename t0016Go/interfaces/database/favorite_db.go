@@ -107,7 +107,7 @@ func (db *FavoriteRepository) GetVtubersMoviesKaraokesWithFavCnts() ([]domain.Tr
 	return TmKas, nil
 }
 
-func (db *FavoriteRepository) GetVtubersMoviesKaraokesByVtuerWithFavCnts(id domain.VtuberId) ([]domain.TransmitKaraoke, error) {
+func (db *FavoriteRepository) GetVtubersMoviesKaraokesByVtuerKanaWithFavCnts(kana string) ([]domain.TransmitKaraoke, error) {
 	fmt.Print("interfaces/database/favorite.go \n")
 	var TmKas []domain.TransmitKaraoke
 	var err error
@@ -121,7 +121,7 @@ func (db *FavoriteRepository) GetVtubersMoviesKaraokesByVtuerWithFavCnts(id doma
 	joinQu2 := "LEFT JOIN karaokes as k ON m.movie_url = k.movie_url "
 	joinQu3 := "LEFT JOIN favorites as f ON k.karaoke_id = f.karaoke_id AND f.karaoke_id != 0  AND f.deleted_at IS NULL"
 	joinQu := fmt.Sprint(joinQu1, joinQu2, joinQu3)
-	whereQu := fmt.Sprintf("vtubers.vtuber_id = %v AND m.movie_url IS NOT NULL AND k.karaoke_id != 0 ", id)
+	whereQu := fmt.Sprintf("vtubers.vtuber_kana = \"%v\" AND m.movie_url IS NOT NULL AND k.karaoke_id != 0 ", kana)
 	groupQu := "k.karaoke_id"
 	err = db.Model(vt).Select(selectQu1, selectQu2, selectQu3, selectQu4).
 		Joins(joinQu).Where(whereQu).Group(groupQu).

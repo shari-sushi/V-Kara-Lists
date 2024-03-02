@@ -3,7 +3,6 @@ package controllers
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sharin-sushi/0016go_next_relation/domain"
@@ -35,23 +34,21 @@ func (controller *Controller) GetJoinVtubersMoviesKaraokes(c *gin.Context) {
 }
 
 func (controller *Controller) ReturnVtuberPageData(c *gin.Context) {
-	id, _ := strconv.Atoi((c.Param("id")))
-	vtuber_id := domain.VtuberId(id)
-	fmt.Println("id", vtuber_id)
+	kana := c.Param("kana")
+	fmt.Println("kana", kana)
 	var errs []error
 
-	MosOfVtu, err := controller.VtuberContentInteractor.GetMoviesUrlTitlebyVtuber(vtuber_id)
+	VtsMosKasWithFavofVtu, err := controller.FavoriteInteractor.GetVtubersMoviesKaraokesByVtuerKanaWithFavCnts(kana)
 	if err != nil {
 		fmt.Print("err:", err)
 		errs = append(errs, err)
 	}
-
-	VtsMosKasWithFavofVtu, err := controller.FavoriteInteractor.GetVtubersMoviesKaraokesByVtuerWithFavCnts(vtuber_id)
+	vtuberId := VtsMosKasWithFavofVtu[0].VtuberId
+	MosOfVtu, err := controller.VtuberContentInteractor.GetMoviesUrlTitlebyVtuber(vtuberId)
 	if err != nil {
 		fmt.Print("err:", err)
 		errs = append(errs, err)
 	}
-	////
 
 	listenerId, err := common.TakeListenerIdFromJWT(c) //非ログイン時でもデータは送付する
 	if err != nil || listenerId == 0 {
