@@ -12,6 +12,7 @@ import { VtuberDeleteTable } from '@/components/table/Vtuber'
 import { MovieDeleteTable } from '@/components/table/Movie'
 import { KaraokeDeleteTable } from '@/components/table/Karaoke'
 import { ToClickTW } from '@/styles/tailwiind'
+import { NotLoggedIn } from '@/components/layout/Main';
 
 export const ToDeleteContext = React.createContext({} as {
     toDeleteVtuberId: number;
@@ -38,6 +39,16 @@ type Mypage = {
 }
 
 export const DeletePage = ({ posts, isSignin }: Mypage) => {
+    if (!isSignin) {
+        return (
+            <Layout pageName={"MyPage"} isSignin={isSignin}>
+                <div>
+                    < NotLoggedIn />
+                </div>
+            </Layout>
+        )
+    };
+
     const vtubers = posts?.vtubers_u_created != null ? posts.vtubers_u_created : [] as ReceivedVtuber[];
     const movies = posts?.vtubers_movies_u_created != null ? posts.vtubers_movies_u_created : [] as ReceivedMovie[];
     const karaokes = posts?.vtubers_movies_karaokes_u_created != null ? posts.vtubers_movies_karaokes_u_created : [] as ReceivedKaraoke[];

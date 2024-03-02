@@ -6,6 +6,7 @@ import { domain } from '@/../env'
 import type { User } from "@/types/user"
 import { GetLogout, Withdraw } from '@/components/button/User';
 import { Layout } from "@/components/layout/Layout";
+import { NotLoggedIn } from "@/components/layout/Main";
 
 type Mypage = {
     listener: User;
@@ -16,8 +17,9 @@ const Profile = ({ listener, isSignin }: Mypage) => {
     if (!isSignin) {
         return (
             <Layout pageName={"MyPage"} isSignin={isSignin}>
-                <br />
-                <>ログインが必要なコンテンツです</> <br />
+                <div>
+                    < NotLoggedIn />
+                </div>
             </Layout>
         )
     };

@@ -26,12 +26,13 @@ const MyPage = ({ data, isSignin }: Mypage) => {
   if (!isSignin) {
     return (
       <Layout pageName={"MyPage"} isSignin={isSignin}>
-        <br />
-        <>ログインが必要なコンテンツです</>
+        <div>
+          < NotLoggedIn />
+        </div>
       </Layout>
-
     )
   };
+
   const vtubers = data?.vtubers_u_created || [] as ReceivedVtuber[];
   const movies = data?.vtubers_movies_u_created || [] as ReceivedMovie[];
   const karaokes = data?.vtubers_movies_karaokes_u_created || [] as ReceivedKaraoke[];
@@ -152,6 +153,7 @@ export default MyPage;
 
 /////////////////////////////////////////////////////////////////////////////
 import { ContextType } from '@/types/server'
+import { NotLoggedIn } from "@/components/layout/Main";
 
 export async function getServerSideProps(context: ContextType) {
   const rawCookie = context.req.headers.cookie;
