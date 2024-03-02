@@ -18,6 +18,11 @@ func (interactor *VtuberContentInteractor) GetVtubers() ([]domain.Vtuber, error)
 	allVts, err := interactor.VtuberContentRepository.GetVtubers()
 	return allVts, err
 }
+func (interactor *VtuberContentInteractor) GetMoviesUrlTitlebyVtuber(id domain.VtuberId) ([]domain.Movie, error) {
+	fmt.Print("useCase/vtuber_content_interactor.go \n")
+	Mos, err := interactor.VtuberContentRepository.GetMoviesUrlTitleByVtuber(id)
+	return Mos, err
+}
 func (interactor *VtuberContentInteractor) GetMovies() ([]domain.Movie, error) {
 	fmt.Print("useCase/vtuber_content_interactor.go \n")
 	allMos, err := interactor.VtuberContentRepository.GetMovies()

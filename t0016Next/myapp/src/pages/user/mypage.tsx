@@ -69,8 +69,6 @@ const MyPage = ({ data, isSignin }: Mypage) => {
           <YouTubePlayer videoId={currentMovieId} start={start} />
         </div>
 
-
-
         {vtubers.length + movies.length + karaokes.length === 0 ? (
           <div id="feature"
             className={`bg-[#657261] rounded top-0 p-1

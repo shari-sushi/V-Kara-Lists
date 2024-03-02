@@ -57,7 +57,19 @@ export function VtuberTable({ posts }: VtuberTableProps) {
 
 
 const columns: Column<ReceivedVtuber>[] = [
-    { Header: 'VTuber', accessor: 'VtuberName' },
+    {
+        Header: 'VTuber(click it)', accessor: 'VtuberName',
+        Cell: ({ row }: { row: { original: ReceivedVtuber } }) => {
+            return (
+                <span className="relative">
+                    <Link href={`/vtuber/${row.original.VtuberKana}`} className="flex">
+                        <img src="/content/external_link.svg" className='w-5 mr-1' />
+                        {row.original.VtuberName}
+                    </Link>
+                </span>
+            )
+        },
+    },
     { Header: 'kana', accessor: 'VtuberKana' },
     {
         Header: '紹介動画', accessor: 'IntroMovieUrl',
