@@ -1,21 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import https from 'https';
 import axios, { AxiosRequestConfig } from 'axios';
+import Link from 'next/link';
 
 import { domain } from '@/../env'
-import type { ReceivedKaraoke } from '@/types/vtuber_content';
+import { Layout } from '@/components/layout/Layout'
+import { ToClickTW } from '@/styles/tailwiind';
+import type { ReceivedKaraoke, ReceivedMovie, ReceivedVtuber } from '@/types/vtuber_content';
+import type { ContextType } from '@/types/server'
 import { YouTubePlayer } from '@/components/moviePlayer/YoutubePlayer'
 import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
-import { KaraokePagenatoinTable } from '@/components/table/Karaoke';
-import { Layout } from '@/components/layout/Layout'
-import { ContextType } from '@/types/server'
+import { KaraokePagenatoinTable } from "@/components/table/Karaoke"
+import { DropDownVtuber } from '@/components/dropDown/Vtuber';
+import { DropDownMovie } from '@/components/dropDown/Movie';
 
-type PostsAndCheckSignin = {
-    posts: { vtubers_movies_karaokes: ReceivedKaraoke[] };
+type TopPage = {
+    posts: {
+        vtubers: ReceivedVtuber[];
+        vtubers_movies: ReceivedMovie[];
+        vtubers_movies_karaokes: ReceivedKaraoke[];
+        latest_karaokes: ReceivedKaraoke[];
+    };
     isSignin: boolean;
 }
 
-export default function SingsPage({ posts, isSignin }: PostsAndCheckSignin) {
+export default function SingsPage({ posts, isSignin }: TopPage) {
     const karaokes = posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[];
 
     // ようつべ用
@@ -42,38 +51,82 @@ export default function SingsPage({ posts, isSignin }: PostsAndCheckSignin) {
 
     const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
 
+    const [selectedVtuber, setSelectedVtuber] = useState<number>(0);
+    const [selectedMovie, setSelectedMovie] = useState<string>("");
+    const [filteredKaraokes, setFilteredKarakes] = useState<ReceivedKaraoke[]>([]);
+    const clearMovieHandler = () => {
+    };
+
+    useEffect(() => {
+        const filterdkaraokes = FilterKaraokesByParentContent(karaokes, selectedVtuber, selectedMovie)
+        setFilteredKarakes(filterdkaraokes)
+    }, [selectedVtuber, selectedMovie]);
+
     return (
         <Layout pageName="カラオケ" isSignin={isSignin}>
-            {/* <div>videoId= {currentMovieId}, start= {start}秒 = {Math.floor(start / 60)}分 {Math.floor(start % 60)}秒</div > */}
             <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
                 <div className={`pt-6 flex flex-col items-center`}>
-                    <div className={`flex `}>
-                        <YouTubePlayer videoId={currentMovieId} start={start} />
-                        {/* <div className='flex '>
-                        <div className='bg-[#B7A692] text-black min-w-[350px] max-w-[300px] h-44 '>
-                            <h2 className=' font-bold  '>選択した楽曲</h2>
-                            <hr className='border-black ' />
-                            Vtubre: {selectedPost.VtuberName} <br />
-                            動画: {selectedPost.MovieTitle} <br />
-                            URL: {selectedPost.MovieUrl} <br />
-                            曲名: {selectedPost.SongName} <br />
-                            歌開始: {selectedPost.SingStart} <br />
+                    <div className={`flex`}>
+                        <div id="feature"
+                            className={`flex flex-col md:flex-row bg-[#657261] rounded
+                                max-w-[1000px]  md:h-[265px] h-full w-full mx-auto
+                                top-0 p-1
+                            `}
+                        >
+                            {/* 左側の要素 */}
+                            <div className='flex flex-col mr-1 '>
+                                <div className='relative flex  justify-center'>
+                                    <YouTubePlayer videoId={currentMovieId} start={start} />
+                                </div>
+                            </div>
+
+                            {/* 右側の要素 */}
+                            <div id="right" className={`relative  px-1 rounded border`}>
+                                <h1 className='text-lg'>絞込み（入力できます）</h1>
+                                <DropDownVtuber
+                                    posts={posts}
+                                    onVtuberSelect={setSelectedVtuber}
+                                    defaultMenuIsOpen={false}
+                                />
+
+                                <DropDownMovie
+                                    posts={posts}
+                                    selectedVtuber={selectedVtuber}
+                                    setSelectedMovie={setSelectedMovie}
+                                    clearMovieHandler={clearMovieHandler}
+                                />
+                                <div className='pt-3'>
+                                    <span>お探しの歌枠や歌がありませんか？</span> <br />
+                                    <Link className={`${ToClickTW.regular} justify-center float-right px-3 mr-2`}
+                                        href="/crud/create" >データを登録する</Link>
+                                </div>
+                            </div>
                         </div>
-                    </div> */}
                     </div>
-                    <div className="flex flex-col w-full">
-                        <KaraokePagenatoinTable
-                            posts={karaokes}
-                            handleMovieClickYouTube={handleMovieClickYouTube}
-                            setSelectedPost={setSelectedPost}
-                        />
-                    </div>
+                </div>
+                <div className="flex flex-col w-full">
+                    <KaraokePagenatoinTable
+                        posts={filteredKaraokes}
+                        handleMovieClickYouTube={handleMovieClickYouTube}
+                        setSelectedPost={setSelectedPost}
+                    />
                 </div>
             </div>
         </Layout>
     )
 }
 
+const FilterKaraokesByParentContent = (karaokes: ReceivedKaraoke[], selectedVtuber: number, selectedMovie: string) => {
+    if (selectedVtuber == 0 && selectedMovie == "") {
+        return karaokes
+    } else if (selectedVtuber != 0 && selectedMovie == "") {
+        const choiceKaraoke = karaokes.filter((karaokes: ReceivedKaraoke) => karaokes.VtuberId === selectedVtuber);
+        return choiceKaraoke
+    } else {
+        const choiceKaraoke = karaokes.filter((karaokes: ReceivedKaraoke) => karaokes.MovieUrl === selectedMovie);
+        return choiceKaraoke
+    }
+}
 
 /////////////////////////////////////////////////////////////////////////////
 export async function getServerSideProps(context: ContextType) {
@@ -97,7 +150,7 @@ export async function getServerSideProps(context: ContextType) {
 
     let resData = null;
     try {
-        const res = await axios.get(`${domain.backendHost}/vcontents/sings`, options);
+        const res = await axios.get(`${domain.backendHost}/vcontents/`, options);
         resData = res.data;
     } catch (error) {
         console.log("erroe in axios.get:", error);

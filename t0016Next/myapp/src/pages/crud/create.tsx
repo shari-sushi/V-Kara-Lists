@@ -10,8 +10,19 @@ import { Layout } from '@/components/layout/Layout'
 import { YouTubePlayer } from '@/components/moviePlayer/YoutubePlayer'
 import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
 import { CreateForm, CreatePageProps } from '@/components/form/CreateContentForm';
+import { NotLoggedIn } from '@/components/layout/Main';
 
 export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
+    if (!isSignin) {
+        return (
+            <Layout pageName={"データベース登録"} isSignin={isSignin}>
+                <div>
+                    < NotLoggedIn />
+                </div>
+            </Layout>
+        )
+    };
+
     const movies = posts?.vtubers_movies || [] as ReceivedMovie[];
     const karaokes = posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[];
 

@@ -11,8 +11,19 @@ import { Layout } from '@/components/layout/Layout'
 import { YouTubePlayer } from '@/components/moviePlayer/YoutubePlayer'
 import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
 import { GestLogin, } from '@/components/button/User'
+import { NotLoggedIn } from '@/components/layout/Main';
 
 export const EditPage = ({ posts, isSignin }: EditPageProps) => {
+    if (!isSignin) {
+        return (
+            <Layout pageName={"データベース編集"} isSignin={isSignin}>
+                <div>
+                    < NotLoggedIn />
+                </div>
+            </Layout>
+        )
+    };
+
     const movies = posts?.vtubers_movies || [] as ReceivedMovie[];
     const karaokes = posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[];
     if (!isSignin) {
