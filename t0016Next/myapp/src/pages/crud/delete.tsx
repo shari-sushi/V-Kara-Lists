@@ -41,7 +41,7 @@ type Mypage = {
 export const DeletePage = ({ posts, isSignin }: Mypage) => {
     if (!isSignin) {
         return (
-            <Layout pageName={"MyPage"} isSignin={isSignin}>
+            <Layout pageName={"データベース削除"} isSignin={isSignin}>
                 <div>
                     < NotLoggedIn />
                 </div>

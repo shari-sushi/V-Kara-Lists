@@ -16,7 +16,7 @@ type Mypage = {
 const Profile = ({ listener, isSignin }: Mypage) => {
     if (!isSignin) {
         return (
-            <Layout pageName={"MyPage"} isSignin={isSignin}>
+            <Layout pageName={"MyProfile"} isSignin={isSignin}>
                 <div>
                     < NotLoggedIn />
                 </div>
@@ -25,7 +25,7 @@ const Profile = ({ listener, isSignin }: Mypage) => {
     };
 
     return (
-        <Layout pageName={"MyPage"} isSignin={isSignin}>
+        <Layout pageName={"MyProfile"} isSignin={isSignin}>
             <div className="mt-6">
                 <h2>会員情報</h2>
                 <ul>

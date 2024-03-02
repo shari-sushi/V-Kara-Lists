@@ -15,7 +15,7 @@ import { NotLoggedIn } from '@/components/layout/Main';
 export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
     if (!isSignin) {
         return (
-            <Layout pageName={"MyPage"} isSignin={isSignin}>
+            <Layout pageName={"データベース登録"} isSignin={isSignin}>
                 <div>
                     < NotLoggedIn />
                 </div>
