@@ -52,7 +52,7 @@ export default function SingsPage({ posts, isSignin }: VtuberPage) {
         setFilteredKarakes(filterdkaraokes)
     }, [selectedVtuber, selectedMovie]);
 
-    if (karaokes.length == 0) {
+    if (movies.length == 0) {
         return (
             <Layout pageName={`Vtuber特設ページ`} isSignin={isSignin}>
                 <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
