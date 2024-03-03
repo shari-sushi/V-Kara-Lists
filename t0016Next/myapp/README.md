@@ -73,7 +73,7 @@ Vtuber本人は自身が歌ったこと歌を把握し、活動に役立てら�
 | ![80%](https://github.com/sharin-sushi/0016go_next_relation/assets/127638412/b3a57a97-41e3-42e4-882c-177a2e317127) | ![273976533-1d5db155-c5a6-403c-95db-f05b6fefb3f0](https://github.com/sharin-sushi/0016go_next_relation/assets/127638412/b4eda633-a6b4-4d30-b446-77a0062ad79a) | ![273976737-17eb88c9-dfb0-4a99-a5ba-bf909c268ada](https://github.com/sharin-sushi/0016go_next_relation/assets/127638412/71a4338f-84d3-4e7f-ab08-c5af83207308)|
 
 AWS構成図 <br />
-<image src="https://github.com/sharin-sushi/V-Kara-Lists/blob/develop/AWS構成図.drawio.png" width="500px" /> <br />
+<image src="https://github.com/sharin-sushi/V-Kara-Lists/blob/develop/AWS構成図.drawio.png" href="https://www.figma.com/file/vIIYk3P6AZoyt1C7Rz1PnT/v-kara?type=design&node-id=208-164&mode=design&t=90nX6V56GHSD9Zde-0" width="500px" /> <br />
 - ※備考※
   - GitHub Actions CIは構築済みです。
   - GitHub Actions CD, apiのprivate subnet化にも取り組んでいます。
