@@ -144,4 +144,4 @@ AWS構成図 <br />
 ## 備考
 - 今後の実装検討:issue[#74](https://github.com/sharin-sushi/V-Kara-Lists/issues/74)
 - 開発画像：isseue[#26](https://github.com/sharin-sushi/V-Kara-Lists/issues/26)
-- 自己紹介等より詳細なことを追記し、Qiitaで[記事]()にしました。
+- 自己紹介等少しだけ加筆し、Qiitaに[記事](https://qiita.com/shari_susi/items/ed4a06518d29e5c87d77)を投稿しました。
