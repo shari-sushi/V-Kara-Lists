@@ -15,7 +15,6 @@ import (
 
 func main() {
 	r := gin.Default()
-	r.Use(requestLogger()) //開発用。本番稼動時はコメントアウトする。
 	r.Use(cors.New(cors.Config{
 		AllowOrigins: []string{
 			"http://localhost", "https://localhost",
@@ -39,6 +38,8 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{})
 	})
 
+	r.Use(requestLogger()) //開発用。本番稼動時はコメントアウトする。
+
 	infra.Routing(r)
 
 	env := common.ReturnEvnCloudorLocal()
@@ -49,6 +50,7 @@ func main() {
 		// host = "v-karaoke.com"
 	} else if env == "on local" {
 		// ローカルのdocker上(compose使用) or  VSCodeで起動
+		// ローカルのファイアーウォール対策
 		host = "localhost"
 	}
 	r.Run(host + ":8080")
