@@ -46,7 +46,7 @@ V-karaを使うことで、好きなVTuberが何を歌ったかを検索、視�
 ### 構成図
 
 ER図 <br>
-<image src="" widtch="700px" /><br>
+<image src="https://github.com/sharin-sushi/V-Kara-Lists/blob/develop/architecture_figure/primary/ERfigure_VTuber_kraoke_lists.drawio.png?raw=true" widtch="700px" /><br>
 
 画面遷移図 [figma](https://www.figma.com/file/vIIYk3P6AZoyt1C7Rz1PnT/v-kara?type=design&node-id=224%3A2715&mode=design&t=90nX6V56GHSD9Zde-1), [原寸画像](https://private-user-images.githubusercontent.com/127638412/309806630-a48f8d29-3932-4bb5-83be-c546ae94405c.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MDk1NjYzMTcsIm5iZiI6MTcwOTU2NjAxNywicGF0aCI6Ii8xMjc2Mzg0MTIvMzA5ODA2NjMwLWE0OGY4ZDI5LTM5MzItNGJiNS04M2JlLWM1NDZhZTk0NDA1Yy5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjQwMzA0JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI0MDMwNFQxNTI2NTdaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT03YTgwNTVjODJkMDkyYjI1ZjIyNmJlNGY3NmU0Yjk5YWZkMjE2NjcxYTMxMjI4MjU4ZWE0MzA3YjZlMzNmMjA1JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZhY3Rvcl9pZD0wJmtleV9pZD0wJnJlcG9faWQ9MCJ9.2NP2uAfwg-VXFhv7BVRm7wUbutkCqUvNDVW3YeLUy2U)<br> 
 ![v-kara](https://github.com/sharin-sushi/V-Kara-Lists/assets/127638412/935dae1d-e564-4b65-a002-f927ec5280e8)<br>
@@ -94,43 +94,37 @@ AWS構成図 <br />
     アトミックデザインの考え方を適宜取り込みつつ`Reactの流儀`を模倣するに留め、機能ごとにフォルダ分けすることで既存コードを探し出しやすい構成にした。
     ページ構成やcssも関わってくることから学習初期段階でクリーンアーキテクチャや完璧なアトミックデザイン等を導入しても適切に運営するのは将来を通して開発コストが増加してしまうものと考えた。
 
-### 機能概要
-  - 会員機能
-    - ログイン（ゲストログイン機能有り、JWT使用）、
-    - ログアウト
-    - 退会
-  - Vtubre(配信者)、歌枠(動画)、歌(その動画の何分何秒)といったデータを表やドロップダウンで閲覧できる
-  - 表について(react-table)
-    - 項目クリックでページ内動画再生 (react-youtube)
-    - 項目クリックで動画へのリンクをコピー
-    - 表にはページネーションやソート機能
-    - 最近登録された50曲の表をtopページに配置
-    - ドロップダウンと連携し、検索や選択でfilterできる
-  - いいね機能
-  - バリデーション(react-hook-form、Goでも少し)
-    - 会員登録、ログイン時：メアド、パスワード
-    - データ登録時：Vtuber名、kana、紹介動画URL、歌枠動画タイトル、歌枠動画URL、曲名
-  - データ登録、編集、削除機能：Vtuber、動画、歌の再生開始時間等(会員専用)
-　  - 登録, 編集時はプルダウンを使用し、簡単に入力できるように(react-select)
-    - マイページにて、自分の登録した情報の一覧を確認できる
-  - DB流出時の被害減少
-    - パスワード：bcryptでハッシュ化
-    - メールアドレス：AESで暗号化
-  - レスポンシブ対応(PC推奨)
-  - 完全SPA化、apiと通信するページは全てSSR化（Next.js）
-
 ### 機能詳細
 
 - 機能要件
-  - ログイン機能（ゲストログイン機能有り）、ログアウト機能
-  - 退会機能
-  - DB登録：Vtuber、動画(youtubeの歌枠)、歌の再生開始時間等の登録/編集/削除(会員専用)
-  - 登録情報をを表で閲覧
-  - いいね機能(会員専用)
-  - バリデーション
-    - 会員登録、ログイン：メアド、パスワード
-    - データ登録：Vtuber名、kana、紹介動画URL、歌枠動画タイトル、歌枠動画URL、曲名
-  - レスポンジシブ
+   - 会員機能
+    - ログイン（ゲストログイン機能有り、JWT使用）、
+    - ログアウト
+    - 退会
+  - VTubre(配信者)、歌枠(動画)、歌(その動画の何分何秒)といったデータを表やドロップダウンで閲覧
+  - コンテンツデータの登録、編集、削除(削除機能会員専用)
+    - 対象データ：VTuber、動画、歌の再生開始時間
+    - 登録, 編集時はプルダウンを併用し、簡単に入力できるように(react-select)
+    - 削除時は表の各今日に削除ボタンを設置
+    - マイページにて、自分の登録した情報の一覧を確認できる
+  - Vtuber個別ページ
+    - Go, Next.jsともにダイナミックルーティングで自動生成
+  - 表について(react-table)
+    - ページ内動画再生：曲名クリック (react-youtube)
+    - 動画へのリンクをコピー：曲毎のコピーアイコンクリック
+    - Vtubre個別ページ：Vtuber名クリック
+    - ページネーション
+    - ソート機能
+    - ドロップダウンと連携し、検索や選択でfiltering
+    - 直近に登録された50曲の表をtopページに配置(その際、ゲストアカウントの登録データを除外)
+  - いいね機能
+    - いいねクリックでアイコンの色が変化
+    - そのコンテンツに付いた総いいね数を表示
+  - バリデーション(react-hook-form、Goでも少し)
+    - 会員登録、ログイン時：メアド、パスワード
+    - データ登録時：Vtuber名、kana、紹介動画URL、歌枠動画タイトル、歌枠動画URL、曲名
+  - レスポンシブ対応(PC推奨)
+  - 完全SPA化、apiと通信するページは全てSSR化（Next.js）
   - ブラウザ対応：Chrome, Opera, safari
 
 - 非機能要件
@@ -139,9 +133,9 @@ AWS構成図 <br />
   - 不正なログイン対策：JWTを使用
   - DB流出時の被害減少：
     - パスワードをbcryptで暗号化
-    - メールアドレスをAESで暗号化し使用時は復号
+    - メールアドレスをAESで暗号化
   - クリーンアーキテクチャを採用し、拡張と修正をしやすく
-  - https化 
+  - https化
 
 ---
 ## 備考
