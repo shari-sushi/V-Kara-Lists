@@ -3,21 +3,13 @@ package controllers
 import (
 	"fmt"
 	"net/http"
-	"os"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sharin-sushi/0016go_next_relation/domain"
 	"github.com/sharin-sushi/0016go_next_relation/interfaces/controllers/common"
 )
 
-var guest domain.Listener
-
-func init() {
-	stringGuestId, _ := strconv.Atoi(os.Getenv("GEST_USER_ID"))
-	guest.ListenerId = domain.ListenerId(stringGuestId)
-	fmt.Printf("guest.ListenerId:%v\n", guest.ListenerId)
-}
+var guestId = common.GetGuestListenerId()
 
 func (controller *Controller) CreateUser(c *gin.Context) {
 	fmt.Printf("CreateUser開始 at interfaces/controllers/users.go \n")
@@ -83,13 +75,14 @@ func (controller *Controller) CreateUser(c *gin.Context) {
 func (controller *Controller) LogicalDeleteUser(c *gin.Context) {
 	tokenLId, err := common.TakeListenerIdFromJWT(c)
 	fmt.Printf("tokenLId = %v \n", tokenLId)
+
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid ListenerId of token",
 			"err":     err,
 		})
 		return
-	} else if tokenLId == guest.ListenerId {
+	} else if tokenLId == guestId {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Guest Acc. must NOT Withdrawal",
 		})
@@ -160,7 +153,6 @@ func Logout(c *gin.Context) {
 }
 
 func GuestLogIn(c *gin.Context) {
-	var guestId domain.ListenerId = guest.ListenerId
 	common.SetListenerIdintoCookie(c, guestId)
 	c.JSON(http.StatusOK, gin.H{
 		"message":      "Successfully Guest Logged In",
