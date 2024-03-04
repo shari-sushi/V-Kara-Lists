@@ -46,7 +46,7 @@ V-karaを使うことで、好きなVTuberが何を歌ったかを検索、視�
 ### 構成図
 
 ER図 <br>
-<image src="https://github.com/sharin-sushi/V-Kara-Lists/blob/develop/architecture_figure/primary/ERfigure_VTuber_kraoke_lists.drawio.png?raw=true" widtch="700px" /><br>
+<image src="https://github.com/sharin-sushi/V-Kara-Lists/assets/127638412/8cc738a8-2c77-49c1-8ef3-ed80df69b98b" widtch="700px" /><br>
 
 画面遷移図 [figma](https://www.figma.com/file/vIIYk3P6AZoyt1C7Rz1PnT/v-kara?type=design&node-id=224%3A2715&mode=design&t=90nX6V56GHSD9Zde-1), [原寸画像](https://private-user-images.githubusercontent.com/127638412/309806630-a48f8d29-3932-4bb5-83be-c546ae94405c.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MDk1NjYzMTcsIm5iZiI6MTcwOTU2NjAxNywicGF0aCI6Ii8xMjc2Mzg0MTIvMzA5ODA2NjMwLWE0OGY4ZDI5LTM5MzItNGJiNS04M2JlLWM1NDZhZTk0NDA1Yy5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjQwMzA0JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI0MDMwNFQxNTI2NTdaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT03YTgwNTVjODJkMDkyYjI1ZjIyNmJlNGY3NmU0Yjk5YWZkMjE2NjcxYTMxMjI4MjU4ZWE0MzA3YjZlMzNmMjA1JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZhY3Rvcl9pZD0wJmtleV9pZD0wJnJlcG9faWQ9MCJ9.2NP2uAfwg-VXFhv7BVRm7wUbutkCqUvNDVW3YeLUy2U)<br> 
 ![v-kara](https://github.com/sharin-sushi/V-Kara-Lists/assets/127638412/935dae1d-e564-4b65-a002-f927ec5280e8)<br>
