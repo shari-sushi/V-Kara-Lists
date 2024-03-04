@@ -450,7 +450,7 @@ func (controller *Controller) ReturnTopPageData(c *gin.Context) {
 		errs = append(errs, err)
 	}
 
-	LatestVtsMosKasWithFav, err := controller.FavoriteInteractor.GetLatest50VtubersMoviesKaraokesWithFavCnts(guest.ListenerId)
+	LatestVtsMosKasWithFav, err := controller.FavoriteInteractor.GetLatest50VtubersMoviesKaraokesWithFavCnts(guestId)
 	if err != nil {
 		errs = append(errs, err)
 	}
