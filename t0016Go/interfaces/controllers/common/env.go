@@ -3,8 +3,10 @@ package common
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
+	"github.com/sharin-sushi/0016go_next_relation/domain"
 )
 
 var goEnv = os.Getenv("GO_ENV") //ローカルpc上でのみ設定
@@ -57,4 +59,11 @@ func ReturnEvnCloudorLocal() string {
 		env = "on local"
 	}
 	return env
+}
+
+func GetGuestListenerId() domain.ListenerId {
+	stringGuestId, _ := strconv.Atoi(os.Getenv("GUEST_USER_ID"))
+	guestId := domain.ListenerId(stringGuestId)
+	fmt.Printf("guestId:%v\n", guestId)
+	return guestId
 }
