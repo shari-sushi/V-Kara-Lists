@@ -7,11 +7,10 @@
 
 ### 概要
 - サイト: [V-kara](https://v-karaoke.com)<br>
-V-karaはVTuber(YouTuberの1種)の歌枠の歌情報を登録し、いつでも見返せるwebアプリです。　<br>
-歌枠とは配信者のカラオケ配信のことで、`どの配信の何分何秒に何を歌ったか`の把握が難しいです。<br>
-V-karaを使うことで、好きなVTuberが何を歌ったかを検索、視聴、布教までシームレスに実施できます。<br>
-ただし、歌情報はユーザーによる入力が必要となり、ユーザー同士で作り上げるDBのような形式になっています。<br>
-※ゲストログイン可能です。使用感だけでも試してみてください！<br>
+V-karaはVTuberの歌枠の歌情報を登録し、いつでも見返せるwebアプリです。<br>
+歌枠とは配信者がカラオケのように沢山歌う配信のことで、`どの配信の何分何秒に何を歌ったか`の把握が難しいのが唯一の欠点です。<br>
+V-karaはその欠点を補い、歌の検索、視聴、布教までシームレスできます。<br>
+ただし、コンテンツの情報はユーザーによる入力が必要で、ユーザー同士で作り上げるDBのような立ち位置です。<br>
 - リポジトリ: [GitHub](https://github.com/sharin-sushi/V-Kara-Lists)<br>
 - サイトデモ動画: [YouTube](https://youtu.be/HunsO-8Eo7Q)<br>
 
@@ -46,9 +45,9 @@ V-karaを使うことで、好きなVTuberが何を歌ったかを検索、視�
 ### 構成図
 
 ER図 <br>
-<image src="https://github.com/sharin-sushi/V-Kara-Lists/assets/127638412/8cc738a8-2c77-49c1-8ef3-ed80df69b98b" widtch="700px" /><br>
+<image src="https://github.com/sharin-sushi/V-Kara-Lists/blob/develop/architecture_figure/primary/ERfigure_VTuber_kraoke_lists.drawio.png?raw=true" widtch="700px" /><br>
 
-画面遷移図 [figma](https://www.figma.com/file/vIIYk3P6AZoyt1C7Rz1PnT/v-kara?type=design&node-id=224%3A2715&mode=design&t=90nX6V56GHSD9Zde-1), [原寸画像](https://private-user-images.githubusercontent.com/127638412/309806630-a48f8d29-3932-4bb5-83be-c546ae94405c.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MDk1NjYzMTcsIm5iZiI6MTcwOTU2NjAxNywicGF0aCI6Ii8xMjc2Mzg0MTIvMzA5ODA2NjMwLWE0OGY4ZDI5LTM5MzItNGJiNS04M2JlLWM1NDZhZTk0NDA1Yy5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjQwMzA0JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI0MDMwNFQxNTI2NTdaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT03YTgwNTVjODJkMDkyYjI1ZjIyNmJlNGY3NmU0Yjk5YWZkMjE2NjcxYTMxMjI4MjU4ZWE0MzA3YjZlMzNmMjA1JlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZhY3Rvcl9pZD0wJmtleV9pZD0wJnJlcG9faWQ9MCJ9.2NP2uAfwg-VXFhv7BVRm7wUbutkCqUvNDVW3YeLUy2U)<br> 
+画面遷移図 [figma](https://www.figma.com/file/vIIYk3P6AZoyt1C7Rz1PnT/v-kara?type=design&node-id=224%3A2715&mode=design&t=90nX6V56GHSD9Zde-1), [原寸画像](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3566489/5264cf9a-a715-7b71-118e-43d37e231f46.png)<br> 
 ![v-kara](https://github.com/sharin-sushi/V-Kara-Lists/assets/127638412/935dae1d-e564-4b65-a002-f927ec5280e8)<br>
 
 
@@ -81,18 +80,20 @@ AWS構成図 <br />
   - 比較対象：Vue.js, React
   - 広く普及しているReactベースのフレームワークであり、SPAを簡単に実装できる
   - 基本的にTypeScriptと共に採用されるため静的型付け言語であるGoと平衡で学びやすいと考えた
+  (実際にやってみたら全然そんなことは無かったですが、学んで良かったとは思っています)
   - ページのルーティングが簡単
 
 - MySQL
 　- 比較対象：Oracle Database、PostgreSQL
-　- 無料かつ、PostgreSQL等と比較し機能が少なく、易しい
+　- 無料
+  - 比較し機能が少なく、易しい
 
 - アーキテクチャ
   - バックエンド
     クリーンアーキテクチャ: 拡張性やバグ修正をやりやすくし長期間のサイト運営でも開発コストを抑えられることを期待した。
   - フロント
-    アトミックデザインの考え方を適宜取り込みつつ`Reactの流儀`を模倣するに留め、機能ごとにフォルダ分けすることで既存コードを探し出しやすい構成にした。
-    ページ構成やcssも関わってくることから学習初期段階でクリーンアーキテクチャや完璧なアトミックデザイン等を導入しても適切に運営するのは将来を通して開発コストが増加してしまうものと考えた。
+    - アトミックデザインの考え方を適宜取り込みつつReactの流儀を模倣するに留め、機能ごとにフォルダ分けすることで既存コードを探し出しやすく関数を使いまわししやすい構成にした。
+    - ページ構成やcssも関わってくることから学習初期段階でクリーンアーキテクチャや完璧なアトミックデザイン等を導入しても適切に運営するのは将来を通して開発コストが増加してしまうものと考えた。
 
 ### 機能
 
@@ -135,10 +136,11 @@ AWS構成図 <br />
   - DB流出時の被害減少：
     - パスワードをbcryptで暗号化
     - メールアドレスをAESで暗号化
-  - クリーンアーキテクチャを採用し、拡張と修正をしやすく
+  - クリーンアーキテクチャを採用し、拡張と修正しやすさを向上
   - https化
   - コンテナ化で開発環境と本番環境の差を低減(Docker)
   - コンテナを一括管理(Docker Compose)
+  - ログインにはCookieにJWTを持たせた
 
 ---
 ## 備考
