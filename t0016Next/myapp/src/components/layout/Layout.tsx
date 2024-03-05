@@ -19,7 +19,6 @@ export const SigninContext = React.createContext({} as {
 })
 
 export function Layout({ pageName, children, isSignin }: LayoutProps) {
-    console.log("pageName", pageName)
     return (
         <div className="h-full">
             <SigninContext.Provider value={{ isSignin }}>

@@ -8,7 +8,6 @@ import { shuffleArray } from '../SomeFunction'
 import { ReceivedKaraoke, FavoriteKaraoke } from "@/types/vtuber_content";
 import { ToDeleteContext } from '@/pages/crud/delete'
 import { TableCss as TableTW } from '@/styles/tailwiind'
-import { ToClickTW } from '@/styles/tailwiind'
 import { SigninContext } from '@/components/layout/Layout'
 
 type KaraokeTableProps = {
@@ -19,52 +18,6 @@ type KaraokeTableProps = {
 export const YouTubePlayerContext = React.createContext({} as {
   handleMovieClickYouTube(movieId: string, time: number): void;
 })
-
-/////////////////////////////////////////////////////////////////
-// 使ってないわ　でもこれが標準…
-export function KaraokeTable({ posts, handleMovieClickYouTube }: KaraokeTableProps) {
-  const data = posts || {}
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable({ columns, data }, useSortBy, useRowSelect);
-
-  return (
-    <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
-      <table {...getTableProps()} className={`${TableTW.regular}`}>
-        <thead className={`${TableTW.regularThead}`}>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                  {column.render('Header')}
-                  <span>
-                    {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <img src="/content/sort.svg" className='inline mx-1 h-5' />}
-                  </span>
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row, i) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()} className={`${TableTW.regularTr}`}>
-                {row.cells.map((cell) => {
-                  return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </YouTubePlayerContext.Provider>
-  );
-}
 
 const columns: Column<ReceivedKaraoke>[] = [
   { Header: 'VTuber', accessor: 'VtuberName' },
@@ -135,7 +88,6 @@ function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumn) {
   const [isDisplay, setIsDisplay] = useState<boolean>(false);
   const { isSignin } = useContext(SigninContext)
   const handleClick = async () => {
-    console.log("isSignin", isSignin)
     if (isSignin == false) {
       setIsDisplay(true)
       setTimeout(() => setIsDisplay(false), 1500)
@@ -194,9 +146,9 @@ function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumn) {
     </div>
   );
 };
+
 ///////////////////////////////////////////////////////////////
 // /karaoke/sings ページネーション
-
 const PagenationReturnPostcolumns: Column<ReceivedKaraoke>[] = [
   { Header: 'VTuber', accessor: 'VtuberName' },
   {
@@ -231,7 +183,7 @@ const PagenationReturnPostcolumns: Column<ReceivedKaraoke>[] = [
           </button>
 
           <span className="absolute right-0">
-            <button className="flex"
+            <button className="flex "
               onClick={() => handleClick()}
             >
               <img src="/content/copy_gray.svg" className='h-4 mr-2' />
@@ -377,107 +329,14 @@ export function KaraokePagenatoinTable({ posts, handleMovieClickYouTube, setSele
   );
 };
 
-////////////////////////////////////////////////////////////////
-// // 素のReact
-// // 全件からランダム表示 使ってない
-export function RandamTable({ posts }: KaraokeTableProps) {
-  const data = posts != null ? posts : [{} as ReceivedKaraoke];
-  const [hasWindow, setHasWindow] = useState(false);
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setHasWindow(true);
-    }
-  }, []);
-
-  const { handleMovieClickYouTube } = useContext(YouTubePlayerContext) //表示ページにyoutubeで再生したいデータを渡す
-  const [shuffledData, setShuffledData] = useState(shuffleArray(data));
-  const [pageSize, setPageSize] = useState(5);
-  const getCurrentData = shuffledData.slice(0, pageSize);
-  console.log("getCurrentData", getCurrentData)
-
-  const maxPageSize = 99999
-  return (
-    <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
-      <div>
-        {hasWindow &&
-          <div>
-            {data === null &&
-              <div>曲は未登録です</div>
-            }
-            {(data?.length > 0 && data?.length < 6) &&
-              <div>歌のランダム表示は登録件数が６件以上で表示可能です <br />
-                現在の登録件数 : {data.length}
-              </div>
-            }
-            {data?.length > 7 &&
-              <span>
-                <div className={` py-0.5`}>
-                  <span className={` px-0.5`}>
-                    ランダム表示:
-                  </span>
-                  <button onClick={() => setShuffledData(shuffleArray(data))} className={`${ToClickTW.regular} py-0`}>
-                    表更新
-                  </button>
-                  <select className='text-right'
-                    value={pageSize}
-                    onChange={(e) => setPageSize(Number(e.target.value))}
-                  >
-                    {[5, 10, 25, 50, 100, maxPageSize].map((pageSize) => (
-                      <option value={pageSize} key={""}>
-                        {pageSize !== maxPageSize ? `Show ${pageSize}` : `Show all`}
-                      </option>
-                    ))}
-                  </select>
-                  (全{data.length}件)
-                </ div>
-                <div>
-                  <table className={`${TableTW.regular}`}>
-                    <thead className={`${TableTW.regularThead}`}>
-                      <tr className={``}>
-                        <th>VTuber</th>
-                        <th>動画</th>
-                        <th>歌(click it)</th>
-                        <th>いいね</th>
-                      </tr>
-                    </thead>
-                    <tbody >
-                      {getCurrentData.map(item => (
-                        <tr key={item.KaraokeId} className={`${TableTW.regularTr}`}>
-                          <td>{item.VtuberName}</td>
-                          <td>{item.MovieTitle}</td>
-                          <td >
-                            <span className="relative">
-                              <button className="flex"
-                                onClick={() => handleMovieClickYouTube(item.MovieUrl, ConvertStringToTime(item.SingStart))}
-                              >
-                                <img src="/content/play_black.svg" className='w-5 mr-2' />
-                                {item.SongName}
-                              </button>
-                            </span>
-                          </td>
-                          <td >
-                            <FavoriteColumn count={item.Count} isFav={item.IsFav} movie={item.MovieUrl} karaoke={item.KaraokeId} />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </span>}
-          </div >
-        }</div >
-    </YouTubePlayerContext.Provider >
-  );
-}
-
 ///////////////////////////////////////////////////
-// // top youtube横　カラム少な目→それに合わせてapi側要変更？
+// // top youtube横　カラム少な目→api側未調整（余計なデータがを渡されている状態）
 const ThinColumns: Column<ReceivedKaraoke>[] = [
   { Header: 'VTuber', accessor: 'VtuberName' },
   {
     Header: '曲名(Click it)', accessor: 'KaraokeId',
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      const { handleMovieClickYouTube } = useContext(YouTubePlayerContext) //表示ページにyoutubeのカレントデータを渡す
+      const { handleMovieClickYouTube } = useContext(YouTubePlayerContext)
 
       const [isDisplay, setIsDisplay] = useState<boolean>(false);
       const handleClick = async () => {
@@ -489,18 +348,18 @@ const ThinColumns: Column<ReceivedKaraoke>[] = [
 
       return (
         <span className="relative flex w-auto" >
-          <button className="flex"
+          <button className="flex overflow-hidden"
             onClick={() => handleMovieClickYouTube(row.original.MovieUrl, ConvertStringToTime(row.original.SingStart))}
           >
-            <img src="/content/play_black.svg" className='w-5 mr-1 bottom-0' />
+            <img src="/content/play_black.svg" className='w-5 mr-1 bottom-0 ' />
             {row.original.SongName}
           </button>
 
-          <span className="absolute right-0">
+          <span className="absolute right-0 ">
             <button className="flex"
               onClick={() => handleClick()}
             >
-              <img src="/content/copy_gray.svg" className='h-4 mr-2' />
+              <img src="/content/copy_gray.svg" className='h-4 mr-2 ' />
             </button>
             {isDisplay &&
               <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">URL was copied</div>
@@ -527,7 +386,7 @@ const ThinColumns: Column<ReceivedKaraoke>[] = [
 ];
 
 export const KaraokeThinTable = ({ posts, handleMovieClickYouTube }: KaraokeTableProps) => {
-  const data = posts || [{} as ReceivedKaraoke]
+  const data = posts || [] as ReceivedKaraoke[]
   const {
     getTableProps,
     getTableBodyProps,
@@ -675,7 +534,7 @@ const deleteColumns: Column<ReceivedKaraoke>[] = [
       const { setCurrentVideoId, setCurrentStart } = useContext(ToDeleteContext);
       const clickHandler = (url: string, SingStart: string) => {
         setCurrentVideoId(ExtractVideoId(url));
-        // setTimeout(() => setCurrentStart(
+        // setTimeout(() => setCurrentStart(　// youtube iframバグ対策。再発に備えてコメントアウトで残しておく
         ConvertStringToTime(SingStart)
         // ), 1450);
       }
@@ -701,7 +560,6 @@ const deleteColumns: Column<ReceivedKaraoke>[] = [
         setToDeleteVtuberId(row.original.VtuberId)
         setToDeleteMovieUrl(row.original.MovieUrl)
         setToDeleteKaraokeId(row.original.KaraokeId)
-        console.log("削除発火")
       }
       return (
         <>
@@ -717,14 +575,14 @@ const deleteColumns: Column<ReceivedKaraoke>[] = [
 ///////////////////////////////////////////////////
 // // top youtube横　
 // 全件取得してフロント側でランダムにしてるけど、バック側でランダム５件+α取得すべき
-// (+αはフロント側でランダム更新するため)
+// (+αはフロント側で完結するランダム更新機能を実装するために必要)
 
 const randam5columns: Column<ReceivedKaraoke>[] = [
   { Header: 'VTuber', accessor: 'VtuberName' },
   {
     Header: '曲名(Click it)', accessor: 'KaraokeId',
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      const { handleMovieClickYouTube } = useContext(YouTubePlayerContext) //表示ページにyoutubeのカレントデータを渡す
+      const { handleMovieClickYouTube } = useContext(YouTubePlayerContext)
 
       const handleClickSongName = (post: ReceivedKaraoke) => {
         handleMovieClickYouTube(
@@ -779,7 +637,7 @@ const randam5columns: Column<ReceivedKaraoke>[] = [
 ];
 
 export const KaraokeMinRandamTable = ({ posts, handleMovieClickYouTube }: KaraokeTableProps) => {
-  const karaokes = posts || [{} as ReceivedKaraoke]
+  const karaokes = posts || [] as ReceivedKaraoke[]
   const [hasWindow, setHasWindow] = useState(false);
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -788,18 +646,6 @@ export const KaraokeMinRandamTable = ({ posts, handleMovieClickYouTube }: Karaok
   }, []);
 
   const [shuffledData, setShuffledData] = useState<ReceivedKaraoke[]>(shuffleArray(karaokes));
-
-  // 実装できてないランダム更新機能
-  // const [isStatus, setIsStatus] = useState<boolean>(true)
-  // const handleClickReload = () => {
-  //   setIsStatus(!isStatus)
-  //   console.log("起動")
-  //   console.log("isStatus", isStatus)
-  // }
-
-  // useEffect(() => {
-  //   setShuffledData(shuffledData)
-  // }, [isStatus])
 
   const {
     getTableProps,
@@ -820,15 +666,6 @@ export const KaraokeMinRandamTable = ({ posts, handleMovieClickYouTube }: Karaok
         <div>
           <div className='flex ml-5 '>
             <h2 className="flex mr-1">ランダム5件表示中 (登録数{posts.length}件)</h2>
-            {/* ↓実装できてないランダム更新機能 */}
-            {/* 
-            {shuffledData[1].KaraokeId}
-            　<button
-              // onClick={() => setShuffledData(shuffledData)}
-              onClick={() => setShuffledData(karaokes)}
-              // onClick={() => handleClickReload()}
-              // onClick={() => alert('clicked')} //発火する
-              className={`${ToClickCss.regular} flex py-0 h-6`} >更新</button> */}
           </div>
           <div className='w-full overflow-scroll md:overflow-hidden'>
             <table {...getTableProps()} className={`${TableTW.minRandom} `}>

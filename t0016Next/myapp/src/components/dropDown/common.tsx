@@ -1,12 +1,3 @@
-import { getWindowSize } from '@/features/layout/Layout';
-import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '@/types/vtuber_content';
-import { CSSObjectWithLabel } from 'react-select';
-
-// (alias) const DropStyle: {
-//   container: (base: any) => any;
-//   control: (base: any) => any;
-// }
-
 // https://zenn.dev/morit4ryo/articles/1897b2296b8f1c
 export const DropStyle = ({
   control: (provided: any, state: any) => ({

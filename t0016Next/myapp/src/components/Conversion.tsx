@@ -1,5 +1,4 @@
 export const ConvertStringToTime = (SingStart: string): number => {
-  // console.log(SingStart)
   const match = SingStart.match(/\d+/g);
   if (!match || match.length !== 3) {
     console.error("Invalid input format:", SingStart);
@@ -9,8 +8,6 @@ export const ConvertStringToTime = (SingStart: string): number => {
   const minutes = Number(match[1]);
   const seconds = Number(match[2]);
   let totalSeconds = (hours * 60 * 60) + (minutes * 60) + seconds;
-
-  // console.log("totalSeconds:", totalSeconds);
   return totalSeconds;
 }
 

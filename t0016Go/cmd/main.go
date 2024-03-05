@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sharin-sushi/0016go_next_relation/infra"
 
-	// "github.com/sharin-sushi/0016go_next_relation/interfaces/controllers"
 	"github.com/sharin-sushi/0016go_next_relation/interfaces/controllers/common"
 )
 
@@ -38,7 +37,7 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{})
 	})
 
-	r.Use(requestLogger()) //開発用。本番稼動時はコメントアウトする。
+	r.Use(requestLogger())
 
 	infra.Routing(r)
 
@@ -46,8 +45,7 @@ func main() {
 	var host string
 	if env == "on cloud" {
 		//クラウド環境
-		// fmt.Println("hallow api server in AWS" + controllers.UpdateData)
-		// host = "v-karaoke.com"
+		// host = ""の状態でok
 	} else if env == "on local" {
 		// ローカルのdocker上(compose使用) or  VSCodeで起動
 		// ローカルのファイアーウォール対策

@@ -59,9 +59,6 @@ export default function DeleteButton({ posts, selectedVtuber, selectedMovie, sel
     });
 
     const handleClick = async () => {
-        console.log("決定押下")
-        console.log("choiceCrudType=", crudContentType, "\n selectedVtuber=",
-            selectedVtuber, "\n selectedKaraoke", selectedKaraoke);
         if (crudContentType === "vtuber" && foundVtuber?.VtuberName) {
             try {
                 const reqBody: DeleteVtuber = {
@@ -108,7 +105,6 @@ export default function DeleteButton({ posts, selectedVtuber, selectedMovie, sel
             } catch (err) {
                 console.error(err);
             }
-            console.log("selectedMovie=", selectedMovie)
         } else {
             console.log("削除するデータの種類(vtuber, movie, karaoke)の選択、またはで想定外のエラーが発生しました。")
         }

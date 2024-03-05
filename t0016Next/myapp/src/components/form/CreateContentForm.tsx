@@ -84,9 +84,7 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
     const { register, handleSubmit, formState: { errors } } = useForm<CrudDate>({ reValidateMode: 'onChange' });
 
     const onSubmit = async (CrudData: CrudDate) => {
-        console.log("crudContentType", crudContentType)
         if (crudContentType === "vtuber") {
-            console.log("vtuber crud")
             try {
                 const reqBody: CreateVtuber = {
                     VtuberName: CrudData.VtuberName,
@@ -215,7 +213,6 @@ export function CreateForm({ posts, selectedVtuber, selectedMovie, selectedKarao
 
                     <div>
                         {crudContentType === "karaoke" &&
-                            // <div id="decide" className="flex flex-col justify-center my-3 ">
                             <div id="decide" className=" ">
                                 <div className='flex flex-col  mt-1 my-4'>
                                     <span className='mx-auto text-black'>

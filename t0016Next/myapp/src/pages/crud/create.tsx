@@ -12,10 +12,12 @@ import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
 import { CreateForm, CreatePageProps } from '@/components/form/CreateContentForm';
 import { NotLoggedIn } from '@/components/layout/Main';
 
+const pageName = "コンテンツ登録"
+
 export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
     if (!isSignin) {
         return (
-            <Layout pageName={"データベース登録"} isSignin={isSignin}>
+            <Layout pageName={pageName} isSignin={isSignin}>
                 <div>
                     < NotLoggedIn />
                 </div>
@@ -25,20 +27,6 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
 
     const movies = posts?.vtubers_movies || [] as ReceivedMovie[];
     const karaokes = posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[];
-
-    // if (!isSignin) {
-    //     // トーストか、新規タグで開いてuseContextでrouterを引き継がせて、ログイン後に元のページに戻す処理をしたい
-    //     // さらに言えば、決定ボタン押下時にログイン状態を確認する処理も入れたい
-    //     // ↑引き継がなくてもrouter.ロールバック？で戻れるでしょ
-    //     return (
-    //         <div className="App">
-    //             <h1>ログインが必要なサービスです</h1>
-    //             <Link href={`/user/signin`} ><u>ログイン</u></Link><br />
-    //             <Link href={`/user/signup`} ><u>会員登録</u></Link>
-    //             <GestLogin /> &nbsp;
-    //         </div>
-    //     );
-    // };
 
     const [selectedVtuber, setSelectedVtuber] = useState<number>(0);
     const [selectedMovie, setSelectedMovie] = useState<string>("");
@@ -57,7 +45,7 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
 
     const clearMovieHandler = () => {
         //中身空でもKaraokeのoptinosを空にしてくれるんだが…
-        // でもこの関数をまるっと消すとダメ…？
+        // でもこの関数をまるっと消すとダメ
 
         // setSelectedKaraoke(0);
     };
@@ -74,9 +62,8 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
     }, [selectedMovie, selectedKaraoke]);
 
     return (
-        <Layout pageName="データベース登録" isSignin={isSignin}>
+        <Layout pageName={pageName} isSignin={isSignin}>
             <div id="body" className='flex flex-col w-full'>
-                {/* <div className='flex flex-col text-sm mb-4'> */}
                 <div id="explain" className='flex justify-center text-sm my-4 ' >
                     <div className='' >
                         <div className='my-3'>
@@ -134,19 +121,18 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
 export async function getServerSideProps(context: ContextType) {
     const rawCookie = context.req.headers.cookie;
     const sessionToken = rawCookie?.split(';').find((cookie: string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];
-    console.log("sessionToken", sessionToken)
     let isSignin = false
     if (sessionToken) {
         isSignin = true
     }
-    // サーバーの証明書が認証されない自己証明書でもHTTPSリクエストを継続する
+    console.log("pageName, sessionToken, isSigni =", pageName, sessionToken, isSignin) //アクセス数記録のため
+
     const httpsAgent = new https.Agent({ rejectUnauthorized: false });
     const options: AxiosRequestConfig = {
         headers: {
-            'Cache-Control': 'no-store', //cache(キャッシュ)を無効にする様だが、必要性理解してない
             cookie: `auth-token=${sessionToken}`,
         },
-        withCredentials: true,  //HttpヘッダーにCookieを含める
+        withCredentials: true,
         httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
     };
 

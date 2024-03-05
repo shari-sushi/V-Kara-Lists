@@ -14,6 +14,8 @@ import { KaraokeThinTable, KaraokeMinRandamTable } from '@/components/table/Kara
 import { ToClickTW } from '@/styles/tailwiind'
 import { ContextType } from '@/types/server'
 
+const pageName = "test"
+
 type TopPage = {
     posts: {
         vtubers: ReceivedVtuber[];
@@ -33,13 +35,15 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
     const [currentMovieId, setCurrentMovieId] = useState<string>("AlHRqSsF--8");
 
     const handleMovieClickYouTube = (url: string, start: number) => {
-        console.log("handleMovieClickYouTube")
         setCurrentMovieId(ExtractVideoId(url));
         setStart(start);
     };
 
     return (
-        <Layout pageName={"TEST"} isSignin={isSignin}>
+        <Layout pageName={pageName} isSignin={isSignin}>
+            <div>
+                2024.03.05
+            </div>
             <div className="flex justify-center md:flex-row flex-col m-6">
                 <div className="w-full h-max p-8 bg-black">
                     〇環境変数取得テスト１ <br />
@@ -158,19 +162,18 @@ export default TopPage;
 export async function getServerSideProps(context: ContextType) {
     const rawCookie = context.req.headers.cookie;
     const sessionToken = rawCookie?.split(';').find((cookie: string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];
-    console.log("sessionToken", sessionToken)
     let isSignin = false
     if (sessionToken) {
         isSignin = true
     }
-    // サーバーの証明書が認証されない自己証明書でもHTTPSリクエストを継続する
+    console.log("pageName, sessionToken, isSigni =", pageName, sessionToken, isSignin) //アクセス数記録のため
+
     const httpsAgent = new https.Agent({ rejectUnauthorized: false });
     const options: AxiosRequestConfig = {
         headers: {
-            'Cache-Control': 'no-store', //cache(キャッシュ)を無効にする様だが、必要性理解してない
             cookie: `auth-token=${sessionToken}`,
         },
-        withCredentials: true,  //HttpヘッダーにCookieを含める
+        withCredentials: true,
         httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
     };
 

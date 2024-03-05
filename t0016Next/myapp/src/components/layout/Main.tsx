@@ -1,13 +1,8 @@
-import Head from "next/head";
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import React, { useContext, useState } from "react";
+import React from "react";
 
-import { GestLogin, GestLoginForHamburger } from '../button/User'
-import { HeaderCss, FooterTW } from '@/styles/tailwiind'
+import { GestLogin } from '../button/User'
 import { ToClickTW } from '@/styles/tailwiind'
-import { getWindowSize } from "@/features/layout/Layout";
-import { CreateLink, DeleteLink, EditLink, KaraokeLink, OriginalSongLink, LoginLink, MyPageLink, ProfileLink, SignUpLink, TitleLink, TopLink } from "../button/link/Humbarger";
 
 export function NotLoggedIn() {
     return (

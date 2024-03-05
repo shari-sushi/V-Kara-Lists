@@ -84,36 +84,6 @@ func getCreateUser() *domain.Listener {
 	return body
 }
 
-// gorm.DeletedAtが有れば論理削除、無ければ物理削除
-// 便宜的に論理削除を1、物理削除を2としてテスト関数を名付けた。
-// func TestSqlHandler_Delete1(t *testing.T) {
-// 	db, mock, err := getMockDB()
-// 	if err != nil {
-// 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
-// 	}
-// 	r := SqlHandler{Conn: db}
-
-// 	logicallBody := getLogicalDeleteUser()
-// 	now := time.Now()
-// 	logicallBody.DeletedAt = gorm.DeletedAt{Time: now, Valid: true}
-
-// 	logilalyQuery := "UPDATE `listeners` SET `deleted_at`=? WHERE listener_id = ? AND `listeners`.`deleted_at` IS NULL"
-// 	mock.ExpectExec(regexp.QuoteMeta(logilalyQuery)).
-// 		WithArgs(logicallBody.DeletedAt.Time, logicallBody.ListenerId).
-// 		WillReturnResult(sqlmock.NewResult(1, 1))
-
-// 	if err != nil {
-// 		t.Log(err)
-// 		t.Log("mockdb is down")
-// 		t.Fail()
-// 	}
-// 	if err := r.Delete(&domain.Listener{}, "listener_id = ?", logicallBody.ListenerId).Error; err != nil {
-// 		t.Log(err)
-// 		t.Log("logicaly delete is down")
-// 		t.Fail()
-// 	}
-// }
-
 func TestSqlHandler_Delete1(t *testing.T) {
 	db, mock, err := getMockDB()
 	if err != nil {
@@ -143,7 +113,6 @@ func TestSqlHandler_Delete1(t *testing.T) {
 }
 
 func getLogicalDeleteUser() *domain.Listener {
-	// var timeTime time.Time
 	var gormDeletedAt gorm.DeletedAt
 	body := &domain.Listener{
 		ListenerId: 1,

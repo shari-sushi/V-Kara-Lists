@@ -18,12 +18,10 @@ func Routing(r *gin.Engine) {
 			users.POST("/signup", Controller.CreateUser)
 			users.PUT("/login", Controller.LogIn)
 			users.PUT("/logout", controllers.Logout)
-			users.DELETE("/withdraw", Controller.LogicalDeleteUser) //未
+			users.DELETE("/withdraw", Controller.LogicalDeleteUser)
 			users.GET("/gestlogin", controllers.GuestLogIn)
 			users.GET("/profile", Controller.GetListenerProfile)
 			users.GET("/mypage", Controller.ListenerPage)
-
-			// users.GET("/resignup", userController.RestoreUser)　//ver1.5
 		}
 		vcontents := ver.Group("/vcontents")
 		{
@@ -36,24 +34,20 @@ func Routing(r *gin.Engine) {
 			vcontents.POST("/create/vtuber", Controller.CreateVtuber)
 			vcontents.POST("/create/movie", Controller.CreateMovie)
 			vcontents.POST("/create/karaoke", Controller.CreateKaraoke)
-			// vcontents.POST("/create/song", Controller.CreateSong)           //ver1.5
 
 			//データ編集
 			vcontents.POST("/edit/vtuber", Controller.EditVtuber)
 			vcontents.POST("/edit/movie", Controller.EditMovie)
 			vcontents.POST("/edit/karaoke", Controller.EditKaraoke)
-			// vcontents.POST("/edit/song", Controller.EditSong)           //ver1.5
 
 			// // データ削除(物理)
 			vcontents.GET("/delete/deletePage", Controller.DeleteOfPage)
 			vcontents.DELETE("/delete/vtuber", Controller.DeleteVtuber)
 			vcontents.DELETE("/delete/movie", Controller.DeleteMovie)
 			vcontents.DELETE("/delete/karaoke", Controller.DeleteKaraoke)
-			// vcontents.DELETE("/delete/song", Controller.DeleteSong)           //ver1.5
 
 			//ドロップダウン用
 			vcontents.GET("/getalldata", Controller.GetVtuverMovieKaraoke)
-			vcontents.GET("/oimomochimochiimomochioimo", Controller.Enigma) // 管理者用
 
 			// テスト用
 			vcontents.GET("/dummy-top-page", Controller.ReturnDummyTopPage)

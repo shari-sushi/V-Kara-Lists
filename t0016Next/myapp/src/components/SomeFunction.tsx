@@ -1,4 +1,4 @@
-import type { ReceivedKaraoke, ReceivedVtuber, ReceivedMovie } from '../types/vtuber_content'; //type{}で型情報のみインポート
+import type { ReceivedKaraoke } from '../types/vtuber_content'; //type{}で型情報のみインポート
 
 export const Checkbox = ({ children, ...props }: JSX.IntrinsicElements['input']) => (
   <label style={{ marginRight: '1em' }}>
@@ -21,6 +21,5 @@ export function shuffleArray(array: ReceivedKaraoke[]) {
     const j = Math.floor(Math.random() * (i + 1)); //ランダムな数値jを生成
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
-  // console.log("shuffle is finish")
   return shuffled;
 }

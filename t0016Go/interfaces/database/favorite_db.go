@@ -12,8 +12,6 @@ type FavoriteRepository struct {
 
 func (db *FavoriteRepository) CountMovieFavorites() ([]domain.TransmitMovie, error) {
 	fmt.Print("interfaces/database/favorite.go\n")
-	// 期待するクエリ
-	// SELECT movie_url COUNT(*) AS count FROM favorite_posts WHERE karaoke_id != 0 GROUP BY movie_url;
 	var fav domain.Favorite
 	var favCnt []domain.TransmitMovie
 	err := db.Model(&fav).Select("movie_url").Where("karaoke_id = 0").Group("movie_url").Find(&favCnt).Error
@@ -25,8 +23,6 @@ func (db *FavoriteRepository) CountMovieFavorites() ([]domain.TransmitMovie, err
 
 func (db *FavoriteRepository) CountKaraokeFavorites() ([]domain.TransmitKaraoke, error) {
 	fmt.Print("interfaces/database/favorite.go \n")
-	// 期待するクエリ
-	// SELECT karaoke_id, COUNT(*) AS count FROM favorite_posts WHERE karaoke_id != 0 GROUP BY karaoke_id;
 	var fav domain.Favorite
 	var favCnt []domain.TransmitKaraoke
 	err := db.Model(&fav).Select("karaoke_id").Where("where karaoke_id != 0").Group("karoke_list_id").Find(&favCnt).Error
@@ -163,12 +159,9 @@ func (db *FavoriteRepository) GetLatest50VtubersMoviesKaraokesWithFavCnts(guestI
 
 func (db *FavoriteRepository) FindFavoritesCreatedByListenerId(lId domain.ListenerId) ([]domain.ReceivedFavorite, error) {
 	fmt.Print("interfaces/database/favorite_db.go \n")
-	// 期待するクエリ
-	// Select * FROM favorites Where listener_id = ?
 	var favs []domain.Favorite
-
 	var receivedfavs []domain.ReceivedFavorite
-	// result := db.Where("listener_id=?", lId).Find(&favs)
+
 	result := db.Select("id, listener_id, movie_url, karaoke_id").Where("listener_id=?", lId).Model(&favs).Scan(&receivedfavs)
 	fmt.Printf("recfavs:\n %+v\n", receivedfavs)
 	fmt.Printf("&recfavs:\n%+v\n", &receivedfavs)
@@ -220,8 +213,7 @@ func (db *FavoriteRepository) UpdateKaraokeFavorite(fav domain.Favorite) error {
 	return err
 }
 
-// 以下、開発中
-
+// 使ってない？
 func (db *FavoriteRepository) FindVtubersCreatedByListenerId(lId domain.ListenerId) ([]domain.Vtuber, error) {
 	fmt.Print("interfaces/database/favorite.go \n")
 	var vts []domain.Vtuber
