@@ -7,6 +7,9 @@ import type { User } from "@/types/user"
 import { GetLogout, Withdraw } from '@/components/button/User';
 import { Layout } from "@/components/layout/Layout";
 import { NotLoggedIn } from "@/components/layout/Main";
+import { ContextType } from '@/types/server'
+
+const pageName = "MyProfile"
 
 type Mypage = {
     listener: User;
@@ -16,7 +19,7 @@ type Mypage = {
 const Profile = ({ listener, isSignin }: Mypage) => {
     if (!isSignin) {
         return (
-            <Layout pageName={"MyProfile"} isSignin={isSignin}>
+            <Layout pageName={pageName} isSignin={isSignin}>
                 <div>
                     < NotLoggedIn />
                 </div>
@@ -45,28 +48,21 @@ export default Profile;
 
 
 /////////////////////////////////////////////////////////////////////////////
-import { ContextType } from '@/types/server'
-
 export async function getServerSideProps(context: ContextType) {
     const rawCookie = context.req.headers.cookie;
-    console.log("rawCookie=", rawCookie, "\n")
-
-    // Cookieが複数ある場合に必要？
-    // cookie.trim()   cookieの文字列の前後の全ての空白文字(スペース、タブ、改行文字等)を除去する
     const sessionToken = rawCookie?.split(';').find((cookie: string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];
     let isSignin = false
     if (sessionToken) {
         isSignin = true
     }
+    console.log("pageName, sessionToken, isSigni =", pageName, sessionToken, isSignin) //アクセス数記録のため
 
-    // サーバーの証明書が認証されない自己証明書でもHTTPSリクエストを継続する
     const httpsAgent = new https.Agent({ rejectUnauthorized: false });
     const options: AxiosRequestConfig = {
         headers: {
-            'Cache-Control': 'no-store', //cache(キャッシュ)を無効にする様だが、必要性理解してない
             cookie: `auth-token=${sessionToken}`,
         },
-        withCredentials: true,  //HttpヘッダーにCookieを含める
+        withCredentials: true,
         httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
     };
 

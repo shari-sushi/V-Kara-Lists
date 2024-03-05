@@ -168,58 +168,6 @@ function FavoriteColumn({ count, isFav, movie }: FavoriteColumn) {
     );
 };
 
-///////////////////////////////////////////////////////////////
-// mypage用
-type MovieTableForMyPageProps = {
-    data: ReceivedMovie[];
-    handleMovieClickYouTube: () => void;
-};
-
-export function MovieTableForMyPage({ data, handleMovieClickYouTube }: MovieTableForMyPageProps) {
-    const {
-        getTableProps,
-        getTableBodyProps,
-        headerGroups,
-        rows,
-        prepareRow,
-    } = useTable({ columns, data }, useSortBy, useRowSelect);
-
-    return (
-        <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
-            <div className=' md:overflow-hidden'>
-                <table {...getTableProps()} className={`${TableCss.regular}`}>
-                    <thead className={`${TableCss.regularThead}`}>
-                        {headerGroups.map((headerGroup) => (
-                            <tr {...headerGroup.getHeaderGroupProps()}>
-                                {headerGroup.headers.map((column) => (
-                                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                                        {column.render('Header')}
-                                        <span>
-                                            {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <img src="/content/sort.svg" className='inline mx-1 h-5' />}
-                                        </span>
-                                    </th>
-                                ))}
-                            </tr>
-                        ))}
-                    </thead>
-                    <tbody {...getTableBodyProps()}>
-                        {rows.map((row, i) => {
-                            prepareRow(row);
-                            return (
-                                <tr {...row.getRowProps()}>
-                                    {row.cells.map((cell) => {
-                                        return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                                    })}
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            </div>
-        </YouTubePlayerContext.Provider>
-    );
-}
-
 ///////////////////////////////////
 type MovieDeleteTableProps = {
     posts: ReceivedMovie[];

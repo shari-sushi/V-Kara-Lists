@@ -36,7 +36,7 @@ func SetListenerIdintoCookie(c *gin.Context, ListenerId domain.ListenerId) (err 
 	if err != nil {
 		return
 	}
-	cookieMaxAge := 60 * 60 * 12 * 12 //開発中につき長時間化中
+	cookieMaxAge := 60 * 60 * 12 * 12
 	getEnvHostDomain()
 	cookie := &http.Cookie{
 		Name:     "auth-token",
@@ -46,7 +46,7 @@ func SetListenerIdintoCookie(c *gin.Context, ListenerId domain.ListenerId) (err 
 		MaxAge:   cookieMaxAge,
 		HttpOnly: true,
 		Secure:   true,
-		SameSite: http.SameSiteNoneMode, //本番環境ではNone禁止
+		SameSite: http.SameSiteLaxMode,
 	}
 
 	http.SetCookie(c.Writer, cookie)
@@ -64,7 +64,7 @@ func UnsetAuthCookie(c *gin.Context) (err error) {
 		MaxAge:   -1,
 		HttpOnly: true,
 		Secure:   true,
-		SameSite: http.SameSiteNoneMode, //本番環境ではNone禁止
+		SameSite: http.SameSiteLaxMode,
 	}
 
 	http.SetCookie(c.Writer, cookie)
@@ -72,14 +72,12 @@ func UnsetAuthCookie(c *gin.Context) (err error) {
 	return
 }
 
-// コードの理解度低い、要勉強
 func TakeListenerIdFromJWT(c *gin.Context) (domain.ListenerId, error) {
 	tokenString, _ := c.Cookie("auth-token")
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("SECRET_KEY")), nil
 	})
 	if err != nil {
-		// c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 		return 0, err
 	}
 	fmt.Printf("token= %v \n", token)
@@ -93,7 +91,6 @@ func TakeListenerIdFromJWT(c *gin.Context) (domain.ListenerId, error) {
 			}
 			listenerId = int(listenerIdFloat)
 		} else {
-			// c.JSON(http.StatusBadRequest, gin.H{"error": "token has no Listener Id"})
 			return 0, fmt.Errorf("token has no Listener Id")
 		}
 	}

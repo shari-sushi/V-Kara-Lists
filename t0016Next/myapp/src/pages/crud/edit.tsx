@@ -13,10 +13,13 @@ import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
 import { GestLogin, } from '@/components/button/User'
 import { NotLoggedIn } from '@/components/layout/Main';
 
+const pageName = "コンテンツ編集"
+
+
 export const EditPage = ({ posts, isSignin }: EditPageProps) => {
     if (!isSignin) {
         return (
-            <Layout pageName={"データベース編集"} isSignin={isSignin}>
+            <Layout pageName={pageName} isSignin={isSignin}>
                 <div>
                     < NotLoggedIn />
                 </div>
@@ -69,7 +72,7 @@ export const EditPage = ({ posts, isSignin }: EditPageProps) => {
     }, [selectedMovie, selectedKaraoke]);
 
     return (
-        <Layout pageName="データベース編集" isSignin={isSignin}>
+        <Layout pageName={pageName} isSignin={isSignin}>
             <div className=''>
                 <div className='flex justify-center text-sm mb-3 '>
                     <span className=''>
@@ -118,19 +121,18 @@ export default EditPage;
 export async function getServerSideProps(context: ContextType) {
     const rawCookie = context.req.headers.cookie;
     const sessionToken = rawCookie?.split(';').find((cookie: string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];
-    console.log("sessionToken", sessionToken)
     let isSignin = false
     if (sessionToken) {
         isSignin = true
     }
-    // サーバーの証明書が認証されない自己証明書でもHTTPSリクエストを継続する
+    console.log("pageName, sessionToken, isSigni =", pageName, sessionToken, isSignin) //アクセス数記録のため
+
     const httpsAgent = new https.Agent({ rejectUnauthorized: false });
     const options: AxiosRequestConfig = {
         headers: {
-            'Cache-Control': 'no-store', //cache(キャッシュ)を無効にする様だが、必要性理解してない
             cookie: `auth-token=${sessionToken}`,
         },
-        withCredentials: true,  //HttpヘッダーにCookieを含める
+        withCredentials: true,
         httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
     };
 

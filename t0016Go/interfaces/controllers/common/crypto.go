@@ -39,9 +39,6 @@ func init() {
 		fmt.Printf("interfaces/controllers/common, env err \n")
 	}
 	bcryotCost, _ = strconv.Atoi(costString)
-
-	fmt.Printf("aesKey = %v, \naesIv =%v \n", aesKey, aesIv)
-
 }
 
 // password

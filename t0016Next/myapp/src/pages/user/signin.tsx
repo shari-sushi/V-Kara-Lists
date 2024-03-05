@@ -5,8 +5,10 @@ import { SigninForm } from "@/components/form/User";
 
 export function SigninPage() {
 
+  const pageName = "Login"
+
   return (
-    <Layout pageName={"ログイン"} isSignin={false}>
+    <Layout pageName={pageName} isSignin={false}>
       <div className="flex justify-center w-full mt-6">
         <div className="w-full max-w-xs">
           <SigninForm />

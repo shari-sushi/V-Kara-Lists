@@ -3,8 +3,6 @@ import Select from 'react-select';
 import type { BasicDataProps, ReceivedKaraoke } from '@/types/vtuber_content';
 import { DropStyle } from './common'
 
-// DropDinwMo, Kaについは、on~~Seletがnillとか0なら処理を止めべき
-
 type Options = {
   value: number;
   label: string;
@@ -24,13 +22,10 @@ export const DropDownKaraoke = ({ posts, selectedMovie, onKaraokeSelect }: DropD
 
   useEffect(() => {
     if (!selectedMovie) {
-      setKaraokeOptions([]); // Movieが選択解除された場合、karaokeの選択肢を空にする
+      setKaraokeOptions([]);
       return;
     }
-    // if (!selectedKaraoke){
-    //   setSelectedKaraoke(null);
-    //   return;
-    // }
+
     const fetchKaraokes = async () => {
       try {
         const choiceKaraoke = karaokes.filter((karaokes: ReceivedKaraoke) => karaokes.MovieUrl === selectedMovie);
@@ -58,16 +53,11 @@ export const DropDownKaraoke = ({ posts, selectedMovie, onKaraokeSelect }: DropD
         className="basic-single"
         classNamePrefix="select"
         isClearable={true} isSearchable={true} options={karaokeOptions}
-        // value={selectedKaraoke} 
         // isMulti={true}  backspaceRemovesValue={false}
         blurInputOnSelect={true} styles={DropStyle}
         onChange={option => {
-          if (option) { //選んだ時にエラー吐く
+          if (option) {
             onKaraokeSelect(option.value);
-            // setSelectedKaraoke(option);
-            // } else {
-            //   handleKaraokeClear();
-            //   setMovieOptions([]);
           }
         }}
       />
@@ -75,7 +65,8 @@ export const DropDownKaraoke = ({ posts, selectedMovie, onKaraokeSelect }: DropD
   );
 };
 
-const memo = { //ファイルのtopレベルに置いておくとESLintの自動整形が機能しなくなる
+const memo = {
+  //ファイルのtopレベルに置いておくとESLintの自動整形が機能しなくなる
   //// 公式
   // https://react-select.com/home
 
