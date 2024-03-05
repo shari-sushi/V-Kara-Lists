@@ -45,7 +45,7 @@ V-karaはその欠点を補い、歌の検索、視聴、布教までシーム�
 ### 構成図
 
 ER図 <br>
-<image src="https://github.com/sharin-sushi/V-Kara-Lists/blob/develop/architecture_figure/primary/ERfigure_VTuber_kraoke_lists.drawio.png?raw=true" widtch="700px" /><br>
+<image src="https://github.com/sharin-sushi/V-Kara-Lists/assets/127638412/c918b587-9fe4-415b-9536-e42be143b373" widtch="700px" /><br>
 
 画面遷移図 [figma](https://www.figma.com/file/vIIYk3P6AZoyt1C7Rz1PnT/v-kara?type=design&node-id=224%3A2715&mode=design&t=90nX6V56GHSD9Zde-1), [原寸画像](https://qiita-image-store.s3.ap-northeast-1.amazonaws.com/0/3566489/5264cf9a-a715-7b71-118e-43d37e231f46.png)<br> 
 ![v-kara](https://github.com/sharin-sushi/V-Kara-Lists/assets/127638412/935dae1d-e564-4b65-a002-f927ec5280e8)<br>
