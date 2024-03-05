@@ -13,15 +13,29 @@ V-karaはその欠点を補い、歌の検索、視聴、布教までシーム�
 ただし、コンテンツの情報はユーザーによる入力が必要で、ユーザー同士で作り上げるDBのような立ち位置です。<br>
 - リポジトリ: [GitHub](https://github.com/sharin-sushi/V-Kara-Lists)<br>
 - サイトデモ動画: [YouTube](https://youtu.be/HunsO-8Eo7Q)<br>
+- 自己紹介+README+独走の仕方[Qiita](https://qiita.com/shari_susi/items/ed4a06518d29e5c87d77)←こちらで網羅しています
 
-### webアプリ主要ページ紹介
-- ※VTuber個別はURLが個別生成されるため、そのままブクマや布教できます 
+### 主要ページ
 
 | TOP | 全歌一覧 | VTuber個別 | データ入力 |
 |---|---|---|---|
 |<image src="https://github.com/sharin-sushi/0007test/assets/127638412/9f8224bc-28d1-4355-92cc-17d90e113192" width="220px"/>|<image src="https://github.com/sharin-sushi/0007test/assets/127638412/d219a34f-e00a-4031-88b7-fb2f6f31005b" width="220px"/><br><br><br>|<image src="https://github.com/sharin-sushi/0007test/assets/127638412/76243bc6-be19-4054-b7ce-ea91da0692ca" width="220px"/><br><br><br>|<image src="https://github.com/sharin-sushi/0007test/assets/127638412/822e3f3a-d532-4c9f-8806-9bc6a6582462" width="220px"/><br><br><br>|
 
-- レスポンシブ対応です。
+### 主要機能
+- 曲名をクリック
+ページ内の動画が切り替わり、その曲からスタート
+- 曲名の右のコピーアイコンクリック
+その動画、その曲のURLをクリップボードに保存
+- ドロップダウンと表
+選択/検索でき、表のfilterになる
+- 各VTuber専用URL
+VTuber個別ページはURLが個別生成される。
+そのままブクマや布教できる
+- データ入力/編集ページ
+ページ中央のラジオボタンで入力するコンテンツを選択
+既存コンテンツに紐づくデータを登録する際は、ドロップダウンで親データを選択する
+
+### レスポンシブ対応
 
 | 通常画面 | ハンバーガーメニュー |
 |:-:|:-:|
@@ -41,6 +55,7 @@ V-karaはその欠点を補い、歌の検索、視聴、布教までシーム�
 - その他
   - AWS(Fargate on ECS, ECR, EC2, RDS, ALB, Route53, CloudWatch, VPC)
   - Docker, Github,GitHub Acitons(CI), Postman, Figma(画面遷移図), draw.io(ER図, AWS構成図)
+  - Tailwind CSS
  
 ### 構成図
 
@@ -146,4 +161,4 @@ AWS構成図 <br />
 ## 備考
 - 今後の実装検討:issue[#74](https://github.com/sharin-sushi/V-Kara-Lists/issues/74)
 - 開発画像：isseue[#26](https://github.com/sharin-sushi/V-Kara-Lists/issues/26)
-- 自己紹介等少しだけ加筆し、Qiitaに[記事](https://qiita.com/shari_susi/items/ed4a06518d29e5c87d77)を投稿しました。
+- 自己紹介+README+独走の仕方[Qiita](https://qiita.com/shari_susi/items/ed4a06518d29e5c87d77)
