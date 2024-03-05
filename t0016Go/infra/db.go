@@ -59,7 +59,6 @@ func dbInit() database.SqlHandler {
 	user := os.Getenv("MYSQL_USER")
 	pw := os.Getenv("MYSQL_PASSWORD")
 	db_name := ""
-	// db_name := "migration_test" //migrationテスト用
 	port := "3306"
 	dbUrL := ""
 	path := ""
@@ -91,22 +90,6 @@ func dbInit() database.SqlHandler {
 	} else {
 		panic("failed to connect database")
 	}
-
-	// rows, err := gormDB.Raw("SHOW DATABASES").Rows()
-	// if err != nil {
-	// 	fmt.Printf("show databases get err: %v\n", err)
-	// }
-	// defer rows.Close()
-
-	// fmt.Printf("result of \"show databases\" is \n")
-	// for rows.Next() {
-	// 	var database string
-	// 	if err := rows.Scan(&database); err != nil {
-	// 		panic(err.Error())
-	// 	}
-	// 	fmt.Printf("%v\n", database)
-	// }
-	// fmt.Printf("That's all\n")
 
 	return sqlHandler
 }

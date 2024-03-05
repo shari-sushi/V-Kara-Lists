@@ -58,8 +58,8 @@ export const DropDownMovie = ({ posts, selectedVtuber, setSelectedMovie, clearMo
             isClearable={true}
             isSearchable={true}
             name="movie"
-            blurInputOnSelect={true}  //defaultでtrueなら不要。スマホでアクセスしないと確認できないと思う。
-            captureMenuScroll={true} //スマホ、タブレット用。使ってみてからt/f判断。
+            blurInputOnSelect={true}
+            captureMenuScroll={true}
             styles={DropStyle}
             options={movieOptions}
             onChange={option => {
@@ -98,12 +98,11 @@ export const DropDownAllMovie = ({ posts, setSelectedMovie, clearMovieHandler }:
             placeholder="動画タイトルを検索/選択"
             className="basic-single"
             classNamePrefix="select"
-            // value={""} //何を入れても選択したものが表示されないだけ
             isClearable={true}
             isSearchable={true}
             name="movie"
-            blurInputOnSelect={true}  //defaultでtrueなら不要。スマホでアクセスしないと確認できないと思う。
-            captureMenuScroll={true} //スマホ、タブレット用。使ってみてからt/f判断。
+            blurInputOnSelect={true}
+            captureMenuScroll={true}
             styles={DropStyle}
             options={movieOptions}
             onChange={option => {

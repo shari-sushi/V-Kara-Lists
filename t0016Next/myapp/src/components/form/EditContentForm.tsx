@@ -84,9 +84,7 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
     }
 
     const onSubmit = async (CrudData: CrudDate) => {
-        console.log("crudContentType", crudContentType)
         if (crudContentType === "vtuber") {
-            console.log("vtuber crud")
             try {
                 const reqBody: EditVtuber = {
                     VtuberId: selectedVtuber, //既存値

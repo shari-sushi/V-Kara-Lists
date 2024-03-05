@@ -97,7 +97,7 @@ func (interactor *FavoriteInteractor) UpdateKaraokeFavorite(fav domain.Favorite)
 	return err
 }
 
-// 以下、開発中
+// 使ってない？
 func (interactor *FavoriteInteractor) FindVtubersCreatedByListenerId(lid domain.ListenerId) ([]domain.Vtuber, error) {
 	fmt.Print("useCase/favorite_interactor.go \n")
 	x, err := interactor.FavoriteRepository.FindVtubersCreatedByListenerId(lid)

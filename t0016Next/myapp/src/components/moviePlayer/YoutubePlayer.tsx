@@ -110,7 +110,7 @@ export const YouTubePlayer = ({ videoId, start }: { videoId: string, start: numb
   }
 }
 
-//////////////////////////////////// 本来あるべき姿(バグなのか動かない…nocookieでなら動く) //////////////////////////////////
+///////////// 本来あるべき姿(バグなのか動かない…nocookieでなら動く) ///////////////
 type Options = React.ComponentProps<typeof YouTube>['opts'];
 
 type YoutubePlayerProps = {

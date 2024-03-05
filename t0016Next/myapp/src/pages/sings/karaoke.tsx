@@ -14,6 +14,8 @@ import { KaraokePagenatoinTable } from "@/components/table/Karaoke"
 import { DropDownVtuber } from '@/components/dropDown/Vtuber';
 import { DropDownMovie } from '@/components/dropDown/Movie';
 
+const pageName = "カラオケ"
+
 type TopPage = {
     posts: {
         vtubers: ReceivedVtuber[];
@@ -33,20 +35,8 @@ export default function SingsPage({ posts, isSignin }: TopPage) {
     const [currentMovieId, setCurrentMovieId] = useState<string>(primaryYoutubeUrl);
     const [start, setStart] = useState<number>(primaryYoutubeStartTime)
     const handleMovieClickYouTube = (url: string, start: number) => {
-        console.log("handleMovieClickYouTube")
-        // if (currentMovieId == ExtractVideoId(url)) {
-        // setStart(-1); //timeに変化が無いと受け付けてもらえないので、苦肉の策
-        // setStart(start);
-        // console.log("同")
-        // } else {
         setCurrentMovieId(ExtractVideoId(url));
-        // setStart(start);
-        //以下をonReady発火させられれば、ユーザー環境による差を少なくできるかも
-        // setStart(-1);
-        // setTimeout(function () {
         setStart(start);
-        // console.log("別")
-        // }, 1400); //短すぎるとエラーになる注意
     }
 
     const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
@@ -63,7 +53,7 @@ export default function SingsPage({ posts, isSignin }: TopPage) {
     }, [selectedVtuber, selectedMovie]);
 
     return (
-        <Layout pageName="カラオケ" isSignin={isSignin}>
+        <Layout pageName={pageName} isSignin={isSignin}>
             <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
                 <div className={`pt-6 flex flex-col items-center`}>
                     <div className={`flex`}>
@@ -132,19 +122,18 @@ const FilterKaraokesByParentContent = (karaokes: ReceivedKaraoke[], selectedVtub
 export async function getServerSideProps(context: ContextType) {
     const rawCookie = context.req.headers.cookie;
     const sessionToken = rawCookie?.split(';').find((cookie: string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];
-    console.log("sessionToken", sessionToken)
     let isSignin = false
     if (sessionToken) {
         isSignin = true
     }
-    // サーバーの証明書が認証されない自己証明書でもHTTPSリクエストを継続する
+    console.log("pageName, sessionToken, isSigni =", pageName, sessionToken, isSignin) //アクセス数記録のため
+
     const httpsAgent = new https.Agent({ rejectUnauthorized: false });
     const options: AxiosRequestConfig = {
         headers: {
-            'Cache-Control': 'no-store', //cache(キャッシュ)を無効にする様だが、必要性理解してない
             cookie: `auth-token=${sessionToken}`,
         },
-        withCredentials: true,  //HttpヘッダーにCookieを含める
+        withCredentials: true,
         httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
     };
 

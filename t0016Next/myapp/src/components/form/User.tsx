@@ -24,7 +24,6 @@ export const SigninForm = () => {
   type InputValues = LoginListener
   const onSubmit = async (data: InputValues) => {
     try {
-      console.log("data=", data);
       const response = await fetch(`${domain.backendHost}/users/login`, {
         method: 'PUT',
         credentials: "include",
@@ -116,7 +115,6 @@ export function SignupForm() {
   // errors：フォームフィールドのエラー情報を含むオブジェクト　　の３つを取得
   const onSubmit = async (data: InputValues) => {
     try {
-      console.log("data=", data);
       const response = await fetch(`${domain.backendHost}/users/signup`, {
         method: 'POST',
         credentials: "include",
