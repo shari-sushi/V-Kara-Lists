@@ -35,11 +35,9 @@ func (controller *Controller) CreateUser(c *gin.Context) {
 		})
 		return
 	}
-	// 稼動テスト用
-	// planEmail, err := common.DecryptFromAES(emailAES)
-	// fmt.Printf("planEmail:%v\n", planEmail)
 
-	if _, err := controller.UserInteractor.FindUserByEmail(emailAES); err == nil { //er==nilであってる。nilならリクエスト却下するから
+	//er==nilであってる。nilならリクエスト却下するから
+	if _, err := controller.UserInteractor.FindUserByEmail(emailAES); err == nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":   "error",
 			"message": "the E-mail address already in use",
@@ -111,7 +109,6 @@ func (controller *Controller) LogIn(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Printf("bindしたuser = %v \n", user)
 	emailAES, err := common.EncryptByAES(user.Email)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

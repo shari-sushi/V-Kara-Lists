@@ -7,14 +7,14 @@ import { domain } from '@/../env'
 import { Layout } from '@/components/layout/Layout'
 import { ToClickTW } from '@/styles/tailwiind';
 import type { ReceivedKaraoke, ReceivedMovie, ReceivedVtuber } from '@/types/vtuber_content';
-import type { ContextType } from '@/types/server'
 import { YouTubePlayer } from '@/components/moviePlayer/YoutubePlayer'
 import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
 import { KaraokePagenatoinTable } from "@/components/table/Karaoke"
 import { DropDownAllMovie } from '@/components/dropDown/Movie';
 import { NotFoundVtuber } from '@/components/layout/Main';
-import { useRouter } from 'next/router';
 import { GetServerSidePropsContext } from 'next';
+
+const pageName = "Vtuber特設ページ"
 
 type VtuberPage = {
     posts: {
@@ -29,7 +29,6 @@ export default function SingsPage({ posts, isSignin }: VtuberPage) {
     const movies = posts?.vtubers_movies || [] as ReceivedMovie[];
     const karaokes = posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[];
 
-    // ようつべ用
     const primaryYoutubeUrl = "kORHSmXcYNc" //船長　 
     const primaryYoutubeStartTime = ConvertStringToTime("00:08:29")
     const [currentMovieId, setCurrentMovieId] = useState<string>(primaryYoutubeUrl);
@@ -54,7 +53,7 @@ export default function SingsPage({ posts, isSignin }: VtuberPage) {
 
     if (movies.length == 0) {
         return (
-            <Layout pageName={`Vtuber特設ページ`} isSignin={isSignin}>
+            <Layout pageName={pageName} isSignin={isSignin}>
                 <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
                     <div className={`pt-6 flex flex-col items-center`}>
                         <div className={`flex`}>
@@ -84,7 +83,7 @@ export default function SingsPage({ posts, isSignin }: VtuberPage) {
     }
 
     return (
-        <Layout pageName={`Vtuber特設ページ`} isSignin={isSignin}>
+        <Layout pageName={`pageName`} isSignin={isSignin}>
             <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
                 <div className={`pt-6 flex flex-col items-center`}>
                     <div className={`flex`}>
@@ -145,23 +144,23 @@ const FilterKaraokesByUrl = (karaokes: ReceivedKaraoke[], selectedMovie: string)
 
 /////////////////////////////////////////////////////////////////////////////
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-    const kana = context.query.vtuber_kana;;
+    const kana = context.query.vtuber_kana;
 
     const rawCookie = context.req.headers.cookie;
     const sessionToken = rawCookie?.split(';').find((cookie: string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];
-    console.log("sessionToken", sessionToken)
     let isSignin = false
     if (sessionToken) {
         isSignin = true
     }
-    // サーバーの証明書が認証されない自己証明書でもHTTPSリクエストを継続する
+
+    console.log("pageName, kana, sessionToken, isSigni =", pageName, kana, sessionToken, isSignin) //アクセス数記録のため
+
     const httpsAgent = new https.Agent({ rejectUnauthorized: false });
     const options: AxiosRequestConfig = {
         headers: {
-            'Cache-Control': 'no-store', //cache(キャッシュ)を無効にする様だが、必要性理解してない
             cookie: `auth-token=${sessionToken}`,
         },
-        withCredentials: true,  //HttpヘッダーにCookieを含める
+        withCredentials: true,
         httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
     };
 

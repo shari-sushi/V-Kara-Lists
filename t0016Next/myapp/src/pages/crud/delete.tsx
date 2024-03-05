@@ -14,6 +14,8 @@ import { KaraokeDeleteTable } from '@/components/table/Karaoke'
 import { ToClickTW } from '@/styles/tailwiind'
 import { NotLoggedIn } from '@/components/layout/Main';
 
+const pageName = "コンテンツ削除"
+
 export const ToDeleteContext = React.createContext({} as {
     toDeleteVtuberId: number;
     setToDeleteVtuberId: React.Dispatch<React.SetStateAction<number>>;
@@ -41,7 +43,7 @@ type Mypage = {
 export const DeletePage = ({ posts, isSignin }: Mypage) => {
     if (!isSignin) {
         return (
-            <Layout pageName={"データベース削除"} isSignin={isSignin}>
+            <Layout pageName={pageName} isSignin={isSignin}>
                 <div>
                     < NotLoggedIn />
                 </div>
@@ -86,7 +88,7 @@ export const DeletePage = ({ posts, isSignin }: Mypage) => {
     }
 
     return (
-        <Layout pageName="データベース削除" isSignin={isSignin}>
+        <Layout pageName={pageName} isSignin={isSignin}>
             <ToDeleteContext.Provider
                 value={{
                     toDeleteVtuberId, setToDeleteVtuberId,
@@ -190,7 +192,6 @@ export function DeleteDecideButton({ posts, selectedVtuberId, selectedMovieUrl, 
     useEffect(() => {
         if (selectedVtuberId) {
             setCrudContentType("vtuber")
-            console.log("setCrudContentType(\"vtuber\")")
         }
     }, [selectedVtuberId])
     useEffect(() => {
@@ -203,7 +204,6 @@ export function DeleteDecideButton({ posts, selectedVtuberId, selectedMovieUrl, 
             setCrudContentType("karaoke")
         }
     }, [selectedKaraokeId])
-
 
     const axiosClient = axios.create({
         baseURL: `${domain.backendHost}/vcontents`,
@@ -342,22 +342,19 @@ export function DeleteDecideButton({ posts, selectedVtuberId, selectedMovieUrl, 
 export async function getServerSideProps(context: ContextType) {
     const rawCookie = context.req.headers.cookie;
 
-    // Cookieが複数ある場合に必要？
-    // cookie.trim()   cookieの文字列の前後の全ての空白文字(スペース、タブ、改行文字等)を除去する
     const sessionToken = rawCookie?.split(';').find((cookie: string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];
     let isSignin = false
     if (sessionToken) {
         isSignin = true
     }
+    console.log("pageName, sessionToken, isSigni =", pageName, sessionToken, isSignin) //アクセス数記録のため
 
-    // サーバーの証明書が認証されない自己証明書でもHTTPSリクエストを継続する
     const httpsAgent = new https.Agent({ rejectUnauthorized: false });
     const options: AxiosRequestConfig = {
         headers: {
-            'Cache-Control': 'no-store', //cache(キャッシュ)を無効にする様だが、必要性理解してない
             cookie: `auth-token=${sessionToken}`,
         },
-        withCredentials: true,  //HttpヘッダーにCookieを含める
+        withCredentials: true,
         httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
     };
 

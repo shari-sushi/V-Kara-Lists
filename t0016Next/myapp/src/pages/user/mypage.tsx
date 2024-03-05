@@ -11,7 +11,11 @@ import { MovieTable } from '@/components/table/Movie'
 import { KaraokePagenatoinTable } from '@/components/table/Karaoke'
 import { YouTubePlayer } from '@/components/moviePlayer/YoutubePlayer'
 import { ExtractVideoId } from '@/components/Conversion'
+import { ContextType } from '@/types/server'
+import { NotLoggedIn } from "@/components/layout/Main";
 import { ToClickTW } from '@/styles/tailwiind'
+
+const pageName = "MyPage"
 
 type Mypage = {
   data: {
@@ -25,7 +29,7 @@ type Mypage = {
 const MyPage = ({ data, isSignin }: Mypage) => {
   if (!isSignin) {
     return (
-      <Layout pageName={"MyPage"} isSignin={isSignin}>
+      <Layout pageName={pageName} isSignin={isSignin}>
         <div>
           < NotLoggedIn />
         </div>
@@ -36,34 +40,23 @@ const MyPage = ({ data, isSignin }: Mypage) => {
   const vtubers = data?.vtubers_u_created || [] as ReceivedVtuber[];
   const movies = data?.vtubers_movies_u_created || [] as ReceivedMovie[];
   const karaokes = data?.vtubers_movies_karaokes_u_created || [] as ReceivedKaraoke[];
-  const [currentMovieId, setCurrentMovieId] = useState<string>("Bjsn-QpwmvU13584");
-  const [start, setStart] = useState<number>((13584))
+  const [currentMovieId, setCurrentMovieId] = useState<string>("Bjsn-QpwmvU"); //こむぎ ワールドイズマイン
+  const [start, setStart] = useState<number>((8091))
 
   const handleMovieClickYouTube = (url: string, start: number) => {
-    // console.log("handleMovieClickYouTube")
-    // if (currentMovieId == ExtractVideoId(url)) {
-    // setStart(-1);
-    // setStart(start);
-    // console.log("同じ")
-    // } else {
     setCurrentMovieId(ExtractVideoId(url));
-    // setTimeout(function () {
-    // setStart(-1);
     setStart(start);
-    // console.log("別")
-    // }, 1300);
-    // }
   };
   const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
   const handleMovieClickYouTubeDemoMovie = () => {
-    const demoUrl = "4JIbhFoOMOc"
+    const demoUrl = "HunsO-8Eo7Q"
     const startTimeCreateOfDemo = 130
     setCurrentMovieId(demoUrl);
     setStart(startTimeCreateOfDemo);
   };
 
   return (
-    <Layout pageName={"MyPage"} isSignin={isSignin}>
+    <Layout pageName={pageName} isSignin={isSignin}>
       <div className="flex flex-col max-w-[1000px] justify-ite">
         <div className="flex mx-auto mt-6">
           <YouTubePlayer videoId={currentMovieId} start={start} />
@@ -150,28 +143,21 @@ const MyPage = ({ data, isSignin }: Mypage) => {
 export default MyPage;
 
 /////////////////////////////////////////////////////////////////////////////
-import { ContextType } from '@/types/server'
-import { NotLoggedIn } from "@/components/layout/Main";
-
 export async function getServerSideProps(context: ContextType) {
   const rawCookie = context.req.headers.cookie;
-
-  // Cookieが複数ある場合に必要？
-  // cookie.trim()   cookieの文字列の前後の全ての空白文字(スペース、タブ、改行文字等)を除去する
   const sessionToken = rawCookie?.split(';').find((cookie: string) => cookie.trim().startsWith('auth-token='))?.split('=')[1];
   let isSignin = false
   if (sessionToken) {
     isSignin = true
   }
+  console.log("pageName, sessionToken, isSigni =", pageName, sessionToken, isSignin) //アクセス数記録のため
 
-  // サーバーの証明書が認証されない自己証明書でもHTTPSリクエストを継続する
   const httpsAgent = new https.Agent({ rejectUnauthorized: false });
   const options: AxiosRequestConfig = {
     headers: {
-      'Cache-Control': 'no-store', //cache(キャッシュ)を無効にする様だが、必要性理解してない
       cookie: `auth-token=${sessionToken}`,
     },
-    withCredentials: true,  //HttpヘッダーにCookieを含める
+    withCredentials: true,
     httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent
   };
 

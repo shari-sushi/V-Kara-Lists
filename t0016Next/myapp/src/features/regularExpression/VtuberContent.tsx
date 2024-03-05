@@ -5,7 +5,6 @@ const vtuberKanaPattern = /^[a-z]+(_[a-z]*)?$/;
 const introMovieUrlPattern = /^(https?:\/\/)?(www\.)?youtube\.com\/watch\?v=[a-zA-Z0-9_\-]{11}(&t=[0-9]+[s]?)?$/;
 const movieTitlePattern = /^.{2,100}$/;
 const MovieUrlPattern = /^(https?:\/\/)?(www\.)?youtube\.com\/watch\?v=[a-zA-Z0-9_\-]{11}$/;
-// const VideoIdPattern = /^[a-zA-Z0-9]{11}$/;
 const songNamePattern = /^.{2,100}$/;
 const singStartPattern = /^[0-9]{2}:[0-9]{2}:[0-9]{2}$/;
 

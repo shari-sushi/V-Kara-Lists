@@ -24,7 +24,6 @@ func (controller *Controller) GetJoinVtubersMoviesKaraokes(c *gin.Context) {
 		return
 	}
 	myFav, err := controller.FavoriteInteractor.FindFavoritesCreatedByListenerId(listenerId)
-	fmt.Printf("myFav=%v\n", myFav)
 	transmitKaraokes := common.AddIsFavToKaraokeWithFav(VtsMosKasWithFav, myFav)
 
 	c.JSON(http.StatusOK, gin.H{
@@ -62,7 +61,6 @@ func (controller *Controller) ReturnVtuberPageData(c *gin.Context) {
 		return
 	}
 	myFav, err := controller.FavoriteInteractor.FindFavoritesCreatedByListenerId(listenerId)
-	// fmt.Printf("myFav= \n %v\n", myFav)
 	TransmitKaraokes := common.AddIsFavToKaraokeWithFav(VtsMosKasWithFavofVtu, myFav)
 
 	c.JSON(http.StatusOK, gin.H{
@@ -117,7 +115,6 @@ func (controller *Controller) CreateMovie(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Printf("1-1:*値よな？ %v \n", movie.VtuberId) //4
 
 	movie.MovieInputterId = listenerId
 	if err := controller.VtuberContentInteractor.CreateMovie(movie); err != nil {
@@ -291,7 +288,7 @@ func (controller *Controller) DeleteOfPage(c *gin.Context) {
 		fmt.Print("err:", err)
 		errs = append(errs, err)
 	}
-	// listenerId取得
+
 	listenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Need Login"})
@@ -302,7 +299,7 @@ func (controller *Controller) DeleteOfPage(c *gin.Context) {
 	if err != nil {
 		errs = append(errs, err)
 	}
-	fmt.Printf("myFav= \n %v\n", myFav)
+
 	TransmitMovies := common.AddIsFavToMovieWithFav(createdVtsMos, myFav)
 	TransmitKaraokes := common.AddIsFavToKaraokeWithFav(createdVtsMosKas, myFav)
 	c.JSON(http.StatusOK, gin.H{
@@ -469,7 +466,7 @@ func (controller *Controller) ReturnTopPageData(c *gin.Context) {
 		return
 	}
 	myFav, err := controller.FavoriteInteractor.FindFavoritesCreatedByListenerId(listenerId)
-	fmt.Printf("myFav= \n %v\n", myFav)
+
 	TransmitMovies := common.AddIsFavToMovieWithFav(VtsMosWithFav, myFav)
 	TransmitKaraokes := common.AddIsFavToKaraokeWithFav(VtsMosKasWithFav, myFav)
 	TransmitLatestKaraoes := common.AddIsFavToKaraokeWithFav(LatestVtsMosKasWithFav, myFav)
@@ -504,7 +501,7 @@ func (controller *Controller) ReturnOriginalSongPage(c *gin.Context) {
 
 }
 
-// dropdown用かな？
+// dropdown用
 func (controller *Controller) GetVtuverMovieKaraoke(c *gin.Context) {
 	var errs []error
 	allVts, err := controller.VtuberContentInteractor.GetVtubers()
@@ -523,49 +520,6 @@ func (controller *Controller) GetVtuverMovieKaraoke(c *gin.Context) {
 		"vtubers":                 allVts,
 		"vtubers_movies":          allMos,
 		"vtubers_movies_karaokes": allKas,
-		"error":                   errs,
-	})
-}
-
-// 管理者用　全データ取得のイメージ、とにかくデータを網羅して確認したいとき
-func (controller *Controller) Enigma(c *gin.Context) {
-	var errs []error
-	allVts, err := controller.VtuberContentInteractor.GetVtubers()
-	if err != nil {
-		errs = append(errs, err)
-	}
-	allMos, err := controller.VtuberContentInteractor.GetMovies()
-	if err != nil {
-		errs = append(errs, err)
-	}
-	allKas, err := controller.VtuberContentInteractor.GetKaraokes()
-	if err != nil {
-		errs = append(errs, err)
-	}
-	if err != nil {
-		errs = append(errs, err)
-	}
-	allVtsMos, err := controller.VtuberContentInteractor.GetVtubersMovies()
-	if err != nil {
-		errs = append(errs, err)
-
-	}
-
-	allVtsMosKas, err := controller.VtuberContentInteractor.GetVtubersMoviesKaraokes()
-	if err != nil {
-		errs = append(errs, err)
-	}
-	all, err := controller.VtuberContentInteractor.GetVtubersMoviesKaraokes()
-	if err != nil {
-		errs = append(errs, err)
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"vtubers":                 allVts,
-		"movies":                  allMos,
-		"karaokes":                allKas,
-		"vtubers_movies":          allVtsMos,
-		"vtubers_movies_karaokes": allVtsMosKas,
-		"all":                     all,
 		"error":                   errs,
 	})
 }
@@ -647,4 +601,4 @@ func (controller *Controller) ReturnTestpage(c *gin.Context) {
 
 }
 
-var UpdateData = "2024/02/29 1418"
+var UpdateData = "2024/03/05 20"
