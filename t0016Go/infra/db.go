@@ -6,11 +6,11 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
-	domain "github.com/sharin-sushi/0016go_next_relation/domain"
-	"github.com/sharin-sushi/0016go_next_relation/interfaces/database"
-
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+
+	domain "github.com/sharin-sushi/0016go_next_relation/domain"
+	"github.com/sharin-sushi/0016go_next_relation/interfaces/database"
 )
 
 type SqlHandler struct {
@@ -72,7 +72,7 @@ func dbInit() database.SqlHandler {
 		db_name = os.Getenv("AWS_DATABASE")
 	} else if (goEnv == "" && isDockerCompose == "true") || (goEnv == "development" && isDockerCompose == "") {
 		// ローカルのdocker上(compose使用) or  VSCodeで起動
-		dbUrL = "localhost"
+		dbUrL = "db"
 		db_name = os.Getenv("MYSQL_DATABASE")
 	}
 
