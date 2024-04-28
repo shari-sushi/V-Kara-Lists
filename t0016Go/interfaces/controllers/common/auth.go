@@ -13,31 +13,15 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
-var hostDomain string
-
-func getEnvHostDomain() {
-	goEnv := os.Getenv("GO_ENV") //ローカルpc上でのみ設定
-	isDockerCompose := os.Getenv("IS_DOCKER_COMPOSE")
-	if goEnv == "" && isDockerCompose == "" {
-		//クラウド環境
-		hostDomain = "v-karaoke.com"
-	} else if goEnv == "" && isDockerCompose == "true" {
-		// ローカルのdocker上(compose使用)
-		hostDomain = "localhost"
-	} else if goEnv == "development" && isDockerCompose == "" {
-		//VSCodeで起動
-		hostDomain = "localhost"
-	}
-}
-
 func SetListenerIdintoCookie(c *gin.Context, ListenerId domain.ListenerId) (err error) {
 	var token string
 	token, err = GenerateToken(int(ListenerId))
 	if err != nil {
 		return
 	}
-	cookieMaxAge := 60 * 60 * 12 * 12
-	getEnvHostDomain()
+	// TODO time使う
+	cookieMaxAge := 60 * 60 * 24 * 7
+	hostDomain := GetEnvHostDomain()
 	cookie := &http.Cookie{
 		Name:     "auth-token",
 		Value:    token,
@@ -55,7 +39,7 @@ func SetListenerIdintoCookie(c *gin.Context, ListenerId domain.ListenerId) (err 
 }
 
 func UnsetAuthCookie(c *gin.Context) (err error) {
-	getEnvHostDomain()
+	hostDomain := GetEnvHostDomain()
 	cookie := &http.Cookie{
 		Name:     "auth-token",
 		Value:    "",
@@ -73,6 +57,7 @@ func UnsetAuthCookie(c *gin.Context) (err error) {
 }
 
 func TakeListenerIdFromJWT(c *gin.Context) (domain.ListenerId, error) {
+	// TODO err処理
 	tokenString, _ := c.Cookie("auth-token")
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("SECRET_KEY")), nil
@@ -94,12 +79,16 @@ func TakeListenerIdFromJWT(c *gin.Context) (domain.ListenerId, error) {
 			return 0, fmt.Errorf("token has no Listener Id")
 		}
 	}
+	// TODO err分岐処理する
+
+	// TODO 早期リターンさせる
 	return domain.ListenerId(listenerId), err
 }
 
 func GenerateToken(ListenerId int) (string, error) {
 	secretKey := os.Getenv("SECRET_KEY")
-	tokenLifeTime := 60 * 60 * 12
+	// TODO
+	tokenLifeTime := 60 * 60 * 24 * 7
 
 	claims := jwt.MapClaims{
 		"listener_id": ListenerId,
@@ -127,10 +116,11 @@ func ParseToken(tokenString string) (*jwt.Token, error) {
 }
 
 func ValidateSignup(m *domain.Listener) error {
+	fmt.Println()
 	err := validation.ValidateStruct(m,
 		validation.Field(&m.ListenerName,
-			validation.Required.Error("Name is requred"),
-			validation.Length(2, 20).Error("Name needs 2~20 cahrs"),
+			validation.Required.Error("Name is required"),
+			validation.Length(2, 20).Error("Name needs 2 ~ 20 chars"),
 		),
 		validation.Field(&m.Email,
 			validation.Required.Error("Email is required"),

@@ -2,9 +2,9 @@
 
 const vtuberNamePattern = /^.{2,100}$/;
 const vtuberKanaPattern = /^[a-z]+(_[a-z]*)?$/;
-const introMovieUrlPattern = /^(https?:\/\/)?(www\.)?youtube\.com\/watch\?v=[a-zA-Z0-9_\-]{11}(&t=[0-9]+[s]?)?$/;
+const introMovieUrlPattern = /^www\.youtube\.com\/watch\?v=[a-zA-Z0-9_\-]{11}(&t=[0-9]+[s]?)?$/;
 const movieTitlePattern = /^.{2,100}$/;
-const MovieUrlPattern = /^(https?:\/\/)?(www\.)?youtube\.com\/watch\?v=[a-zA-Z0-9_\-]{11}$/;
+const MovieUrlPattern = /^www\.youtube\.com\/watch\?v=[a-zA-Z0-9_\-]{11}$/;
 const songNamePattern = /^.{2,100}$/;
 const singStartPattern = /^[0-9]{2}:[0-9]{2}:[0-9]{2}$/;
 
@@ -36,7 +36,7 @@ export const ValidateCreate = {
         pattern: {
             value: new RegExp(`(${introMovieUrlPattern.source})`),
             // value: new RegExp(`(${YouTubeUrlPattern.source})|(${VideoIdPattern.source})`),
-            message: "www.youtube.com/watch?v=XxxXxxXxxXx の形式で入力してください。",
+            message: "www.youtube.com/watch?v=xxx の形式で入力してください。(xxx部は任意の11文字)",
             // message: "https://www.youtube.com/watch?v=OB8pMKU3uxo \n www.youtube.com/watch?v=OB8pMKU3uxo \n v=OB8pMKU3uxo \n のいずれかの形式で入力してください。",
         },
     },

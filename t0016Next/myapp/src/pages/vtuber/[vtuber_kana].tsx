@@ -13,8 +13,9 @@ import { KaraokePagenatoinTable } from "@/components/table/Karaoke"
 import { DropDownAllMovie } from '@/components/dropDown/Movie';
 import { NotFoundVtuber } from '@/components/layout/Main';
 import { GetServerSidePropsContext } from 'next';
+import { generateRandomNumber } from '@/components/SomeFunction';
 
-const pageName = "Vtuber特設ページ"
+const pageName = "Vtuber特設ページ" // VTuberの名前になるように後で代入している
 
 type VtuberPage = {
     posts: {
@@ -28,28 +29,34 @@ type VtuberPage = {
 export default function SingsPage({ posts, isSignin }: VtuberPage) {
     const movies = posts?.vtubers_movies || [] as ReceivedMovie[];
     const karaokes = posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[];
+    const playKaraokeNumber = generateRandomNumber(karaokes.length)
 
-    const primaryYoutubeUrl = "kORHSmXcYNc" //船長　 
-    const primaryYoutubeStartTime = ConvertStringToTime("00:08:29")
+    const url = "www.youtube.com/watch?v=kORHSmXcYNc"
+    const stringTime = "00:08:29"
+    const primaryYoutubeUrl = ExtractVideoId(karaokes[playKaraokeNumber]?.MovieUrl || url)
+    const primaryYoutubeStartTime = ConvertStringToTime(karaokes[playKaraokeNumber]?.SingStart || stringTime)
+
     const [currentMovieId, setCurrentMovieId] = useState<string>(primaryYoutubeUrl);
     const [start, setStart] = useState<number>(primaryYoutubeStartTime)
+
     const handleMovieClickYouTube = (url: string, start: number) => {
         setCurrentMovieId(ExtractVideoId(url));
         setStart(start);
     }
 
-    const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
 
-    const [selectedVtuber, setSelectedVtuber] = useState<number>(0);
     const [selectedMovie, setSelectedMovie] = useState<string>("");
     const [filteredKaraokes, setFilteredKarakes] = useState<ReceivedKaraoke[]>([]);
-    const clearMovieHandler = () => {
-    };
 
     useEffect(() => {
         const filterdkaraokes = FilterKaraokesByUrl(karaokes, selectedMovie)
         setFilteredKarakes(filterdkaraokes)
-    }, [selectedVtuber, selectedMovie]);
+    }, [selectedMovie]);
+
+    // propsとして必要
+    const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
+    const clearMovieHandler = () => {
+    };
 
     if (movies.length == 0) {
         return (
@@ -82,8 +89,9 @@ export default function SingsPage({ posts, isSignin }: VtuberPage) {
         )
     }
 
+
     return (
-        <Layout pageName={`pageName`} isSignin={isSignin}>
+        <Layout pageName={`${karaokes[0].VtuberName}`} isSignin={isSignin}>
             <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
                 <div className={`pt-6 flex flex-col items-center`}>
                     <div className={`flex`}>

@@ -121,10 +121,11 @@ type YoutubePlayerProps = {
   windowSize: { width: number; height: number; }
 };
 
-const onPlayerReady = (event: { target: YT.Player }) => {
-  // access to player in all event handlers via event.target
-  event.target.pauseVideo();
-}
+// const onPlayerReady = (event: { target: YT.Player }) => {
+// access to player in all event handlers via event.target
+// event.target.pauseVideo();
+// }
+// onReady = onPlayerReady,
 
 // 単一再生
 export const PreYouTubePlayer: React.FC<YoutubePlayerProps> = ({
@@ -133,21 +134,22 @@ export const PreYouTubePlayer: React.FC<YoutubePlayerProps> = ({
     // width: 640, height: 360,
     playerVars: {
       autoplay: 1,
+      // playing: 1,
       start: start,
       // end:,
       playsinline: 1,
       // mute: 1,
-      loop: 1,
+      // loop: 1,
     },
     host: 'https://www.youtube-nocookie.com'
   },
 
-  onReady = onPlayerReady,
 }) => {
   return (
     <YouTube
       videoId={videoId}
-      opts={opts} onReady={onReady}
+      opts={opts}
+    //  onReady={onReady}
     />
   );
 };
