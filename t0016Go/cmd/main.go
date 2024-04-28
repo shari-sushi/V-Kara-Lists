@@ -41,16 +41,8 @@ func main() {
 
 	infra.Routing(r)
 
-	env := common.ReturnEvnCloudorLocal()
-	var host string
-	if env == "on cloud" {
-		//クラウド環境
-		// host = ""の状態でok
-	} else if env == "on local" {
-		// ローカルのdocker上(compose使用) or  VSCodeで起動
-		// ローカルのファイアーウォール対策
-		host = "localhost"
-	}
+	host := common.GetHostByENV()
+
 	r.Run(host + ":8080")
 }
 

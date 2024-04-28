@@ -36,7 +36,8 @@ func SetListenerIdintoCookie(c *gin.Context, ListenerId domain.ListenerId) (err 
 	if err != nil {
 		return
 	}
-	cookieMaxAge := 60 * 60 * 12 * 12
+	// TODO time使う
+	cookieMaxAge := 60 * 60 * 24 * 7
 	getEnvHostDomain()
 	cookie := &http.Cookie{
 		Name:     "auth-token",
@@ -73,6 +74,7 @@ func UnsetAuthCookie(c *gin.Context) (err error) {
 }
 
 func TakeListenerIdFromJWT(c *gin.Context) (domain.ListenerId, error) {
+	// TODO err処理
 	tokenString, _ := c.Cookie("auth-token")
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("SECRET_KEY")), nil
@@ -94,12 +96,16 @@ func TakeListenerIdFromJWT(c *gin.Context) (domain.ListenerId, error) {
 			return 0, fmt.Errorf("token has no Listener Id")
 		}
 	}
+	// TODO err分岐処理する
+
+	// TODO 早期リターンさせる
 	return domain.ListenerId(listenerId), err
 }
 
 func GenerateToken(ListenerId int) (string, error) {
 	secretKey := os.Getenv("SECRET_KEY")
-	tokenLifeTime := 60 * 60 * 12
+	// TODO
+	tokenLifeTime := 60 * 60 * 24 * 7
 
 	claims := jwt.MapClaims{
 		"listener_id": ListenerId,
@@ -129,8 +135,8 @@ func ParseToken(tokenString string) (*jwt.Token, error) {
 func ValidateSignup(m *domain.Listener) error {
 	err := validation.ValidateStruct(m,
 		validation.Field(&m.ListenerName,
-			validation.Required.Error("Name is requred"),
-			validation.Length(2, 20).Error("Name needs 2~20 cahrs"),
+			validation.Required.Error("Name is required"),
+			validation.Length(2, 20).Error("Name needs 2 ~ 20 chars"),
 		),
 		validation.Field(&m.Email,
 			validation.Required.Error("Email is required"),

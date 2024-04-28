@@ -97,7 +97,7 @@ func (controller *Controller) LogicalDeleteUser(c *gin.Context) {
 	}
 	c.SetCookie("auth-token", "none", -1, "/", "localhost", false, true)
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Successfully Withdrawn. You can restore  ur acc. within 60 days.",
+		"message": "Successfully Withdrawn. You can restore ur acc. within 60 days.",
 	})
 }
 

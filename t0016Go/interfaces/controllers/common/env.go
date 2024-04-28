@@ -9,22 +9,27 @@ import (
 	"github.com/sharin-sushi/0016go_next_relation/domain"
 )
 
-var goEnv = os.Getenv("GO_ENV") //ローカルpc上でのみ設定
+var goEnv = os.Getenv("GO_ENV")                      //ローカルpc上でのみ設定
+var isDockerCompose = os.Getenv("IS_DOCKER_COMPOSE") //docckercompos.ymlにのみ記載
+
+var isOnCloud = (goEnv == "" && isDockerCompose == "")
+var isOnLoclaWithDockerCompose = (goEnv == "" && isDockerCompose == "true")
+var isOnLoclaWithOutDockerCompose = (goEnv == "development" && isDockerCompose == "")
+var isOnLocal = (isOnLoclaWithDockerCompose || isOnLoclaWithOutDockerCompose)
 
 func returnDetailEnv() string {
 	var env string
-	isDockerCompose := os.Getenv("IS_DOCKER_COMPOSE") //docckercompos.ymlにのみ記載
-	if goEnv == "" && isDockerCompose == "" {
+	if isOnCloud {
 		//クラウド環境
 		fmt.Println("クラウド環境で起動")
 		env = "on cloud"
 		envCheck(goEnv, isDockerCompose)
-	} else if goEnv == "" && isDockerCompose == "true" {
+	} else if isOnLoclaWithDockerCompose {
 		// ローカルのdocker上(compose使用)
 		fmt.Println("ローカルのdockerコンテナ内で起動")
 		env = "on local with docker-copmpose"
 		envCheck(goEnv, isDockerCompose)
-	} else if goEnv == "development" && isDockerCompose == "" {
+	} else if isOnLoclaWithOutDockerCompose {
 		//VSCodeで起動
 		fmt.Println("VSCodeで起動。godotenv.Load使用")
 		err := godotenv.Load("../.env")
@@ -45,20 +50,18 @@ func envCheck(goEnv, isDockerCompose string) {
 	fmt.Printf("goEnv == %v && isDocker == %v \n", goEnv, isDockerCompose)
 
 	guest := os.Getenv("GUEST_USER_NAME")
-	fmt.Printf("GUEST_USER_NAME=%v \n", guest)
+	fmt.Printf("環境変数の取得が成功したか：%v\n", guest == "guest")
 }
 
-func ReturnEvnCloudorLocal() string {
-	isDockerCompose := os.Getenv("IS_DOCKER_COMPOSE")
-	var env string
-	if goEnv == "" && isDockerCompose == "" {
-		//クラウド環境
-		env = "on cloud"
-	} else if (goEnv == "" && isDockerCompose == "true") || (goEnv == "development" && isDockerCompose == "") {
-		// ローカルのdocker上(compose使用) or  VSCodeで起動
-		env = "on local"
+func GetHostByENV() string {
+	var host string
+	if isOnCloud {
+		host = ""
 	}
-	return env
+	if isOnLocal {
+		host = "localhost:"
+	}
+	return host
 }
 
 func GetGuestListenerId() domain.ListenerId {
