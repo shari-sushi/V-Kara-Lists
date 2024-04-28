@@ -16,29 +16,27 @@ import (
 var bcryotCost int
 var aesKey []byte
 var aesIv []byte
+var costString string
+
+func initAesEnv() {
+	fmt.Println("sart to initAesEnv")
+	costString = os.Getenv("BCRYPT_COST")
+	aesKey = []byte(os.Getenv("AES_KEY"))
+	aesIv, _ = hex.DecodeString(os.Getenv("AES_IV"))
+}
 
 func init() {
-	var costString string
-
-	env := GetHostByENV()
-	if env == "on cloud" {
-		costString = os.Getenv("BCRYPT_COST")
-		aesKey = []byte(os.Getenv("AES_KEY"))
-		aesIv, _ = hex.DecodeString(os.Getenv("AES_IV"))
-	} else if env == "on local" {
-		err := godotenv.Load("../.env")
-		if err == nil {
-			costString = os.Getenv("BCRYPT_COST")
-			aesKey = []byte(os.Getenv("AES_KEY"))
-			aesIv, _ = hex.DecodeString(os.Getenv("AES_IV"))
-			fmt.Println("sucussesly got .env file by godotenv. and retried os.Getenv")
-		} else {
-			fmt.Println("failed to get .env file by godotenv")
-		}
-	} else {
-		fmt.Printf("interfaces/controllers/common, env err \n")
+	var err error
+	fmt.Println("start to godotenc.Load")
+	if err = godotenv.Load("../.env"); err == nil {
+		fmt.Println("failed to godotenv at init() in cryptgo (on Cloud)")
 	}
-	bcryotCost, _ = strconv.Atoi(costString)
+	initAesEnv()
+
+	bcryotCost, err = strconv.Atoi(costString)
+	if err != nil {
+		fmt.Printf("failed to convert to bcryptCost. err:%v\n", err)
+	}
 }
 
 // password
@@ -59,14 +57,14 @@ func EncryptByAES(plain string) (encrypted string, err error) {
 
 	block, err := aes.NewCipher(aesKey)
 	if err != nil {
-		return "err of encrypt to aes:", err
+		return "", err
 	}
 	padded := pkcs7Pad(bytePlain)
 	byteEncrypted := make([]byte, len(padded))
 
 	cbcEncrypter := cipher.NewCBCEncrypter(block, aesIv)
 	cbcEncrypter.CryptBlocks(byteEncrypted, padded)
-	convertedHexString := hex.EncodeToString(byteEncrypted) // 9361c5df196aaef2fb621b66c18657b7
+	convertedHexString := hex.EncodeToString(byteEncrypted)
 	encrypted = convertedHexString
 
 	return encrypted, nil
