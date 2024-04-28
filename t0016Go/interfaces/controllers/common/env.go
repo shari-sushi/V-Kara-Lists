@@ -17,6 +17,15 @@ var isOnLoclaWithDockerCompose = (goEnv == "" && isDockerCompose == "true")
 var isOnLoclaWithOutDockerCompose = (goEnv == "development" && isDockerCompose == "")
 var isOnLocal = (isOnLoclaWithDockerCompose || isOnLoclaWithOutDockerCompose)
 
+func GetEnvHostDomain() string {
+	if isOnCloud {
+		return "v-karaoke.com"
+	} else if isOnLocal {
+		return "localhost"
+	}
+	return "localhost" // 環境変数用意してない人でも動くように
+}
+
 func returnDetailEnv() string {
 	var env string
 	if isOnCloud {
@@ -59,7 +68,7 @@ func GetHostByENV() string {
 		host = ""
 	}
 	if isOnLocal {
-		host = "localhost:"
+		host = "localhost"
 	}
 	return host
 }
