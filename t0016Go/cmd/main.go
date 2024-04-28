@@ -41,7 +41,7 @@ func main() {
 
 	infra.Routing(r)
 
-	host := common.GetHostByENV()
+	host := common.GetEnvHostDomain()
 
 	r.Run(host + ":8080")
 }

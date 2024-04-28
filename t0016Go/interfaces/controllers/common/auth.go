@@ -13,23 +13,6 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
-var hostDomain string
-
-func getEnvHostDomain() {
-	goEnv := os.Getenv("GO_ENV") //ローカルpc上でのみ設定
-	isDockerCompose := os.Getenv("IS_DOCKER_COMPOSE")
-	if goEnv == "" && isDockerCompose == "" {
-		//クラウド環境
-		hostDomain = "v-karaoke.com"
-	} else if goEnv == "" && isDockerCompose == "true" {
-		// ローカルのdocker上(compose使用)
-		hostDomain = "localhost"
-	} else if goEnv == "development" && isDockerCompose == "" {
-		//VSCodeで起動
-		hostDomain = "localhost"
-	}
-}
-
 func SetListenerIdintoCookie(c *gin.Context, ListenerId domain.ListenerId) (err error) {
 	var token string
 	token, err = GenerateToken(int(ListenerId))
@@ -38,7 +21,7 @@ func SetListenerIdintoCookie(c *gin.Context, ListenerId domain.ListenerId) (err 
 	}
 	// TODO time使う
 	cookieMaxAge := 60 * 60 * 24 * 7
-	getEnvHostDomain()
+	hostDomain := GetEnvHostDomain()
 	cookie := &http.Cookie{
 		Name:     "auth-token",
 		Value:    token,
@@ -56,7 +39,7 @@ func SetListenerIdintoCookie(c *gin.Context, ListenerId domain.ListenerId) (err 
 }
 
 func UnsetAuthCookie(c *gin.Context) (err error) {
-	getEnvHostDomain()
+	hostDomain := GetEnvHostDomain()
 	cookie := &http.Cookie{
 		Name:     "auth-token",
 		Value:    "",
@@ -133,6 +116,7 @@ func ParseToken(tokenString string) (*jwt.Token, error) {
 }
 
 func ValidateSignup(m *domain.Listener) error {
+	fmt.Println()
 	err := validation.ValidateStruct(m,
 		validation.Field(&m.ListenerName,
 			validation.Required.Error("Name is required"),
