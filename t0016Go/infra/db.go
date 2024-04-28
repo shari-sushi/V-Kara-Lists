@@ -66,13 +66,16 @@ func dbInit() database.SqlHandler {
 	isDockerCompose := os.Getenv("IS_DOCKER_COMPOSE")
 	goEnv := os.Getenv("GO_ENV")
 
-	if goEnv == "" && isDockerCompose == "" {
+	isOnCloud := goEnv == "" && isDockerCompose == ""
+
+	if isOnCloud {
 		//クラウド環境
 		dbUrL = os.Getenv("RDS_END_PIONT")
 		db_name = os.Getenv("AWS_DATABASE")
 	} else if (goEnv == "" && isDockerCompose == "true") || (goEnv == "development" && isDockerCompose == "") {
 		// ローカルのdocker上(compose使用) or  VSCodeで起動
 		dbUrL = "db"
+		user = "root" //応急処置
 		db_name = os.Getenv("MYSQL_DATABASE")
 	}
 

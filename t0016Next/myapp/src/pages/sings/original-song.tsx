@@ -20,8 +20,8 @@ type PostsAndCheckSignin = {
 export default function SingsPage({ posts, isSignin }: PostsAndCheckSignin) {
     const karaokes = posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[];
 
-    const primaryYoutubeUrl = "5WzeYsoGCZc" //船長　kORHSmXcYNc, 00:08:29
-    const primaryYoutubeStartTime = ConvertStringToTime("00:30:33")
+    const primaryYoutubeUrl = "HcpFGZNusBw" //船長　kORHSmXcYNc, 00:08:29
+    const primaryYoutubeStartTime = ConvertStringToTime("")
     const [currentMovieId, setCurrentMovieId] = useState<string>(primaryYoutubeUrl);
     const [start, setStart] = useState<number>(primaryYoutubeStartTime)
     const handleMovieClickYouTube = (url: string, start: number) => {
@@ -37,6 +37,8 @@ export default function SingsPage({ posts, isSignin }: PostsAndCheckSignin) {
                 <div className='text-2xl font-bold my-[20%] bg- '>
                     開発中...... <br /><br />
                     coming soon......
+
+                    <button></button>
                 </div>
             </div>
             <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
@@ -77,12 +79,12 @@ export async function getServerSideProps(context: ContextType) {
     };
 
     let resData = null;
-    try {
-        const res = await axios.get(`${domain.backendHost}/vcontents/orignal-song`, options);
-        resData = res.data;
-    } catch (error) {
-        console.log("erroe in axios.get:", error);
-    }
+    // try {
+    // const res = await axios.get(`${domain.backendHost}/vcontents/orignal-song`, options);
+    // resData = res.data;
+    // } catch (error) {
+    // console.log("erroe in axios.get:", error);
+    // }
     return {
         props: {
             posts: resData,

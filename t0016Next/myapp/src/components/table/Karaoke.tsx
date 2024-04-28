@@ -128,8 +128,8 @@ function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumn) {
 
   };
   return (
-    <div>
-      <button className={`${TableTW.favoriteColumn} relative flex`} onClick={handleClick}>
+    <div className="flex justify-center">
+      <button className={`${TableTW.favoriteColumn} relative flex `} onClick={handleClick}>
         {isFavNow ?
           <img src="/content/heart_pink.svg" className='flex w-5 m-1 mr-0' />
           : <img src="/content/heart_white.svg" className='flex w-5 m-1 mr-0' />
@@ -417,7 +417,9 @@ export const KaraokeThinTable = ({ posts, handleMovieClickYouTube }: KaraokeTabl
               return (
                 <tr {...row.getRowProps()} className={`${TableTW.regularTr}`}>
                   {row.cells.map((cell) => {
-                    return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                    return <td {...cell.getCellProps()}>
+                      {cell.render('Cell')}
+                    </td>
                   })}
                 </tr>
               );
