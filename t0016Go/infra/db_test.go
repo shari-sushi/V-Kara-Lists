@@ -42,9 +42,11 @@ func testMigrate(db *gorm.DB, mock sqlmock.Sqlmock) error {
 
 func TestSqlHandler_Create(t *testing.T) {
 	userBody := getCreateUser()
-	now := time.Now()
 
+	// todo: time.Now() をgetCreateUserのフィールドに直接使う
+	now := time.Now()
 	userBody.UpdatedAt = now
+
 	userBody.DeletedAt.Valid = false
 
 	db, mock, err := getMockDB()
@@ -52,6 +54,8 @@ func TestSqlHandler_Create(t *testing.T) {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
 	r := SqlHandler{Conn: db}
+
+	// 書き方間違ってるかも
 	query := "INSERT"
 	mock.ExpectExec(regexp.QuoteMeta(query)).
 		WithArgs(userBody.ListenerName, userBody.Email, userBody.Password, userBody.UpdatedAt, userBody.DeletedAt).
@@ -71,7 +75,9 @@ func TestSqlHandler_Create(t *testing.T) {
 }
 
 func getCreateUser() *domain.Listener {
+	// 関数として切り出す return time.now()。これ多分使えてない
 	var timeTime time.Time
+
 	var gormDeletedAt gorm.DeletedAt
 	body := &domain.Listener{
 		ListenerName: "shari",
