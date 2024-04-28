@@ -12,56 +12,68 @@ import (
 var guestId = common.GetGuestListenerId()
 
 func (controller *Controller) CreateUser(c *gin.Context) {
-	fmt.Printf("CreateUser開始 at interfaces/controllers/users.go \n")
+	fmt.Printf("start `CreateUser` at interfaces/controllers/users.go \n")
 	var user domain.Listener
 	if err := c.ShouldBind(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Invalid request body",
+			"message": "Invailed request body",
+			"error":   err.Error(),
 		})
 		return
 	}
-
 	if err := common.ValidateSignup(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": err.Error(),
+			"message": "Invailed validation",
+			"error":   err.Error(),
 		})
 		return
 	}
+	fmt.Println("user:", user)
 	emailAES, err := common.EncryptByAES(user.Email)
 	if err != nil {
+		fmt.Println("err.Error:", err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error":   "error",
 			"message": "failed encrypt email by AES",
+			"error":   err.Error(),
 		})
 		return
 	}
+	fmt.Println("emailAES:", emailAES)
 
-	//er==nilであってる。nilならリクエスト却下するから
 	if _, err := controller.UserInteractor.FindUserByEmail(emailAES); err == nil {
+		fmt.Println("メアドが重複のため会員登録却下")
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error":   "error",
 			"message": "the E-mail address already in use",
 		})
 		return
 	}
 	hashPW, err := common.EncryptPassword(user.Password)
 	if err != nil {
+		fmt.Println("err.Error:", err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "failed generate hassed Password",
+			"error":   err.Error(),
 		})
 		return
 	}
+
 	user.Password = hashPW
 	user.Email = emailAES
 	newUser, err := controller.UserInteractor.CreateUser(user)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "failed Singed Up",
+			"error":   err.Error(),
 		})
 		return
 	}
-	if err := common.SetListenerIdintoCookie(c, newUser.ListenerId); err != nil {
+	fmt.Println("newUser:", newUser)
 
+	if err := common.SetListenerIdintoCookie(c, newUser.ListenerId); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "the E-mail address already in use",
+			"error":   err.Error(),
+		})
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -71,6 +83,8 @@ func (controller *Controller) CreateUser(c *gin.Context) {
 }
 
 func (controller *Controller) LogicalDeleteUser(c *gin.Context) {
+	fmt.Printf("start `LogicalDeleteUser` at interfaces/controllers/users.go \n")
+
 	tokenLId, err := common.TakeListenerIdFromJWT(c)
 	fmt.Printf("tokenLId = %v \n", tokenLId)
 
@@ -102,26 +116,35 @@ func (controller *Controller) LogicalDeleteUser(c *gin.Context) {
 }
 
 func (controller *Controller) LogIn(c *gin.Context) {
+	fmt.Printf("start `LogIn` at interfaces/controllers/users.go \n")
+
 	var user domain.Listener
 	if err := c.ShouldBind(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid request body",
+			"error":   err.Error(),
 		})
 		return
 	}
+	fmt.Printf("user:%v\n", user)
+
 	emailAES, err := common.EncryptByAES(user.Email)
 	if err != nil {
+		fmt.Printf("err:%v\n", err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error":   "error",
 			"message": "failed encrypt email by AES",
+			"error":   err.Error(),
 		})
 		return
 	}
+	fmt.Printf("emailAES:%v\n", emailAES)
+
 	foundListener, err := controller.UserInteractor.FindUserByEmail(emailAES)
 	fmt.Printf("foundListener=%v\n", foundListener)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Error fetching listener info",
+			"message": "Error fetching listener info",
+			"error":   err.Error(),
 		})
 		return
 	}
@@ -129,11 +152,17 @@ func (controller *Controller) LogIn(c *gin.Context) {
 	if err := common.CompareHashAndPassword(foundListener.Password, string(user.Password)); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "failed Login: Please confirm the Email&Password you entered",
+			"error":   err.Error(),
 		})
 		return
 	}
 
 	if err := common.SetListenerIdintoCookie(c, foundListener.ListenerId); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "failed Login: failed set cookie. bad system.",
+			"error":   err.Error(),
+		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
