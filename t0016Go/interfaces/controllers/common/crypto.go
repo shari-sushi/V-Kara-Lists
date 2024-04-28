@@ -20,7 +20,7 @@ var aesIv []byte
 func init() {
 	var costString string
 
-	env := ReturnEvnCloudorLocal()
+	env := GetHostByENV()
 	if env == "on cloud" {
 		costString = os.Getenv("BCRYPT_COST")
 		aesKey = []byte(os.Getenv("AES_KEY"))

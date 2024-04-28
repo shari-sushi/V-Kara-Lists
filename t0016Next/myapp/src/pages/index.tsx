@@ -15,6 +15,7 @@ import { ToClickTW } from '@/styles/tailwiind'
 import { getWindowSize } from '@/features/layout/Layout';
 import { ContextType } from '@/types/server'
 
+
 const pageName = "Top"
 
 type TopPage = {
@@ -67,6 +68,16 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
             <h2 className='flex justify-center text-xs ms:text-sm md:text-base '>
               「ささっと把握」、「さくっと再生」、「ばばっと布教」
             </h2>
+
+            <h3 className='flex justify-center pt-4 w-atuo'>
+              <div className='flex-col '>
+
+                〇お知らせ <br />
+                <li>
+                  本サイトは視聴機能付きの「ユーザー参加型データベース」です。ご登録をお願いします！
+                </li>
+              </div>
+            </h3>
           </hgroup>
         </div>
 
@@ -109,6 +120,23 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
             </div>
           </div>
 
+          {vtubers.length == 0 &&
+            <div className='flex justify-center py-12'>
+              <div className='flex justify-center bg-[#657261] font-bold text-xl p-6 max-w-[1200px]'>
+                <span>
+                  データの取得に失敗したようです。<br /><br />
+                  ページを更新してもこの文章が表示される場合は<br />
+                  お手数ですが、
+                  <Link href="https://twitter.com/sharin_prog" className='text-3xl text-[#b3d854] underline mx-2'>
+                    開発者のX</Link>
+                  にDMいただけますと幸いです。<br /><br />
+                  サーバーが落ちている可能性があります。
+                </span>
+
+              </div>
+            </div>
+          }
+
           {/* 表達 */}
           <div id="feature"
             className={`flex-col md:flex-row justify-center
@@ -121,25 +149,28 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
                 <img src="/content/human_white.svg" className='h-5 mr-1' />
                 <h2 className='h-5 flex-1 mb-1'>配信者</h2>
               </div>
-              <VtuberTable posts={vtubers} /><br />
 
-              <h2 className='flex'>
-                <img src="/content/movie.svg" className='h-5 mr-1' />
-                歌枠(動画)
-              </h2 >
-              <MovieTable posts={movies} handleMovieClickYouTube={handleMovieClickYouTube} /><br />
-              <h2 className='flex'>
-                <img src="/content/note.svg" className='h-5 mr-1' />
-                歌
-              </h2>
-              <KaraokeMinRandamTable
-                posts={karaokes}
-                handleMovieClickYouTube={handleMovieClickYouTube}
-              />
+              <div>
+                <VtuberTable posts={vtubers} /><br />
+                <h2 className='flex'>
+                  <img src="/content/movie.svg" className='h-5 mr-1' />
+                  歌枠(動画)
+                </h2 >
+                <MovieTable posts={movies} handleMovieClickYouTube={handleMovieClickYouTube} /><br />
+                <h2 className='flex'>
+                  <img src="/content/note.svg" className='h-5 mr-1' />
+                  歌
+                </h2>
+                <KaraokeMinRandamTable
+                  posts={karaokes}
+                  handleMovieClickYouTube={handleMovieClickYouTube}
+                />
+              </div>
             </div>
           </div>
         </div>
       </div>
+
     </Layout >
   )
 };

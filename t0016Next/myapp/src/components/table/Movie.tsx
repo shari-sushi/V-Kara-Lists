@@ -150,7 +150,7 @@ function FavoriteColumn({ count, isFav, movie }: FavoriteColumn) {
         }
     };
     return (
-        <div>
+        <div className="flex justify-center">
             <button className={`${TableCss.favoriteColumn} relative flex`} onClick={handleClick}>
                 {isFavNow ?
                     <img src="/content/heart_pink.svg" className='flex w-5 m-1 mr-0' />
