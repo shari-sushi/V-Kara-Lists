@@ -127,7 +127,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
                   データの取得に失敗したようです。<br /><br />
                   ページを更新してもこの文章が表示される場合は<br />
                   お手数ですが、
-                  <Link href="https://twitter.com/sharin_prog" className='text-3xl text-[#b3d854] underline mx-2'>
+                  <Link href="https://twitter.com/shari_susi" className='text-3xl text-[#b3d854] underline mx-2'>
                     開発者のX</Link>
                   にDMいただけますと幸いです。<br /><br />
                   サーバーが落ちている可能性があります。
