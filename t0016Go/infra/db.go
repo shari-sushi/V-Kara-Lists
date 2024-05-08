@@ -57,8 +57,17 @@ func dbInit() database.SqlHandler {
 		dbUrl = os.Getenv("RDS_END_PIONT")
 		dbName = os.Getenv("AWS_DATABASE")
 		fmt.Printf("環境変数より取得: dbUrl=%v, dbName=%v, \n", dbUrl, dbName)
+
+		// クラウド環境で、環境変数使ってなくて、
+		// １つのインスタンス内でMySQLとGoがlocal接続するよみたいな状況用
+		if dbName == "" && dbUrl == "" {
+			dbName = "v_kara_db"
+			dbUrl = "localhost"
+			user = "root"
+			pw = ""
+		}
 	} else if common.IsOnLoclaWithDockerCompose {
-		// Golangはローカルのdocker上(compose使用) or  VSCodeで起動
+		// Golangはローカルのdocker-compose or  VSCodeで起動
 		// MySQLはローカルのdocker上(compose使用) で起動
 		if user == "" {
 			user = "root"
@@ -66,7 +75,7 @@ func dbInit() database.SqlHandler {
 		dbUrl = "v_kara_db"
 		dbName = os.Getenv("MYSQL_DATABASE")
 	} else if common.IsOnLoclaWithOutDockerCompose {
-		// Golangはローカルのdocker上(compose使用) or  VSCodeで起動
+		// Golangはローカルのdocker-compose or  VSCodeで起動
 		// MySQLはローカルでdockerを使用せずに起動
 		if user == "" {
 			user = "root"
