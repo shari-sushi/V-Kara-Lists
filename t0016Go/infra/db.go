@@ -59,12 +59,13 @@ func dbInit() database.SqlHandler {
 		fmt.Printf("環境変数より取得: dbUrl=%v, dbName=%v, \n", dbUrl, dbName)
 
 		// クラウド環境で、環境変数使ってなくて、
-		// １つのインスタンス内でMySQLとGoがlocal接続するよみたいな状況用
+		// MySQLとGoがlocal接続するよ(１つのインスタンス内で両方立ててるとか)みたいな状況用
 		if dbName == "" && dbUrl == "" {
 			dbName = "v_kara_db"
 			dbUrl = "localhost"
-			user = "root"
-			pw = ""
+			// mysqlでユーザー作って、// 権限も付与すること
+			user = "shari"
+			pw = "shari_sushi"
 		}
 	} else if common.IsOnLoclaWithDockerCompose {
 		// Golangはローカルのdocker-compose or  VSCodeで起動
