@@ -1,5 +1,9 @@
 version: '3.8'
 
+# 正直、dbだけdocdker-composeで他はVSCodeで動かす
+# (以下のapi, appをコメントアウトしてdocker-compse up)
+# が一番開発しやすいです
+
 services:
   db:
     image: mysql:8.0.32
@@ -16,22 +20,22 @@ services:
       - "3306:3306"
     command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci 
   
-  api:
-    build: 
-      context: ./t0016Go
-    container_name: v_kara_api
-    env_file: ./t0016Go/.env
-    environment:
-      - IS_DOCKER_COMPOSE=true 
-    stdin_open: true
-    tty: true
-    volumes:
-      - ./t0016Go:/api/src
-    depends_on:
-      db:
-        condition: service_healthy
-    ports:
-      - "8080:8080"
+  # api:
+  #   build: 
+  #     context: ./t0016Go
+  #   container_name: v_kara_api
+  #   env_file: ./t0016Go/.env
+  #   environment:
+  #     - IS_DOCKER_COMPOSE=true 
+  #   stdin_open: true
+  #   tty: true
+  #   volumes:
+  #     - ./t0016Go:/api/src
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   ports:
+  #     - "8080:8080"
 
   app:
     build:
