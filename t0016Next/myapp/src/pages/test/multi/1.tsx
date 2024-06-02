@@ -7,7 +7,6 @@ import { domain } from '@/../../env'
 import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '@/types/vtuber_content';
 import { Layout } from '@/components/layout/Layout'
 import { ContextType } from '@/types/server'
-///////////////
 import {
     flexRender,
     getCoreRowModel,
@@ -17,8 +16,8 @@ import {
     getFilteredRowModel,
 } from "@tanstack/react-table";
 import { VtuberCOLUMNS4 } from "./libs/data";
-import TestLink from './component';
-///////////////
+import { TestLink } from './index';
+
 // http://localhost:80/test/multi
 // const pageNum = Number(window.location.pathname.split("/").pop());
 const pageNum = 1
@@ -35,19 +34,18 @@ type TopPage = {
 
 
 export default function App({ posts, isSignin }: TopPage) {
-    const vtubers = posts?.vtubers || [{} as ReceivedVtuber];
-
     const [data, setData] = useState<ReceivedVtuber[]>([]);
 
     const initialPageIndex = 0;
     const initialPageSize = 2;
 
     useEffect(() => {
+        const vtubers = posts?.vtubers || [{} as ReceivedVtuber];
         const fetchData = async () => {
             setData(await vtubers);
         };
         fetchData();
-    }, []);
+    }, [posts.vtubers]);
 
     const columns = useMemo(() => VtuberCOLUMNS4, []);
 
