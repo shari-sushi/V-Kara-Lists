@@ -1,15 +1,6 @@
 import { VtuberId } from "@/types/vtuber_content";
 import { ColumnDef } from "@tanstack/react-table";
-
-type ReceivedVtuber = {
-    VtuberId: VtuberId;
-    VtuberName: string;
-    VtuberKana: string;
-    IntroMovieUrl: string | null;
-    VtuberInputterId: string;
-    Count: number;
-    IsFav: boolean;
-}
+import Image from 'next/image';
 
 export const VtuberCOLUMNS: ColumnDef<any>[] = [
     {
@@ -73,13 +64,13 @@ const getSortIcon = (sortDirection: any): JSX.Element => {
         case "asc":
             return (
                 <svg className="fill-white">
-                    <img src="/content/sort.svg" className='inline-block w-6 h-5' />
+                    <Image src="/content/sort.svg" width={24} height={20} alt="Sort Ascending" className='inline-block' />
                 </svg>
             );
         case "desc":
-            return <img src="/content/play_black.svg" className='inline-block w-6 h-5' />;
+            return <Image src="/content/play_black.svg" width={24} height={20} alt="Sort Descending" className='inline-block' />;
         default:
-            return <img src="/content/movie.svg" className='inline-block w-6 h-5' />;
+            return <Image src="/content/movie.svg" width={24} height={20} alt="Default Icon" className='inline-block' />;
     }
 };
 
