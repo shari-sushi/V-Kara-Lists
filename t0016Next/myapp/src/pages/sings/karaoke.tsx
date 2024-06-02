@@ -10,11 +10,11 @@ import type { ReceivedKaraoke, ReceivedMovie, ReceivedVtuber } from '@/types/vtu
 import type { ContextType } from '@/types/server'
 import { YouTubePlayer } from '@/components/moviePlayer/YoutubePlayer'
 import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
-import { KaraokePagenatoinTable } from "@/components/table/Karaoke"
 import { DropDownVtuber } from '@/components/dropDown/Vtuber';
 import { DropDownMovie } from '@/components/dropDown/Movie';
+import KaraokeGlobalFilterTable from '@/components/table-tanstack/Karaoke/KaraokeGlobalFilterTable';
 
-const pageName = "カラオケ"
+const pageName = "カラオケ(全曲)"
 
 type TopPage = {
     posts: {
@@ -65,7 +65,7 @@ export default function SingsPage({ posts, isSignin }: TopPage) {
                         >
                             {/* 左側の要素 */}
                             <div className='flex flex-col mr-1 '>
-                                <div className='relative flex  justify-center'>
+                                <div className='relative flex justify-center'>
                                     <YouTubePlayer videoId={currentMovieId} start={start} />
                                 </div>
                             </div>
@@ -95,7 +95,7 @@ export default function SingsPage({ posts, isSignin }: TopPage) {
                     </div>
                 </div>
                 <div className="flex flex-col w-full">
-                    <KaraokePagenatoinTable
+                    <KaraokeGlobalFilterTable
                         posts={filteredKaraokes}
                         handleMovieClickYouTube={handleMovieClickYouTube}
                         setSelectedPost={setSelectedPost}

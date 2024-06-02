@@ -6,20 +6,19 @@ import Link from 'next/link';
 import { domain } from '@/../env'
 import { Layout } from '@/components/layout/Layout'
 import { ToClickTW } from '@/styles/tailwiind';
-import type { ReceivedKaraoke, ReceivedMovie, ReceivedVtuber } from '@/types/vtuber_content';
+import type { ReceivedKaraoke, ReceivedMovie } from '@/types/vtuber_content';
 import { YouTubePlayer } from '@/components/moviePlayer/YoutubePlayer'
 import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
-import { KaraokePagenatoinTable } from "@/components/table/Karaoke"
 import { DropDownAllMovie } from '@/components/dropDown/Movie';
 import { NotFoundVtuber } from '@/components/layout/Main';
 import { GetServerSidePropsContext } from 'next';
 import { generateRandomNumber } from '@/components/SomeFunction';
+import KaraokeFilterTableWithoutVTuberName from '@/components/table-tanstack/Karaoke/KaraokeFilterTableWithoutVTuberName';
 
-const pageName = "Vtuber特設ページ" // VTuberの名前になるように後で代入している
+const pageName = "Vtuber特設ページ" // VTuberの名前になるようにレンダリングフェーズで変更している
 
 type VtuberPage = {
     posts: {
-        vtubers: ReceivedVtuber[];
         vtubers_movies: ReceivedMovie[];
         vtubers_movies_karaokes: ReceivedKaraoke[];
     };
@@ -125,7 +124,7 @@ export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
                     </div>
                 </div>
                 <div className="flex flex-col w-full">
-                    <KaraokePagenatoinTable
+                    <KaraokeFilterTableWithoutVTuberName
                         posts={filteredKaraokes}
                         handleMovieClickYouTube={handleMovieClickYouTube}
                         setSelectedPost={setSelectedPost}
