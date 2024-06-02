@@ -3,7 +3,7 @@ import Link from 'next/link';
 import https from 'https';
 import axios, { AxiosRequestConfig } from 'axios';
 
-import { domain } from '@/../env'
+import { domain } from '@/../../env'
 import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '@/types/vtuber_content';
 import { YouTubePlayer } from '@/components/moviePlayer/YoutubePlayer'
 import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
@@ -13,9 +13,12 @@ import { MovieTable } from '@/components/table/Movie'
 import { KaraokeThinTable, KaraokeMinRandamTable } from '@/components/table/Karaoke'
 import { ToClickTW } from '@/styles/tailwiind'
 import { ContextType } from '@/types/server'
+import TestLink from './multi/component';
 
 const pageName = "test"
+const pageNum = 0
 
+// http://localhost:80/test
 type TopPage = {
     posts: {
         vtubers: ReceivedVtuber[];
@@ -41,6 +44,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
 
     return (
         <Layout pageName={pageName} isSignin={isSignin}>
+            <TestLink thisPageNum={pageNum} />
             <div>
                 2024.03.05
             </div>

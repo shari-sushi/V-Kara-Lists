@@ -60,7 +60,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
           <hgroup className='pb-1 md:pb-3 '>
             {/* <a>videoId= {currentMovieId}, start= {start}秒 = {Math.floor(start / 60)}分 {Math.floor(start % 60)}秒</a > */}
             <h1 className="flex justify-center text-xl sm:text-2xl md:text-3xl font-bold underline ">
-              V-kara (VTuber-karaoke-Lists)
+              V-Karaoke (VTuber-Karaoke-Lists)
             </h1>
             <h2 className='flex justify-center text-sm  md:text-base'>
               「推し」の「歌枠」の聴きたい「歌」
@@ -73,9 +73,8 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
               <div className='flex-col '>
 
                 〇お知らせ <br />
-                <li>
-                  本サイトは視聴機能付きの「ユーザー参加型データベース」です。ご登録をお願いします！
-                </li>
+                <li><Link href="/sings/karoke" className='font-bold'>「カラオケ」</Link>ページの検索機能を強化しました(6/3)</li>
+                {/* <li>本サイトは視聴機能付きの「ユーザー参加型データベース」です。ご登録をお願いします！</li> */}
               </div>
             </h3>
           </hgroup>

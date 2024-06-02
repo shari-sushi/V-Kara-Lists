@@ -19,7 +19,6 @@ export const DropDownKaraoke = ({ posts, selectedMovie, onKaraokeSelect }: DropD
   const karaokes = posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke]
   const [karaokeOptions, setKaraokeOptions] = useState<Options[]>([]);
   const [selectedKaraoke, setSelectedKaraoke] = useState<number>(0);
-
   useEffect(() => {
     if (!selectedMovie) {
       setKaraokeOptions([]);
@@ -29,7 +28,7 @@ export const DropDownKaraoke = ({ posts, selectedMovie, onKaraokeSelect }: DropD
     const fetchKaraokes = async () => {
       try {
         const choiceKaraoke = karaokes.filter((karaokes: ReceivedKaraoke) => karaokes.MovieUrl === selectedMovie);
-        console.log("API Response ka:", choiceKaraoke);
+        console.log("choiceKa:", choiceKaraoke);
         let havingkaraoke = choiceKaraoke.map((karaoke: ReceivedKaraoke) => ({
           value: karaoke.KaraokeId,
           label: karaoke.SongName || ""
@@ -65,8 +64,52 @@ export const DropDownKaraoke = ({ posts, selectedMovie, onKaraokeSelect }: DropD
   );
 };
 
+type DropDownKaraokePartialMatchSearchProps = {
+  preKaraokes: ReceivedKaraoke[];
+  setSelectedKaraokes: (value: ReceivedKaraoke[]) => void;
+};
+
+export const PartialMatchSearch = ({ preKaraokes, setSelectedKaraokes }: DropDownKaraokePartialMatchSearchProps) => {
+  const [karaokeOptions, setKaraokeOptions] = useState<Options[]>([]);
+  const [selectedKaraoke, setSelectedKaraoke] = useState<ReceivedKaraoke[]>([]);
+  const text = ""
+  // text == ""ならpreKaraokeをそのまま返したいというかそもそもここで処理したらバケツリレー大変だしな…
+
+  useEffect(() => {
+    const fetchKaraokes = async () => {
+      try {
+        // const searchedKaraokes = preKaraokes.filter((ka) => ka.SongName == text)
+        // setSelectedKaraokes(searchedKaraokes)
+      } catch {
+
+      };
+    };
+    fetchKaraokes();
+  }, [text]);
+  return (
+    <div>
+      <Select
+        id="selectbox"
+        instanceId="selectbox"
+        placeholder="歌を検索/選択"
+        className="basic-single"
+        classNamePrefix="select"
+        isClearable={true} isSearchable={true} options={karaokeOptions}
+        // isMulti={true}  backspaceRemovesValue={false}
+        blurInputOnSelect={true} styles={DropStyle}
+        onChange={option => {
+          if (option) {
+            // onKaraokeSelect(option.value);
+          }
+        }}
+      />
+    </div>
+  )
+}
+
+
 const memo = {
-  //ファイルのtopレベルに置いておくとESLintの自動整形が機能しなくなる
+  // コメントをファイルのtopレベルに置いておくとESLintの自動整形機能が死ぬ
   //// 公式
   // https://react-select.com/home
 
