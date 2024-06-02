@@ -26,8 +26,7 @@ type VtuberPage = {
     isSignin: boolean;
 }
 
-export default function SingsPage({ posts, isSignin }: VtuberPage) {
-    const movies = posts?.vtubers_movies || [] as ReceivedMovie[];
+export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
     const karaokes = posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[];
     const playKaraokeNumber = generateRandomNumber(karaokes.length)
 
@@ -44,7 +43,6 @@ export default function SingsPage({ posts, isSignin }: VtuberPage) {
         setStart(start);
     }
 
-
     const [selectedMovie, setSelectedMovie] = useState<string>("");
     const [filteredKaraokes, setFilteredKarakes] = useState<ReceivedKaraoke[]>([]);
 
@@ -55,10 +53,8 @@ export default function SingsPage({ posts, isSignin }: VtuberPage) {
 
     // propsとして必要
     const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
-    const clearMovieHandler = () => {
-    };
 
-    if (movies.length == 0) {
+    if (karaokes.length == 0) {
         return (
             <Layout pageName={pageName} isSignin={isSignin}>
                 <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
@@ -89,7 +85,6 @@ export default function SingsPage({ posts, isSignin }: VtuberPage) {
         )
     }
 
-
     return (
         <Layout pageName={`${karaokes[0].VtuberName}`} isSignin={isSignin}>
             <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
@@ -116,9 +111,9 @@ export default function SingsPage({ posts, isSignin }: VtuberPage) {
                                 </div>
                                 <span >動画絞込み（入力できます）</span>
                                 <DropDownAllMovie
-                                    posts={posts}
+                                    preMovies={posts.vtubers_movies}
                                     setSelectedMovie={setSelectedMovie}
-                                    clearMovieHandler={clearMovieHandler}
+                                // clearMovieHandler={clearMovieHandler}
                                 />
                                 <div className='pt-5'>
                                     <span>お探しの歌枠や歌がありませんか？</span> <br />

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import https from 'https';
-import axios, { AxiosRequestConfig } from 'axios';
+import { AxiosRequestConfig } from 'axios';
 
-import { domain } from '@/../env'
 import type { ReceivedKaraoke } from '@/types/vtuber_content';
 import { YouTubePlayer } from '@/components/moviePlayer/YoutubePlayer'
 import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
