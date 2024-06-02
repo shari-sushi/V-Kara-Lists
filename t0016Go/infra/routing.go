@@ -9,55 +9,57 @@ import (
 // https://github.com/sharin-sushi/0016go_next_relation/issues/71#issuecomment-1843543763
 
 func Routing(r *gin.Engine) {
-	Controller := controllers.NewController(dbInit())
+	controller := controllers.NewController(dbInit())
 
 	ver := r.Group("/v1")
 	{
 		users := ver.Group("/users")
 		{
-			users.POST("/signup", Controller.CreateUser)
-			users.PUT("/login", Controller.LogIn)
+			users.POST("/signup", controller.CreateUser)
+			users.PUT("/login", controller.LogIn)
 			users.PUT("/logout", controllers.Logout)
-			users.DELETE("/withdraw", Controller.LogicalDeleteUser)
+			users.DELETE("/withdraw", controller.LogicalDeleteUser)
 			users.GET("/gestlogin", controllers.GuestLogIn)
-			users.GET("/profile", Controller.GetListenerProfile)
-			users.GET("/mypage", Controller.ListenerPage)
+			users.GET("/profile", controller.GetListenerProfile)
+			users.GET("/mypage", controller.ListenerPage)
 		}
 		vcontents := ver.Group("/vcontents")
 		{
-			vcontents.GET("/", Controller.ReturnTopPageData)
-			vcontents.GET("/vtuber/:kana", Controller.ReturnVtuberPageData)
-			vcontents.GET("/sings", Controller.GetJoinVtubersMoviesKaraokes)
-			vcontents.GET("/original-song", Controller.ReturnOriginalSongPage)
+			vcontents.GET("/", controller.ReturnTopPageData)
+			vcontents.GET("/vtuber/:kana", controller.ReturnVtuberPageData)
+			// TODO : v2 : 単数形に
+			vcontents.GET("/sings", controller.GetJoinVtubersMoviesKaraokes)
+			vcontents.GET("/original-song", controller.ReturnOriginalSongPage)
+
 			// /vtuber, /movie, /karaokeの文字列はフロント側で比較演算に使われてる
 			// データ新規登録
-			vcontents.POST("/create/vtuber", Controller.CreateVtuber)
-			vcontents.POST("/create/movie", Controller.CreateMovie)
-			vcontents.POST("/create/karaoke", Controller.CreateKaraoke)
+			vcontents.POST("/create/vtuber", controller.CreateVtuber)
+			vcontents.POST("/create/movie", controller.CreateMovie)
+			vcontents.POST("/create/karaoke", controller.CreateKaraoke)
 
 			//データ編集
-			vcontents.POST("/edit/vtuber", Controller.EditVtuber)
-			vcontents.POST("/edit/movie", Controller.EditMovie)
-			vcontents.POST("/edit/karaoke", Controller.EditKaraoke)
+			vcontents.POST("/edit/vtuber", controller.EditVtuber)
+			vcontents.POST("/edit/movie", controller.EditMovie)
+			vcontents.POST("/edit/karaoke", controller.EditKaraoke)
 
 			// // データ削除(物理)
-			vcontents.GET("/delete/deletePage", Controller.DeleteOfPage)
-			vcontents.DELETE("/delete/vtuber", Controller.DeleteVtuber)
-			vcontents.DELETE("/delete/movie", Controller.DeleteMovie)
-			vcontents.DELETE("/delete/karaoke", Controller.DeleteKaraoke)
+			vcontents.GET("/delete/deletePage", controller.DeleteOfPage)
+			vcontents.DELETE("/delete/vtuber", controller.DeleteVtuber)
+			vcontents.DELETE("/delete/movie", controller.DeleteMovie)
+			vcontents.DELETE("/delete/karaoke", controller.DeleteKaraoke)
 
 			//ドロップダウン用
-			vcontents.GET("/getalldata", Controller.GetVtuverMovieKaraoke)
+			vcontents.GET("/getalldata", controller.GetVtuverMovieKaraoke)
 
 			// テスト用
-			vcontents.GET("/dummy-top-page", Controller.ReturnDummyTopPage)
+			vcontents.GET("/dummy-top-page", controller.ReturnDummyTopPage)
 		}
 		fav := ver.Group("/fav")
 		{
-			fav.POST("/favorite/movie", Controller.SaveMovieFavorite)
-			fav.DELETE("/unfavorite/movie", Controller.DeleteMovieFavorite)
-			fav.POST("/favorite/karaoke", Controller.SaveKaraokeFavorite)
-			fav.DELETE("/unfavorite/karaoke", Controller.DeleteKaraokeFavorite)
+			fav.POST("/favorite/movie", controller.SaveMovieFavorite)
+			fav.DELETE("/unfavorite/movie", controller.DeleteMovieFavorite)
+			fav.POST("/favorite/karaoke", controller.SaveKaraokeFavorite)
+			fav.DELETE("/unfavorite/karaoke", controller.DeleteKaraokeFavorite)
 		}
 	}
 }
