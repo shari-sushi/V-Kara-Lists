@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import https from 'https';
 import axios, { AxiosRequestConfig } from 'axios';
 import Link from 'next/link';
+import Image from 'next/image';
 
 import { domain } from '@/../env'
 import { Layout } from "@/components/layout/Layout";
@@ -27,6 +28,10 @@ type Mypage = {
 }
 
 const MyPage = ({ data, isSignin }: Mypage) => {
+  const [currentMovieId, setCurrentMovieId] = useState<string>("Bjsn-QpwmvU"); //こむぎ ワールドイズマイン
+  const [start, setStart] = useState<number>((8091))
+  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
+
   if (!isSignin) {
     return (
       <Layout pageName={pageName} isSignin={isSignin}>
@@ -40,14 +45,11 @@ const MyPage = ({ data, isSignin }: Mypage) => {
   const vtubers = data?.vtubers_u_created || [] as ReceivedVtuber[];
   const movies = data?.vtubers_movies_u_created || [] as ReceivedMovie[];
   const karaokes = data?.vtubers_movies_karaokes_u_created || [] as ReceivedKaraoke[];
-  const [currentMovieId, setCurrentMovieId] = useState<string>("Bjsn-QpwmvU"); //こむぎ ワールドイズマイン
-  const [start, setStart] = useState<number>((8091))
 
   const handleMovieClickYouTube = (url: string, start: number) => {
     setCurrentMovieId(ExtractVideoId(url));
     setStart(start);
   };
-  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
   const handleMovieClickYouTubeDemoMovie = () => {
     const demoUrl = "HunsO-8Eo7Q"
     const startTimeCreateOfDemo = 130
@@ -104,28 +106,38 @@ const MyPage = ({ data, isSignin }: Mypage) => {
             <div className='mt-4 max-w-[1000px] '>
               <h1 className="font-bold text-lg"><u></u>自分の登録したデータ一覧</h1>
               <div>
-                <div className='flex'>
-                  <img src="/content/human_white.svg" className='h-5 mr-1' />
-                  <h2>配信者: 登録数{vtubers.length}</h2>
-                </div>
-                <VtuberTable posts={vtubers} /><br />
+                <div className=''>
+                  <div className=' '>
+                    <div className='flex'>
+                      <Image src="/content/human_white.svg" width={20} height={20} alt="Human Icon" className='h-5 mr-1' />
+                      <h2>配信者: 登録数{vtubers.length}</h2>
+                    </div>
+                    <VtuberTable posts={vtubers} /><br />
+                  </div>
 
-                <div className='flex'>
-                  <img src="/content/movie.svg" className='h-5 mr-1' />
-                  <h2>歌枠(動画): 登録数{movies.length}</h2>
-                </div>
-                < MovieTable posts={movies} handleMovieClickYouTube={handleMovieClickYouTube} /><br />
+                  <div className=' '>
+                    <div className='flex'>
+                      <Image src="/content/movie.svg" width={20} height={20} alt="Movie Icon" className='h-5 mr-1' />
+                      <h2>歌枠(動画): 登録数{movies.length}</h2>
+                    </div>
+                    <MovieTable posts={movies} handleMovieClickYouTube={handleMovieClickYouTube} /><br />
+                  </div>
 
-                <div className='flex'>
-                  <img src="/content/note.svg" className='h-5 mr-1' />
-                  <h2>歌: 登録数{karaokes.length}</h2>
+                  <div className=' '>
+                    <div className='flex'>
+                      <Image src="/content/note.svg" width={20} height={20} alt="Note Icon" className='h-5 mr-1' />
+                      <h2>歌: 登録数{karaokes.length}</h2>
+                    </div>
+                  </div>
+
+                  <KaraokePagenatoinTable
+                    posts={karaokes}
+                    handleMovieClickYouTube={handleMovieClickYouTube}
+                    setSelectedPost={setSelectedPost}
+                  />
                 </div>
-                <KaraokePagenatoinTable
-                  posts={karaokes}
-                  handleMovieClickYouTube={handleMovieClickYouTube}
-                  setSelectedPost={setSelectedPost}
-                />
               </div>
+
             </div>
           </div>
         )}
