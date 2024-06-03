@@ -9,6 +9,7 @@ import { ReceivedKaraoke, FavoriteKaraoke } from "@/types/vtuber_content";
 import { ToDeleteContext } from '@/pages/crud/delete'
 import { TableCss as TableTW } from '@/styles/tailwiind'
 import { SigninContext } from '@/components/layout/Layout'
+import Image from "next/image";
 
 type KaraokeTableProps = {
   posts: ReceivedKaraoke[];
@@ -39,7 +40,7 @@ const columns: Column<ReceivedKaraoke>[] = [
           <button className="flex"
             onClick={() => handleMovieClickYouTube(row.original.MovieUrl, ConvertStringToTime(row.original.SingStart))}
           >
-            <img src="/content/play_black.svg" className='w-5 mr-1 bottom-0' />
+            <Image src="/content/play_black.svg" className='w-5 mr-1 bottom-0' width={24} height={20} alt={""} />
             {row.original.SongName}
           </button>
 
@@ -47,7 +48,7 @@ const columns: Column<ReceivedKaraoke>[] = [
             <button className="flex"
               onClick={() => handleClick()}
             >
-              <img src="/content/copy_gray.svg" className='h-4 mr-2' />
+              <Image src="/content/copy_gray.svg" className='h-4 mr-2' width={24} height={20} alt={""} />
             </button>
             {isDisplay &&
               <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">
@@ -131,8 +132,8 @@ function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumn) {
     <div className="flex justify-center">
       <button className={`${TableTW.favoriteColumn} relative flex `} onClick={handleClick}>
         {isFavNow ?
-          <img src="/content/heart_pink.svg" className='flex w-5 m-1 mr-0' />
-          : <img src="/content/heart_white.svg" className='flex w-5 m-1 mr-0' />
+          <Image src="/content/heart_pink.svg" className='flex w-5 m-1 mr-0' width={24} height={20} alt={""} />
+          : <Image src="/content/heart_white.svg" className='flex w-5 m-1 mr-0' width={24} height={20} alt={""} />
         }
 
         {isFavNow == isFav ? count : isFavNow ? count + 1 : count - 1}
@@ -178,7 +179,7 @@ const PagenationReturnPostcolumns: Column<ReceivedKaraoke>[] = [
           <button className="flex"
             onClick={() => handleClickPlay(row.original)}
           >
-            <img src="/content/play_black.svg" className='w-5 mr-1 bottom-0' />
+            <Image src="/content/play_black.svg" className='w-5 mr-1 bottom-0' width={24} height={20} alt={""} />
             {row.original.SongName}
           </button>
 
@@ -186,7 +187,7 @@ const PagenationReturnPostcolumns: Column<ReceivedKaraoke>[] = [
             <button className="flex "
               onClick={() => handleClick()}
             >
-              <img src="/content/copy_gray.svg" className='h-4 mr-2' />
+              <Image src="/content/copy_gray.svg" className='h-4 mr-2' width={24} height={20} alt={""} />
             </button>
             {isDisplay &&
               <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">
@@ -296,12 +297,12 @@ export function KaraokePagenatoinTable({ posts, handleMovieClickYouTube, setSele
           <table {...getTableProps()} className={`${TableTW.regular}`}>
             <thead>
               {headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
+                <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
                   {headerGroup.headers.map((column) => (
-                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                    <th {...column.getHeaderProps(column.getSortByToggleProps())} key={column.id}>
                       {column.render('Header')}
                       <span>
-                        {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <img src="/content/sort.svg" className='inline mx-1 h-5' />}
+                        {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <Image src="/content/sort.svg" width={24} height={20} alt="Sortable mark" className='inline mx-1 h-5' />}
                       </span>
                     </th>
                   ))}
@@ -312,9 +313,9 @@ export function KaraokePagenatoinTable({ posts, handleMovieClickYouTube, setSele
               {page.map((row) => {
                 prepareRow(row);
                 return (
-                  <tr {...row.getRowProps()} className={`${TableTW.regularTr}`}>
-                    {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()}>
+                  <tr {...row.getRowProps()} className={`${TableTW.regularTr}`} key={row.id}>
+                    {row.cells.map((cell, i) => (
+                      <td {...cell.getCellProps()} key={i}>
                         {cell.render("Cell")}
                       </td>
                     ))}
@@ -351,7 +352,7 @@ const ThinColumns: Column<ReceivedKaraoke>[] = [
           <button className="flex overflow-hidden"
             onClick={() => handleMovieClickYouTube(row.original.MovieUrl, ConvertStringToTime(row.original.SingStart))}
           >
-            <img src="/content/play_black.svg" className='w-5 mr-1 bottom-0 ' />
+            <Image src="/content/play_black.svg" className='w-5 mr-1 bottom-0 ' width={24} height={20} alt={""} />
             {row.original.SongName}
           </button>
 
@@ -359,7 +360,7 @@ const ThinColumns: Column<ReceivedKaraoke>[] = [
             <button className="flex"
               onClick={() => handleClick()}
             >
-              <img src="/content/copy_gray.svg" className='h-4 mr-2 ' />
+              <Image src="/content/copy_gray.svg" className='h-4 mr-2 ' alt={""} width={24} height={20} />
             </button>
             {isDisplay &&
               <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">URL was copied</div>
@@ -401,11 +402,11 @@ export const KaraokeThinTable = ({ posts, handleMovieClickYouTube }: KaraokeTabl
         <table {...getTableProps()} className={`${TableTW.regular} `}>
           <thead className={`${TableTW.regularThead}`}>
             {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
+              <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
                 {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps(column.getSortByToggleProps())} className="px-2">
+                  <th {...column.getHeaderProps(column.getSortByToggleProps())} className="px-2" key={column.id}>
                     {column.render('Header')}
-                    {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <img src="/content/sort.svg" className='inline-block w-6 h-5' />}
+                    {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <Image src="/content/sort.svg" width={24} height={20} alt="Sortable mark" className='inline-block w-6 h-5' />}
                   </th>
                 ))}
               </tr>
@@ -415,9 +416,9 @@ export const KaraokeThinTable = ({ posts, handleMovieClickYouTube }: KaraokeTabl
             {rows.map((row, i) => {
               prepareRow(row);
               return (
-                <tr {...row.getRowProps()} className={`${TableTW.regularTr}`}>
-                  {row.cells.map((cell) => {
-                    return <td {...cell.getCellProps()}>
+                <tr {...row.getRowProps()} className={`${TableTW.regularTr}`} key={i}>
+                  {row.cells.map((cell, j) => {
+                    return <td {...cell.getCellProps()} key={j}>
                       {cell.render('Cell')}
                     </td>
                   })}
@@ -501,20 +502,20 @@ export function KaraokeDeleteTable({ posts, handleMovieClickYouTube }: KaraokeTa
         <table {...getTableProps()} className={`${TableTW.regular} `}>
           <thead className={`${TableTW.regularThead}`}>
             {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()} >
+              <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
                 {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                  <th {...column.getHeaderProps()} key={column.id}>{column.render("Header")}</th>
                 ))}
               </tr>
             ))}
           </thead>
           <tbody {...getTableBodyProps()}>
-            {page.map((row) => {
+            {page.map((row, i) => {
               prepareRow(row);
               return (
-                <tr {...row.getRowProps()} className={`${TableTW.regularTr}`}>
-                  {row.cells.map((cell) => (
-                    <td {...cell.getCellProps()}>
+                <tr {...row.getRowProps()} className={`${TableTW.regularTr}`} key={i}>
+                  {row.cells.map((cell, j) => (
+                    <td {...cell.getCellProps()} key={j}>
                       {cell.render("Cell")}
                     </td>
                   ))}
@@ -545,7 +546,7 @@ const deleteColumns: Column<ReceivedKaraoke>[] = [
           <button className="flex"
             onClick={() => clickHandler(row.original.MovieUrl, row.original.SingStart)}
           >
-            <img src="/content/play_black.svg" className='w-5 mr-2' />
+            <Image src="/content/play_black.svg" className='w-5 mr-2' alt={""} width={24} height={20} />
             {row.original.SongName}
           </button>
         </span >
@@ -605,14 +606,14 @@ const randam5columns: Column<ReceivedKaraoke>[] = [
         <div className="relative flex" >
           <div className="flex flex-row">
             <button className="flex" onClick={() => handleClickSongName(row.original)} >
-              <img src="/content/play_black.svg" className='w-5 mr-1 ' />
+              <Image src="/content/play_black.svg" className='w-5 mr-1 ' alt={""} width={24} height={20} />
               {row.original.SongName}
             </button>
           </div>
 
           <div className="flex flex-row">
             <button className="absolute right-0" onClick={() => handleClickClipUrl()} >
-              <img src="/content/copy_gray.svg" className='h-4 mr-2' />
+              <Image src="/content/copy_gray.svg" className='h-4 mr-2' alt={""} width={24} height={20} />
             </button>
             {isDisplay &&
               <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">URL was copied</div>}
@@ -673,20 +674,20 @@ export const KaraokeMinRandamTable = ({ posts, handleMovieClickYouTube }: Karaok
             <table {...getTableProps()} className={`${TableTW.minRandom} `}>
               <thead className={`${TableTW.regularThead}`}>
                 {headerGroups.map((headerGroup) => (
-                  <tr {...headerGroup.getHeaderGroupProps()} >
-                    {headerGroup.headers.map((column) => (
-                      <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+                  <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id} >
+                    {headerGroup.headers.map((column, i) => (
+                      <th {...column.getHeaderProps()} key={i}>{column.render("Header")} </th>
                     ))}
                   </tr>
                 ))}
               </thead>
               <tbody {...getTableBodyProps()}>
-                {page.map((row) => {
+                {page.map((row, i) => {
                   prepareRow(row);
                   return (
-                    <tr {...row.getRowProps()} className={`${TableTW.regularTr}`}>
-                      {row.cells.map((cell) => (
-                        <td {...cell.getCellProps()}>
+                    <tr {...row.getRowProps()} className={`${TableTW.regularTr}`} key={i}>
+                      {row.cells.map((cell, j) => (
+                        <td {...cell.getCellProps()} key={j}>
                           {cell.render("Cell")}
                         </td>
                       ))}
