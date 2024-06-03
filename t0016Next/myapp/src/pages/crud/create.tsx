@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import https from 'https';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -15,18 +15,9 @@ import { NotLoggedIn } from '@/components/layout/Main';
 const pageName = "コンテンツ登録"
 
 export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
-    if (!isSignin) {
-        return (
-            <Layout pageName={pageName} isSignin={isSignin}>
-                <div>
-                    < NotLoggedIn />
-                </div>
-            </Layout>
-        )
-    };
+    const movies = useMemo(() => posts?.vtubers_movies || [] as ReceivedMovie[], [posts]);
+    const karaokes = useMemo(() => posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[], [posts]);
 
-    const movies = posts?.vtubers_movies || [] as ReceivedMovie[];
-    const karaokes = posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[];
 
     const [selectedVtuber, setSelectedVtuber] = useState<number>(0);
     const [selectedMovie, setSelectedMovie] = useState<string>("");
@@ -41,7 +32,7 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
             setCurrentVideoId(foundYoutubeId);
             setCurrentStart(1)
         }
-    }, [selectedMovie]);
+    }, [movies, selectedMovie]);
 
     const clearMovieHandler = () => {
         //中身空でもKaraokeのoptinosを空にしてくれるんだが…
@@ -59,7 +50,17 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
                 setCurrentStart(foundSingStart);
             }
         }
-    }, [selectedMovie, selectedKaraoke]);
+    }, [selectedMovie, selectedKaraoke, selectedVtuber, karaokes]);
+
+    if (!isSignin) {
+        return (
+            <Layout pageName={pageName} isSignin={isSignin}>
+                <div>
+                    < NotLoggedIn />
+                </div>
+            </Layout>
+        )
+    };
 
     return (
         <Layout pageName={pageName} isSignin={isSignin}>

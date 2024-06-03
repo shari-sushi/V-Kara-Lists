@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import https from 'https';
 import axios, { AxiosRequestConfig } from 'axios';
 
@@ -13,6 +13,7 @@ import { MovieDeleteTable } from '@/components/table/Movie'
 import { KaraokeDeleteTable } from '@/components/table/Karaoke'
 import { ToClickTW } from '@/styles/tailwiind'
 import { NotLoggedIn } from '@/components/layout/Main';
+import Image from 'next/image';
 
 const pageName = "コンテンツ削除"
 
@@ -41,19 +42,12 @@ type Mypage = {
 }
 
 export const DeletePage = ({ posts, isSignin }: Mypage) => {
-    if (!isSignin) {
-        return (
-            <Layout pageName={pageName} isSignin={isSignin}>
-                <div>
-                    < NotLoggedIn />
-                </div>
-            </Layout>
-        )
-    };
+
 
     const vtubers = posts?.vtubers_u_created != null ? posts.vtubers_u_created : [] as ReceivedVtuber[];
-    const movies = posts?.vtubers_movies_u_created != null ? posts.vtubers_movies_u_created : [] as ReceivedMovie[];
-    const karaokes = posts?.vtubers_movies_karaokes_u_created != null ? posts.vtubers_movies_karaokes_u_created : [] as ReceivedKaraoke[];
+    const movies = useMemo(() => posts?.vtubers_movies_u_created != null ? posts.vtubers_movies_u_created : [] as ReceivedMovie[], [posts]);
+    const karaokes = useMemo(() => posts?.vtubers_movies_karaokes_u_created != null ? posts.vtubers_movies_karaokes_u_created : [] as ReceivedKaraoke[], [posts]);
+
 
     const [toDeleteVtuberId, setToDeleteVtuberId] = useState<number>(0);
     const [toDeleteMovieUrl, setToDeleteMovieUrl] = useState<string>("");
@@ -82,10 +76,20 @@ export const DeletePage = ({ posts, isSignin }: Mypage) => {
                 setCurrentStart(foundSingStart);
             }
         }
-    }, [toDeleteMovieUrl, toDeleteKaraokeId, movies]);
+    }, [toDeleteMovieUrl, toDeleteKaraokeId, movies, toDeleteVtuberId, karaokes]);
 
     const handleMovieClickYouTube = (s: string, n: number) => {
     }
+
+    if (!isSignin) {
+        return (
+            <Layout pageName={pageName} isSignin={isSignin}>
+                <div>
+                    < NotLoggedIn />
+                </div>
+            </Layout>
+        )
+    };
 
     return (
         <Layout pageName={pageName} isSignin={isSignin}>
@@ -130,19 +134,19 @@ export const DeletePage = ({ posts, isSignin }: Mypage) => {
                            `}
                         >
                             <div className='flex mt-1 md:mt-4 '>
-                                <img src="/content/human_white.svg" className='h-5 mr-1' />
+                                <Image src="/content/human_white.svg" className='h-5 mr-1' width={24} height={20} alt="" />
                                 配信者: 自分の登録数{vtubers.length}
                             </div>
                             <VtuberDeleteTable posts={vtubers}
                             />
                             <div className='flex mt-4 '>
-                                <img src="/content/movie.svg" className='h-5 mr-1' />
+                                <Image src="/content/movie.svg" className='h-5 mr-1' width={24} height={20} alt="" />
                                 歌枠(動画): 自分の登録数{movies.length}
                             </div>
                             <MovieDeleteTable posts={movies} handleMovieClickYouTube={handleMovieClickYouTube} />
 
                             <div className='flex mt-4'>
-                                <img src="/content/note.svg" className='h-5 mr-1' />
+                                <Image src="/content/note.svg" className='h-5 mr-1' width={24} height={20} alt="" />
                                 歌: 自分の登録数{karaokes != null ? karaokes.length : 0}
                             </div>
                             <div className="flex flex-col">

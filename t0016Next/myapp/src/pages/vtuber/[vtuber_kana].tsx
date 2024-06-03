@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import https from 'https';
 import axios, { AxiosRequestConfig } from 'axios';
 import Link from 'next/link';
@@ -26,7 +26,8 @@ type VtuberPage = {
 }
 
 export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
-    const karaokes = posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[];
+    const karaokes = useMemo(() => posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke], [posts]);
+
     const playKaraokeNumber = generateRandomNumber(karaokes.length)
 
     const url = "www.youtube.com/watch?v=kORHSmXcYNc"
@@ -48,7 +49,7 @@ export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
     useEffect(() => {
         const filterdkaraokes = FilterKaraokesByUrl(karaokes, selectedMovie)
         setFilteredKarakes(filterdkaraokes)
-    }, [selectedMovie]);
+    }, [karaokes, selectedMovie]);
 
     // propsとして必要
     const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)

@@ -5,6 +5,7 @@ import { ReceivedVtuber } from "@/types/vtuber_content";
 import TableStyle from '@/styles/table.module.css'
 import { ToDeleteContext } from '@/pages/crud/delete'
 import { TableCss } from '@/styles/tailwiind'
+import Image from "next/image";
 
 type VtuberTableProps = {
     posts: ReceivedVtuber[];
@@ -25,12 +26,12 @@ export function VtuberTable({ posts }: VtuberTableProps) {
             <table {...getTableProps()} className={`${TableCss.regular} caption-bottom`}>
                 <thead className={`${TableCss.regularThead}`}>
                     {headerGroups.map((headerGroup) => (
-                        <tr {...headerGroup.getHeaderGroupProps()}>
+                        <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
                             {headerGroup.headers.map((column) => (
-                                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                <th {...column.getHeaderProps(column.getSortByToggleProps())} key={column.id}>
                                     {column.render('Header')}
                                     <span>
-                                        {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <img src="/content/sort.svg" className='inline mx-1 h-5' />
+                                        {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <Image src="/content/sort.svg" className='inline mx-1 h-5' width={24} height={20} alt="" />
                                         }
                                     </span>
                                 </th>
@@ -42,9 +43,9 @@ export function VtuberTable({ posts }: VtuberTableProps) {
                     {rows.map((row, i) => {
                         prepareRow(row);
                         return (
-                            <tr {...row.getRowProps()} className={`${TableCss.regularTr}`}>
-                                {row.cells.map((cell) => {
-                                    return <td {...cell.getCellProps()} className={TableStyle.td} >{cell.render('Cell')}</td>
+                            <tr {...row.getRowProps()} className={`${TableCss.regularTr}`} key={i}>
+                                {row.cells.map((cell, j) => {
+                                    return <td {...cell.getCellProps()} className={TableStyle.td} key={j}>{cell.render('Cell')}</td>
                                 })}
                             </tr>
                         );
@@ -63,7 +64,7 @@ const columns: Column<ReceivedVtuber>[] = [
             return (
                 <span className="relative">
                     <Link href={`/vtuber/${row.original.VtuberKana}`} className="flex">
-                        <img src="/content/external_link.svg" className='w-5 mr-1' />
+                        <Image src="/content/external_link.svg" className='w-5 mr-1' width={24} height={20} alt="" />
                         {row.original.VtuberName}
                     </Link>
                 </span>
@@ -80,11 +81,10 @@ const columns: Column<ReceivedVtuber>[] = [
                         {row.original.IntroMovieUrl &&
                             <Link href={`https://${row.original.IntroMovieUrl}`} className="flex"
                                 target="_blank" rel="noopener noreferrer">
-                                <img src="/content/external_link.svg" className='w-5 mr-2' />
+                                <Image src="/content/external_link.svg" className='w-5 mr-2' width={24} height={20} alt="" />
                                 YouTubeへ
                             </Link>
                             || <span className={`pl-7`}>未登録</span>
-
                         }
                     </>
                 </span>
@@ -113,12 +113,12 @@ export function VtuberDeleteTable({ posts }: VtuberDeleteTableProps) {
             <table {...getTableProps()} className={TableCss.regular}>
                 <thead className={`${TableCss.regularThead}`}>
                     {headerGroups.map((headerGroup) => (
-                        <tr {...headerGroup.getHeaderGroupProps()}>
+                        <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
                             {headerGroup.headers.map((column) => (
-                                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                <th {...column.getHeaderProps(column.getSortByToggleProps())} key={headerGroup.id}>
                                     {column.render('Header')}
                                     <span>
-                                        {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <img src="/content/sort.svg" className='inline mx-1 h-5' />}
+                                        {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <Image src="/content/sort.svg" className='inline mx-1 h-5' width={24} height={20} alt="" />}
                                     </span>
                                 </th>
                             ))}
@@ -129,9 +129,9 @@ export function VtuberDeleteTable({ posts }: VtuberDeleteTableProps) {
                     {rows.map((row, i) => {
                         prepareRow(row);
                         return (
-                            <tr {...row.getRowProps()} className={`${TableCss.regularTr}`}>
-                                {row.cells.map((cell) => {
-                                    return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                            <tr {...row.getRowProps()} className={`${TableCss.regularTr}`} key={i}>
+                                {row.cells.map((cell, j) => {
+                                    return <td {...cell.getCellProps()} key={j}>{cell.render('Cell')}</td>
                                 })}
                             </tr>
                         );
@@ -154,7 +154,7 @@ const deleteColumns: Column<ReceivedVtuber>[] = [
                         {row.original.IntroMovieUrl &&
                             <Link href={`https://${row.original.IntroMovieUrl}`} className="flex"
                                 target="_blank" rel="noopener noreferrer">
-                                <img src="/content/play_black.svg" className='w-5 mr-2' />
+                                <Image src="/content/play_black.svg" className='w-5 mr-2' width={24} height={20} alt="" />
                                 YouTubeへ
                             </Link>
                             || <span className={`pl-7`}>未登録</span>

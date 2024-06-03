@@ -14,6 +14,7 @@ import { KaraokeThinTable, KaraokeMinRandamTable } from '@/components/table/Kara
 import { ToClickTW } from '@/styles/tailwiind'
 import { getWindowSize } from '@/features/layout/Layout';
 import { ContextType } from '@/types/server'
+import Image from 'next/image';
 
 
 const pageName = "Top"
@@ -105,7 +106,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
                 className={
                   `${ToClickTW.regular}
                      absolute flex right-1 top-[1px]  `}>
-                <img src="/content/note.svg" className='h-5 mx-1 ' />
+                <Image src="/content/note.svg" className='h-5 mx-1 ' width={24} height={20} alt="" />
                 もっと見る
               </Link>
 
@@ -145,19 +146,19 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
           >
             <div className='mt-4 max-w-[1000px] '>
               <div className='flex '>
-                <img src="/content/human_white.svg" className='h-5 mr-1' />
+                <Image src="/content/human_white.svg" className='h-5 mr-1' width={24} height={20} alt="" />
                 <h2 className='h-5 flex-1 mb-1'>配信者</h2>
               </div>
 
               <div>
                 <VtuberTable posts={vtubers} /><br />
                 <h2 className='flex'>
-                  <img src="/content/movie.svg" className='h-5 mr-1' />
+                  <Image src="/content/movie.svg" className='h-5 mr-1' width={24} height={20} alt="" />
                   歌枠(動画)
                 </h2 >
                 <MovieTable posts={movies} handleMovieClickYouTube={handleMovieClickYouTube} /><br />
                 <h2 className='flex'>
-                  <img src="/content/note.svg" className='h-5 mr-1' />
+                  <Image src="/content/note.svg" className='h-5 mr-1' width={24} height={20} alt="" />
                   歌
                 </h2>
                 <KaraokeMinRandamTable
@@ -166,10 +167,10 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
                 />
               </div>
             </div>
+
           </div>
         </div>
       </div>
-
     </Layout >
   )
 };

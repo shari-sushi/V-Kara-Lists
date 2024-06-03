@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import https from 'https';
 import axios, { AxiosRequestConfig } from 'axios';
 import Link from 'next/link';
@@ -27,7 +27,8 @@ type TopPage = {
 }
 
 export default function SingsPage({ posts, isSignin }: TopPage) {
-    const karaokes = posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[];
+    // TODO : エラー文のオススメで指示があったからuseMemoを使ったが、このuseMemoの使い方は本来ではないかも。useMemoはパフォーマンスを上げるためであって機能のためのものじゃないはず。
+    const karaokes = useMemo(() => posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke], [posts]);
 
     // ようつべ用
     const primaryYoutubeUrl = "5WzeYsoGCZc" //船長　kORHSmXcYNc, 00:08:29
@@ -50,7 +51,7 @@ export default function SingsPage({ posts, isSignin }: TopPage) {
     useEffect(() => {
         const filterdkaraokes = FilterKaraokesByParentContent(karaokes, selectedVtuber, selectedMovie)
         setFilteredKarakes(filterdkaraokes)
-    }, [selectedVtuber, selectedMovie]);
+    }, [selectedVtuber, selectedMovie, karaokes]);
 
     return (
         <Layout pageName={pageName} isSignin={isSignin}>

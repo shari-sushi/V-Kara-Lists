@@ -11,6 +11,7 @@ import { SigninContext } from '@/components/layout/Layout'
 import { ConvertStringToTime } from '../Conversion'
 import { TableCss } from '@/styles/tailwiind'
 import type { FavoriteColumn, KaraokeTablefilterInputProps, KaraokeTablePagenationButtonsProps as TablePagenationButtonsProps } from './types'
+import Image from "next/image";
 
 export const YouTubePlayerContext = React.createContext({} as {
     handleMovieClickYouTube(movieId: string, time: number): void;
@@ -68,8 +69,8 @@ export function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumn)
         <div className="flex justify-center">
             <button className={`${TableTW.favoriteColumn} relative flex `} onClick={handleClick}>
                 {isFavNow ?
-                    <img src="/content/heart_pink.svg" className='flex w-5 m-1 mr-0' />
-                    : <img src="/content/heart_white.svg" className='flex w-5 m-1 mr-0' />
+                    <Image src="/content/heart_pink.svg" className='flex w-5 m-1 mr-0' width={24} height={20} alt="" />
+                    : <Image src="/content/heart_white.svg" className='flex w-5 m-1 mr-0' width={24} height={20} alt="" />
                 }
 
                 {isFavNow == isFav ? count : isFavNow ? count + 1 : count - 1}
@@ -94,7 +95,9 @@ export const KaraokeBasicColumuns: ColumnDef<ReceivedKaraoke>[] = [
     {
         header: "曲名(Click it)", accessorKey: "SongName", enableSorting: true,
         cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
+            // eslint-disable-next-line react-hooks/rules-of-hooks
             const { handleMovieClickYouTube } = useContext(YouTubePlayerContext) //表示ページに再生したいデータを渡す
+            // eslint-disable-next-line react-hooks/rules-of-hooks
             const { setSelectedPost } = useContext(SeletctPostContext)
             const handleClickPlay = (post: ReceivedKaraoke) => {
                 handleMovieClickYouTube(
@@ -103,6 +106,7 @@ export const KaraokeBasicColumuns: ColumnDef<ReceivedKaraoke>[] = [
                 );
                 setSelectedPost(post)
             };
+            // eslint-disable-next-line react-hooks/rules-of-hooks
             const [isDisplay, setIsDisplay] = useState<boolean>(false);
             const handleClick = async () => {
                 const url = "https://" + row.original.MovieUrl + "&t=" + ConvertStringToTime(row.original.SingStart)
@@ -117,7 +121,7 @@ export const KaraokeBasicColumuns: ColumnDef<ReceivedKaraoke>[] = [
                     <button className="flex"
                         onClick={() => handleClickPlay(row.original)}
                     >
-                        <img src="/content/play_black.svg" className='w-5 mr-1 bottom-0' />
+                        <Image src="/content/play_black.svg" className='w-5 mr-1 bottom-0' width={24} height={20} alt="" />
                         {row.original.SongName}
                     </button>
 
@@ -125,7 +129,7 @@ export const KaraokeBasicColumuns: ColumnDef<ReceivedKaraoke>[] = [
                         <button className="flex "
                             onClick={() => handleClick()}
                         >
-                            <img src="/content/copy_gray.svg" className='h-4 mr-2' />
+                            <Image src="/content/copy_gray.svg" className='h-4 mr-2' width={24} height={20} alt="" />
                         </button>
                         {isDisplay &&
                             <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">
