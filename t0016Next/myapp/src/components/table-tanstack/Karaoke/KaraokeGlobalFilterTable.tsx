@@ -14,11 +14,13 @@ import { ReceivedKaraoke } from "@/types/vtuber_content";
 import { TableCss } from '@/styles/tailwiind'
 import { KaraokeGlobalFilterColumns, KaraokeTableAFilterInput, KaraokeTableFilterInput, KaraokeTablePagenationButtons, SeletctPostContext, YouTubePlayerContext } from '../Commons'
 import { KaraokeTableReturnPostProps } from "../types";
+import Image from "next/image";
 
 export default function KaraokeGlobalFilterTable({ posts, handleMovieClickYouTube, setSelectedPost }: KaraokeTableReturnPostProps) {
-    const karoakes = posts || [{} as ReceivedKaraoke];
+    const karaokes = useMemo(() => posts || [{} as ReceivedKaraoke], [posts]);
+
     const maxPageSize = 99999
-    const [data, setData] = useState<ReceivedKaraoke[]>(karoakes);
+    const [data, setData] = useState<ReceivedKaraoke[]>(karaokes);
 
     const [sorting, setSorting] = React.useState<SortingState>([])
 
@@ -27,10 +29,10 @@ export default function KaraokeGlobalFilterTable({ posts, handleMovieClickYouTub
 
     useEffect(() => {
         const fetchData = async () => {
-            setData(await karoakes);
+            setData(await karaokes);
         };
         fetchData();
-    }, [karoakes]);
+    }, [karaokes]);
 
     const columns = useMemo(() => KaraokeGlobalFilterColumns, []);
 
@@ -85,7 +87,7 @@ export default function KaraokeGlobalFilterTable({ posts, handleMovieClickYouTub
                                                             header.getContext()
                                                         )}
                                                         <span className="className='inline-block w-6 h-5'">
-                                                            {header.column.getIsSorted() === false && <img src="/content/sort.svg" className='h-5' />}
+                                                            {header.column.getIsSorted() === false && <Image src="/content/sort.svg" className='h-5' width={24} height={20} alt="" />}
                                                             {header.column.getIsSorted() === 'asc' && <span>🔼</span>}
                                                             {header.column.getIsSorted() === 'desc' && <span >🔽</span>}
                                                         </span>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Select from 'react-select';
 import type { BasicDataProps, ReceivedMovie } from '@/types/vtuber_content';
 import { DropStyle } from './common'
@@ -17,7 +17,8 @@ type DropDownMovieProps = {
 };
 
 export const DropDownMovie = ({ posts, selectedVtuber, setSelectedMovie, clearMovieHandler }: DropDownMovieProps) => {
-    const movies = posts?.vtubers_movies || [{} as ReceivedMovie]
+    const movies = useMemo(() => posts?.vtubers_movies || [{} as ReceivedMovie], [posts]);
+
     const handleMovieClear = () => {
         setSelectedMovie("");
         clearMovieHandler();
@@ -45,7 +46,7 @@ export const DropDownMovie = ({ posts, selectedVtuber, setSelectedMovie, clearMo
             };
             filterMoviesBySelectedVtuber();
         }
-    }, [selectedVtuber, movies]);
+    }, [selectedVtuber, setSelectedMovie, movies]);
 
     return (
         <Select

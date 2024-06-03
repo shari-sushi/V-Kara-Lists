@@ -8,6 +8,8 @@ import { ReceivedMovie, FavoriteMovie } from "@/types/vtuber_content";
 import { ToDeleteContext } from '@/pages/crud/delete'
 import { TableCss, } from '@/styles/tailwiind'
 import { SigninContext } from "../layout/Layout";
+import Image from "next/image";
+import { cp } from "fs";
 
 
 // topページ, mypage用
@@ -36,12 +38,12 @@ export function MovieTable({ posts, handleMovieClickYouTube }: MovieTableProps) 
                 <table {...getTableProps()} className={`${TableCss.regular} `}>
                     <thead className={`${TableCss.regularThead}`}>
                         {headerGroups.map((headerGroup) => (
-                            <tr {...headerGroup.getHeaderGroupProps()}>
+                            <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
                                 {headerGroup.headers.map((column) => (
-                                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                    <th {...column.getHeaderProps(column.getSortByToggleProps())} key={column.id}>
                                         {column.render('Header')}
                                         <span>
-                                            {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <img src="/content/sort.svg" className='inline mx-1 h-5' />}
+                                            {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <Image src="/content/sort.svg" className='inline mx-1 h-5' alt={"Sortable mark"} width={24} height={20} />}
                                         </span>
                                     </th>
                                 ))}
@@ -52,9 +54,9 @@ export function MovieTable({ posts, handleMovieClickYouTube }: MovieTableProps) 
                         {rows.map((row, i) => {
                             prepareRow(row);
                             return (
-                                <tr {...row.getRowProps()} className={`${TableCss.regularTr}`}>
-                                    {row.cells.map((cell) => {
-                                        return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                <tr {...row.getRowProps()} className={`${TableCss.regularTr}`} key={i}>
+                                    {row.cells.map((cell, j) => {
+                                        return <td {...cell.getCellProps()} key={j}>{cell.render('Cell')}</td>
                                     })}
                                 </tr>
                             );
@@ -77,7 +79,7 @@ const columns: Column<ReceivedMovie>[] = [
                     <button className="flex"
                         onClick={() => handleMovieClickYouTube(row.original.MovieUrl, 1)}
                     >
-                        <img src="/content/play_black.svg" className='w-5 mr-2' />
+                        <Image src="/content/play_black.svg" className='w-5 mr-2' alt="" width={24} height={20} />
                         {row.original.MovieTitle}
                     </button>
                 </span>
@@ -153,8 +155,8 @@ function FavoriteColumn({ count, isFav, movie }: FavoriteColumn) {
         <div className="flex justify-center">
             <button className={`${TableCss.favoriteColumn} relative flex`} onClick={handleClick}>
                 {isFavNow ?
-                    <img src="/content/heart_pink.svg" className='flex w-5 m-1 mr-0' />
-                    : <img src="/content/heart_white.svg" className='flex w-5 m-1 mr-0' />
+                    <Image src="/content/heart_pink.svg" className='flex w-5 m-1 mr-0' alt="" width={24} height={20} />
+                    : <Image src="/content/heart_white.svg" className='flex w-5 m-1 mr-0' alt="" width={24} height={20} />
                 }
                 {isFavNow == isFav ? count : isFavNow ? count + 1 : count - 1}
 
@@ -191,12 +193,12 @@ export function MovieDeleteTable({ posts, handleMovieClickYouTube }: MovieDelete
                 <table {...getTableProps()} className={`${TableCss.regular}`}>
                     <thead className={`${TableCss.regularThead}`}>
                         {headerGroups.map((headerGroup) => (
-                            <tr {...headerGroup.getHeaderGroupProps()}>
+                            <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
                                 {headerGroup.headers.map((column) => (
-                                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                    <th {...column.getHeaderProps(column.getSortByToggleProps())} key={column.id}>
                                         {column.render('Header')}
                                         <span>
-                                            {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <img src="/content/sort.svg" className='inline mx-1 h-5' />}
+                                            {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <Image src="/content/sort.svg" className='inline mx-1 h-5' alt="" width={24} height={20} />}
                                         </span>
                                     </th>
                                 ))}
@@ -207,9 +209,9 @@ export function MovieDeleteTable({ posts, handleMovieClickYouTube }: MovieDelete
                         {rows.map((row, i) => {
                             prepareRow(row);
                             return (
-                                <tr {...row.getRowProps()} className={`${TableCss.regularTr}`}>
-                                    {row.cells.map((cell) => {
-                                        return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                <tr {...row.getRowProps()} className={`${TableCss.regularTr}`} key={i}>
+                                    {row.cells.map((cell, j) => {
+                                        return <td {...cell.getCellProps()} key={j}>{cell.render('Cell')}</td>
                                     })}
                                 </tr>
                             );
@@ -236,7 +238,7 @@ const deleteColumns: Column<ReceivedMovie>[] = [
                     <button className="flex"
                         onClick={() => handleClick(row.original.MovieUrl, 1)}
                     >
-                        <img src="/content/play_black.svg" className='w-5 mr-2' />
+                        <Image src="/content/play_black.svg" className='w-5 mr-2' alt="" width={24} height={20} />
                         {row.original.MovieTitle}
                     </button>
                 </span>)
