@@ -6,11 +6,12 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
-	domain "github.com/sharin-sushi/0016go_next_relation/domain"
-	"github.com/sharin-sushi/0016go_next_relation/interfaces/database"
-
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+
+	domain "github.com/sharin-sushi/0016go_next_relation/domain"
+	"github.com/sharin-sushi/0016go_next_relation/interfaces/controllers/common"
+	"github.com/sharin-sushi/0016go_next_relation/interfaces/database"
 )
 
 type SqlHandler struct {
@@ -23,63 +24,68 @@ func init() {
 
 // 似たような処理がSetListenerIdintoCookie()にもあるので、envを変更するときは注意
 func getEnvVar() {
-	goEnv := os.Getenv("GO_ENV") //ローカルpc上でのみ設定
-	isDockerCompose := os.Getenv("IS_DOCKER_COMPOSE")
-	if goEnv == "" && isDockerCompose == "" {
+	if common.IsOnCloud {
 		//クラウド環境
 		fmt.Println("クラウド環境で起動")
-		envCheck(goEnv, isDockerCompose)
-	} else if goEnv == "" && isDockerCompose == "true" {
+	} else if common.IsOnLoclaWithDockerCompose {
 		// ローカルのdocker上(compose使用)
 		fmt.Println("ローカルのdockerコンテナ内で起動")
-		envCheck(goEnv, isDockerCompose)
-	} else if goEnv == "development" && isDockerCompose == "" {
+	} else if common.IsOnLoclaWithOutDockerCompose {
 		//VSCodeで起動
 		fmt.Println("VSCodeで起動。godotenv.Load使用")
 		err := godotenv.Load("../.env")
 		if err == nil {
 			fmt.Println("got .env file sucussesly. retry os.Getenv")
-			goEnv := os.Getenv("GO_ENV")
-			envCheck(goEnv, isDockerCompose)
 		} else {
 			fmt.Println("godotenvで.envファイル取得失敗")
-			envCheck(goEnv, isDockerCompose)
 		}
 	}
-}
-
-func envCheck(goEnv, isDockerCompose string) {
-	fmt.Printf("goEnv == %v && isDocker == %v \n", goEnv, isDockerCompose)
 
 	guest := os.Getenv("GUEST_USER_NAME")
-	fmt.Printf("GUEST_USER_NAME=%v \n", guest)
+	fmt.Printf("「%v」の中身が空でなければ環境変数を読み込めてるはず。 \n", guest)
 }
 
 func dbInit() database.SqlHandler {
 	user := os.Getenv("MYSQL_USER")
 	pw := os.Getenv("MYSQL_PASSWORD")
-	db_name := ""
+	dbName := ""
 	port := "3306"
-	dbUrL := ""
-	path := ""
+	dbUrl := ""
 
-	isDockerCompose := os.Getenv("IS_DOCKER_COMPOSE")
-	goEnv := os.Getenv("GO_ENV")
-
-	isOnCloud := goEnv == "" && isDockerCompose == ""
-
-	if isOnCloud {
+	if common.IsOnCloud {
 		//クラウド環境
-		dbUrL = os.Getenv("RDS_END_PIONT")
-		db_name = os.Getenv("AWS_DATABASE")
-	} else if (goEnv == "" && isDockerCompose == "true") || (goEnv == "development" && isDockerCompose == "") {
-		// ローカルのdocker上(compose使用) or  VSCodeで起動
-		dbUrL = "localhost"
-		user = "root" //応急処置
-		db_name = os.Getenv("MYSQL_DATABASE")
+		dbUrl = os.Getenv("RDS_END_PIONT")
+		dbName = os.Getenv("AWS_DATABASE")
+		fmt.Printf("環境変数より取得: dbUrl=%v, dbName=%v, \n", dbUrl, dbName)
+
+		// クラウド環境で、環境変数使ってなくて、
+		// MySQLとGoがlocal接続するよ(１つのインスタンス内で両方立ててるとか)みたいな状況用
+		if dbName == "" && dbUrl == "" {
+			dbName = "v_kara_db"
+			dbUrl = "localhost"
+			// mysqlでユーザー作って、// 権限も付与すること
+			user = "shari"
+			pw = "shari_sushi"
+		}
+	} else if common.IsOnLoclaWithDockerCompose {
+		// Golangはローカルのdocker-compose or  VSCodeで起動
+		// MySQLはローカルのdocker上(compose使用) で起動
+		if user == "" {
+			user = "root"
+		}
+		dbUrl = "v_kara_db"
+		dbName = os.Getenv("MYSQL_DATABASE")
+	} else if common.IsOnLoclaWithOutDockerCompose {
+		// Golangはローカルのdocker-compose or  VSCodeで起動
+		// MySQLはローカルでdockerを使用せずに起動
+		if user == "" {
+			user = "root"
+		}
+		dbUrl = "localhost"
+		dbName = os.Getenv("MYSQL_DATABASE")
 	}
 
-	path = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=true", user, pw, dbUrL, port, db_name)
+	path := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=true", user, pw, dbUrl, port, dbName)
 
 	fmt.Printf("path=%v \n", path)
 	var err error

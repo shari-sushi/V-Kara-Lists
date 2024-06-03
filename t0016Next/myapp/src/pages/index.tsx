@@ -14,6 +14,7 @@ import { KaraokeThinTable, KaraokeMinRandamTable } from '@/components/table/Kara
 import { ToClickTW } from '@/styles/tailwiind'
 import { getWindowSize } from '@/features/layout/Layout';
 import { ContextType } from '@/types/server'
+import Image from 'next/image';
 
 
 const pageName = "Top"
@@ -60,7 +61,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
           <hgroup className='pb-1 md:pb-3 '>
             {/* <a>videoId= {currentMovieId}, start= {start}秒 = {Math.floor(start / 60)}分 {Math.floor(start % 60)}秒</a > */}
             <h1 className="flex justify-center text-xl sm:text-2xl md:text-3xl font-bold underline ">
-              V-kara (VTuber-karaoke-Lists)
+              V-Karaoke (VTuber-Karaoke-Lists)
             </h1>
             <h2 className='flex justify-center text-sm  md:text-base'>
               「推し」の「歌枠」の聴きたい「歌」
@@ -73,9 +74,8 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
               <div className='flex-col '>
 
                 〇お知らせ <br />
-                <li>
-                  本サイトは視聴機能付きの「ユーザー参加型データベース」です。ご登録をお願いします！
-                </li>
+                <li><Link href="/sings/karoke" className='font-bold'>「カラオケ」</Link>ページの検索機能を強化しました(6/3)</li>
+                {/* <li>本サイトは視聴機能付きの「ユーザー参加型データベース」です。ご登録をお願いします！</li> */}
               </div>
             </h3>
           </hgroup>
@@ -106,7 +106,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
                 className={
                   `${ToClickTW.regular}
                      absolute flex right-1 top-[1px]  `}>
-                <img src="/content/note.svg" className='h-5 mx-1 ' />
+                <Image src="/content/note.svg" className='h-5 mx-1 ' width={24} height={20} alt="" />
                 もっと見る
               </Link>
 
@@ -127,7 +127,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
                   データの取得に失敗したようです。<br /><br />
                   ページを更新してもこの文章が表示される場合は<br />
                   お手数ですが、
-                  <Link href="https://twitter.com/sharin_prog" className='text-3xl text-[#b3d854] underline mx-2'>
+                  <Link href="https://twitter.com/shari_susi" className='text-3xl text-[#b3d854] underline mx-2'>
                     開発者のX</Link>
                   にDMいただけますと幸いです。<br /><br />
                   サーバーが落ちている可能性があります。
@@ -146,19 +146,19 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
           >
             <div className='mt-4 max-w-[1000px] '>
               <div className='flex '>
-                <img src="/content/human_white.svg" className='h-5 mr-1' />
+                <Image src="/content/human_white.svg" className='h-5 mr-1' width={24} height={20} alt="" />
                 <h2 className='h-5 flex-1 mb-1'>配信者</h2>
               </div>
 
               <div>
                 <VtuberTable posts={vtubers} /><br />
                 <h2 className='flex'>
-                  <img src="/content/movie.svg" className='h-5 mr-1' />
+                  <Image src="/content/movie.svg" className='h-5 mr-1' width={24} height={20} alt="" />
                   歌枠(動画)
                 </h2 >
                 <MovieTable posts={movies} handleMovieClickYouTube={handleMovieClickYouTube} /><br />
                 <h2 className='flex'>
-                  <img src="/content/note.svg" className='h-5 mr-1' />
+                  <Image src="/content/note.svg" className='h-5 mr-1' width={24} height={20} alt="" />
                   歌
                 </h2>
                 <KaraokeMinRandamTable
@@ -167,10 +167,10 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
                 />
               </div>
             </div>
+
           </div>
         </div>
       </div>
-
     </Layout >
   )
 };

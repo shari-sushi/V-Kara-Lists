@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Select from 'react-select';
 import type { BasicDataProps, ReceivedMovie } from '@/types/vtuber_content';
 import { DropStyle } from './common'
@@ -17,7 +17,8 @@ type DropDownMovieProps = {
 };
 
 export const DropDownMovie = ({ posts, selectedVtuber, setSelectedMovie, clearMovieHandler }: DropDownMovieProps) => {
-    const movies = posts?.vtubers_movies || [{} as ReceivedMovie]
+    const movies = useMemo(() => posts?.vtubers_movies || [{} as ReceivedMovie], [posts]);
+
     const handleMovieClear = () => {
         setSelectedMovie("");
         clearMovieHandler();
@@ -45,7 +46,7 @@ export const DropDownMovie = ({ posts, selectedVtuber, setSelectedMovie, clearMo
             };
             filterMoviesBySelectedVtuber();
         }
-    }, [selectedVtuber, movies]);
+    }, [selectedVtuber, setSelectedMovie, movies]);
 
     return (
         <Select
@@ -74,19 +75,20 @@ export const DropDownMovie = ({ posts, selectedVtuber, setSelectedMovie, clearMo
 };
 
 type DropDownAllMovieProps = {
-    posts: BasicDataProps;
+    preMovies: ReceivedMovie[];
     setSelectedMovie: (value: string) => void;
-    clearMovieHandler: () => void;
+    // ✩１
+    // clearMovieHandler: () => void;
 };
 
-export const DropDownAllMovie = ({ posts, setSelectedMovie, clearMovieHandler }: DropDownAllMovieProps) => {
-    const movies = posts?.vtubers_movies || [{} as ReceivedMovie]
-    const handleMovieClear = () => {
-        setSelectedMovie("");
-        clearMovieHandler();
-    };
+export const DropDownAllMovie = ({ preMovies, setSelectedMovie }: DropDownAllMovieProps) => {
+    // ✩１
+    // const handleMovieClear = () => {
+    // setSelectedMovie("");
+    // clearMovieHandler();
+    // };
 
-    const movieOptions = movies.map((movie: ReceivedMovie) => ({
+    const movieOptions = preMovies?.map((movie: ReceivedMovie) => ({
         value: movie.MovieUrl,
         label: movie.MovieTitle
     }));
@@ -109,7 +111,9 @@ export const DropDownAllMovie = ({ posts, setSelectedMovie, clearMovieHandler }:
                 if (option) {
                     setSelectedMovie(option.value);
                 } else {
-                    handleMovieClear();
+                    setSelectedMovie("");
+                    // ✩１(↓がある時は↑が不要)
+                    // handleMovieClear();
                 }
             }}
         />

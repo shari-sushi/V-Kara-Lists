@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import https from 'https';
 import axios, { AxiosRequestConfig } from 'axios';
+import Image from 'next/image'
 
-import { domain } from '@/../env'
+import { domain } from '@/../../env'
 import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from '@/types/vtuber_content';
 import { YouTubePlayer } from '@/components/moviePlayer/YoutubePlayer'
 import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
@@ -13,9 +14,12 @@ import { MovieTable } from '@/components/table/Movie'
 import { KaraokeThinTable, KaraokeMinRandamTable } from '@/components/table/Karaoke'
 import { ToClickTW } from '@/styles/tailwiind'
 import { ContextType } from '@/types/server'
+import { TestLink } from './multi';
 
 const pageName = "test"
+const pageNum = 0
 
+// http://localhost:80/test
 type TopPage = {
     posts: {
         vtubers: ReceivedVtuber[];
@@ -41,6 +45,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
 
     return (
         <Layout pageName={pageName} isSignin={isSignin}>
+            <TestLink thisPageNum={pageNum} />
             <div>
                 2024.03.05
             </div>
@@ -50,7 +55,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
                     <hr />
                     process.env.NODE_ENV={process.env.NODE_ENV}
                     <br /><br />
-                    ※取得できないとき、"process.env.NODE_ENV="と空となる
+                    ※取得できないとき、`process.env.NODE_ENV=`と空となる
                     <br /><br />
                     ローカルで、<br />
                     npm run devでは development <br />
@@ -62,7 +67,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
                     <hr />
                     process.env.EXSAMPLE_TEST={process.env.EXSAMPLE_TEST}
                     <br /><br />
-                    ※取得できないとき、"process.env.EXSAMPLE_TEST="と空となる
+                    ※取得できないとき、`process.env.EXSAMPLE_TEST=`と空となる
                     ※3/25時点ではEXSAMPLE_TESTを設定してない
                     <br /><br />
                 </div>
@@ -108,7 +113,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
                                 className={
                                     `${ToClickTW.regular}
                      absolute flex right-1 top-[1px]  `}>
-                                <img src="/content/note.svg" className='h-5 mx-1 ' />
+                                <Image src="/content/note.svg" width={20} height={20} alt="Note Icon" className="h-5 mx-1" />
                                 もっと見る
                             </Link>
 
@@ -131,18 +136,21 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
                     >
                         <div className='mt-4 max-w-[1000px] '>
                             <div className='flex '>
-                                <img src="/content/human_white.svg" className='h-5 mr-1' />
+                                <Image src="/content/human_white.svg" width={20} height={20} alt="Note Icon" className="h-5 mx-1" />
+
                                 <h2 className='h-5 flex-1 mb-1'>配信者</h2>
                             </div>
                             <VtuberTable posts={vtubers} /><br />
 
                             <h2 className='flex'>
-                                <img src="/content/movie.svg" className='h-5 mr-1' />
+                                <Image src="/content/movie.svg" width={20} height={20} alt="Note Icon" className="h-5 mx-1" />
+
                                 歌枠(動画)
                             </h2 >
                             <MovieTable posts={movies} handleMovieClickYouTube={handleMovieClickYouTube} /><br />
                             <h2 className='flex'>
-                                <img src="/content/note.svg" className='h-5 mr-1' />
+                                <Image src="/content/note.svg" width={20} height={20} alt="Note Icon" className="h-5 mx-1" />
+
                                 歌
                             </h2>
                             <KaraokeMinRandamTable

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import https from 'https';
 import axios, { AxiosRequestConfig } from 'axios';
 import Link from 'next/link';
@@ -10,11 +10,11 @@ import type { ReceivedKaraoke, ReceivedMovie, ReceivedVtuber } from '@/types/vtu
 import type { ContextType } from '@/types/server'
 import { YouTubePlayer } from '@/components/moviePlayer/YoutubePlayer'
 import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
-import { KaraokePagenatoinTable } from "@/components/table/Karaoke"
 import { DropDownVtuber } from '@/components/dropDown/Vtuber';
 import { DropDownMovie } from '@/components/dropDown/Movie';
+import KaraokeGlobalFilterTable from '@/components/table-tanstack/Karaoke/KaraokeGlobalFilterTable';
 
-const pageName = "カラオケ"
+const pageName = "カラオケ(全曲)"
 
 type TopPage = {
     posts: {
@@ -27,7 +27,8 @@ type TopPage = {
 }
 
 export default function SingsPage({ posts, isSignin }: TopPage) {
-    const karaokes = posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[];
+    // TODO : エラー文のオススメで指示があったからuseMemoを使ったが、このuseMemoの使い方は本来ではないかも。useMemoはパフォーマンスを上げるためであって機能のためのものじゃないはず。
+    const karaokes = useMemo(() => posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke], [posts]);
 
     // ようつべ用
     const primaryYoutubeUrl = "5WzeYsoGCZc" //船長　kORHSmXcYNc, 00:08:29
@@ -50,7 +51,7 @@ export default function SingsPage({ posts, isSignin }: TopPage) {
     useEffect(() => {
         const filterdkaraokes = FilterKaraokesByParentContent(karaokes, selectedVtuber, selectedMovie)
         setFilteredKarakes(filterdkaraokes)
-    }, [selectedVtuber, selectedMovie]);
+    }, [selectedVtuber, selectedMovie, karaokes]);
 
     return (
         <Layout pageName={pageName} isSignin={isSignin}>
@@ -65,7 +66,7 @@ export default function SingsPage({ posts, isSignin }: TopPage) {
                         >
                             {/* 左側の要素 */}
                             <div className='flex flex-col mr-1 '>
-                                <div className='relative flex  justify-center'>
+                                <div className='relative flex justify-center'>
                                     <YouTubePlayer videoId={currentMovieId} start={start} />
                                 </div>
                             </div>
@@ -95,7 +96,7 @@ export default function SingsPage({ posts, isSignin }: TopPage) {
                     </div>
                 </div>
                 <div className="flex flex-col w-full">
-                    <KaraokePagenatoinTable
+                    <KaraokeGlobalFilterTable
                         posts={filteredKaraokes}
                         handleMovieClickYouTube={handleMovieClickYouTube}
                         setSelectedPost={setSelectedPost}

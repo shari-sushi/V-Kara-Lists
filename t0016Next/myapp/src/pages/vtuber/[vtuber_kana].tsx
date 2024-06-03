@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import https from 'https';
 import axios, { AxiosRequestConfig } from 'axios';
 import Link from 'next/link';
@@ -6,29 +6,28 @@ import Link from 'next/link';
 import { domain } from '@/../env'
 import { Layout } from '@/components/layout/Layout'
 import { ToClickTW } from '@/styles/tailwiind';
-import type { ReceivedKaraoke, ReceivedMovie, ReceivedVtuber } from '@/types/vtuber_content';
+import type { ReceivedKaraoke, ReceivedMovie } from '@/types/vtuber_content';
 import { YouTubePlayer } from '@/components/moviePlayer/YoutubePlayer'
 import { ConvertStringToTime, ExtractVideoId } from '@/components/Conversion'
-import { KaraokePagenatoinTable } from "@/components/table/Karaoke"
 import { DropDownAllMovie } from '@/components/dropDown/Movie';
 import { NotFoundVtuber } from '@/components/layout/Main';
 import { GetServerSidePropsContext } from 'next';
 import { generateRandomNumber } from '@/components/SomeFunction';
+import KaraokeFilterTableWithoutVTuberName from '@/components/table-tanstack/Karaoke/KaraokeFilterTableWithoutVTuberName';
 
-const pageName = "Vtuber特設ページ" // VTuberの名前になるように後で代入している
+const pageName = "Vtuber特設ページ" // VTuberの名前になるようにレンダリングフェーズで変更している
 
 type VtuberPage = {
     posts: {
-        vtubers: ReceivedVtuber[];
         vtubers_movies: ReceivedMovie[];
         vtubers_movies_karaokes: ReceivedKaraoke[];
     };
     isSignin: boolean;
 }
 
-export default function SingsPage({ posts, isSignin }: VtuberPage) {
-    const movies = posts?.vtubers_movies || [] as ReceivedMovie[];
-    const karaokes = posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[];
+export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
+    const karaokes = useMemo(() => posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke], [posts]);
+
     const playKaraokeNumber = generateRandomNumber(karaokes.length)
 
     const url = "www.youtube.com/watch?v=kORHSmXcYNc"
@@ -44,21 +43,18 @@ export default function SingsPage({ posts, isSignin }: VtuberPage) {
         setStart(start);
     }
 
-
     const [selectedMovie, setSelectedMovie] = useState<string>("");
     const [filteredKaraokes, setFilteredKarakes] = useState<ReceivedKaraoke[]>([]);
 
     useEffect(() => {
         const filterdkaraokes = FilterKaraokesByUrl(karaokes, selectedMovie)
         setFilteredKarakes(filterdkaraokes)
-    }, [selectedMovie]);
+    }, [karaokes, selectedMovie]);
 
     // propsとして必要
     const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
-    const clearMovieHandler = () => {
-    };
 
-    if (movies.length == 0) {
+    if (karaokes.length == 0) {
         return (
             <Layout pageName={pageName} isSignin={isSignin}>
                 <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
@@ -89,7 +85,6 @@ export default function SingsPage({ posts, isSignin }: VtuberPage) {
         )
     }
 
-
     return (
         <Layout pageName={`${karaokes[0].VtuberName}`} isSignin={isSignin}>
             <div className='flex flex-col w-full max-w-[1000px] mx-auto'>
@@ -116,9 +111,9 @@ export default function SingsPage({ posts, isSignin }: VtuberPage) {
                                 </div>
                                 <span >動画絞込み（入力できます）</span>
                                 <DropDownAllMovie
-                                    posts={posts}
+                                    preMovies={posts.vtubers_movies}
                                     setSelectedMovie={setSelectedMovie}
-                                    clearMovieHandler={clearMovieHandler}
+                                // clearMovieHandler={clearMovieHandler}
                                 />
                                 <div className='pt-5'>
                                     <span>お探しの歌枠や歌がありませんか？</span> <br />
@@ -130,7 +125,7 @@ export default function SingsPage({ posts, isSignin }: VtuberPage) {
                     </div>
                 </div>
                 <div className="flex flex-col w-full">
-                    <KaraokePagenatoinTable
+                    <KaraokeFilterTableWithoutVTuberName
                         posts={filteredKaraokes}
                         handleMovieClickYouTube={handleMovieClickYouTube}
                         setSelectedPost={setSelectedPost}
