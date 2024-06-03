@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import https from 'https';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -15,36 +15,15 @@ import { NotLoggedIn } from '@/components/layout/Main';
 
 const pageName = "コンテンツ編集"
 
-
 export const EditPage = ({ posts, isSignin }: EditPageProps) => {
-    if (!isSignin) {
-        return (
-            <Layout pageName={pageName} isSignin={isSignin}>
-                <div>
-                    < NotLoggedIn />
-                </div>
-            </Layout>
-        )
-    };
-
-    const movies = posts?.vtubers_movies || [] as ReceivedMovie[];
-    const karaokes = posts?.vtubers_movies_karaokes || [] as ReceivedKaraoke[];
-    if (!isSignin) {
-        return (
-            <div className="by-3 mx-auto">
-                <h1>ログインが必要なサービスです</h1>
-                <Link href={`/user/signin`} ><u>ログイン</u></Link><br />
-                <Link href={`/user/signup`} ><u>会員登録</u></Link>
-                <GestLogin />
-            </div>
-        );
-    };
-
     const [selectedVtuber, setSelectedVtuber] = useState<number>(0);
     const [selectedMovie, setSelectedMovie] = useState<string>("");
     const [selectedKaraoke, setSelectedKaraoke] = useState<number>(0);
     const [currentVideoId, setCurrentVideoId] = useState<string>("AAsRtnbDs-0");
     const [currentStart, setCurrentStart] = useState<number>(27);
+
+    const movies = useMemo(() => posts?.vtubers_movies_karaokes || [{} as ReceivedMovie], [posts]);
+    const karaokes = useMemo(() => posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke], [posts]);
 
     useEffect(() => {
         const foundMovie = movies.find(movies => movies.MovieUrl === selectedMovie)
@@ -53,7 +32,7 @@ export const EditPage = ({ posts, isSignin }: EditPageProps) => {
             setCurrentVideoId(foundYoutubeId);
             setCurrentStart(1)
         }
-    }, [selectedMovie]);
+    }, [selectedMovie, setCurrentVideoId, setCurrentStart, movies]);
 
     const clearMovieHandler = () => {
         //中身空でもKaraokeのoptinosを空にしてくれるんだが…
@@ -69,7 +48,28 @@ export const EditPage = ({ posts, isSignin }: EditPageProps) => {
                 setCurrentStart(foundSingStart);
             }
         }
-    }, [selectedMovie, selectedKaraoke]);
+    }, [selectedVtuber, selectedMovie, selectedKaraoke, karaokes]);
+
+    if (!isSignin) {
+        return (
+            <Layout pageName={pageName} isSignin={isSignin}>
+                <div>
+                    < NotLoggedIn />
+                </div>
+            </Layout>
+        )
+    };
+
+    if (!isSignin) {
+        return (
+            <div className="by-3 mx-auto">
+                <h1>ログインが必要なサービスです</h1>
+                <Link href={`/user/signin`} ><u>ログイン</u></Link><br />
+                <Link href={`/user/signup`} ><u>会員登録</u></Link>
+                <GestLogin />
+            </div>
+        );
+    };
 
     return (
         <Layout pageName={pageName} isSignin={isSignin}>

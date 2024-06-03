@@ -8,6 +8,7 @@ import { HeaderCss, FooterTW } from '@/styles/tailwiind'
 import { ToClickTW } from '@/styles/tailwiind'
 import { getWindowSize } from "@/features/layout/Layout";
 import { CreateLink, DeleteLink, EditLink, KaraokeLink, OriginalSongLink, LoginLink, MyPageLink, ProfileLink, SignUpLink, TitleLink, TopLink } from "../button/link/Humbarger";
+import Image from "next/image";
 
 type LayoutProps = {
     pageName: string;
@@ -50,7 +51,7 @@ const Header = ({ pageName }: HeaderProps) => {
     const { isSignin } = useContext(SigninContext)
 
     const [isOpen, setIsOpen] = useState<Boolean>(false)
-    const { width, height } = getWindowSize()
+    const { width } = getWindowSize()
 
     if (width > 768) {
         return (
@@ -157,7 +158,7 @@ const Header = ({ pageName }: HeaderProps) => {
                         <button onClick={() => setIsOpen(!isOpen)}
                             className="hover:bg-[#657261] rounded-lg "
                         >
-                            <img src="/user/hamburger.svg" className="h-7 " />
+                            <Image src="/user/hamburger.svg" className="h-7" width={24} height={20} alt={""} />
                         </button>
 
                     </div>
@@ -172,7 +173,7 @@ const Header = ({ pageName }: HeaderProps) => {
                                 <button onClick={() => setIsOpen(!isOpen)}
                                     className="absolute right-0 top-0 h-7 hover:bg-[#1f2724] rounded-lg  "
                                 >
-                                    <img src="/user/cross_bold.svg" className="h-7 " />
+                                    <Image src="/user/cross_bold.svg" className="h-7 " width={24} height={20} alt={""} />
                                 </button>
 
                                 <div id="area" className="flex flex-col h-full" >

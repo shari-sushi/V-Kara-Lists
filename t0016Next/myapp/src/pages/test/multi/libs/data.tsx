@@ -2,6 +2,10 @@ import { VtuberId } from "@/types/vtuber_content";
 import { ColumnDef } from "@tanstack/react-table";
 import Image from 'next/image';
 
+export default function Dummy() {
+    return <></>
+}
+
 export const VtuberCOLUMNS: ColumnDef<any>[] = [
     {
         header: "お名前",
