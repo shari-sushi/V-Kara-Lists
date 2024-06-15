@@ -24,10 +24,10 @@ export function VtuberTable({ posts }: VtuberTableProps) {
     return (
         <div className="w-full overflow-scroll md:overflow-hidden">
             <table {...getTableProps()} className={`${TableCss.regular} caption-bottom`}>
-                <thead className={`${TableCss.regularThead}`}>
-                    {headerGroups.map((headerGroup) => (
-                        <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
-                            {headerGroup.headers.map((column) => (
+                <thead className={`${TableCss.regularThead}`} >
+                    {headerGroups.map((headerGroup, i) => (
+                        <tr {...headerGroup.getHeaderGroupProps()} key={i}>
+                            {headerGroup.headers.map((column, j) => (
                                 <th {...column.getHeaderProps(column.getSortByToggleProps())} key={column.id}>
                                     {column.render('Header')}
                                     <span>

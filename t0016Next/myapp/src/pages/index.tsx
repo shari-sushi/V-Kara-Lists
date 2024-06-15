@@ -12,10 +12,8 @@ import { VtuberTable } from '@/components/table/Vtuber'
 import { MovieTable } from '@/components/table/Movie'
 import { KaraokeThinTable, KaraokeMinRandamTable } from '@/components/table/Karaoke'
 import { ToClickTW } from '@/styles/tailwiind'
-import { getWindowSize } from '@/features/layout/Layout';
 import { ContextType } from '@/types/server'
 import Image from 'next/image';
-
 
 const pageName = "Top"
 
@@ -36,7 +34,6 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
   const latestKaraokes = posts?.latest_karaokes || [] as ReceivedKaraoke[];
   const [start, setStart] = useState<number>((36 * 60 + 41))
   const [currentMovieId, setCurrentMovieId] = useState<string>("E7x2TZ1_Ys4");
-  const { height, width } = getWindowSize();
 
   const handleMovieClickYouTube = (url: string, start: number) => {
     //クリティカルな環境バグなので再発時用に残しておく
@@ -74,7 +71,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
               <div className='flex-col '>
 
                 〇お知らせ <br />
-                <li><Link href="/sings/karoke" className='font-bold'>「カラオケ」</Link>ページの検索機能を強化しました(6/3)</li>
+                <li><Link href="/sings/karaoke" className='font-bold'>「カラオケ」</Link>ページの検索機能を強化しました(6/3)</li>
                 {/* <li>本サイトは視聴機能付きの「ユーザー参加型データベース」です。ご登録をお願いします！</li> */}
               </div>
             </h3>
@@ -91,7 +88,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
             {/* 左側の要素 */}
             <div className='flex flex-col mr-1 '>
               <div className='relative flex  justify-center'>
-                <YouTubePlayer videoId={currentMovieId} start={start} />
+                {/* <YouTubePlayer videoId={currentMovieId} start={start} /> */}
               </div>
               <span className='relative flex md:top-2 justify-center md:mb-3'>
                 {"音量差 注意（特に個人→大手）"}
@@ -106,7 +103,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
                 className={
                   `${ToClickTW.regular}
                      absolute flex right-1 top-[1px]  `}>
-                <Image src="/content/note.svg" className='h-5 mx-1 ' width={24} height={20} alt="" />
+                <Image src="/content/note.svg" className='h-5 mx-1 ' width={24} height={20} alt="note image" />
                 もっと見る
               </Link>
 

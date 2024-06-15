@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React, { useContext, useState } from "react";
+import React, { useContext, useMemo, useState, useEffect } from "react";
 
 import { GestLogin, GestLoginForHamburger } from '../button/User'
 import { HeaderCss, FooterTW } from '@/styles/tailwiind'
@@ -9,6 +9,7 @@ import { ToClickTW } from '@/styles/tailwiind'
 import { getWindowSize } from "@/features/layout/Layout";
 import { CreateLink, DeleteLink, EditLink, KaraokeLink, OriginalSongLink, LoginLink, MyPageLink, ProfileLink, SignUpLink, TitleLink, TopLink } from "../button/link/Humbarger";
 import Image from "next/image";
+import useWindowSize from "@/hooks/useSetWindowSize";
 
 type LayoutProps = {
     pageName: string;
@@ -24,16 +25,16 @@ export function Layout({ pageName, children, isSignin }: LayoutProps) {
         <div className="h-full">
             <SigninContext.Provider value={{ isSignin }}>
                 <Head>
-                    <link rel="icon" href="/shari.ico" />
+                    <Link rel="icon" href="/shari.ico" />
                     <title>{`V-kara/${pageName}`}</title>
                 </Head>
                 <Header pageName={pageName} />
                 <main className="flex flex-col min-h-screen p-4 pt-8 ">
-                    <span className='md:absolute md:right-1 '>
+                    <div className='md:absolute md:right-1 '>
                         <span className="flex-1 "> {pageName}</span>
                         <span className="flex-1 px-1">|</span>
                         <span className="flex-1 ">{isSignin && "ログイン中" || '非ログイン中'}</span>
-                    </span>
+                    </div>
                     {children}
                 </main>
                 <Footer />
@@ -48,103 +49,109 @@ type HeaderProps = {
 
 const Header = ({ pageName }: HeaderProps) => {
     const pathName = usePathname();
+    // const { width } = useWindowSize()
     const { isSignin } = useContext(SigninContext)
 
     const [isOpen, setIsOpen] = useState<Boolean>(false)
     const { width } = getWindowSize()
-
     if (width > 768) {
         return (
-            <header className={`${HeaderCss.regular}`}>
-                <a href="#pageTop" />
-                <Link href="/" className="flex float-left bg-[#FFF6E4] text-[#000000] font-extrabold px-4 pb-1 pr-6 rounded-br-full ">
-                    V-kara
-                </Link>
-                <span className="flex float-right">
-                    <span className="px-1">
-                        <span >
-                            <Link href="/" className={`${ToClickTW.regular} mr-1`}>
-                                TOP
-                            </Link>
-                        </span>
-                        <span >
-                            <Link href="/sings/karaoke" className={`${ToClickTW.regular} mr-1`}>
-                                カラオケ
-                            </Link>
-                        </ span>
-                        <span >
-                            <Link href="/sings/original-song" className={`${ToClickTW.regular} mr-1`}>
-                                オリ曲
-                            </Link>
-                        </span>/
-                    </span >
+            <div>
 
-                    {isSignin &&
-                        <span className="px-1">
-                            <span className="pr-1">
-                                データの
-                            </span>
-                            <span className="pr-1">
-                                <Link href="/crud/create" className={`${ToClickTW.regular} `}>
-                                    登録
+                <header className={`${HeaderCss.regular}`}>
+                    <a href="#pageTop" />
+                    <Link href="/" className="flex float-left bg-[#FFF6E4] text-[#000000] font-extrabold px-4 pb-1 pr-6 rounded-br-full ">
+                        V-kara
+                    </Link>
+                    <div className="flex float-right">
+                        <div className="px-1">
+                            <span >
+                                <Link href="/" className={`${ToClickTW.regular} mr-1`}>
+                                    TOP
                                 </Link>
                             </span>
-                            <span className="pr-1">:</span>
-                            <span className="pr-1">
-                                <Link href="/crud/edit" className={`${ToClickTW.regular} `}>
-                                    編集
+                            <span >
+                                <Link href="/sings/karaoke" className={`${ToClickTW.regular} mr-1`}>
+                                    カラオケ
                                 </Link>
-                            </span>
-                            <span className="pr-1">:</span>
-                            <span className="pr-1">
-                                <Link href="/crud/delete" className={`${ToClickTW.regular} `}>
-                                    削除
+                            </ span>
+                            <span >
+                                <Link href="/sings/original-song" className={`${ToClickTW.regular} mr-1`}>
+                                    オリ曲
                                 </Link>
-                            </span>
-                            /
-                        </span>
-                    }
+                            </span>/
+                        </div >
 
-                    {!isSignin &&
-                        <div className="pr-1">
-                            <Link href="/user/signup" className={`${ToClickTW.regular} mr-1`}>
-                                会員登録
-                            </Link>
-                            <span className="pr-1">:</span>
-                            <Link href="/user/signin" className={`${ToClickTW.regular} mr-1`}>
-                                ログイン
-                            </Link>
-                            <span className="pr-1">:</span>
-                            <GestLogin />
-                        </div>
-                    }
-
-                    {isSignin &&
-                        <div>
-                            <span className="pr-1">
-                                <Link href="/user/mypage" className={`${ToClickTW.regular} `}>
-                                    マイページ
-                                </Link>
-                            </span>
-                            {pathName === "/user/mypage" &&
-                                <span >
-                                    <span className="pr-1">:</span>
-                                    <Link href="/user/profile" className={`${ToClickTW.regular} px-1`}>
-                                        プロフィール
+                        {isSignin &&
+                            <div className="px-1">
+                                <span className="pr-1">
+                                    データの
+                                </span>
+                                <span className="pr-1">
+                                    <Link href="/crud/create" className={`${ToClickTW.regular} `}>
+                                        登録
                                     </Link>
                                 </span>
-                            }
-                        </div>
-                    }
-                </span>
-            </header >
+                                <span className="pr-1">:</span>
+                                <span className="pr-1">
+                                    <Link href="/crud/edit" className={`${ToClickTW.regular} `}>
+                                        編集
+                                    </Link>
+                                </span>
+                                <span className="pr-1">:</span>
+                                <span className="pr-1">
+                                    <Link href="/crud/delete" className={`${ToClickTW.regular} `}>
+                                        削除
+                                    </Link>
+                                </span>
+                                /
+                            </div>
+                        }
+
+                        {!isSignin &&
+                            <div className="pr-1">
+                                <Link href="/user/signup" className={`${ToClickTW.regular} mr-1`}>
+                                    会員登録
+                                </Link>
+                                <span className="pr-1">:</span>
+                                <Link href="/user/signin" className={`${ToClickTW.regular} mr-1`}>
+                                    ログイン
+                                </Link>
+                                <span className="pr-1">:</span>
+                                <GestLogin />
+                            </div>
+                        }
+
+                        {isSignin &&
+                            <div>
+                                <span className="pr-1">
+                                    <Link href="/user/mypage" className={`${ToClickTW.regular} `}>
+                                        マイページ
+                                    </Link>
+                                </span>
+                                {pathName === "/user/mypage" &&
+                                    <div >
+                                        <span className="pr-1">:</span>
+                                        <Link href="/user/profile" className={`${ToClickTW.regular} px-1`}>
+                                            プロフィール
+                                        </Link>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </header >
+
+            </div>
+
         )
     } else {
+
         return (
             <header className={`${HeaderCss.regular}  z-40`}>
                 <a href="#pageTop" />
                 <TitleLink />
-                <span className={``}>
+                <div className={``}>
                     <div className=" h-6 flex float-right justify-end z-30  items-center ">
                         <Link href="/" className={`${ToClickTW.regular} mr-1 w-10 `}>
                             TOP
@@ -170,6 +177,7 @@ const Header = ({ pageName }: HeaderProps) => {
                                 className="absolute w-screen h-screen opacity-85 inset-0 bg-[#1f2724] z-10 ">
                             </button>
                             <div className={`absolute right-0 flex float-right flex-col h-screen w-[40%]  min-w-44 bg-[#657261] z-40  scroll-smooth`}>
+
                                 <button onClick={() => setIsOpen(!isOpen)}
                                     className="absolute right-0 top-0 h-7 hover:bg-[#1f2724] rounded-lg  "
                                 >
@@ -178,6 +186,8 @@ const Header = ({ pageName }: HeaderProps) => {
 
                                 <div id="area" className="flex flex-col h-full" >
                                     <hr id="hr1" className="flex w-[50%] my-4" />
+                                    <hr className=" w-[40%] my-4" />
+                                    <hr className=" w-[10%] my-4" />
                                     <div id="menu" className="absolute flex flex-col right-0 w-36 sm:w-48 mt-[20%]  rounded " >
                                         <div className=" flex flex-col ">
                                             <TopLink />
@@ -185,6 +195,8 @@ const Header = ({ pageName }: HeaderProps) => {
                                             <OriginalSongLink />
                                         </div>
                                         <hr className="w-[60%] top-10 right-0 my-3" />
+
+
                                         {!isSignin &&
                                             <div className=" flex flex-col " >
                                                 <SignUpLink />
@@ -193,7 +205,6 @@ const Header = ({ pageName }: HeaderProps) => {
                                                 <hr className=" w-[60%] top-10 right-0 my-3 " />
                                             </div>
                                         }
-
 
                                         {isSignin &&
                                             <div>
@@ -213,13 +224,12 @@ const Header = ({ pageName }: HeaderProps) => {
                                             </div>
                                         }
                                     </div>
-                                    <hr className=" w-[40%] my-4" />
-                                    <hr className=" w-[10%] my-4" />
+
                                 </div>
                             </div>
                         </div>
                     }
-                </span>
+                </div>
             </header >
         )
 
@@ -232,39 +242,39 @@ const Footer = () => {
     return (
         <footer className={`${FooterTW.regular}`}>
 
-            <span className="flex float-right">
+            <div className="flex float-right">
                 <Link href="/" className="mx-1">TOP</Link>:
                 <Link href="/sings/karaoke" className="mx-1">   カラオケ</Link>:
                 <Link href="/sings/original-song" className="mx-1">  オリ曲</Link>/
                 {isSignin &&
-                    <span className="mx-1">
+                    <div className="mx-1">
                         <Link href="/crud/create" className="mx-1">登録</Link>:
                         <Link href="/crud/edit" className="mx-1">編集</Link>:
                         <Link href="/crud/delete" className="mx-1">削除</Link>
                         /
-                    </span>
+                    </div>
                 }
 
                 {!isSignin &&
-                    <span className="mx-1">
+                    <div className="mx-1">
                         <Link href="/user/signup" className="mx-1">会員登録</Link>:
                         <Link href="/user/signin" className="mx-1">ログイン</Link>
-                    </span>
+                    </div>
                 }
 
                 {isSignin &&
-                    <span className="">
+                    <div className="">
                         <Link href="/user/mypage" className="mx-1">マイページ</Link>
                         {pathName === "/user/mypage" &&
-                            <span>:
+                            <div>:
                                 <Link href="/user/profile" className="mx-1">プロフィール</Link>
-                            </span>}
-                    </span>
+                            </div>}
+                    </div>
                 }
-            </span>
-            <a id="pageTop" className="flex float-left bg-[#FFF6E4] text-[#000000] font-extrabold px-4 pb-1 pr-6 rounded-tr-full ">
+            </div>
+            <div id="pageTop" className="flex float-left bg-[#FFF6E4] text-[#000000] font-extrabold px-4 pb-1 pr-6 rounded-tr-full ">
                 V-kara
-            </a>
+            </div>
         </footer >
     );
 }
