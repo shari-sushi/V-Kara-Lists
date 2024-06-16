@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import { GestLogin, GestLoginForHamburger } from '../button/User'
 import { HeaderCss, FooterTW } from '@/styles/tailwiind'
@@ -48,11 +48,15 @@ type HeaderProps = {
 
 const Header = ({ pageName }: HeaderProps) => {
     const pathName = usePathname();
-    // const { width } = useWindowSize()
     const { isSignin } = useContext(SigninContext)
 
     const [isOpen, setIsOpen] = useState<Boolean>(false)
-    const { width } = getWindowSize()
+    const [width, setWidth] = useState<number>(900)
+
+    useEffect(() => {
+        const { width } = getWindowSize()
+        setWidth(width)
+    }, [])
     if (width > 768) {
         return (
             <div>
