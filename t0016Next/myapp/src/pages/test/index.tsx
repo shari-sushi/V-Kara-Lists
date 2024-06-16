@@ -47,7 +47,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
         <Layout pageName={pageName} isSignin={isSignin}>
             <TestLink thisPageNum={pageNum} />
             <div>
-                2024.03.05
+                2024.06.04
             </div>
             <div className="flex justify-center md:flex-row flex-col m-6">
                 <div className="w-full h-max p-8 bg-black">

@@ -3,6 +3,8 @@ import YouTube from 'react-youtube';
 
 import { YouTubeTW } from '@/styles/tailwiind'
 import { getWindowSize } from '@/features/layout/Layout';
+import useWindowSize from '@/hooks/useSetWindowSize';
+import useHasWindow from '@/hooks/useHasWindow';
 
 export const YouTubePlayer = ({ videoId, start }: { videoId: string, start: number }) => {
   const [hasWindow, setHasWindow] = useState(false);
@@ -13,9 +15,14 @@ export const YouTubePlayer = ({ videoId, start }: { videoId: string, start: numb
   }, []);
 
   const { height: preHeight, width: preWidth } = getWindowSize();
+  // const { width: preWidth, height: preHeight } = useWindowSize()
+  // const hasWindow = useHasWindow()
+  // const preWidth = windowSize.width
+  // const preHeight = windowSize.height
   const aspectRatio = 9 / 16
-  // 横向き
-  if (preWidth > preHeight) {
+  const isHorizontally = preWidth > preHeight
+
+  if (isHorizontally) {
     if (preWidth > 950) {
       const height = 255;
       const width = Math.round(height / aspectRatio);
@@ -53,8 +60,7 @@ export const YouTubePlayer = ({ videoId, start }: { videoId: string, start: numb
     }
   }
 
-  // 縦向き
-  if (preHeight > preWidth) {
+  if (!isHorizontally) {
     if (preWidth >= 950) {
       const height = 255;
       const width = Math.round(height / aspectRatio);

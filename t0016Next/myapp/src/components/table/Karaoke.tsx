@@ -403,8 +403,8 @@ export const KaraokeThinTable = ({ posts, handleMovieClickYouTube }: KaraokeTabl
           <thead className={`${TableTW.regularThead}`}>
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
-                {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps(column.getSortByToggleProps())} className="px-2" key={column.id}>
+                {headerGroup.headers.map((column, i) => (
+                  <th {...column.getHeaderProps(column.getSortByToggleProps())} className="px-2" key={i}>
                     {column.render('Header')}
                     {column.isSorted ? (column.isSortedDesc ? '🔽' : '🔼') : <Image src="/content/sort.svg" width={24} height={20} alt="Sortable mark" className='inline-block w-6 h-5' />}
                   </th>
