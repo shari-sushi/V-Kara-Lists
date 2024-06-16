@@ -88,7 +88,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
             {/* 左側の要素 */}
             <div className='flex flex-col mr-1 '>
               <div className='relative flex  justify-center'>
-                {/* <YouTubePlayer videoId={currentMovieId} start={start} /> */}
+                <YouTubePlayer videoId={currentMovieId} start={start} />
               </div>
               <span className='relative flex md:top-2 justify-center md:mb-3'>
                 {"音量差 注意（特に個人→大手）"}
