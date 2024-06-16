@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React, { useContext, useMemo, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 
 import { GestLogin, GestLoginForHamburger } from '../button/User'
 import { HeaderCss, FooterTW } from '@/styles/tailwiind'
@@ -9,7 +9,6 @@ import { ToClickTW } from '@/styles/tailwiind'
 import { getWindowSize } from "@/features/layout/Layout";
 import { CreateLink, DeleteLink, EditLink, KaraokeLink, OriginalSongLink, LoginLink, MyPageLink, ProfileLink, SignUpLink, TitleLink, TopLink } from "../button/link/Humbarger";
 import Image from "next/image";
-import useWindowSize from "@/hooks/useSetWindowSize";
 
 type LayoutProps = {
     pageName: string;

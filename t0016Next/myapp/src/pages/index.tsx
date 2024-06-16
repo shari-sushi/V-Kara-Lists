@@ -56,7 +56,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
       <div className='inline-block flex-col pt-1 items-center justify-center'>
         <div className='flex flex-col '>
           <hgroup className='pb-1 md:pb-3 '>
-            {/* <a>videoId= {currentMovieId}, start= {start}秒 = {Math.floor(start / 60)}分 {Math.floor(start % 60)}秒</a > */}
+            <a>videoId= {currentMovieId}, start= {start}秒 = {Math.floor(start / 60)}分 {Math.floor(start % 60)}秒</a >
             <h1 className="flex justify-center text-xl sm:text-2xl md:text-3xl font-bold underline ">
               V-Karaoke (VTuber-Karaoke-Lists)
             </h1>
