@@ -45,6 +45,7 @@ export function Layout({ pageName, children, isSignin }: LayoutProps) {
 type HeaderProps = {
     pageName: string;
 }
+const md = 768
 
 const Header = ({ pageName }: HeaderProps) => {
     const pathName = usePathname();
@@ -57,7 +58,7 @@ const Header = ({ pageName }: HeaderProps) => {
         const { width } = getWindowSize()
         setWidth(width)
     }, [])
-    if (width > 768) {
+    if (width > md) {
         return (
             <div>
 
