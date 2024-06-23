@@ -24,7 +24,7 @@ export function Layout({ pageName, children, isSignin }: LayoutProps) {
         <div className="h-full">
             <SigninContext.Provider value={{ isSignin }}>
                 <Head>
-                    <Link rel="icon" href="/shari.ico" />
+                    <link rel="icon" href="/shari.ico" />
                     <title>{`V-kara/${pageName}`}</title>
                 </Head>
                 <Header pageName={pageName} />

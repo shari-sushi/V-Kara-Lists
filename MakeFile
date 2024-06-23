@@ -1,0 +1,14 @@
+setup:\
+	make-env-db\
+	make-env-app\
+	make-env-api
+	cd t0016Next/myapp && npm install && npm run build
+
+make-env-db:
+	cd db && copy sample.env .env
+
+make-env-app:
+	cd t0016Next && copy sample.env .env
+
+make-env-api:
+	cd t0016Go && copy sample.env .env
