@@ -18,12 +18,12 @@ var IsOnLocal = (IsOnLoclaWithDockerCompose || IsOnLoclaWithOutDockerCompose)
 
 func GetEnvHostDomain() string {
 	if IsOnCloud {
-		return ""
+		return "v-karaoke.com"
 	} else if IsOnLocal {
-		return "0.0.0.0"
+		return "localhost"
 	}
 	// 環境変数用意してない人でも動くように(でもゲストIDは環境変数からの取得を必須にしてるという)
-	return "0.0.0.0"
+	return "localhost"
 }
 
 func GetGuestListenerId() domain.ListenerId {
