@@ -20,10 +20,10 @@ func GetEnvHostDomain() string {
 	if IsOnCloud {
 		return ""
 	} else if IsOnLocal {
-		return "localhost"
+		return "0.0.0.0"
 	}
 	// 環境変数用意してない人でも動くように(でもゲストIDは環境変数からの取得を必須にしてるという)
-	return "localhost"
+	return "0.0.0.0"
 }
 
 func GetGuestListenerId() domain.ListenerId {
