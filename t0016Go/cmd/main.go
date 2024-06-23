@@ -8,8 +8,6 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/sharin-sushi/0016go_next_relation/infra"
-
-	"github.com/sharin-sushi/0016go_next_relation/interfaces/controllers/common"
 )
 
 func main() {
@@ -41,9 +39,7 @@ func main() {
 
 	infra.Routing(r)
 
-	host := common.GetEnvHostDomain()
-
-	r.Run(host + ":8080")
+	r.Run(":8080")
 }
 
 func requestLogger() gin.HandlerFunc {

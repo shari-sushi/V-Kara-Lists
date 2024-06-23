@@ -19,7 +19,7 @@ var aesIv []byte
 var costString string
 
 func initAesEnv() {
-	fmt.Println("sart to initAesEnv")
+	fmt.Println("start to initAesEnv")
 	costString = os.Getenv("BCRYPT_COST")
 	aesKey = []byte(os.Getenv("AES_KEY"))
 	aesIv, _ = hex.DecodeString(os.Getenv("AES_IV"))
@@ -27,8 +27,8 @@ func initAesEnv() {
 
 func init() {
 	var err error
-	fmt.Println("start to godotenc.Load")
-	if err = godotenv.Load("../.env"); err == nil {
+	fmt.Println("start to godotenv.Load")
+	if err = godotenv.Load(".env", "../.env"); err != nil {
 		fmt.Println("failed to godotenv at init() in cryptgo (on Cloud)")
 	}
 	initAesEnv()
