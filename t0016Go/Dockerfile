@@ -4,7 +4,7 @@ WORKDIR /api/src
 
 COPY . .
 
-RUN go get -u all
+RUN go mod tidy
 
 EXPOSE 8080
 
