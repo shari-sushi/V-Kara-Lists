@@ -24,7 +24,7 @@ func ValidateVtuber(v domain.Vtuber) error {
 		))
 }
 
-func NomalizeMovie(m domain.Movie) domain.Movie {
+func NormalizeMovie(m domain.Movie) domain.Movie {
 	// m.VtuberId = strings.TrimSpace(m.SingStart)
 	m.MovieTitle = strings.TrimSpace(m.MovieTitle)
 	m.MovieUrl = strings.TrimSpace(m.MovieUrl)
