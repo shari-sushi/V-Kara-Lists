@@ -23,10 +23,10 @@ func GetEnvVar() {
 	if common.IsOnCloud {
 		//クラウド環境
 		fmt.Println("クラウド環境で起動")
-	} else if common.IsOnLoclaWithDockerCompose {
+	} else if common.IsOnLocalWithDockerCompose {
 		// ローカルのdocker上(compose使用)
 		fmt.Println("ローカルのdockerコンテナ内で起動")
-	} else if common.IsOnLoclaWithOutDockerCompose {
+	} else if common.IsOnLocalWithOutDockerCompose {
 		//VSCodeで起動
 		fmt.Println("VSCodeで起動。godotenv.Load使用")
 		err := godotenv.Load("../.env")
@@ -64,7 +64,7 @@ func dbInit() database.SqlHandler {
 			user = "shari"
 			pw = "shari_sushi"
 		}
-	} else if common.IsOnLoclaWithDockerCompose {
+	} else if common.IsOnLocalWithDockerCompose {
 		fmt.Println("common.IsOnLoclaWithDockerCompose : true")
 		// Golangはローカルのdocker-compose or ターミナルの go run で起動
 		// MySQLはローカルのdocker上(compose使用) で起動
@@ -73,7 +73,7 @@ func dbInit() database.SqlHandler {
 		}
 		dbUrl = "v_kara_db"
 		dbName = os.Getenv("MYSQL_DATABASE")
-	} else if common.IsOnLoclaWithOutDockerCompose {
+	} else if common.IsOnLocalWithOutDockerCompose {
 		fmt.Println("develop env. is unknown")
 		// Golangはローカルのdocker-compose or  VSCodeで起動
 		// MySQLはローカルでdockerを使用せずに起動
