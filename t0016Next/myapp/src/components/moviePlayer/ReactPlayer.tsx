@@ -11,10 +11,7 @@ interface YouTubePlayerState {
   player: any;
 }
 
-class YouTubePlayer extends React.Component<
-  YouTubePlayerProps,
-  YouTubePlayerState
-> {
+class YouTubePlayer extends React.Component<YouTubePlayerProps, YouTubePlayerState> {
   private playerRef: React.RefObject<YouTube>;
   // time = this.props.time
   constructor(props: YouTubePlayerProps) {
@@ -115,12 +112,7 @@ class YouTubePlayer extends React.Component<
 
     return (
       <div>
-        <YouTube
-          videoId={videoId}
-          opts={opts}
-          onReady={this.onReady}
-          ref={this.playerRef}
-        />
+        <YouTube videoId={videoId} opts={opts} onReady={this.onReady} ref={this.playerRef} />
       </div>
     );
   }

@@ -52,7 +52,7 @@ func (interactor *VtuberContentInteractor) CreateVtuber(v domain.Vtuber) error {
 	return nil
 }
 func (interactor *VtuberContentInteractor) CreateMovie(m domain.Movie) error {
-	m = common.NomalizeMovie(m)
+	m = common.NormalizeMovie(m)
 
 	if err := common.ValidateMovie(m); err != nil {
 		return err
@@ -90,7 +90,7 @@ func (interactor *VtuberContentInteractor) UpdateVtuber(v domain.Vtuber) error {
 }
 
 func (interactor *VtuberContentInteractor) UpdateMovie(m domain.Movie) error {
-	m = common.NomalizeMovie(m)
+	m = common.NormalizeMovie(m)
 
 	if err := common.ValidateMovie(m); err != nil {
 		return err

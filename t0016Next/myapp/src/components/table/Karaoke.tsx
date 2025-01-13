@@ -319,7 +319,7 @@ export function KaraokePagenatoinTable({
   handleMovieClickYouTube,
   setSelectedPost,
 }: KaraokeTableReturnPostProps) {
-  const data = posts != null ? posts : [{} as ReceivedKaraoke];
+  const data: ReceivedKaraoke[] = posts;
   const maxPageSize = 99999;
 
   const {
@@ -754,7 +754,7 @@ const deleteColumns: Column<ReceivedKaraoke>[] = [
     accessor: "VtuberName",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
       return (
-        <span key={row.original.VtuberId} className="relative">
+        <span key={row.original.KaraokeId} className="relative">
           <Link
             href={`/vtuber/${row.original.VtuberKana}`}
             className={`flex ${LinkTW.base}`}
@@ -940,7 +940,7 @@ const randam5columns: Column<ReceivedKaraoke>[] = [
   },
 ];
 
-export const KaraokeMinRandamTable = ({
+export const KaraokeMinRandomTable = ({
   posts,
   handleMovieClickYouTube,
 }: KaraokeTableProps) => {
