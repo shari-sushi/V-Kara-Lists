@@ -170,7 +170,51 @@ func (controller *Controller) CreateKaraoke(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully Registered the New Karaoke",
 	})
+}
 
+// NOTE: この関数はMVCを意識しているため他の未経験時代の関数より責務を多く持つ
+func (controller *Controller) CreateKaraokes(c *gin.Context) {
+	var karaokes []domain.Karaoke
+	if err := c.ShouldBind(&karaokes); err != nil {
+		fmt.Println("err: ShoulBind karaoke,", err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "failed request body",
+		})
+
+		return
+	}
+
+	listenerId, err := common.TakeListenerIdFromJWT(c)
+	fmt.Println("listenerId", listenerId)
+	if err != nil {
+		fmt.Println("err: jwt,", err)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "failed to fetch listener info",
+		})
+
+		return
+	}
+
+	if _, err := controller.VtuberContentInteractor.GetMovie(karaokes[0].MovieUrl); err != nil {
+		fmt.Println("error : get movie,", err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "failed to registor songs, must registor video before songs",
+		})
+	}
+
+	if err := controller.VtuberContentInteractor.CreateKaraokes(listenerId, karaokes); err != nil {
+		fmt.Println("err: create karaoke,", err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "failed to registere karaokes",
+		})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "registered the New Karaoke",
+		"created": karaokes,
+	})
 }
 
 func (controller *Controller) EditVtuber(c *gin.Context) {

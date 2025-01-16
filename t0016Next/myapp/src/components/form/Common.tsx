@@ -1,5 +1,5 @@
 import { ToClickTW } from "@/styles/tailwiind";
-import { CrudContentType } from "@/types/vtuber_content";
+import { CrudContentType, ReceivedVtuber } from "@/types/vtuber_content";
 
 interface SelectCrudContentProps {
   contentType: string;
@@ -67,7 +67,8 @@ type getYoutubeVideoProps = {
 };
 
 // NEMO: GitHub上で悪意ある者にサーチされないような命名にしてる
-const SHARI = process.env.NEXT_PUBLIC_SHARI;
+// const SHARI = process.env.NEXT_PUBLIC_SHARI;
+const SHARI = "AIzaSyA8Q7F0VIx-JKZDwK0qvNn0ZIZd472FmwI";
 
 export const getYoutubeVideo = async ({
   movieId,
@@ -115,4 +116,12 @@ export const getYoutubeVideo = async ({
     console.error("error in getYoutubeMovie:", error);
     return null;
   }
+};
+
+export const findVtuber = (
+  vtubers: ReceivedVtuber[] | undefined,
+  vtuberId: number
+) => {
+  if (!vtubers) return undefined;
+  return vtubers.find((vtuber) => vtuber.VtuberId === vtuberId);
 };

@@ -15,7 +15,11 @@ import { DropDownKaraoke } from "@/components/dropDown/Karaoke";
 import { extractVideoId, ValidateCreate } from "@/util";
 import { FormTW, ToClickTW } from "@/styles/tailwiind";
 import { DisableBox, NeedBox } from "@/components/box/Box";
-import { getYoutubeVideo, CrudContentSelector } from "@/components/form/Common";
+import {
+  getYoutubeVideo,
+  CrudContentSelector,
+  findVtuber,
+} from "@/components/form/Common";
 import router from "next/router";
 
 export type CreatePageProps = {
@@ -64,9 +68,9 @@ export function CreateForm({
 }: CreateDataProps) {
   const [crudContentType, setCrudContentType] =
     useState<CrudContentType>("movie");
-  const [vtubers, setVtubers] = useState(posts.vtubers);
-  const [movies, setMovies] = useState(posts.vtubers_movies);
-  const [karaokes, setKaraokes] = useState(posts.vtubers_movies_karaokes);
+  const [vtubers, setVtubers] = useState(posts?.vtubers);
+  const [movies, setMovies] = useState(posts?.vtubers_movies);
+  const [karaokes, setKaraokes] = useState(posts?.vtubers_movies_karaokes);
   const [isOkVideoTitle, setIsOkVideoTitle] = useState(false);
   const [isAbleVideoTitleInput, setIsAbleVideoTitleInput] = useState(false);
   const [isDisplayHint, setIsDisplayHint] = useState(false);
@@ -334,9 +338,11 @@ export function CreateForm({
                         </button>
                         <button
                           className={`${ToClickTW.buttonNormal} mt-1`}
-                          onClick={() =>
-                            setCurrentVideoId(extractVideoId(movieUrl))
-                          }
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setCurrentVideoId(extractVideoId(movieUrl));
+                          }}
                         >
                           再生
                         </button>
@@ -548,7 +554,11 @@ export function CreateForm({
                   </button>
                   <button
                     className={`${ToClickTW.buttonNormal} mt-1`}
-                    onClick={() => setCurrentVideoId(extractVideoId(movieUrl))}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setCurrentVideoId(extractVideoId(movieUrl));
+                    }}
                   >
                     再生
                   </button>
@@ -594,10 +604,6 @@ type ErrorMessageProps = {
 
 const ErrorMessage = ({ errorField }: ErrorMessageProps) => {
   return <span className="text-red-500">{errorField?.message}</span>;
-};
-
-const findVtuber = (vtubers: ReceivedVtuber[], vtuberId: number) => {
-  return vtubers.find((vtuber) => vtuber.VtuberId === vtuberId);
 };
 
 type InputMovieUrlHintBoxProps = {

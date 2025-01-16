@@ -9,7 +9,7 @@ import { DropDownMovie } from "@/components/dropDown/Movie";
 import { ValidateEdit } from "@/util";
 import { FormTW, ToClickTW } from "@/styles/tailwiind";
 import { DropDownKaraoke } from "../dropDown/Karaoke";
-import { CrudContentSelector } from "@/components/form/Common";
+import { CrudContentSelector, findVtuber } from "@/components/form/Common";
 import router from "next/router";
 
 export type EditPageProps = {
@@ -206,6 +206,7 @@ export function EditForm({
           </div>
           <div className="bottom-0">
             <DropDownVtuber
+              selectedVtuber={findVtuber(vtubers, selectedVtuber)}
               posts={posts}
               onVtuberSelect={setSelectedVtuber}
               defaultMenuIsOpen={false}
