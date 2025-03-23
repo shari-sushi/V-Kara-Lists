@@ -319,7 +319,7 @@ export function KaraokePagenatoinTable({
   handleMovieClickYouTube,
   setSelectedPost,
 }: KaraokeTableReturnPostProps) {
-  const data = posts != null ? posts : [{} as ReceivedKaraoke];
+  const data: ReceivedKaraoke[] = posts;
   const maxPageSize = 99999;
 
   const {
@@ -940,7 +940,7 @@ const randam5columns: Column<ReceivedKaraoke>[] = [
   },
 ];
 
-export const KaraokeMinRandamTable = ({
+export const KaraokeMinRandomTable = ({
   posts,
   handleMovieClickYouTube,
 }: KaraokeTableProps) => {

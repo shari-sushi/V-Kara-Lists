@@ -636,8 +636,8 @@ const InputMovieUrlHintBox = ({
               ヒント💡
             </div>
 
-            <div className="flex flex-col overflow-y-auto h-60 text-black w-full">
-              <div className="bg-[#FFF6E4] h-full w-full rounded-b-md px-2">
+            <div className="flex flex-col overflow-y-auto h-60 text-black w-full bg-[#FFF6E4]">
+              <div className=" h-full w-full rounded-b-md px-2">
                 V-Karaでは次のような書き方をURLとして認識できます。
                 <div className="flex flex-col gap-1 pl-3">
                   <li>

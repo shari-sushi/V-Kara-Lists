@@ -18,7 +18,7 @@ class YouTubePlayer extends React.Component<
   private playerRef: React.RefObject<YouTube>;
   // time = this.props.time
   constructor(props: YouTubePlayerProps) {
-    console.log("props(super前)", props); // 0
+    console.log("props(super前)", props); // 0z
     console.log("props.time", props.time);
     console.log("props.videoId", props.videoId);
 
