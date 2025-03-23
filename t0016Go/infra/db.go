@@ -99,7 +99,9 @@ func dbInit() database.SqlHandler {
 	var err error
 	var sqlHandler *SqlHandler
 	gormDB, err := gorm.Open(mysql.Open(path), &gorm.Config{})
-	gormDB = gormDB.Debug()
+	if !common.IsOnCloud {
+		gormDB = gormDB.Debug()
+	}
 	if err == nil {
 		sqlHandler = new(SqlHandler)
 		sqlHandler.Conn = gormDB
