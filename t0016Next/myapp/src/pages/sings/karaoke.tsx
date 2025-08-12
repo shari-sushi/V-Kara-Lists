@@ -18,6 +18,7 @@ import { DropDownVtuber } from "@/components/dropDown/Vtuber";
 import { DropDownMovie } from "@/components/dropDown/Movie";
 import KaraokeGlobalFilterTable from "@/components/table-tanstack/Karaoke/KaraokeGlobalFilterTable";
 import { checkLoggedin } from "@/util/webStrage/cookie";
+import { findVtuber } from "@/components/form/Common";
 
 const pageName = "カラオケ(全曲)";
 
@@ -94,6 +95,7 @@ export default function SingsPage({ posts, isSignin }: TopPage) {
               <div id="right" className={`relative  px-1 rounded border`}>
                 <h1 className="text-lg">絞込み（入力できます）</h1>
                 <DropDownVtuber
+                  selectedVtuber={findVtuber(posts.vtubers, selectedVtuber)}
                   posts={posts}
                   onVtuberSelect={setSelectedVtuber}
                   defaultMenuIsOpen={false}
