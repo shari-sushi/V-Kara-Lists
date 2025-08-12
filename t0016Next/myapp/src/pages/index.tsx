@@ -15,7 +15,7 @@ import { VtuberTable } from "@/components/table/Vtuber";
 import { MovieTable } from "@/components/table/Movie";
 import {
   KaraokeThinTable,
-  KaraokeMinRandamTable,
+  KaraokeMinRandomTable,
 } from "@/components/table/Karaoke";
 import { ToClickTW } from "@/styles/tailwiind";
 import { ContextType } from "@/types/server";
@@ -90,7 +90,7 @@ const MainItem = ({ posts }: TopPageProps) => {
                 top-0 p-1
                 `}
       >
-        {/* 左側の要素 */}
+        {/* 左側の要素 currenr */}
         <div className="flex flex-col mr-1 ">
           <div className="relative flex justify-center">
             <YouTubePlayer videoId={currentMovieId} start={start} />
@@ -133,7 +133,7 @@ const MainItem = ({ posts }: TopPageProps) => {
               />
             </div>
           )}
-          {!posts && <FailedMessge />}
+          {!posts && <FailedMessage />}
         </div>
       </div>
 
@@ -184,7 +184,7 @@ const MainItem = ({ posts }: TopPageProps) => {
               歌
             </h2>
             {posts && (
-              <KaraokeMinRandamTable
+              <KaraokeMinRandomTable
                 posts={posts?.vtubers_movies_karaokes}
                 handleMovieClickYouTube={handleMovieClickYouTube}
               />
@@ -215,7 +215,7 @@ const TitleGroup = () => {
   );
 };
 
-const FailedMessge = () => {
+const FailedMessage = () => {
   return (
     <div className="flex justify-center py-12">
       <div className="flex flex-col  items-center bg-[#657261] font-bold text-xl p-6 max-w-[1200px]">
