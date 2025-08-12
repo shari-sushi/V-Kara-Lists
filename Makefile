@@ -1,3 +1,23 @@
+.PHONY: env
+env:
+	set -a && . ./.env && set +a && echo $${AWS_REGION}
+
+.PHONY : aws-login
+aws-login :
+	aws ecr get-login-password --region $${AWS_REGION} | docker login --username $${AWS_USERNAME} --password-stdin $${AWS_PASSWORD}
+
+.PHONY : aws-be-build-and-push
+aws-be-build&push : 
+	cd t0016Go && docker build -t $${AWS_API_SERVICE_NAME} . --no-cache \
+	&& docker tag $${AWS_API_SERVICE_NAME}:latest $${AWS_API_SERVICE_URI}:latest \
+	&& docker push $${AWS_API_SERVICE_URI}:latest
+
+.PHONY : aws-fe-build-and-push
+aws-fe-build&push : 
+	cd t0016Next && docker build -t $${AWS_FE_SERVICE_NAME} . --no-cache \
+	&& docker tag $${AWS_APP_SERVICE_NAME}:latest $${AWS_FE_SERVICE_URI}:latest \
+	&& docker push $${AWS_APP_SERVICE_URI}:latest
+
 ####### 普段の開発向け
 .PHONY: run
 run:
