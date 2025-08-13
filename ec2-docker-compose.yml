@@ -1,0 +1,36 @@
+services:
+  # db:
+  #   image: mysql:8.0.32
+  #   platform: linux/amd64 # mac環境で必須なことがあるらしい
+  #   env_file: ./db/.env
+  #   container_name: v_kara_db
+  #   build:
+  #     context: ./db
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+  #     timeout: 5s
+  #     retries: 10
+  #   ports:
+  #     - "3306:3306"
+  #   command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+
+api:
+  image: v-kara-api:latest
+  container_name: v-kara-api
+  environment:
+    - DEPLOY_ENV=EC2_DOCKER_COMPOSE
+    - DEPLOY_DB_ENV=RDS
+    - IS_DOCKER_COMPOSE=true
+  env_file: api.env # これが無いと、上述のenvironment変数が無視される。なぜかは不明。
+  ports:
+    - "8080:8080"
+
+  app:
+    image: v-kara-app:latest
+    container_name: v-kara-app
+    env_file: .env
+    environment:
+      - DEPLOY_ENV=EC2_DOCKER_COMPOSE
+      - IS_DOCKER_COMPOSE=true
+    ports:
+      - "80:80"
