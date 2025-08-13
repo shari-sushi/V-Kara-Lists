@@ -102,7 +102,7 @@ func (controller *Controller) DeleteMovieFavorite(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully UnFavorite it",
 	})
-	return
+
 }
 
 func (controller *Controller) SaveKaraokeFavorite(c *gin.Context) {
