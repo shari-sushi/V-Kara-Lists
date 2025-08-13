@@ -13,6 +13,7 @@ type UserRepository interface {
 type VtuberContentRepository interface {
 	// 基本的なCRUd
 	GetVtubers() ([]domain.Vtuber, error)
+	GetMovieByUrl(url domain.MovieUrl) (domain.Movie, error)
 	GetMovies() ([]domain.Movie, error)
 	GetKaraokes() ([]domain.Karaoke, error)
 	GetVtubersMovies() ([]domain.VtuberMovie, error)
@@ -21,6 +22,7 @@ type VtuberContentRepository interface {
 	CreateVtuber(domain.Vtuber) error
 	CreateMovie(domain.Movie) error
 	CreateKaraoke(domain.Karaoke) error
+	CreateKaraokes(domain.MovieUrl, []domain.Karaoke) error
 	UpdateVtuber(domain.Vtuber) error
 	UpdateMovie(domain.Movie) error
 	UpdateKaraoke(domain.Karaoke) error

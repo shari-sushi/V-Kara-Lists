@@ -20,6 +20,16 @@ func (db *VtuberContentRepository) GetVtubers() ([]domain.Vtuber, error) {
 	return vts, nil
 }
 
+func (db *VtuberContentRepository) GetMovieByUrl(url domain.MovieUrl) (domain.Movie, error) {
+	fmt.Print("interfaces/database/vtuber_content_db.go \n")
+	var mo domain.Movie
+	err := db.Where("movie_url = ?", url).Find(&mo).Error
+	if err != nil {
+		return domain.Movie{}, err
+	}
+	return mo, nil
+}
+
 func (db *VtuberContentRepository) GetMovies() ([]domain.Movie, error) {
 	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var mos []domain.Movie
@@ -105,6 +115,18 @@ func (db *VtuberContentRepository) CreateKaraoke(K domain.Karaoke) error {
 		return result.Error
 	}
 	result := db.Create(&K)
+	return result.Error
+}
+
+func (db *VtuberContentRepository) CreateKaraokes(movieUrl domain.MovieUrl, Ks []domain.Karaoke) error {
+	fmt.Print("interfaces/database/vtuber_content_db.go \n")
+	var Mo domain.Movie
+	Mo.MovieUrl = movieUrl
+	if result := db.First(&Mo); result.Error != nil {
+		return result.Error
+	}
+
+	result := db.Create(&Ks)
 	return result.Error
 }
 
