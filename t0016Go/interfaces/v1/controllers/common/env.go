@@ -17,7 +17,7 @@ var DEPLOY_DB_ENV = os.Getenv("DEPLOY_DB_ENV")       // EC2用 docker-compose.ym
 var IsOnCloud = (goEnv == "" && isDockerCompose == "") || (DEPLOY_ENV == "EC2_DOCKER_COMPOSE" && DEPLOY_DB_ENV == "RDS")
 var IsOnLocalWithDockerCompose = (goEnv == "" && isDockerCompose == "true")
 var IsOnLocalWithOutDockerCompose = (goEnv == "development" && isDockerCompose == "")
-var IsOnLocal = (IsOnLocalWithDockerCompose || IsOnLocalWithOutDockerCompose)
+var IsOnLocal = !IsOnCloud && IsOnLocalWithDockerCompose || IsOnLocalWithOutDockerCompose
 
 func GetEnvHostDomain() string {
 	if IsOnCloud {
