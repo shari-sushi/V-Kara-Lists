@@ -150,7 +150,7 @@ func (controller *Controller) CreateKaraoke(c *gin.Context) {
 		return
 	}
 	listenerId, err := common.TakeListenerIdFromJWT(c)
-	fmt.Println("listenerId", listenerId)
+	fmt.Println("created karaoke by listenerId: ", listenerId)
 	if err != nil {
 		fmt.Println("err: jwt,", err)
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -185,7 +185,7 @@ func (controller *Controller) CreateKaraokes(c *gin.Context) {
 	}
 
 	listenerId, err := common.TakeListenerIdFromJWT(c)
-	fmt.Println("listenerId", listenerId)
+	fmt.Println("created some karaokes by listenerId:", listenerId)
 	if err != nil {
 		fmt.Println("err: jwt,", err)
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -246,12 +246,14 @@ func (controller *Controller) EditVtuber(c *gin.Context) {
 		})
 		return
 	}
+
 	if err := controller.VtuberContentInteractor.UpdateVtuber(vtuber); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Inputter can modify each data",
 		})
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully Update",
 	})
@@ -266,6 +268,7 @@ func (controller *Controller) EditMovie(c *gin.Context) {
 		})
 		return
 	}
+
 	var Movie domain.Movie
 	if err := c.ShouldBind(&Movie); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -273,7 +276,7 @@ func (controller *Controller) EditMovie(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Printf("shouldBind Movie:%v \n ", Movie)
+
 	Movie.MovieInputterId = listenerId
 	if isAuth, err := controller.VtuberContentInteractor.VerifyUserModifyMovie(listenerId, Movie); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -286,6 +289,7 @@ func (controller *Controller) EditMovie(c *gin.Context) {
 		})
 		return
 	}
+
 	if err := controller.VtuberContentInteractor.UpdateMovie(Movie); err != nil {
 		fmt.Println("err:", err)
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -308,6 +312,7 @@ func (controller *Controller) EditKaraoke(c *gin.Context) {
 		})
 		return
 	}
+
 	var Karaoke domain.Karaoke
 	if err := c.ShouldBind(&Karaoke); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -315,6 +320,7 @@ func (controller *Controller) EditKaraoke(c *gin.Context) {
 		})
 		return
 	}
+
 	Karaoke.KaraokeInputterId = listenerId
 	if isAuth, err := controller.VtuberContentInteractor.VerifyUserModifyKaraoke(listenerId, Karaoke); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -335,6 +341,7 @@ func (controller *Controller) EditKaraoke(c *gin.Context) {
 			return
 		}
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully Update",
 	})
@@ -531,7 +538,7 @@ func (controller *Controller) ReturnTopPageData(c *gin.Context) {
 	}
 
 	listenerId, err := common.TakeListenerIdFromJWT(c) //非ログイン時でもデータは送付する
-	fmt.Printf("listenerId=%v\n", listenerId)
+	fmt.Printf("deleted karaoke by listenerId: %v\n", listenerId)
 	if err != nil || listenerId == 0 {
 		fmt.Println("err:", err)
 		errs = append(errs, err)

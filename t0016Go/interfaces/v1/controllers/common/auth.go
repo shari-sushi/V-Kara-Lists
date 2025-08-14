@@ -34,7 +34,7 @@ func SetListenerIdintoCookie(c *gin.Context, ListenerId domain.ListenerId) (err 
 	}
 
 	http.SetCookie(c.Writer, cookie)
-	fmt.Printf("発行したcookie= %v \n", cookie)
+	fmt.Printf("ログイン 発行したcookie: %v \n", cookie)
 	return
 }
 
@@ -52,7 +52,7 @@ func UnsetAuthCookie(c *gin.Context) (err error) {
 	}
 
 	http.SetCookie(c.Writer, cookie)
-	fmt.Printf("発行したcookie= %v \n", cookie)
+	fmt.Printf("ログアウト：発行したcookie: %v \n", cookie)
 	return
 }
 
@@ -65,7 +65,6 @@ func TakeListenerIdFromJWT(c *gin.Context) (domain.ListenerId, error) {
 	if err != nil {
 		return 0, err
 	}
-	fmt.Printf("token= %v \n", token)
 
 	var listenerId int
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
