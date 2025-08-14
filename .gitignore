@@ -28,3 +28,6 @@ t0016Go/interfaces/controllers/common/crypto_test.go
 
 # README.md
 gitコマンド等.txt
+
+# ec2にscpする際の圧縮拡張子
+.gz
