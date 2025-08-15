@@ -5,7 +5,7 @@ import { AxiosRequestConfig } from "axios";
 import type { ReceivedKaraoke } from "@/types/vtuber_content";
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer";
 import { timeStringToSecondNum, extractVideoId } from "@/util";
-import { KaraokePagenatoinTable } from "@/components/table/Karaoke";
+import { KaraokePaginationTable } from "@/components/table/Karaoke";
 import { Layout } from "@/components/layout/Layout";
 import { ContextType } from "@/types/server";
 import { checkLoggedin } from "@/util/webStrage/cookie";
@@ -47,7 +47,7 @@ export default function SingsPage({ posts, isSignin }: PostsAndCheckSignin) {
             <YouTubePlayer videoId={currentMovieId} start={start} />
           </div>
           <div className="flex flex-col w-full">
-            <KaraokePagenatoinTable posts={karaokes} handleMovieClickYouTube={handleMovieClickYouTube} setSelectedPost={setSelectedPost} />
+            <KaraokePaginationTable posts={karaokes} handleMovieClickYouTube={handleMovieClickYouTube} setSelectedPost={setSelectedPost} />
           </div>
         </div>
       </div>

@@ -29,7 +29,6 @@ type TopPage = {
 };
 
 export default function SingsPage({ posts, isSignin }: TopPage) {
-  // TODO : エラー文のオススメで指示があったからuseMemoを使ったが、このuseMemoの使い方は本来ではないかも。useMemoはパフォーマンスを上げるためであって機能のためのものじゃないはず。
   const karaokes: ReceivedKaraoke[] = useMemo(() => posts?.vtubers_movies_karaokes || [], [posts]);
 
   // ようつべ用
@@ -46,14 +45,14 @@ export default function SingsPage({ posts, isSignin }: TopPage) {
 
   const [selectedVtuber, setSelectedVtuber] = useState<number>(0);
   const [selectedMovie, setSelectedMovie] = useState<string>("");
-  const [filteredKaraokes, setFilteredKarakes] = useState<ReceivedKaraoke[]>([]);
+  const [filteredKaraokes, setFilteredKaraokes] = useState<ReceivedKaraoke[]>([]);
   const clearMovieHandler = () => {
     // TODO: 実装
   };
 
   useEffect(() => {
-    const filterdkaraokes = FilterKaraokesByParentContent(karaokes, selectedVtuber, selectedMovie);
-    setFilteredKarakes(filterdkaraokes);
+    const filteredKaraokes = FilterKaraokesByParentContent(karaokes, selectedVtuber, selectedMovie);
+    setFilteredKaraokes(filteredKaraokes);
   }, [selectedVtuber, selectedMovie, karaokes]);
 
   return (

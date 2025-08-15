@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import https from "https";
 import axios, { AxiosRequestConfig } from "axios";
-
 import { domain } from "@/../env";
 import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from "@/types/vtuber_content";
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer";
@@ -78,7 +77,7 @@ const MainItem = ({ posts }: TopPageProps) => {
                 top-0 p-1
                 `}
       >
-        {/* 左側の要素 currenr */}
+        {/* 左側の要素 */}
         <div className="flex flex-col mr-1 ">
           <div className="relative flex justify-center">
             <YouTubePlayer videoId={currentMovieId} start={start} />
@@ -90,11 +89,7 @@ const MainItem = ({ posts }: TopPageProps) => {
         <div id="right" className={`relative w-full h-full border px-1 rounded `}>
           <span className="mx-2 mt-1 absolute w-[70%]">最近登録された50曲</span>
 
-          <Link
-            href={`/sings/karaoke`}
-            className={`${ToClickTW.regular}
-                     absolute flex right-1 top-[1px]  `}
-          >
+          <Link href={`/sings/karaoke`} className={`absolute flex right-1 top-[1px] ${ToClickTW.regular}`}>
             <Image src="/content/note.svg" className="h-5 mx-1 " width={24} height={20} alt="note image" />
             もっと見る
           </Link>

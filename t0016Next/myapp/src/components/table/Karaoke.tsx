@@ -15,90 +15,35 @@ import { useHasWindow } from "@/hooks/useHasWindow";
 
 type KaraokeTableProps = {
   posts: ReceivedKaraoke[];
-  handleMovieClickYouTube: (arg0: string, arg1: number) => void;
+  handleMovieClickYouTube: (url: string, arg1: number) => void;
 };
 
-export const YouTubePlayerContext = React.createContext(
+export const YouTubePlayerContext = React.createContext({} as { handleMovieClickYouTube(movieId: string, time: number): void });
+const SelectPostContext = React.createContext(
   {} as {
-    handleMovieClickYouTube(movieId: string, time: number): void;
+    setSelectedPost: (arg0: ReceivedKaraoke) => void;
   }
 );
 
-const columns: Column<ReceivedKaraoke>[] = [
-  {
-    Header: "VTuber(click it)",
-    accessor: "VtuberName",
-    Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      return (
-        <span className="relative">
-          <Link href={`/vtuber/${row.original.VtuberKana}`} className={`flex ${LinkTW.base}`}>
-            <Image src="/content/external_link.svg" className="w-5 mr-1" width={24} height={20} alt="" />
-            {row.original.VtuberName}
-          </Link>
-        </span>
-      );
-    },
-  },
-  {
-    Header: "曲名(Click it)",
-    accessor: "KaraokeId",
-    Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      const { handleMovieClickYouTube } = useContext(YouTubePlayerContext); //表示ページにyoutubeのカレントデータを渡す
-
-      const [isDisplay, setIsDisplay] = useState<boolean>(false);
-      const handleClick = async () => {
-        const url = "https://" + row.original.MovieUrl + "&t=" + timeStringToSecondNum(row.original.SingStart);
-        await navigator.clipboard.writeText(url);
-        setIsDisplay(true);
-        setTimeout(() => setIsDisplay(false), 2000);
-      };
-
-      return (
-        <div className="relative flex w-auto">
-          <button className="flex" onClick={() => handleMovieClickYouTube(row.original.MovieUrl, timeStringToSecondNum(row.original.SingStart))}>
-            <Image src="/content/play_black.svg" className="w-5 mr-1 bottom-0 " width={24} height={20} alt={""} />
-            {row.original.SongName}
-          </button>
-
-          <div id="clip url" className="absolute right-0">
-            <button className="flex" onClick={() => handleClick()}>
-              <Image src="/content/copy_gray.svg" className="h-5 mr-2 flex hover:bg-[#B7A692] stroke-2  rounded-md" width={24} height={20} alt={""} />
-            </button>
-            {isDisplay && <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">URL was copied</div>}
-          </div>
-        </div>
-      );
-    },
-  },
-  { Header: "動画タイトル", accessor: "MovieTitle" },
-  {
-    Header: "いいね",
-    accessor: "Count",
-    Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} movie={row.original.MovieUrl} karaoke={row.original.KaraokeId} />;
-    },
-  },
-];
-
-type FavoriteColumn = {
+type FavoriteColumnProps = {
   count: number;
   isFav: boolean;
   movie: string;
   karaoke: number;
 };
 
-function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumn) {
-  const [isFavNow, setIsCheck] = useState(isFav);
+function FavoriteColumn({ count, isFav: initialFav, movie, karaoke }: FavoriteColumnProps) {
+  const [isFavorite, setIsFavorite] = useState(initialFav);
   const [isDisplay, setIsDisplay] = useState<boolean>(false);
   const { isSignin } = useAuth();
   const handleClick = async () => {
-    if (isSignin == false) {
+    if (!isSignin) {
       setIsDisplay(true);
       setTimeout(() => setIsDisplay(false), 1500);
       return;
     }
 
-    setIsCheck(!isFavNow);
+    setIsFavorite(!isFavorite);
     const axiosClient = axios.create({
       withCredentials: true,
       headers: {
@@ -111,7 +56,7 @@ function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumn) {
         MovieUrl: movie,
         KaraokeId: karaoke,
       };
-      if (isFavNow) {
+      if (isFavorite) {
         const response = await axiosClient.delete(`${domain.backendHost}/fav/unfavorite/karaoke`, { data: reqBody });
         if (!response.status) {
           throw new Error(response.statusText);
@@ -126,18 +71,17 @@ function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumn) {
       console.error(err);
     }
   };
+
   return (
     <div className="flex justify-center">
-      <button className={`${TableTW.favoriteColumn} relative flex `} onClick={handleClick}>
-        {isFavNow ? (
+      <button className={TableTW.favoriteColumn} onClick={handleClick}>
+        {isFavorite ? (
           <Image src="/content/heart_pink.svg" className="flex w-5 m-1 mr-0" width={24} height={20} alt={""} />
         ) : (
           <Image src="/content/heart_white.svg" className="flex w-5 m-1 mr-0" width={24} height={20} alt={""} />
         )}
-
-        {isFavNow == isFav ? count : isFavNow ? count + 1 : count - 1}
-
-        {isDisplay && <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[140px]">ログインが必要です</div>}
+        {isFavorite === initialFav ? count : isFavorite ? count + 1 : count - 1}
+        {isDisplay && <div className={TableTW.NeedLoginMessage}>ログインが必要です</div>}
       </button>
     </div>
   );
@@ -145,7 +89,7 @@ function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumn) {
 
 ///////////////////////////////////////////////////////////////
 // /karaoke/sings ページネーション
-const PagenationReturnPostColumns: Column<ReceivedKaraoke>[] = [
+const PaginationReturnPostColumns: Column<ReceivedKaraoke>[] = [
   { Header: "VTuber", accessor: "VtuberName" },
   {
     Header: "曲名(Click it)",
@@ -201,13 +145,7 @@ type KaraokeTableReturnPostProps = {
   setSelectedPost: (arg0: ReceivedKaraoke) => void;
 };
 
-const SelectPostContext = React.createContext(
-  {} as {
-    setSelectedPost: (arg0: ReceivedKaraoke) => void;
-  }
-);
-
-export function KaraokePagenationTable({ posts, handleMovieClickYouTube, setSelectedPost }: KaraokeTableReturnPostProps) {
+export function KaraokePaginationTable({ posts, handleMovieClickYouTube, setSelectedPost }: KaraokeTableReturnPostProps) {
   const data: ReceivedKaraoke[] = posts;
   const maxPageSize = 99999;
 
@@ -228,7 +166,7 @@ export function KaraokePagenationTable({ posts, handleMovieClickYouTube, setSele
     state: { pageIndex, pageSize },
   } = useTable(
     {
-      columns: PagenationReturnPostColumns,
+      columns: PaginationReturnPostColumns,
       data,
       initialState: { pageIndex: 0, pageSize: 25 },
     },
@@ -238,7 +176,7 @@ export function KaraokePagenationTable({ posts, handleMovieClickYouTube, setSele
   );
 
   return (
-    <SeletctPostContext.Provider value={{ setSelectedPost }}>
+    <SelectPostContext.Provider value={{ setSelectedPost }}>
       <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
         <div id="tab" className=" ">
           <div className="flex bg-[#B7A692] mt-1 py-1 px-2 md:px-3 rounded-t-xl md:rounded-t-2xl max-w-[400px] ">
@@ -406,8 +344,7 @@ export const KaraokeThinTable = ({ posts, handleMovieClickYouTube }: KaraokeTabl
 
 ///////////////////////////
 //  delete用
-export function KaraokeDeleteTable({ posts, handleMovieClickYouTube }: KaraokeTableProps) {
-  const data = posts != null ? posts : [{} as ReceivedKaraoke];
+export function KaraokeDeleteTable({ posts: karaokes, handleMovieClickYouTube }: KaraokeTableProps) {
   const maxPageSize = 1000;
   const {
     getTableProps,
@@ -428,7 +365,7 @@ export function KaraokeDeleteTable({ posts, handleMovieClickYouTube }: KaraokeTa
   } = useTable(
     {
       columns: deleteColumns,
-      data,
+      data: karaokes,
       initialState: { pageIndex: 0, pageSize: 25 },
     },
     usePagination
@@ -563,7 +500,7 @@ const deleteColumns: Column<ReceivedKaraoke>[] = [
 // 全件取得してフロント側でランダムにしてるけど、バック側でランダム５件+α取得すべき
 // (+αはフロント側で完結するランダム更新機能を実装するために必要)
 
-const randam5columns: Column<ReceivedKaraoke>[] = [
+const random5columns: Column<ReceivedKaraoke>[] = [
   {
     Header: "VTuber(click it)",
     accessor: "VtuberName",
@@ -625,17 +562,12 @@ const randam5columns: Column<ReceivedKaraoke>[] = [
   },
 ];
 
-export const KaraokeMinRandomTable = ({ posts, handleMovieClickYouTube }: KaraokeTableProps) => {
-  const karaokes = posts;
+export const KaraokeMinRandomTable = ({ posts: karaokes, handleMovieClickYouTube }: KaraokeTableProps) => {
   const hasWindow = useHasWindow();
-
-  // TODO: 何のためにあるのか分からない。消す。
-  const [shuffledData, setShuffledData] = useState<ReceivedKaraoke[]>(shuffleArray(karaokes));
-
   const { getTableProps, getTableBodyProps, headerGroups, prepareRow, page } = useTable(
     {
-      columns: randam5columns,
-      data: shuffledData,
+      columns: random5columns,
+      data: shuffleArray(karaokes),
       initialState: { pageIndex: 0, pageSize: 5 },
     },
     usePagination
@@ -646,7 +578,7 @@ export const KaraokeMinRandomTable = ({ posts, handleMovieClickYouTube }: Karaok
       {hasWindow && (
         <div>
           <div className="flex ml-5 ">
-            <h2 className="flex mr-1">ランダム5件表示中 (登録数{posts?.length}件)</h2>
+            <h2 className="flex mr-1">ランダム5件表示中 (登録数{karaokes.length}件)</h2>
           </div>
           <div className="w-full overflow-scroll md:overflow-hidden">
             <table {...getTableProps()} className={`${TableTW.minRandom} `}>
@@ -662,12 +594,12 @@ export const KaraokeMinRandomTable = ({ posts, handleMovieClickYouTube }: Karaok
                 ))}
               </thead>
               <tbody {...getTableBodyProps()}>
-                {page.map((row, i) => {
+                {page.map((row, rI) => {
                   prepareRow(row);
                   return (
-                    <tr {...row.getRowProps()} className={`${TableTW.regularTr}`} key={i}>
-                      {row.cells.map((cell, j) => (
-                        <td {...cell.getCellProps()} key={j}>
+                    <tr {...row.getRowProps()} className={TableTW.regularTr} key={rI}>
+                      {row.cells.map((cell, cI) => (
+                        <td {...cell.getCellProps()} key={cI}>
                           {cell.render("Cell")}
                         </td>
                       ))}

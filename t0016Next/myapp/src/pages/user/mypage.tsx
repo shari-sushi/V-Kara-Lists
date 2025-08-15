@@ -9,7 +9,7 @@ import { Layout } from "@/components/layout/Layout";
 import type { ReceivedKaraoke, ReceivedVtuber, ReceivedMovie } from "../../types/vtuber_content"; //type{}で型情報のみインポート
 import { VtuberTable } from "@/components/table/Vtuber";
 import { MovieTable } from "@/components/table/Movie";
-import { KaraokePagenatoinTable } from "@/components/table/Karaoke";
+import { KaraokePaginationTable } from "@/components/table/Karaoke";
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer";
 import { extractVideoId } from "@/util";
 import { ContextType } from "@/types/server";
@@ -125,14 +125,12 @@ const MyPage = ({ data, isSignin }: Mypage) => {
                     <br />
                   </div>
 
-                  <div className=" ">
-                    <div className="flex">
-                      <Image src="/content/note.svg" width={20} height={20} alt="Note Icon" className="h-5 mr-1" />
-                      <h2>歌: 登録数{karaokes.length}</h2>
-                    </div>
+                  <div className="flex">
+                    <Image src="/content/note.svg" width={20} height={20} alt="Note Icon" className="h-5 mr-1" />
+                    <h2>歌: 登録数{karaokes.length}</h2>
                   </div>
 
-                  <KaraokePagenatoinTable posts={karaokes} handleMovieClickYouTube={handleMovieClickYouTube} setSelectedPost={setSelectedPost} />
+                  <KaraokePaginationTable posts={karaokes} handleMovieClickYouTube={handleMovieClickYouTube} setSelectedPost={setSelectedPost} />
                 </div>
               </div>
             </div>

@@ -1,26 +1,26 @@
-// 今後こっち(tasnstack)に移行していく
-// TODO : 雑多に集めすぎたので、フォルダ分け
-import React, { useState, useContext } from "react";
+import { useState, useContext, createContext } from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
-
 import { domain } from "@/../env";
 import { ReceivedKaraoke, FavoriteKaraoke } from "@/types/vtuber_content";
 import { LinkTW, TableCss as TableTW } from "@/styles/tailwiind";
 import { timeStringToSecondNum } from "@/util";
 import { useAuth } from "@/providers/AuthProvider";
 import { TableCss } from "@/styles/tailwiind";
-import type { KaraokeTablefilterInputProps, KaraokeTablePagenationButtonsProps as TablePagenationButtonsProps } from "./types";
+import type { KaraokeTableFilterInputProps, KaraokeTablePaginationButtonsProps } from "./types";
 
-export const YouTubePlayerContext = React.createContext(
+// 今後こっち(tasnstack)に移行していく
+// TODO : 雑多に集めすぎたので、フォルダ分け
+
+export const YouTubePlayerContext = createContext(
   {} as {
     handleMovieClickYouTube(movieId: string, time: number): void;
   }
 );
 
-export const SeletctPostContext = React.createContext(
+export const SeletctPostContext = createContext(
   {} as {
     setSelectedPost: (arg0: ReceivedKaraoke) => void;
   }
@@ -74,16 +74,14 @@ export function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumnP
   };
   return (
     <div className="flex justify-center">
-      <button className={`${TableTW.favoriteColumn} relative flex `} onClick={handleClick}>
+      <button className={TableTW.favoriteColumn} onClick={handleClick}>
         {isFavNow ? (
           <Image src="/content/heart_pink.svg" className="flex w-5 m-1 mr-0" width={24} height={20} alt="" />
         ) : (
           <Image src="/content/heart_white.svg" className="flex w-5 m-1 mr-0" width={24} height={20} alt="" />
         )}
-
         {isFavNow == isFav ? count : isFavNow ? count + 1 : count - 1}
-
-        {isDisplay && <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[140px]">ログインが必要です</div>}
+        {isDisplay && <div className={TableCss.NeedLoginMessage}>ログインが必要です</div>}
       </button>
     </div>
   );
@@ -107,14 +105,14 @@ export const ColumnVtuberName: ColumnDef<ReceivedKaraoke>[] = [
   },
 ];
 
-export const KaraokeBasicColumuns: ColumnDef<ReceivedKaraoke>[] = [
+export const KaraokeBasicColumns: ColumnDef<ReceivedKaraoke>[] = [
   {
     header: "曲名(Click it)",
     accessorKey: "SongName",
     enableSorting: true,
     cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const { handleMovieClickYouTube } = useContext(YouTubePlayerContext); //表示ページに再生したいデータを渡す
+      const { handleMovieClickYouTube } = useContext(YouTubePlayerContext);
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const { setSelectedPost } = useContext(SeletctPostContext);
       const handleClickPlay = (post: ReceivedKaraoke) => {
@@ -176,7 +174,7 @@ export const KaraokeGlobalFilterColumns: ColumnDef<ReceivedKaraoke>[] = [
       );
     },
   },
-  ...KaraokeBasicColumuns,
+  ...KaraokeBasicColumns,
 ];
 
 // TODO : schemeに配信日カラムを追加し、それでソートできるようにする。↓な感じで表示変換しつつできるらしい。
@@ -191,7 +189,7 @@ export const KaraokeGlobalFilterColumns: ColumnDef<ReceivedKaraoke>[] = [
 //     },
 // },
 
-export const KaraokeTableAFilterInput = ({ table, accesKey }: KaraokeTablefilterInputProps) => {
+export const KaraokeTableAFilterInput = ({ table, accesKey }: KaraokeTableFilterInputProps) => {
   if (accesKey === "Count") {
     return (
       <div className="mr-1">
@@ -209,7 +207,7 @@ export const KaraokeTableAFilterInput = ({ table, accesKey }: KaraokeTablefilter
   );
 };
 
-export const KaraokeTableFilterInput = ({ table }: KaraokeTablefilterInputProps) => {
+export const KaraokeTableFilterInput = ({ table }: KaraokeTableFilterInputProps) => {
   return (
     <div className="bg-[#B7A692] mt-0.5 py-1 px-2 rounded-xl max-w-[400px]">
       <input
@@ -224,7 +222,7 @@ export const KaraokeTableFilterInput = ({ table }: KaraokeTablefilterInputProps)
 };
 
 //  TODO : Vtuber, Movie, Karaikeのテーブル全部で使いまわせるように出来ると思う
-export const KaraokeTablePagenationButtons = ({ table, maxPageSize }: TablePagenationButtonsProps) => {
+export const KaraokeTablePagenationButtons = ({ table, maxPageSize }: KaraokeTablePaginationButtonsProps) => {
   return (
     <div className="flex bg-[#B7A692] mt-1 py-1 px-2 md:px-3 rounded-t-xl md:rounded-t-2xl max-w-[400px] ">
       <button className={`${TableCss.pageNationDouble} md:mx-1`} onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>

@@ -53,6 +53,7 @@ const Header = ({ pageName }: HeaderProps) => {
     const { width } = getWindowSize();
     setWidth(width);
   }, []);
+
   if (width > md) {
     return (
       <div>

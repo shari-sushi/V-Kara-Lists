@@ -1,12 +1,12 @@
 import { Table } from "@tanstack/react-table";
 import { ReceivedKaraoke } from "@/types/vtuber_content";
 
-export type KaraokeTablePagenationButtonsProps = {
+export type KaraokeTablePaginationButtonsProps = {
   table: Table<ReceivedKaraoke>;
   maxPageSize: number;
 };
 
-export type KaraokeTablefilterInputProps = {
+export type KaraokeTableFilterInputProps = {
   table: Table<ReceivedKaraoke>;
   accesKey?: string;
 };
