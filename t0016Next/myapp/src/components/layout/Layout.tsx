@@ -1,46 +1,38 @@
 import Head from "next/head";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useContext, useEffect, useState } from "react";
-
+import React, { useEffect, useState } from "react";
+import { useAuth } from "@/providers/AuthProvider";
 import { GestLogin, GestLoginForHamburger } from "../button/User";
 import { HeaderCss, FooterTW } from "@/styles/tailwiind";
 import { ToClickTW } from "@/styles/tailwiind";
 import { getWindowSize } from "@/features/layout/Layout";
 import { CreateLink, DeleteLink, EditLink, KaraokeLink, OriginalSongLink, LoginLink, MyPageLink, ProfileLink, SignUpLink, TitleLink, TopLink } from "../button/link/Humbarger";
 import Image from "next/image";
-import VKaraVideoPlayer from "./VKaraVideoPlayer";
 
 type LayoutProps = {
   pageName: string;
   children: any;
   isSignin: boolean;
 };
-export const SigninContext = React.createContext(
-  {} as {
-    isSignin: boolean;
-  }
-);
 
 export function Layout({ pageName, children, isSignin }: LayoutProps) {
   return (
     <div className="h-full">
-      <SigninContext.Provider value={{ isSignin }}>
-        <Head>
-          <link rel="icon" href="/shari.ico" />
-          <title>{`V-kara/${pageName}`}</title>
-        </Head>
-        <Header pageName={pageName} />
-        <main className="flex flex-col min-h-screen p-4 pt-8 ">
-          <div className="md:absolute md:right-1 ">
-            <span className="flex-1 "> {pageName}</span>
-            <span className="flex-1 px-1">|</span>
-            <span className="flex-1 ">{(isSignin && "ログイン中") || "非ログイン中"}</span>
-          </div>
-          {children}
-        </main>
-        <Footer />
-      </SigninContext.Provider>
+      <Head>
+        <link rel="icon" href="/shari.ico" />
+        <title>{`V-kara/${pageName}`}</title>
+      </Head>
+      <Header pageName={pageName} />
+      <main className="flex flex-col min-h-screen p-4 pt-8 ">
+        <div className="md:absolute md:right-1 ">
+          <span className="flex-1 "> {pageName}</span>
+          <span className="flex-1 px-1">|</span>
+          <span className="flex-1 ">{(isSignin && "ログイン中") || "非ログイン中"}</span>
+        </div>
+        {children}
+      </main>
+      <Footer />
     </div>
   );
 }
@@ -52,7 +44,7 @@ const md = 768;
 
 const Header = ({ pageName }: HeaderProps) => {
   const pathName = usePathname();
-  const { isSignin } = useContext(SigninContext);
+  const { isSignin } = useAuth();
 
   const [isOpen, setIsOpen] = useState<Boolean>(false);
   const [width, setWidth] = useState<number>(900);
@@ -228,7 +220,7 @@ const Header = ({ pageName }: HeaderProps) => {
 
 const Footer = () => {
   const pathName = usePathname();
-  const { isSignin } = useContext(SigninContext);
+  const { isSignin } = useAuth();
   return (
     <footer className={`${FooterTW.regular}`}>
       <div className="flex float-right">

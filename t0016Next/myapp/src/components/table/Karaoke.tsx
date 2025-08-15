@@ -9,7 +9,7 @@ import { shuffleArray } from "../SomeFunction";
 import { ReceivedKaraoke, FavoriteKaraoke } from "@/types/vtuber_content";
 import { ToDeleteContext } from "@/pages/crud/delete";
 import { LinkTW, TableCss as TableTW } from "@/styles/tailwiind";
-import { SigninContext } from "@/components/layout/Layout";
+import { useAuth } from "@/providers/AuthProvider";
 import Image from "next/image";
 
 type KaraokeTableProps = {
@@ -89,7 +89,7 @@ type FavoriteColumn = {
 function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumn) {
   const [isFavNow, setIsCheck] = useState(isFav);
   const [isDisplay, setIsDisplay] = useState<boolean>(false);
-  const { isSignin } = useContext(SigninContext);
+  const { isSignin } = useAuth();
   const handleClick = async () => {
     if (isSignin == false) {
       setIsDisplay(true);

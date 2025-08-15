@@ -9,8 +9,8 @@ import Link from "next/link";
 import { domain } from "@/../env";
 import { ReceivedKaraoke, FavoriteKaraoke } from "@/types/vtuber_content";
 import { LinkTW, TableCss as TableTW } from "@/styles/tailwiind";
-import { SigninContext } from "@/components/layout/Layout";
 import { timeStringToSecondNum } from "@/util";
+import { useAuth } from "@/providers/AuthProvider";
 import { TableCss } from "@/styles/tailwiind";
 import type { KaraokeTablefilterInputProps, KaraokeTablePagenationButtonsProps as TablePagenationButtonsProps } from "./types";
 
@@ -36,7 +36,7 @@ export type FavoriteColumnProps = {
 export function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumnProps) {
   const [isFavNow, setIsCheck] = useState(isFav);
   const [isDisplay, setIsDisplay] = useState<boolean>(false);
-  const { isSignin } = useContext(SigninContext);
+  const { isSignin } = useAuth();
   const handleClick = async () => {
     if (isSignin == false) {
       setIsDisplay(true);

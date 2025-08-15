@@ -1,14 +1,13 @@
 import React, { useContext, useState } from "react";
 import { useTable, useSortBy, Column, useRowSelect } from "react-table";
 import Link from "next/link";
-
 import { domain } from "@/../env";
 import { extractVideoId } from "@/util";
 import axios from "axios";
 import { ReceivedMovie, FavoriteMovie } from "@/types/vtuber_content";
 import { ToDeleteContext } from "@/pages/crud/delete";
 import { LinkTW, TableCss } from "@/styles/tailwiind";
-import { SigninContext } from "../layout/Layout";
+import { useAuth } from "@/providers/AuthProvider";
 import Image from "next/image";
 
 // topページ, mypage用
@@ -117,7 +116,7 @@ type FavoriteColumn = {
 function FavoriteColumn({ count, isFav, movie }: FavoriteColumn) {
   const [isFavNow, setIsCheck] = useState(isFav);
   const [isDisplay, setIsDisplay] = useState<boolean>(false);
-  const { isSignin } = useContext(SigninContext);
+  const { isSignin } = useAuth();
 
   const handleClick = async () => {
     if (isSignin == false) {
