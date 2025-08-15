@@ -7,20 +7,9 @@ import { GestLogin, GestLoginForHamburger } from "../button/User";
 import { HeaderCss, FooterTW } from "@/styles/tailwiind";
 import { ToClickTW } from "@/styles/tailwiind";
 import { getWindowSize } from "@/features/layout/Layout";
-import {
-  CreateLink,
-  DeleteLink,
-  EditLink,
-  KaraokeLink,
-  OriginalSongLink,
-  LoginLink,
-  MyPageLink,
-  ProfileLink,
-  SignUpLink,
-  TitleLink,
-  TopLink,
-} from "../button/link/Humbarger";
+import { CreateLink, DeleteLink, EditLink, KaraokeLink, OriginalSongLink, LoginLink, MyPageLink, ProfileLink, SignUpLink, TitleLink, TopLink } from "../button/link/Humbarger";
 import Image from "next/image";
+import VKaraVideoPlayer from "./VKaraVideoPlayer";
 
 type LayoutProps = {
   pageName: string;
@@ -46,9 +35,7 @@ export function Layout({ pageName, children, isSignin }: LayoutProps) {
           <div className="md:absolute md:right-1 ">
             <span className="flex-1 "> {pageName}</span>
             <span className="flex-1 px-1">|</span>
-            <span className="flex-1 ">
-              {(isSignin && "ログイン中") || "非ログイン中"}
-            </span>
+            <span className="flex-1 ">{(isSignin && "ログイン中") || "非ログイン中"}</span>
           </div>
           {children}
         </main>
@@ -79,10 +66,7 @@ const Header = ({ pageName }: HeaderProps) => {
       <div>
         <header className={`${HeaderCss.regular}`}>
           <a href="#pageTop" />
-          <Link
-            href="/"
-            className="flex float-left bg-[#FFF6E4] text-[#000000] font-extrabold px-4 pb-1 pr-6 rounded-br-full "
-          >
+          <Link href="/" className="flex float-left bg-[#FFF6E4] text-[#000000] font-extrabold px-4 pb-1 pr-6 rounded-br-full ">
             V-kara
           </Link>
           <div className="flex float-right">
@@ -93,18 +77,12 @@ const Header = ({ pageName }: HeaderProps) => {
                 </Link>
               </span>
               <span>
-                <Link
-                  href="/sings/karaoke"
-                  className={`${ToClickTW.regular} mr-1`}
-                >
+                <Link href="/sings/karaoke" className={`${ToClickTW.regular} mr-1`}>
                   カラオケ
                 </Link>
               </span>
               <span>
-                <Link
-                  href="/sings/original-song"
-                  className={`${ToClickTW.regular} mr-1`}
-                >
+                <Link href="/sings/original-song" className={`${ToClickTW.regular} mr-1`}>
                   オリ曲
                 </Link>
               </span>
@@ -137,17 +115,11 @@ const Header = ({ pageName }: HeaderProps) => {
 
             {!isSignin && (
               <div className="pr-1">
-                <Link
-                  href="/user/signup"
-                  className={`${ToClickTW.regular} mr-1`}
-                >
+                <Link href="/user/signup" className={`${ToClickTW.regular} mr-1`}>
                   会員登録
                 </Link>
                 <span className="pr-1">:</span>
-                <Link
-                  href="/user/signin"
-                  className={`${ToClickTW.regular} mr-1`}
-                >
+                <Link href="/user/signin" className={`${ToClickTW.regular} mr-1`}>
                   ログイン
                 </Link>
                 <span className="pr-1">:</span>
@@ -165,10 +137,7 @@ const Header = ({ pageName }: HeaderProps) => {
                 {pathName === "/user/mypage" && (
                   <>
                     <span className="pr-1">:</span>
-                    <Link
-                      href="/user/profile"
-                      className={`${ToClickTW.regular} px-1`}
-                    >
+                    <Link href="/user/profile" className={`${ToClickTW.regular} px-1`}>
                       プロフィール
                     </Link>
                   </>
@@ -192,56 +161,27 @@ const Header = ({ pageName }: HeaderProps) => {
             <Link href="/sings/karaoke" className={`${ToClickTW.regular} mr-1`}>
               カラオケ
             </Link>
-            <Link
-              href="/sings/original-song"
-              className={`${ToClickTW.regular} mr-1`}
-            >
+            <Link href="/sings/original-song" className={`${ToClickTW.regular} mr-1`}>
               オリ曲
             </Link>
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="hover:bg-[#657261] rounded-lg "
-            >
-              <Image
-                src="/user/hamburger.svg"
-                className="h-7"
-                width={24}
-                height={20}
-                alt={""}
-              />
+            <button onClick={() => setIsOpen(!isOpen)} className="hover:bg-[#657261] rounded-lg ">
+              <Image src="/user/hamburger.svg" className="h-7" width={24} height={20} alt={""} />
             </button>
           </div>
 
           {isOpen && (
             <div>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="absolute w-screen h-screen opacity-85 inset-0 bg-[#1f2724] z-10 "
-              ></button>
-              <div
-                className={`absolute right-0 flex float-right flex-col h-screen w-[40%]  min-w-44 bg-[#657261] z-40  scroll-smooth`}
-              >
-                <button
-                  onClick={() => setIsOpen(!isOpen)}
-                  className="absolute right-0 top-0 h-7 hover:bg-[#1f2724] rounded-lg  "
-                >
-                  <Image
-                    src="/user/cross_bold.svg"
-                    className="h-7 "
-                    width={24}
-                    height={20}
-                    alt={""}
-                  />
+              <button onClick={() => setIsOpen(false)} className="absolute w-screen h-screen opacity-85 inset-0 bg-[#1f2724] z-10 "></button>
+              <div className={`absolute right-0 flex float-right flex-col h-screen w-[40%]  min-w-44 bg-[#657261] z-40  scroll-smooth`}>
+                <button onClick={() => setIsOpen(!isOpen)} className="absolute right-0 top-0 h-7 hover:bg-[#1f2724] rounded-lg  ">
+                  <Image src="/user/cross_bold.svg" className="h-7 " width={24} height={20} alt={""} />
                 </button>
 
                 <div id="area" className="flex flex-col h-full">
                   <hr id="hr1" className="flex w-[50%] my-4" />
                   <hr className=" w-[40%] my-4" />
                   <hr className=" w-[10%] my-4" />
-                  <div
-                    id="menu"
-                    className="absolute flex flex-col right-0 w-36 sm:w-48 mt-[20%]  rounded "
-                  >
+                  <div id="menu" className="absolute flex flex-col right-0 w-36 sm:w-48 mt-[20%]  rounded ">
                     <div className=" flex flex-col ">
                       <TopLink />
                       <KaraokeLink />
@@ -349,10 +289,7 @@ const Footer = () => {
           </div>
         )}
       </div>
-      <div
-        id="pageTop"
-        className="flex float-left bg-[#FFF6E4] text-[#000000] font-extrabold px-4 pb-1 pr-6 rounded-tr-full "
-      >
+      <div id="pageTop" className="flex float-left bg-[#FFF6E4] text-[#000000] font-extrabold px-4 pb-1 pr-6 rounded-tr-full ">
         V-kara
       </div>
     </footer>

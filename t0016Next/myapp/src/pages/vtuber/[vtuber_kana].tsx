@@ -27,25 +27,17 @@ type VtuberPage = {
 };
 
 export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
-  const karaokes: ReceivedKaraoke[] = useMemo(
-    () => posts?.vtubers_movies_karaokes || [],
-    [posts]
-  );
+  const karaokes: ReceivedKaraoke[] = useMemo(() => posts?.vtubers_movies_karaokes || [], [posts]);
 
   const playKaraokeNumber = generateRandomNumber(karaokes.length);
 
   // TODO: ロジック正しいか確認。動画がkaraokesから選ばれてtimeが初期値になることはないか。動画は0番目や最終番目も選ばれるか。
   const url = "www.youtube.com/watch?v=kORHSmXcYNc"; // 船長
   const stringTime = "00:08:29"; // ピンクレディー メドレー
-  const primaryYoutubeUrl = extractVideoId(
-    karaokes[playKaraokeNumber]?.MovieUrl || url
-  );
-  const primaryYoutubeStartTime = timeStringToSecondNum(
-    karaokes[playKaraokeNumber]?.SingStart || stringTime
-  );
+  const primaryYoutubeUrl = extractVideoId(karaokes[playKaraokeNumber]?.MovieUrl || url);
+  const primaryYoutubeStartTime = timeStringToSecondNum(karaokes[playKaraokeNumber]?.SingStart || stringTime);
 
-  const [currentMovieId, setCurrentMovieId] =
-    useState<string>(primaryYoutubeUrl);
+  const [currentMovieId, setCurrentMovieId] = useState<string>(primaryYoutubeUrl);
   const [start, setStart] = useState<number>(primaryYoutubeStartTime);
 
   const handleMovieClickYouTube = (url: string, start: number) => {
@@ -56,9 +48,7 @@ export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
   const [selectedMovie, setSelectedMovie] = useState<string>("");
 
   // propsとして必要
-  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>(
-    {} as ReceivedKaraoke
-  );
+  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke);
 
   if (karaokes.length == 0) {
     return (
@@ -113,9 +103,7 @@ export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
               {/* 右側の要素 */}
               <div id="right" className={`relative  px-1 rounded border`}>
                 <div className="flex py-3 text-black bg-[#FFF6E4] justify-center rounded-xl">
-                  <span className="text-xl font-bold mr-2">
-                    {karaokes?.[0].VtuberName}
-                  </span>
+                  <span className="text-xl font-bold mr-2">{karaokes?.[0].VtuberName}</span>
                   <span className="mt-1">の歌枠</span>
                 </div>
                 <span>動画絞込み（入力できます）</span>
@@ -126,10 +114,7 @@ export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
                 />
                 <div className="pt-5">
                   <span>お探しの歌枠や歌がありませんか？</span> <br />
-                  <Link
-                    className={`${ToClickTW.regular} justify-center float-right px-3 mr-2`}
-                    href="/crud/create"
-                  >
+                  <Link className={`${ToClickTW.regular} justify-center float-right px-3 mr-2`} href="/crud/create">
                     データを登録する
                   </Link>
                 </div>
@@ -138,11 +123,7 @@ export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
           </div>
         </div>
         <div className="flex flex-col w-full">
-          <KaraokeFilterTableWithoutVTuberName
-            posts={filterKaraokesByUrl(karaokes, selectedMovie)}
-            handleMovieClickYouTube={handleMovieClickYouTube}
-            setSelectedPost={setSelectedPost}
-          />
+          <KaraokeFilterTableWithoutVTuberName posts={filterKaraokesByUrl(karaokes, selectedMovie)} handleMovieClickYouTube={handleMovieClickYouTube} setSelectedPost={setSelectedPost} />
         </div>
       </div>
     </Layout>
@@ -160,12 +141,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const kana = context.query.vtuber_kana;
 
   const { sessionToken, isLoggedin } = checkLoggedin(context);
-  console.log(
-    "pageName, sessionToken, isLoggedin =",
-    pageName,
-    sessionToken,
-    isLoggedin
-  ); // 会員、非会員、どのページかの記録のため
+  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin); // 会員、非会員、どのページかの記録のため
 
   const httpsAgent = new https.Agent({ rejectUnauthorized: false });
   const options: AxiosRequestConfig = {
@@ -178,16 +154,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   let resData = null;
   try {
-    const res = await axios.get(
-      `${domain.backendHost}/vcontents/vtuber/${kana}`,
-      options
-    );
+    const res = await axios.get(`${domain.backendHost}/vcontents/vtuber/${kana}`, options);
     resData = res.data;
   } catch (error) {
-    console.log(
-      `error in axios.get with \`/vcontents/vtuber/${kana}\`: `,
-      error
-    );
+    console.log(`error in axios.get with \`/vcontents/vtuber/${kana}\`: `, error);
   }
   return {
     props: {

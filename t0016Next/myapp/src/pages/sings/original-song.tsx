@@ -22,17 +22,14 @@ export default function SingsPage({ posts, isSignin }: PostsAndCheckSignin) {
 
   const primaryYoutubeUrl = "HcpFGZNusBw"; //船長　kORHSmXcYNc, 00:08:29
   const primaryYoutubeStartTime = timeStringToSecondNum("");
-  const [currentMovieId, setCurrentMovieId] =
-    useState<string>(primaryYoutubeUrl);
+  const [currentMovieId, setCurrentMovieId] = useState<string>(primaryYoutubeUrl);
   const [start, setStart] = useState<number>(primaryYoutubeStartTime);
   const handleMovieClickYouTube = (url: string, start: number) => {
     setCurrentMovieId(extractVideoId(url));
     setStart(start);
   };
 
-  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>(
-    {} as ReceivedKaraoke
-  );
+  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke);
 
   return (
     <Layout pageName={pageName} isSignin={isSignin}>
@@ -50,11 +47,7 @@ export default function SingsPage({ posts, isSignin }: PostsAndCheckSignin) {
             <YouTubePlayer videoId={currentMovieId} start={start} />
           </div>
           <div className="flex flex-col w-full">
-            <KaraokePagenatoinTable
-              posts={karaokes}
-              handleMovieClickYouTube={handleMovieClickYouTube}
-              setSelectedPost={setSelectedPost}
-            />
+            <KaraokePagenatoinTable posts={karaokes} handleMovieClickYouTube={handleMovieClickYouTube} setSelectedPost={setSelectedPost} />
           </div>
         </div>
       </div>
@@ -64,12 +57,7 @@ export default function SingsPage({ posts, isSignin }: PostsAndCheckSignin) {
 
 export async function getServerSideProps(context: ContextType) {
   const { sessionToken, isLoggedin } = checkLoggedin(context);
-  console.log(
-    "pageName, sessionToken, isLoggedin =",
-    pageName,
-    sessionToken,
-    isLoggedin
-  ); // 会員、非会員、どのページかの記録のため
+  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin); // 会員、非会員、どのページかの記録のため
 
   const httpsAgent = new https.Agent({ rejectUnauthorized: false });
   const options: AxiosRequestConfig = {

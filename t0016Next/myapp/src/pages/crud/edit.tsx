@@ -23,19 +23,11 @@ export const EditPage = ({ posts, isSignin }: EditPageProps) => {
   const [currentVideoId, setCurrentVideoId] = useState<string>("AAsRtnbDs-0");
   const [currentStart, setCurrentStart] = useState<number>(27);
 
-  const movies = useMemo(
-    () => posts?.vtubers_movies_karaokes || [{} as ReceivedMovie],
-    [posts]
-  );
-  const karaokes = useMemo(
-    () => posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke],
-    [posts]
-  );
+  const movies = useMemo(() => posts?.vtubers_movies_karaokes || [{} as ReceivedMovie], [posts]);
+  const karaokes = useMemo(() => posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke], [posts]);
 
   useEffect(() => {
-    const foundMovie = movies.find(
-      (movies) => movies.MovieUrl === selectedMovie
-    );
+    const foundMovie = movies.find((movies) => movies.MovieUrl === selectedMovie);
     if (foundMovie) {
       const foundYoutubeId = extractVideoId(foundMovie.MovieUrl);
       setCurrentVideoId(foundYoutubeId);
@@ -50,12 +42,8 @@ export const EditPage = ({ posts, isSignin }: EditPageProps) => {
 
   useEffect(() => {
     if (selectedVtuber && selectedMovie && selectedKaraoke) {
-      const foundMovies = karaokes.filter(
-        (karaoke) => karaoke.MovieUrl === selectedMovie
-      );
-      const foundKaraoke = foundMovies.find(
-        (foundMovie) => foundMovie.KaraokeId === selectedKaraoke
-      );
+      const foundMovies = karaokes.filter((karaoke) => karaoke.MovieUrl === selectedMovie);
+      const foundKaraoke = foundMovies.find((foundMovie) => foundMovie.KaraokeId === selectedKaraoke);
       if (foundKaraoke) {
         const foundSingStart = timeStringToSecondNum(foundKaraoke.SingStart);
         setCurrentStart(foundSingStart);
@@ -95,15 +83,10 @@ export const EditPage = ({ posts, isSignin }: EditPageProps) => {
         <div className="flex justify-center text-sm mb-3 ">
           <span className="">
             <h1 className="bg-gray-600 w-[180px]">会員の方へ</h1>
-            <li>
-              現在、データの編集・削除はデータ登録者とサイト管理者しかできないようにロックしています。
-            </li>
+            <li>現在、データの編集・削除はデータ登録者とサイト管理者しかできないようにロックしています。</li>
             <li>
               ご自身の登録データは
-              <Link
-                href="/user/mypage"
-                className="underline underline-offset-1"
-              >
+              <Link href="/user/mypage" className="underline underline-offset-1">
                 マイページ
               </Link>
               で確認できます。
@@ -111,10 +94,7 @@ export const EditPage = ({ posts, isSignin }: EditPageProps) => {
           </span>
         </div>
 
-        <div
-          id="feature"
-          className={`flex flex-col  w-full max-w-[1000px] mx-auto`}
-        >
+        <div id="feature" className={`flex flex-col  w-full max-w-[1000px] mx-auto`}>
           <div className="inline-block flex-col top-0 mx-auto ">
             <div className="inline-block mx-auto md:mx-0 md:min-h-[255px] p-0 md:p-3">
               <YouTubePlayer videoId={currentVideoId} start={currentStart} />
@@ -147,12 +127,7 @@ export default EditPage;
 
 export async function getServerSideProps(context: ContextType) {
   const { sessionToken, isLoggedin } = checkLoggedin(context);
-  console.log(
-    "pageName, sessionToken, isLoggedin =",
-    pageName,
-    sessionToken,
-    isLoggedin
-  ); // 会員、非会員、どのページかの記録のため
+  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin); // 会員、非会員、どのページかの記録のため
 
   const httpsAgent = new https.Agent({ rejectUnauthorized: false });
   const options: AxiosRequestConfig = {

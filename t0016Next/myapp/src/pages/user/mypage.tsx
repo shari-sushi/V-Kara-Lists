@@ -6,11 +6,7 @@ import Image from "next/image";
 
 import { domain } from "@/../env";
 import { Layout } from "@/components/layout/Layout";
-import type {
-  ReceivedKaraoke,
-  ReceivedVtuber,
-  ReceivedMovie,
-} from "../../types/vtuber_content"; //type{}で型情報のみインポート
+import type { ReceivedKaraoke, ReceivedVtuber, ReceivedMovie } from "../../types/vtuber_content"; //type{}で型情報のみインポート
 import { VtuberTable } from "@/components/table/Vtuber";
 import { MovieTable } from "@/components/table/Movie";
 import { KaraokePagenatoinTable } from "@/components/table/Karaoke";
@@ -35,9 +31,7 @@ type Mypage = {
 const MyPage = ({ data, isSignin }: Mypage) => {
   const [currentMovieId, setCurrentMovieId] = useState<string>("Bjsn-QpwmvU"); //こむぎ ワールドイズマイン
   const [start, setStart] = useState<number>(8091);
-  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>(
-    {} as ReceivedKaraoke
-  );
+  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke);
 
   if (!isSignin) {
     return (
@@ -51,8 +45,7 @@ const MyPage = ({ data, isSignin }: Mypage) => {
 
   const vtubers = data?.vtubers_u_created || ([] as ReceivedVtuber[]);
   const movies = data?.vtubers_movies_u_created || ([] as ReceivedMovie[]);
-  const karaokes =
-    data?.vtubers_movies_karaokes_u_created || ([] as ReceivedKaraoke[]);
+  const karaokes = data?.vtubers_movies_karaokes_u_created || ([] as ReceivedKaraoke[]);
 
   const handleMovieClickYouTube = (url: string, start: number) => {
     setCurrentMovieId(extractVideoId(url));
@@ -85,22 +78,14 @@ const MyPage = ({ data, isSignin }: Mypage) => {
               </h1>
 
               <div className="flex flex-col p-5">
-                <div className="mx-auto">
-                  自分で登録したデータが無いようです...TT
-                </div>
-                <button
-                  className={`${ToClickTW.regular} flex max-w-40 mt-8 mx-auto`}
-                  onClick={() => handleMovieClickYouTubeDemoMovie()}
-                >
+                <div className="mx-auto">自分で登録したデータが無いようです...TT</div>
+                <button className={`${ToClickTW.regular} flex max-w-40 mt-8 mx-auto`} onClick={() => handleMovieClickYouTubeDemoMovie()}>
                   データ登録方法を <br />
                   動画で見る
                 </button>
                 <div className="flex justify-center">
                   <span className="py-5">
-                    <Link
-                      href="/crud/create"
-                      className={`${ToClickTW.regular} `}
-                    >
+                    <Link href="/crud/create" className={`${ToClickTW.regular} `}>
                       データ登録する
                     </Link>
                   </span>
@@ -124,13 +109,7 @@ const MyPage = ({ data, isSignin }: Mypage) => {
                 <div className="">
                   <div className=" ">
                     <div className="flex">
-                      <Image
-                        src="/content/human_white.svg"
-                        width={20}
-                        height={20}
-                        alt="Human Icon"
-                        className="h-5 mr-1"
-                      />
+                      <Image src="/content/human_white.svg" width={20} height={20} alt="Human Icon" className="h-5 mr-1" />
                       <h2>配信者: 登録数{vtubers.length}</h2>
                     </div>
                     <VtuberTable posts={vtubers} />
@@ -139,40 +118,21 @@ const MyPage = ({ data, isSignin }: Mypage) => {
 
                   <div className=" ">
                     <div className="flex">
-                      <Image
-                        src="/content/movie.svg"
-                        width={20}
-                        height={20}
-                        alt="Movie Icon"
-                        className="h-5 mr-1"
-                      />
+                      <Image src="/content/movie.svg" width={20} height={20} alt="Movie Icon" className="h-5 mr-1" />
                       <h2>歌枠(動画): 登録数{movies.length}</h2>
                     </div>
-                    <MovieTable
-                      posts={movies}
-                      handleMovieClickYouTube={handleMovieClickYouTube}
-                    />
+                    <MovieTable posts={movies} handleMovieClickYouTube={handleMovieClickYouTube} />
                     <br />
                   </div>
 
                   <div className=" ">
                     <div className="flex">
-                      <Image
-                        src="/content/note.svg"
-                        width={20}
-                        height={20}
-                        alt="Note Icon"
-                        className="h-5 mr-1"
-                      />
+                      <Image src="/content/note.svg" width={20} height={20} alt="Note Icon" className="h-5 mr-1" />
                       <h2>歌: 登録数{karaokes.length}</h2>
                     </div>
                   </div>
 
-                  <KaraokePagenatoinTable
-                    posts={karaokes}
-                    handleMovieClickYouTube={handleMovieClickYouTube}
-                    setSelectedPost={setSelectedPost}
-                  />
+                  <KaraokePagenatoinTable posts={karaokes} handleMovieClickYouTube={handleMovieClickYouTube} setSelectedPost={setSelectedPost} />
                 </div>
               </div>
             </div>
@@ -193,12 +153,7 @@ export default MyPage;
 
 export async function getServerSideProps(context: ContextType) {
   const { sessionToken, isLoggedin } = checkLoggedin(context);
-  console.log(
-    "pageName, sessionToken, isLoggedin =",
-    pageName,
-    sessionToken,
-    isLoggedin
-  ); // 会員、非会員、どのページかの記録のため
+  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin); // 会員、非会員、どのページかの記録のため
 
   const httpsAgent = new https.Agent({ rejectUnauthorized: false });
   const options: AxiosRequestConfig = {

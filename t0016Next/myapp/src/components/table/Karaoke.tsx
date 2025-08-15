@@ -1,11 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import {
-  useTable,
-  usePagination,
-  useSortBy,
-  Column,
-  useRowSelect,
-} from "react-table";
+import { useTable, usePagination, useSortBy, Column, useRowSelect } from "react-table";
 import axios from "axios";
 import Link from "next/link";
 
@@ -36,17 +30,8 @@ const columns: Column<ReceivedKaraoke>[] = [
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
       return (
         <span className="relative">
-          <Link
-            href={`/vtuber/${row.original.VtuberKana}`}
-            className={`flex ${LinkTW.base}`}
-          >
-            <Image
-              src="/content/external_link.svg"
-              className="w-5 mr-1"
-              width={24}
-              height={20}
-              alt=""
-            />
+          <Link href={`/vtuber/${row.original.VtuberKana}`} className={`flex ${LinkTW.base}`}>
+            <Image src="/content/external_link.svg" className="w-5 mr-1" width={24} height={20} alt="" />
             {row.original.VtuberName}
           </Link>
         </span>
@@ -61,11 +46,7 @@ const columns: Column<ReceivedKaraoke>[] = [
 
       const [isDisplay, setIsDisplay] = useState<boolean>(false);
       const handleClick = async () => {
-        const url =
-          "https://" +
-          row.original.MovieUrl +
-          "&t=" +
-          timeStringToSecondNum(row.original.SingStart);
+        const url = "https://" + row.original.MovieUrl + "&t=" + timeStringToSecondNum(row.original.SingStart);
         await navigator.clipboard.writeText(url);
         setIsDisplay(true);
         setTimeout(() => setIsDisplay(false), 2000);
@@ -73,40 +54,16 @@ const columns: Column<ReceivedKaraoke>[] = [
 
       return (
         <div className="relative flex w-auto">
-          <button
-            className="flex"
-            onClick={() =>
-              handleMovieClickYouTube(
-                row.original.MovieUrl,
-                timeStringToSecondNum(row.original.SingStart)
-              )
-            }
-          >
-            <Image
-              src="/content/play_black.svg"
-              className="w-5 mr-1 bottom-0 "
-              width={24}
-              height={20}
-              alt={""}
-            />
+          <button className="flex" onClick={() => handleMovieClickYouTube(row.original.MovieUrl, timeStringToSecondNum(row.original.SingStart))}>
+            <Image src="/content/play_black.svg" className="w-5 mr-1 bottom-0 " width={24} height={20} alt={""} />
             {row.original.SongName}
           </button>
 
           <div id="clip url" className="absolute right-0">
             <button className="flex" onClick={() => handleClick()}>
-              <Image
-                src="/content/copy_gray.svg"
-                className="h-5 mr-2 flex hover:bg-[#B7A692] stroke-2  rounded-md"
-                width={24}
-                height={20}
-                alt={""}
-              />
+              <Image src="/content/copy_gray.svg" className="h-5 mr-2 flex hover:bg-[#B7A692] stroke-2  rounded-md" width={24} height={20} alt={""} />
             </button>
-            {isDisplay && (
-              <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">
-                URL was copied
-              </div>
-            )}
+            {isDisplay && <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">URL was copied</div>}
           </div>
         </div>
       );
@@ -117,14 +74,7 @@ const columns: Column<ReceivedKaraoke>[] = [
     Header: "いいね",
     accessor: "Count",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      return (
-        <FavoriteColumn
-          count={row.original.Count}
-          isFav={row.original.IsFav}
-          movie={row.original.MovieUrl}
-          karaoke={row.original.KaraokeId}
-        />
-      );
+      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} movie={row.original.MovieUrl} karaoke={row.original.KaraokeId} />;
     },
   },
 ];
@@ -161,18 +111,12 @@ function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumn) {
         KaraokeId: karaoke,
       };
       if (isFavNow) {
-        const response = await axiosClient.delete(
-          `${domain.backendHost}/fav/unfavorite/karaoke`,
-          { data: reqBody }
-        );
+        const response = await axiosClient.delete(`${domain.backendHost}/fav/unfavorite/karaoke`, { data: reqBody });
         if (!response.status) {
           throw new Error(response.statusText);
         }
       } else {
-        const response = await axiosClient.post(
-          `${domain.backendHost}/fav/favorite/karaoke`,
-          reqBody
-        );
+        const response = await axiosClient.post(`${domain.backendHost}/fav/favorite/karaoke`, reqBody);
         if (!response.status) {
           throw new Error(response.statusText);
         }
@@ -183,35 +127,16 @@ function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumn) {
   };
   return (
     <div className="flex justify-center">
-      <button
-        className={`${TableTW.favoriteColumn} relative flex `}
-        onClick={handleClick}
-      >
+      <button className={`${TableTW.favoriteColumn} relative flex `} onClick={handleClick}>
         {isFavNow ? (
-          <Image
-            src="/content/heart_pink.svg"
-            className="flex w-5 m-1 mr-0"
-            width={24}
-            height={20}
-            alt={""}
-          />
+          <Image src="/content/heart_pink.svg" className="flex w-5 m-1 mr-0" width={24} height={20} alt={""} />
         ) : (
-          <Image
-            src="/content/heart_white.svg"
-            className="flex w-5 m-1 mr-0"
-            width={24}
-            height={20}
-            alt={""}
-          />
+          <Image src="/content/heart_white.svg" className="flex w-5 m-1 mr-0" width={24} height={20} alt={""} />
         )}
 
         {isFavNow == isFav ? count : isFavNow ? count + 1 : count - 1}
 
-        {isDisplay && (
-          <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[140px]">
-            ログインが必要です
-          </div>
-        )}
+        {isDisplay && <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[140px]">ログインが必要です</div>}
       </button>
     </div>
   );
@@ -228,20 +153,13 @@ const PagenationReturnPostcolumns: Column<ReceivedKaraoke>[] = [
       const { handleMovieClickYouTube } = useContext(YouTubePlayerContext); //表示ページにyoutubeのカレントデータを渡す
       const { setSelectedPost } = useContext(SeletctPostContext);
       const handleClickPlay = (post: ReceivedKaraoke) => {
-        handleMovieClickYouTube(
-          row.original.MovieUrl,
-          timeStringToSecondNum(row.original.SingStart)
-        );
+        handleMovieClickYouTube(row.original.MovieUrl, timeStringToSecondNum(row.original.SingStart));
         setSelectedPost(post);
       };
 
       const [isDisplay, setIsDisplay] = useState<boolean>(false);
       const handleClick = async () => {
-        const url =
-          "https://" +
-          row.original.MovieUrl +
-          "&t=" +
-          timeStringToSecondNum(row.original.SingStart);
+        const url = "https://" + row.original.MovieUrl + "&t=" + timeStringToSecondNum(row.original.SingStart);
         await navigator.clipboard.writeText(url);
         setIsDisplay(true);
         setSelectedPost(row.original);
@@ -250,35 +168,16 @@ const PagenationReturnPostcolumns: Column<ReceivedKaraoke>[] = [
 
       return (
         <div className="relative flex w-auto">
-          <button
-            className="flex"
-            onClick={() => handleClickPlay(row.original)}
-          >
-            <Image
-              src="/content/play_black.svg"
-              className="w-5 mr-1 bottom-0"
-              width={24}
-              height={20}
-              alt={""}
-            />
+          <button className="flex" onClick={() => handleClickPlay(row.original)}>
+            <Image src="/content/play_black.svg" className="w-5 mr-1 bottom-0" width={24} height={20} alt={""} />
             {row.original.SongName}
           </button>
 
           <span className="absolute right-0">
             <button className="flex " onClick={() => handleClick()}>
-              <Image
-                src="/content/copy_gray.svg"
-                className="h-5 mr-2 flex hover:bg-[#B7A692] stroke-2  rounded-md"
-                alt={""}
-                width={18}
-                height={18}
-              />
+              <Image src="/content/copy_gray.svg" className="h-5 mr-2 flex hover:bg-[#B7A692] stroke-2  rounded-md" alt={""} width={18} height={18} />
             </button>
-            {isDisplay && (
-              <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">
-                URL was copied
-              </div>
-            )}
+            {isDisplay && <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">URL was copied</div>}
           </span>
         </div>
       );
@@ -290,14 +189,7 @@ const PagenationReturnPostcolumns: Column<ReceivedKaraoke>[] = [
     Header: "いいね",
     accessor: "Count",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      return (
-        <FavoriteColumn
-          count={row.original.Count}
-          isFav={row.original.IsFav}
-          movie={row.original.MovieUrl}
-          karaoke={row.original.KaraokeId}
-        />
-      );
+      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} movie={row.original.MovieUrl} karaoke={row.original.KaraokeId} />;
     },
   },
 ];
@@ -314,11 +206,7 @@ const SeletctPostContext = React.createContext(
   }
 );
 
-export function KaraokePagenatoinTable({
-  posts,
-  handleMovieClickYouTube,
-  setSelectedPost,
-}: KaraokeTableReturnPostProps) {
+export function KaraokePagenatoinTable({ posts, handleMovieClickYouTube, setSelectedPost }: KaraokeTableReturnPostProps) {
   const data: ReceivedKaraoke[] = posts;
   const maxPageSize = 99999;
 
@@ -353,18 +241,10 @@ export function KaraokePagenatoinTable({
       <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
         <div id="tab" className=" ">
           <div className="flex bg-[#B7A692] mt-1 py-1 px-2 md:px-3 rounded-t-xl md:rounded-t-2xl max-w-[400px] ">
-            <button
-              className={`${TableTW.pageNationDouble} md:mx-1`}
-              onClick={() => gotoPage(0)}
-              disabled={!canPreviousPage}
-            >
+            <button className={`${TableTW.pageNationDouble} md:mx-1`} onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
               {"<<"}
             </button>
-            <button
-              className={`${TableTW.pageNationSingle} sm:mx-0.5 md:mx-1`}
-              onClick={() => previousPage()}
-              disabled={!canPreviousPage}
-            >
+            <button className={`${TableTW.pageNationSingle} sm:mx-0.5 md:mx-1`} onClick={() => previousPage()} disabled={!canPreviousPage}>
               {"<"}
             </button>
             <span>
@@ -372,26 +252,14 @@ export function KaraokePagenatoinTable({
                 {pageIndex + 1} / {pageOptions.length}
               </strong>
             </span>
-            <button
-              className={`${TableTW.pageNationSingle} sm:mx-1`}
-              onClick={() => nextPage()}
-              disabled={!canNextPage}
-            >
+            <button className={`${TableTW.pageNationSingle} sm:mx-1`} onClick={() => nextPage()} disabled={!canNextPage}>
               {">"}
             </button>
-            <button
-              className={`${TableTW.pageNationDouble} md:mx-1`}
-              onClick={() => gotoPage(pageCount - 1)}
-              disabled={!canNextPage}
-            >
+            <button className={`${TableTW.pageNationDouble} md:mx-1`} onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
               {">>"}
             </button>
 
-            <select
-              className="text-right"
-              value={pageSize}
-              onChange={(e) => setPageSize(Number(e.target.value))}
-            >
+            <select className="text-right" value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))}>
               {[25, 50, 75, 100, maxPageSize].map((pageSize) => (
                 <option key={pageSize} value={pageSize}>
                   {pageSize !== maxPageSize ? `Show ${pageSize}` : `Show all`}
@@ -407,28 +275,9 @@ export function KaraokePagenatoinTable({
               {headerGroups.map((headerGroup) => (
                 <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
                   {headerGroup.headers.map((column) => (
-                    <th
-                      {...column.getHeaderProps(column.getSortByToggleProps())}
-                      key={column.id}
-                    >
+                    <th {...column.getHeaderProps(column.getSortByToggleProps())} key={column.id}>
                       {column.render("Header")}
-                      <span>
-                        {column.isSorted ? (
-                          column.isSortedDesc ? (
-                            "🔽"
-                          ) : (
-                            "🔼"
-                          )
-                        ) : (
-                          <Image
-                            src="/content/sort.svg"
-                            width={24}
-                            height={20}
-                            alt="Sortable mark"
-                            className="inline mx-1 h-5"
-                          />
-                        )}
-                      </span>
+                      <span>{column.isSorted ? column.isSortedDesc ? "🔽" : "🔼" : <Image src="/content/sort.svg" width={24} height={20} alt="Sortable mark" className="inline mx-1 h-5" />}</span>
                     </th>
                   ))}
                 </tr>
@@ -438,11 +287,7 @@ export function KaraokePagenatoinTable({
               {page.map((row) => {
                 prepareRow(row);
                 return (
-                  <tr
-                    {...row.getRowProps()}
-                    className={`${TableTW.regularTr}`}
-                    key={row.id}
-                  >
+                  <tr {...row.getRowProps()} className={`${TableTW.regularTr}`} key={row.id}>
                     {row.cells.map((cell, i) => (
                       <td {...cell.getCellProps()} key={i}>
                         {cell.render("Cell")}
@@ -468,17 +313,8 @@ const ThinColumns: Column<ReceivedKaraoke>[] = [
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
       return (
         <span className="relative">
-          <Link
-            href={`/vtuber/${row.original.VtuberKana}`}
-            className={`flex ${LinkTW.base}`}
-          >
-            <Image
-              src="/content/external_link.svg"
-              className="w-5 mr-1"
-              width={24}
-              height={20}
-              alt=""
-            />
+          <Link href={`/vtuber/${row.original.VtuberKana}`} className={`flex ${LinkTW.base}`}>
+            <Image src="/content/external_link.svg" className="w-5 mr-1" width={24} height={20} alt="" />
             {row.original.VtuberName}
           </Link>
         </span>
@@ -493,11 +329,7 @@ const ThinColumns: Column<ReceivedKaraoke>[] = [
 
       const [isDisplay, setIsDisplay] = useState<boolean>(false);
       const handleClick = async () => {
-        const url =
-          "https://" +
-          row.original.MovieUrl +
-          "&t=" +
-          timeStringToSecondNum(row.original.SingStart);
+        const url = "https://" + row.original.MovieUrl + "&t=" + timeStringToSecondNum(row.original.SingStart);
         await navigator.clipboard.writeText(url);
         setIsDisplay(true);
         setTimeout(() => setIsDisplay(false), 2000);
@@ -505,40 +337,16 @@ const ThinColumns: Column<ReceivedKaraoke>[] = [
 
       return (
         <span className="relative flex w-auto">
-          <button
-            className={`flex overflow-hidden ${LinkTW.base}`}
-            onClick={() =>
-              handleMovieClickYouTube(
-                row.original.MovieUrl,
-                timeStringToSecondNum(row.original.SingStart)
-              )
-            }
-          >
-            <Image
-              src="/content/play_black.svg"
-              className="w-5 mr-1 bottom-0 "
-              width={24}
-              height={20}
-              alt={""}
-            />
+          <button className={`flex overflow-hidden ${LinkTW.base}`} onClick={() => handleMovieClickYouTube(row.original.MovieUrl, timeStringToSecondNum(row.original.SingStart))}>
+            <Image src="/content/play_black.svg" className="w-5 mr-1 bottom-0 " width={24} height={20} alt={""} />
             {row.original.SongName}
           </button>
 
           <span className="absolute right-0 ">
             <button onClick={handleClick}>
-              <Image
-                src="/content/copy_gray.svg"
-                className="h-5 mr-2 flex hover:bg-[#B7A692] stroke-2  rounded-md"
-                alt={""}
-                width={18}
-                height={18}
-              />
+              <Image src="/content/copy_gray.svg" className="h-5 mr-2 flex hover:bg-[#B7A692] stroke-2  rounded-md" alt={""} width={18} height={18} />
             </button>
-            {isDisplay && (
-              <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">
-                URL was copied
-              </div>
-            )}
+            {isDisplay && <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">URL was copied</div>}
           </span>
         </span>
       );
@@ -548,25 +356,14 @@ const ThinColumns: Column<ReceivedKaraoke>[] = [
     Header: "いいね",
     accessor: "Count",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      return (
-        <FavoriteColumn
-          count={row.original.Count}
-          isFav={row.original.IsFav}
-          movie={row.original.MovieUrl}
-          karaoke={row.original.KaraokeId}
-        />
-      );
+      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} movie={row.original.MovieUrl} karaoke={row.original.KaraokeId} />;
     },
   },
 ];
 
-export const KaraokeThinTable = ({
-  posts,
-  handleMovieClickYouTube,
-}: KaraokeTableProps) => {
+export const KaraokeThinTable = ({ posts, handleMovieClickYouTube }: KaraokeTableProps) => {
   const data = posts || ([] as ReceivedKaraoke[]);
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns: ThinColumns, data }, useSortBy, useRowSelect);
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns: ThinColumns, data }, useSortBy, useRowSelect);
 
   return (
     <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
@@ -576,27 +373,9 @@ export const KaraokeThinTable = ({
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
                 {headerGroup.headers.map((column, i) => (
-                  <th
-                    {...column.getHeaderProps(column.getSortByToggleProps())}
-                    className="px-2"
-                    key={`karoake_thin_table_header_${i}`}
-                  >
+                  <th {...column.getHeaderProps(column.getSortByToggleProps())} className="px-2" key={`karoake_thin_table_header_${i}`}>
                     {column.render("Header")}
-                    {column.isSorted ? (
-                      column.isSortedDesc ? (
-                        "🔽"
-                      ) : (
-                        "🔼"
-                      )
-                    ) : (
-                      <Image
-                        src="/content/sort.svg"
-                        width={24}
-                        height={20}
-                        alt="Sortable mark"
-                        className="inline-block w-6 h-5"
-                      />
-                    )}
+                    {column.isSorted ? column.isSortedDesc ? "🔽" : "🔼" : <Image src="/content/sort.svg" width={24} height={20} alt="Sortable mark" className="inline-block w-6 h-5" />}
                   </th>
                 ))}
               </tr>
@@ -606,11 +385,7 @@ export const KaraokeThinTable = ({
             {rows.map((row, i) => {
               prepareRow(row);
               return (
-                <tr
-                  {...row.getRowProps()}
-                  className={`${TableTW.regularTr}`}
-                  key={i}
-                >
+                <tr {...row.getRowProps()} className={`${TableTW.regularTr}`} key={i}>
                   {row.cells.map((cell, j) => {
                     return (
                       <td {...cell.getCellProps()} key={j}>
@@ -630,10 +405,7 @@ export const KaraokeThinTable = ({
 
 ///////////////////////////
 //  delete用
-export function KaraokeDeleteTable({
-  posts,
-  handleMovieClickYouTube,
-}: KaraokeTableProps) {
+export function KaraokeDeleteTable({ posts, handleMovieClickYouTube }: KaraokeTableProps) {
   const data = posts != null ? posts : [{} as ReceivedKaraoke];
   const maxPageSize = 1000;
   const {
@@ -665,18 +437,10 @@ export function KaraokeDeleteTable({
     <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
       <div id="tab" className=" ">
         <div className="flex bg-[#B7A692] mt-1 py-1 px-2 md:px-3 rounded-t-xl md:rounded-t-2xl max-w-[400px] ">
-          <button
-            className={`${TableTW.pageNationDouble} md:mx-1`}
-            onClick={() => gotoPage(0)}
-            disabled={!canPreviousPage}
-          >
+          <button className={`${TableTW.pageNationDouble} md:mx-1`} onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
             {"<<"}
           </button>
-          <button
-            className={`${TableTW.pageNationSingle} mx-1`}
-            onClick={() => previousPage()}
-            disabled={!canPreviousPage}
-          >
+          <button className={`${TableTW.pageNationSingle} mx-1`} onClick={() => previousPage()} disabled={!canPreviousPage}>
             {"<"}
           </button>
           <span>
@@ -684,25 +448,13 @@ export function KaraokeDeleteTable({
               {pageIndex + 1} / {pageOptions.length}
             </strong>
           </span>
-          <button
-            className={`${TableTW.pageNationSingle} mx-1`}
-            onClick={() => nextPage()}
-            disabled={!canNextPage}
-          >
+          <button className={`${TableTW.pageNationSingle} mx-1`} onClick={() => nextPage()} disabled={!canNextPage}>
             {">"}
           </button>
-          <button
-            className={`${TableTW.pageNationDouble} md:mx-1`}
-            onClick={() => gotoPage(pageCount - 1)}
-            disabled={!canNextPage}
-          >
+          <button className={`${TableTW.pageNationDouble} md:mx-1`} onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
             {">>"}
           </button>
-          <select
-            className="text-right"
-            value={pageSize}
-            onChange={(e) => setPageSize(Number(e.target.value))}
-          >
+          <select className="text-right" value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))}>
             {[10, 25, 50, 75, 100, maxPageSize].map((pageSize) => (
               <option key={pageSize} value={pageSize}>
                 {pageSize !== maxPageSize ? `Show ${pageSize}` : `Show all`}
@@ -728,11 +480,7 @@ export function KaraokeDeleteTable({
             {page.map((row, i) => {
               prepareRow(row);
               return (
-                <tr
-                  {...row.getRowProps()}
-                  className={`${TableTW.regularTr}`}
-                  key={i}
-                >
+                <tr {...row.getRowProps()} className={`${TableTW.regularTr}`} key={i}>
                   {row.cells.map((cell, j) => (
                     <td {...cell.getCellProps()} key={j}>
                       {cell.render("Cell")}
@@ -755,17 +503,8 @@ const deleteColumns: Column<ReceivedKaraoke>[] = [
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
       return (
         <span key={row.original.KaraokeId} className="relative">
-          <Link
-            href={`/vtuber/${row.original.VtuberKana}`}
-            className={`flex ${LinkTW.base}`}
-          >
-            <Image
-              src="/content/external_link.svg"
-              className="w-5 mr-1"
-              width={24}
-              height={20}
-              alt=""
-            />
+          <Link href={`/vtuber/${row.original.VtuberKana}`} className={`flex ${LinkTW.base}`}>
+            <Image src="/content/external_link.svg" className="w-5 mr-1" width={24} height={20} alt="" />
             {row.original.VtuberName}
           </Link>
         </span>
@@ -776,8 +515,7 @@ const deleteColumns: Column<ReceivedKaraoke>[] = [
     Header: "曲",
     accessor: "SongName",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      const { setCurrentVideoId, setCurrentStart } =
-        useContext(ToDeleteContext);
+      const { setCurrentVideoId, setCurrentStart } = useContext(ToDeleteContext);
       const clickHandler = (url: string, SingStart: string) => {
         setCurrentVideoId(extractVideoId(url));
         // setTimeout(() => setCurrentStart(　// youtube iframバグ対策。再発に備えてコメントアウトで残しておく
@@ -786,19 +524,8 @@ const deleteColumns: Column<ReceivedKaraoke>[] = [
       };
       return (
         <span className="relative">
-          <button
-            className="flex"
-            onClick={() =>
-              clickHandler(row.original.MovieUrl, row.original.SingStart)
-            }
-          >
-            <Image
-              src="/content/play_black.svg"
-              className="w-5 mr-2"
-              alt={""}
-              width={24}
-              height={20}
-            />
+          <button className="flex" onClick={() => clickHandler(row.original.MovieUrl, row.original.SingStart)}>
+            <Image src="/content/play_black.svg" className="w-5 mr-2" alt={""} width={24} height={20} />
             {row.original.SongName}
           </button>
         </span>
@@ -811,8 +538,7 @@ const deleteColumns: Column<ReceivedKaraoke>[] = [
     Header: "削除",
     accessor: "KaraokeId",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      const { setToDeleteVtuberId, setToDeleteMovieUrl, setToDeleteKaraokeId } =
-        useContext(ToDeleteContext);
+      const { setToDeleteVtuberId, setToDeleteMovieUrl, setToDeleteKaraokeId } = useContext(ToDeleteContext);
       const clickHandler = () => {
         setToDeleteVtuberId(row.original.VtuberId);
         setToDeleteMovieUrl(row.original.MovieUrl);
@@ -843,17 +569,8 @@ const randam5columns: Column<ReceivedKaraoke>[] = [
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
       return (
         <span className="relative">
-          <Link
-            href={`/vtuber/${row.original.VtuberKana}`}
-            className={`flex ${LinkTW.base}`}
-          >
-            <Image
-              src="/content/external_link.svg"
-              className="w-5 mr-1"
-              width={24}
-              height={20}
-              alt=""
-            />
+          <Link href={`/vtuber/${row.original.VtuberKana}`} className={`flex ${LinkTW.base}`}>
+            <Image src="/content/external_link.svg" className="w-5 mr-1" width={24} height={20} alt="" />
             {row.original.VtuberName}
           </Link>
         </span>
@@ -867,19 +584,12 @@ const randam5columns: Column<ReceivedKaraoke>[] = [
       const { handleMovieClickYouTube } = useContext(YouTubePlayerContext);
 
       const handleClickSongName = (post: ReceivedKaraoke) => {
-        handleMovieClickYouTube(
-          post.MovieUrl,
-          timeStringToSecondNum(post.SingStart)
-        );
+        handleMovieClickYouTube(post.MovieUrl, timeStringToSecondNum(post.SingStart));
       };
 
       const [isDisplay, setIsDisplay] = useState<boolean>(false);
       const handleClickClipUrl = async () => {
-        const url =
-          "https://" +
-          row.original.MovieUrl +
-          "&t=" +
-          timeStringToSecondNum(row.original.SingStart);
+        const url = "https://" + row.original.MovieUrl + "&t=" + timeStringToSecondNum(row.original.SingStart);
         await navigator.clipboard.writeText(url);
         setIsDisplay(true);
         setTimeout(() => setIsDisplay(false), 2000);
@@ -888,36 +598,17 @@ const randam5columns: Column<ReceivedKaraoke>[] = [
       return (
         <div className="relative flex">
           <div className="flex flex-row">
-            <button
-              className="flex"
-              onClick={() => handleClickSongName(row.original)}
-            >
-              <Image
-                src="/content/play_black.svg"
-                className="w-5 mr-1 "
-                alt={""}
-                width={24}
-                height={20}
-              />
+            <button className="flex" onClick={() => handleClickSongName(row.original)}>
+              <Image src="/content/play_black.svg" className="w-5 mr-1 " alt={""} width={24} height={20} />
               {row.original.SongName}
             </button>
           </div>
 
           <div className="flex flex-row">
             <button className="absolute right-0" onClick={handleClickClipUrl}>
-              <Image
-                src="/content/copy_gray.svg"
-                className="h-5 mr-2 flex hover:bg-[#B7A692] stroke-2  rounded-md"
-                alt={""}
-                width={18}
-                height={18}
-              />
+              <Image src="/content/copy_gray.svg" className="h-5 mr-2 flex hover:bg-[#B7A692] stroke-2  rounded-md" alt={""} width={18} height={18} />
             </button>
-            {isDisplay && (
-              <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">
-                URL was copied
-              </div>
-            )}
+            {isDisplay && <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">URL was copied</div>}
           </div>
         </div>
       );
@@ -928,22 +619,12 @@ const randam5columns: Column<ReceivedKaraoke>[] = [
     Header: "いいね",
     accessor: "Count",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      return (
-        <FavoriteColumn
-          count={row.original.Count}
-          isFav={row.original.IsFav}
-          movie={row.original.MovieUrl}
-          karaoke={row.original.KaraokeId}
-        />
-      );
+      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} movie={row.original.MovieUrl} karaoke={row.original.KaraokeId} />;
     },
   },
 ];
 
-export const KaraokeMinRandomTable = ({
-  posts,
-  handleMovieClickYouTube,
-}: KaraokeTableProps) => {
+export const KaraokeMinRandomTable = ({ posts, handleMovieClickYouTube }: KaraokeTableProps) => {
   const karaokes = posts || ([] as ReceivedKaraoke[]);
   const [hasWindow, setHasWindow] = useState(false);
   useEffect(() => {
@@ -953,37 +634,29 @@ export const KaraokeMinRandomTable = ({
   }, []);
 
   // TODO: 何のためにあるのか分からない。消す。
-  const [shuffledData, setShuffledData] = useState<ReceivedKaraoke[]>(
-    shuffleArray(karaokes)
-  );
+  const [shuffledData, setShuffledData] = useState<ReceivedKaraoke[]>(shuffleArray(karaokes));
 
-  const { getTableProps, getTableBodyProps, headerGroups, prepareRow, page } =
-    useTable(
-      {
-        columns: randam5columns,
-        data: shuffledData,
-        initialState: { pageIndex: 0, pageSize: 5 },
-      },
-      usePagination
-    );
+  const { getTableProps, getTableBodyProps, headerGroups, prepareRow, page } = useTable(
+    {
+      columns: randam5columns,
+      data: shuffledData,
+      initialState: { pageIndex: 0, pageSize: 5 },
+    },
+    usePagination
+  );
 
   return (
     <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
       {hasWindow && (
         <div>
           <div className="flex ml-5 ">
-            <h2 className="flex mr-1">
-              ランダム5件表示中 (登録数{posts?.length}件)
-            </h2>
+            <h2 className="flex mr-1">ランダム5件表示中 (登録数{posts?.length}件)</h2>
           </div>
           <div className="w-full overflow-scroll md:overflow-hidden">
             <table {...getTableProps()} className={`${TableTW.minRandom} `}>
               <thead className={`${TableTW.regularThead}`}>
                 {headerGroups.map((headerGroup, i) => (
-                  <tr
-                    {...headerGroup.getHeaderGroupProps()}
-                    key={`delete_header_${i}`}
-                  >
+                  <tr {...headerGroup.getHeaderGroupProps()} key={`delete_header_${i}`}>
                     {headerGroup.headers.map((column, i) => (
                       <th {...column.getHeaderProps()} key={i}>
                         {column.render("Header")}{" "}
@@ -996,11 +669,7 @@ export const KaraokeMinRandomTable = ({
                 {page.map((row, i) => {
                   prepareRow(row);
                   return (
-                    <tr
-                      {...row.getRowProps()}
-                      className={`${TableTW.regularTr}`}
-                      key={i}
-                    >
+                    <tr {...row.getRowProps()} className={`${TableTW.regularTr}`} key={i}>
                       {row.cells.map((cell, j) => (
                         <td {...cell.getCellProps()} key={j}>
                           {cell.render("Cell")}
