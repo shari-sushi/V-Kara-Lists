@@ -3,11 +3,7 @@ import https from "https";
 import axios, { AxiosRequestConfig } from "axios";
 
 import { domain } from "@/../env";
-import type {
-  ReceivedMovie,
-  ReceivedKaraoke,
-  BasicDataProps,
-} from "@/types/vtuber_content";
+import type { ReceivedMovie, ReceivedKaraoke, BasicDataProps } from "@/types/vtuber_content";
 import type { ContextType } from "@/types/server";
 import { Layout } from "@/components/layout/Layout";
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer";
@@ -25,14 +21,8 @@ type CreatePageProps = {
 };
 
 export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
-  const movies = useMemo(
-    () => posts?.vtubers_movies || ([] as ReceivedMovie[]),
-    [posts]
-  );
-  const karaokes = useMemo(
-    () => posts?.vtubers_movies_karaokes || ([] as ReceivedKaraoke[]),
-    [posts]
-  );
+  const movies = useMemo(() => posts?.vtubers_movies || ([] as ReceivedMovie[]), [posts]);
+  const karaokes = useMemo(() => posts?.vtubers_movies_karaokes || ([] as ReceivedKaraoke[]), [posts]);
 
   const [selectedVtuberId, setSelectedVtuberId] = useState<number>(0);
   const [selectedMovieUrl, setSelectedMovieUrl] = useState<string>("");
@@ -41,9 +31,7 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
   const [currentStart, setCurrentStart] = useState<number>(0);
 
   useEffect(() => {
-    const foundMovie = movies.find(
-      (movies) => movies.MovieUrl === selectedMovieUrl
-    );
+    const foundMovie = movies.find((movies) => movies.MovieUrl === selectedMovieUrl);
     if (foundMovie) {
       const foundYoutubeId = extractVideoId(foundMovie.MovieUrl);
       setCurrentVideoId(foundYoutubeId);
@@ -59,12 +47,8 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
 
   useEffect(() => {
     if (selectedVtuberId && selectedMovieUrl && selectedKaraokeId) {
-      const foundMovies = karaokes.filter(
-        (karaoke) => karaoke.MovieUrl === selectedMovieUrl
-      );
-      const foundKaraoke = foundMovies.find(
-        (foundMovie) => foundMovie.KaraokeId === selectedKaraokeId
-      );
+      const foundMovies = karaokes.filter((karaoke) => karaoke.MovieUrl === selectedMovieUrl);
+      const foundKaraoke = foundMovies.find((foundMovie) => foundMovie.KaraokeId === selectedKaraokeId);
       if (foundKaraoke) {
         const foundSingStart = timeStringToSecondNum(foundKaraoke.SingStart);
         setCurrentStart(foundSingStart);
@@ -87,20 +71,14 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
       <div id="body" className="flex flex-col w-full">
         <CreateContentFormDescription />
 
-        <div
-          id="feature"
-          className={`flex flex-col w-full max-w-[1000px] mx-auto`}
-        >
+        <div id="feature" className={`flex flex-col w-full max-w-[1000px] mx-auto`}>
           <div className="inline-block flex-col top-0 mx-auto ">
             <div className="inline-block mx-auto md:mx-0 md:min-h-[255px] p-0 md:px-3">
               <YouTubePlayer videoId={currentVideoId} start={currentStart} />
             </div>
           </div>
 
-          <div
-            id="form"
-            className={`inline-block flex-col top-0 max-w-[1000px] h-[600px]`}
-          >
+          <div id="form" className={`inline-block flex-col top-0 max-w-[1000px] h-[600px]`}>
             <div className="mt-1">
               <CreateForm
                 posts={posts}
@@ -123,12 +101,7 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
 
 export async function getServerSideProps(context: ContextType) {
   const { sessionToken, isLoggedin } = checkLoggedin(context);
-  console.log(
-    "pageName, sessionToken, isLoggedin =",
-    pageName,
-    sessionToken,
-    isLoggedin
-  ); // 会員、非会員、どのページかの記録のため
+  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin); // 会員、非会員、どのページかの記録のため
 
   const httpsAgent = new https.Agent({ rejectUnauthorized: false });
   const options: AxiosRequestConfig = {

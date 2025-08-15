@@ -3,11 +3,7 @@ import https from "https";
 import axios, { AxiosRequestConfig } from "axios";
 
 import { domain } from "@/../env";
-import type {
-  ReceivedVtuber,
-  ReceivedMovie,
-  ReceivedKaraoke,
-} from "@/types/vtuber_content";
+import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from "@/types/vtuber_content";
 import type { ContextType } from "@/types/server";
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer";
 import { timeStringToSecondNum, extractVideoId } from "@/util";
@@ -43,30 +39,15 @@ type MyPagePosts = {
   all_vtubers_movies: ReceivedMovie[];
 };
 
-type Mypage = {
+type DeletePageProps = {
   posts: MyPagePosts;
   isSignin: boolean;
 };
 
-export const DeletePage = ({ posts, isSignin }: Mypage) => {
-  const vtubers =
-    posts?.vtubers_u_created != null
-      ? posts.vtubers_u_created
-      : ([] as ReceivedVtuber[]);
-  const movies = useMemo(
-    () =>
-      posts?.vtubers_movies_u_created != null
-        ? posts.vtubers_movies_u_created
-        : ([] as ReceivedMovie[]),
-    [posts]
-  );
-  const karaokes = useMemo(
-    () =>
-      posts?.vtubers_movies_karaokes_u_created != null
-        ? posts.vtubers_movies_karaokes_u_created
-        : ([] as ReceivedKaraoke[]),
-    [posts]
-  );
+export const DeletePage = ({ posts, isSignin }: DeletePageProps) => {
+  const vtubers = posts?.vtubers_u_created != null ? posts.vtubers_u_created : ([] as ReceivedVtuber[]);
+  const movies = useMemo(() => (posts?.vtubers_movies_u_created != null ? posts.vtubers_movies_u_created : ([] as ReceivedMovie[])), [posts]);
+  const karaokes = useMemo(() => (posts?.vtubers_movies_karaokes_u_created != null ? posts.vtubers_movies_karaokes_u_created : ([] as ReceivedKaraoke[])), [posts]);
 
   const [toDeleteVtuberId, setToDeleteVtuberId] = useState<number>(0);
   const [toDeleteMovieUrl, setToDeleteMovieUrl] = useState<string>("");
@@ -78,9 +59,7 @@ export const DeletePage = ({ posts, isSignin }: Mypage) => {
     if (toDeleteVtuberId && !toDeleteMovieUrl) {
     }
     if (toDeleteVtuberId && toDeleteMovieUrl) {
-      const foundMovie = movies.find(
-        (movies) => movies.MovieUrl === toDeleteMovieUrl
-      );
+      const foundMovie = movies.find((movies) => movies.MovieUrl === toDeleteMovieUrl);
       if (foundMovie) {
         const foundYoutubeId = extractVideoId(foundMovie.MovieUrl);
         setCurrentVideoId(foundYoutubeId);
@@ -91,9 +70,7 @@ export const DeletePage = ({ posts, isSignin }: Mypage) => {
 
   useEffect(() => {
     if (toDeleteVtuberId && toDeleteMovieUrl && toDeleteKaraokeId) {
-      const foundKaraoke = karaokes.find(
-        (karaoke) => karaoke.KaraokeId === toDeleteKaraokeId
-      );
+      const foundKaraoke = karaokes.find((karaoke) => karaoke.KaraokeId === toDeleteKaraokeId);
       if (foundKaraoke) {
         const foundSingStart = timeStringToSecondNum(foundKaraoke.SingStart);
         setCurrentStart(foundSingStart);
@@ -130,21 +107,14 @@ export const DeletePage = ({ posts, isSignin }: Mypage) => {
         <div className="">
           <div id="decideBottun" className="fixed z-40">
             <div className="">
-              <DeleteDecideButton
-                posts={posts}
-                selectedVtuberId={toDeleteVtuberId}
-                selectedMovieUrl={toDeleteMovieUrl}
-                selectedKaraokeId={toDeleteKaraokeId}
-              />
+              <DeleteDecideButton posts={posts} selectedVtuberId={toDeleteVtuberId} selectedMovieUrl={toDeleteMovieUrl} selectedKaraokeId={toDeleteKaraokeId} />
             </div>
           </div>
 
           <div className="flex flex-col justify-center">
             <div className="inline-block text-sm mb-4 mt-2 mx-auto">
               <h1>会員の方へ</h1>
-              <li>
-                現在、データの編集・削除はデータ登録者とサイト管理者しかできないようにロックしています。
-              </li>
+              <li>現在、データの編集・削除はデータ登録者とサイト管理者しかできないようにロックしています。</li>
               <li>ご自身の登録データはmypageでも確認できます。</li>
             </div>
 
@@ -160,46 +130,22 @@ export const DeletePage = ({ posts, isSignin }: Mypage) => {
                            `}
             >
               <div className="flex mt-1 md:mt-4 ">
-                <Image
-                  src="/content/human_white.svg"
-                  className="h-5 mr-1"
-                  width={24}
-                  height={20}
-                  alt=""
-                />
+                <Image src="/content/human_white.svg" className="h-5 mr-1" width={24} height={20} alt="" />
                 配信者: 自分の登録数{vtubers.length}
               </div>
               <VtuberDeleteTable posts={vtubers} />
               <div className="flex mt-4 ">
-                <Image
-                  src="/content/movie.svg"
-                  className="h-5 mr-1"
-                  width={24}
-                  height={20}
-                  alt=""
-                />
+                <Image src="/content/movie.svg" className="h-5 mr-1" width={24} height={20} alt="" />
                 歌枠(動画): 自分の登録数{movies.length}
               </div>
-              <MovieDeleteTable
-                posts={movies}
-                handleMovieClickYouTube={handleMovieClickYouTube}
-              />
+              <MovieDeleteTable posts={movies} handleMovieClickYouTube={handleMovieClickYouTube} />
 
               <div className="flex mt-4">
-                <Image
-                  src="/content/note.svg"
-                  className="h-5 mr-1"
-                  width={24}
-                  height={20}
-                  alt=""
-                />
+                <Image src="/content/note.svg" className="h-5 mr-1" width={24} height={20} alt="" />
                 歌: 自分の登録数{karaokes != null ? karaokes.length : 0}
               </div>
               <div className="flex flex-col">
-                <KaraokeDeleteTable
-                  posts={karaokes}
-                  handleMovieClickYouTube={handleMovieClickYouTube}
-                />
+                <KaraokeDeleteTable posts={karaokes} handleMovieClickYouTube={handleMovieClickYouTube} />
               </div>
             </div>
           </div>
@@ -232,25 +178,14 @@ type DeleteKaraoke = {
   SongName: string;
 };
 
-export function DeleteDecideButton({
-  posts,
-  selectedVtuberId,
-  selectedMovieUrl,
-  selectedKaraokeId,
-}: selectedDate) {
+export function DeleteDecideButton({ posts, selectedVtuberId, selectedMovieUrl, selectedKaraokeId }: selectedDate) {
   const vtubers = posts?.all_vtubers || [{} as ReceivedVtuber];
   const movies = posts?.all_vtubers_movies || [{} as ReceivedMovie];
-  const karaokes = posts?.vtubers_movies_karaokes_u_created || [
-    {} as ReceivedKaraoke,
-  ];
+  const karaokes = posts?.vtubers_movies_karaokes_u_created || [{} as ReceivedKaraoke];
 
-  const foundVtuber = vtubers.find(
-    (vtuber) => vtuber.VtuberId == selectedVtuberId
-  );
+  const foundVtuber = vtubers.find((vtuber) => vtuber.VtuberId == selectedVtuberId);
   const foundMovie = movies.find((movie) => movie.MovieUrl == selectedMovieUrl);
-  const foundKaraoke = karaokes.find(
-    (karaoke) => karaoke.KaraokeId == selectedKaraokeId
-  );
+  const foundKaraoke = karaokes.find((karaoke) => karaoke.KaraokeId == selectedKaraokeId);
 
   const [crudContentType, setCrudContentType] = useState<string>("");
   useEffect(() => {
@@ -337,14 +272,11 @@ export function DeleteDecideButton({
         console.error(err);
       }
     } else {
-      console.log(
-        "削除するデータの種類(vtuber, movie, karaoke)の選択、またはで想定外のエラーが発生しました。"
-      );
+      console.log("削除するデータの種類(vtuber, movie, karaoke)の選択、またはで想定外のエラーが発生しました。");
     }
   };
 
-  const { setToDeleteVtuberId, setToDeleteMovieUrl, setToDeleteKaraokeId } =
-    useContext(ToDeleteContext);
+  const { setToDeleteVtuberId, setToDeleteMovieUrl, setToDeleteKaraokeId } = useContext(ToDeleteContext);
   const canselClickHandler = () => {
     setCrudContentType("");
     setToDeleteVtuberId(0);
@@ -354,11 +286,7 @@ export function DeleteDecideButton({
 
   return (
     <div className="mid-w-1/2 min-h-3/1">
-      <div>
-        {crudContentType && (
-          <div className="h-screen w-screen opacity-85 inset-0 bg-[#1f2724] z-30" />
-        )}
-      </div>
+      <div>{crudContentType && <div className="h-screen w-screen opacity-85 inset-0 bg-[#1f2724] z-30" />}</div>
       <div className="fixed top-1/2 mx-auto md:left-[10%] md:right-[10%] max-w-[600px]">
         {crudContentType && (
           <div className="bg-[#FFF6E4] text-black p-5 sm:p-20 md:p-[10%] px-auto rounded-md ">
@@ -391,16 +319,10 @@ export function DeleteDecideButton({
             )}
 
             <div className="flex flex-row justify-center mt-1 md:mt-12">
-              <button
-                className={`${ToClickTW.regular} mx-auto w-24`}
-                onClick={handleClick}
-              >
+              <button className={`${ToClickTW.regular} mx-auto w-24`} onClick={handleClick}>
                 決定
               </button>
-              <button
-                className={`${ToClickTW.regular} mx-auto w-24`}
-                onClick={() => canselClickHandler()}
-              >
+              <button className={`${ToClickTW.regular} mx-auto w-24`} onClick={() => canselClickHandler()}>
                 キャンセル
               </button>
             </div>
@@ -413,12 +335,7 @@ export function DeleteDecideButton({
 
 export async function getServerSideProps(context: ContextType) {
   const { sessionToken, isLoggedin } = checkLoggedin(context);
-  console.log(
-    "pageName, sessionToken, isLoggedin =",
-    pageName,
-    sessionToken,
-    isLoggedin
-  ); // 会員、非会員、どのページかの記録のため
+  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin); // 会員、非会員、どのページかの記録のため
 
   const httpsAgent = new https.Agent({ rejectUnauthorized: false });
   const options: AxiosRequestConfig = {
@@ -430,10 +347,7 @@ export async function getServerSideProps(context: ContextType) {
   };
 
   try {
-    const res = await axios.get(
-      `${domain.backendHost}/vcontents/delete/deletePage`,
-      options
-    );
+    const res = await axios.get(`${domain.backendHost}/vcontents/delete/deletePage`, options);
     const resData = res.data;
 
     return {
