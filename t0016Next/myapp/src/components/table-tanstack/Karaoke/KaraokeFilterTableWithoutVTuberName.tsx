@@ -3,7 +3,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable, SortingState, getSortedRowModel, getFilteredRowModel } from "@tanstack/react-table";
 
 import { ReceivedKaraoke } from "@/types/vtuber_content";
-import { KaraokeBasicColumuns, KaraokeTableAFilterInput, KaraokeTableFilterInput, KaraokeTablePagenationButtons, SeletctPostContext, YouTubePlayerContext } from "../Commons";
+import { KaraokeBasicColumns, KaraokeTableAFilterInput, KaraokeTableFilterInput, KaraokeTablePagenationButtons, SeletctPostContext, YouTubePlayerContext } from "../Commons";
 import { TableCss } from "@/styles/tailwiind";
 import type { KaraokeTableReturnPostProps } from "../types";
 import Image from "next/image";
@@ -26,7 +26,7 @@ export default function KaraokeFilterTableWithoutVTuberName({ posts, handleMovie
     fetchData();
   }, [karaokes]);
 
-  const columns = useMemo(() => KaraokeBasicColumuns, []);
+  const columns = useMemo(() => KaraokeBasicColumns, []);
 
   const table = useReactTable({
     columns,

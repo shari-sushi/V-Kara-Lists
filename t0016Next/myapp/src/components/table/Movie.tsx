@@ -153,15 +153,14 @@ function FavoriteColumn({ count, isFav, movie }: FavoriteColumn) {
   };
   return (
     <div className="flex justify-center">
-      <button className={`${TableCss.favoriteColumn} relative flex`} onClick={handleClick}>
+      <button className={TableCss.favoriteColumn} onClick={handleClick}>
         {isFavNow ? (
           <Image src="/content/heart_pink.svg" className="flex w-5 m-1 mr-0" alt="" width={24} height={20} />
         ) : (
           <Image src="/content/heart_white.svg" className="flex w-5 m-1 mr-0" alt="" width={24} height={20} />
         )}
         {isFavNow == isFav ? count : isFavNow ? count + 1 : count - 1}
-
-        {isDisplay && <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[140px]">ログインが必要です</div>}
+        {isDisplay && <div className={TableCss.NeedLoginMessage}>ログインが必要です</div>}
       </button>
     </div>
   );

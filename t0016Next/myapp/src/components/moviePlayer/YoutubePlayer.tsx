@@ -41,13 +41,10 @@ export const YouTubePlayer = ({ videoId, start, sizeLevel = 5 }: { videoId: stri
   return <PreYouTubePlayer videoId={videoId} start={start} windowSize={{ height, width }} />;
 };
 
-///////////// 本来あるべき姿(バグなのか動かない…nocookieでなら動く) ///////////////
-type Options = React.ComponentProps<typeof YouTube>["opts"];
-
 type YoutubePlayerProps = {
   videoId: string;
   start?: number;
-  opts?: Options;
+  opts?: YouTube;
   onReady?: (event: { target: YT.Player }) => void;
   windowSize: { width: number; height: number };
 };
@@ -66,7 +63,6 @@ export const PreYouTubePlayer: React.FC<YoutubePlayerProps> = ({
   opts = {
     width: windowSize.width,
     height: windowSize.height,
-    // width: 640, height: 360,
     playerVars: {
       autoplay: 1,
       // playing: 1,
