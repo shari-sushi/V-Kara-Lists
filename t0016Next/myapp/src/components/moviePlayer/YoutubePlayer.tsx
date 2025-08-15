@@ -1,120 +1,44 @@
-import React, { useEffect, useState } from "react";
 import YouTube from "react-youtube";
-
-import { YouTubeTW } from "@/styles/tailwiind";
 import { getWindowSize } from "@/features/layout/Layout";
-import useWindowSize from "@/hooks/useSetWindowSize";
-import useHasWindow from "@/hooks/useHasWindow";
+import { useHasWindow } from "@/hooks/useHasWindow";
 
-export const YouTubePlayer = ({
-  videoId,
-  start,
-}: {
-  videoId: string;
-  start: number;
-}) => {
-  const [hasWindow, setHasWindow] = useState(false);
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setHasWindow(true);
-    }
-  }, []);
+export const YouTubePlayer = ({ videoId, start, sizeLevel = 5 }: { videoId: string; start: number; sizeLevel?: number }) => {
+  const hasWindow = useHasWindow();
+  if (hasWindow == null) {
+    return null;
+  }
 
-  const { height: preHeight, width: preWidth } = getWindowSize();
-  // const { width: preWidth, height: preHeight } = useWindowSize()
-  // const hasWindow = useHasWindow()
-  // const preWidth = windowSize.width
-  // const preHeight = windowSize.height
+  const { height: windowWHeight, width: windowWidth } = getWindowSize();
   const aspectRatio = 9 / 16;
-  const isHorizontally = preWidth > preHeight;
+  const isHorizontally = windowWidth > windowWHeight;
+
+  let height = windowWHeight;
+  let width = windowWidth;
 
   if (isHorizontally) {
-    if (preWidth > 950) {
-      const height = 255;
-      const width = Math.round(height / aspectRatio);
-      return (
-        <div>
-          {hasWindow && (
-            <div>
-              <PreYouTubePlayer
-                videoId={videoId}
-                start={start}
-                windowSize={{ height, width }}
-              />
-            </div>
-          )}
-        </div>
-      );
+    if (windowWidth > 950) {
+      height = 255;
+      width = Math.round(height / aspectRatio);
     } else {
-      const width = Math.round(preWidth / 2);
-      const height = Math.round((preWidth / 2) * aspectRatio);
-      return (
-        <div>
-          {hasWindow && (
-            <div>
-              <PreYouTubePlayer
-                videoId={videoId}
-                start={start}
-                windowSize={{ height, width }}
-              />
-            </div>
-          )}
-        </div>
-      );
+      width = Math.round(windowWidth / 2);
+      height = Math.round((windowWidth / 2) * aspectRatio);
     }
   }
 
   if (!isHorizontally) {
-    if (preWidth >= 950) {
-      const height = 255;
-      const width = Math.round(height / aspectRatio);
-      return (
-        <div>
-          {hasWindow && (
-            <div>
-              <PreYouTubePlayer
-                videoId={videoId}
-                start={start}
-                windowSize={{ height, width }}
-              />
-            </div>
-          )}
-        </div>
-      );
-    } else if (preWidth > 500) {
-      const width = Math.round(0.48 * preWidth);
-      const height = Math.round(0.48 * preWidth * aspectRatio);
-      return (
-        <div>
-          {hasWindow && (
-            <div>
-              <PreYouTubePlayer
-                videoId={videoId}
-                start={start}
-                windowSize={{ height, width }}
-              />
-            </div>
-          )}
-        </div>
-      );
+    if (windowWidth >= 950) {
+      height = 255;
+      width = Math.round(height / aspectRatio);
+    } else if (windowWidth > 500) {
+      width = Math.round(windowWidth * 0.48);
+      height = Math.round(windowWidth * 0.48 * aspectRatio);
     } else {
-      const width = Math.round(preHeight * 0.48);
-      const height = Math.round(preHeight * 0.48 * aspectRatio);
-      return (
-        <div>
-          {hasWindow && (
-            <div>
-              <PreYouTubePlayer
-                videoId={videoId}
-                start={start}
-                windowSize={{ height, width }}
-              />
-            </div>
-          )}
-        </div>
-      );
+      width = Math.round(windowWHeight * 0.48);
+      height = Math.round(windowWHeight * 0.48 * aspectRatio);
     }
   }
+
+  return <PreYouTubePlayer videoId={videoId} start={start} windowSize={{ height, width }} />;
 };
 
 ///////////// 本来あるべき姿(バグなのか動かない…nocookieでなら動く) ///////////////
