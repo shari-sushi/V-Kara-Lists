@@ -11,6 +11,7 @@ import { ToDeleteContext } from "@/pages/crud/delete";
 import { LinkTW, TableCss as TableTW } from "@/styles/tailwiind";
 import { useAuth } from "@/providers/AuthProvider";
 import Image from "next/image";
+import { useHasWindow } from "@/hooks/useHasWindow";
 
 type KaraokeTableProps = {
   posts: ReceivedKaraoke[];
@@ -144,14 +145,14 @@ function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumn) {
 
 ///////////////////////////////////////////////////////////////
 // /karaoke/sings ページネーション
-const PagenationReturnPostcolumns: Column<ReceivedKaraoke>[] = [
+const PagenationReturnPostColumns: Column<ReceivedKaraoke>[] = [
   { Header: "VTuber", accessor: "VtuberName" },
   {
     Header: "曲名(Click it)",
     accessor: "KaraokeId",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
       const { handleMovieClickYouTube } = useContext(YouTubePlayerContext); //表示ページにyoutubeのカレントデータを渡す
-      const { setSelectedPost } = useContext(SeletctPostContext);
+      const { setSelectedPost } = useContext(SelectPostContext);
       const handleClickPlay = (post: ReceivedKaraoke) => {
         handleMovieClickYouTube(row.original.MovieUrl, timeStringToSecondNum(row.original.SingStart));
         setSelectedPost(post);
@@ -200,13 +201,13 @@ type KaraokeTableReturnPostProps = {
   setSelectedPost: (arg0: ReceivedKaraoke) => void;
 };
 
-const SeletctPostContext = React.createContext(
+const SelectPostContext = React.createContext(
   {} as {
     setSelectedPost: (arg0: ReceivedKaraoke) => void;
   }
 );
 
-export function KaraokePagenatoinTable({ posts, handleMovieClickYouTube, setSelectedPost }: KaraokeTableReturnPostProps) {
+export function KaraokePagenationTable({ posts, handleMovieClickYouTube, setSelectedPost }: KaraokeTableReturnPostProps) {
   const data: ReceivedKaraoke[] = posts;
   const maxPageSize = 99999;
 
@@ -227,7 +228,7 @@ export function KaraokePagenatoinTable({ posts, handleMovieClickYouTube, setSele
     state: { pageIndex, pageSize },
   } = useTable(
     {
-      columns: PagenationReturnPostcolumns,
+      columns: PagenationReturnPostColumns,
       data,
       initialState: { pageIndex: 0, pageSize: 25 },
     },
@@ -300,7 +301,7 @@ export function KaraokePagenatoinTable({ posts, handleMovieClickYouTube, setSele
           </table>
         </div>
       </YouTubePlayerContext.Provider>
-    </SeletctPostContext.Provider>
+    </SelectPostContext.Provider>
   );
 }
 
@@ -625,13 +626,8 @@ const randam5columns: Column<ReceivedKaraoke>[] = [
 ];
 
 export const KaraokeMinRandomTable = ({ posts, handleMovieClickYouTube }: KaraokeTableProps) => {
-  const karaokes = posts || ([] as ReceivedKaraoke[]);
-  const [hasWindow, setHasWindow] = useState(false);
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setHasWindow(true);
-    }
-  }, []);
+  const karaokes = posts;
+  const hasWindow = useHasWindow();
 
   // TODO: 何のためにあるのか分からない。消す。
   const [shuffledData, setShuffledData] = useState<ReceivedKaraoke[]>(shuffleArray(karaokes));
