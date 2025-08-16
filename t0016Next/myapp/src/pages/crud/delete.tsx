@@ -78,8 +78,6 @@ export const DeletePage = ({ posts, isSignin }: DeletePageProps) => {
     }
   }, [toDeleteMovieUrl, toDeleteKaraokeId, movies, toDeleteVtuberId, karaokes]);
 
-  const handleMovieClickYouTube = (s: string, n: number) => {};
-
   if (!isSignin) {
     return (
       <Layout pageName={pageName} isSignin={isSignin}>
@@ -138,14 +136,14 @@ export const DeletePage = ({ posts, isSignin }: DeletePageProps) => {
                 <Image src="/content/movie.svg" className="h-5 mr-1" width={24} height={20} alt="" />
                 歌枠(動画): 自分の登録数{movies.length}
               </div>
-              <MovieDeleteTable posts={movies} handleMovieClickYouTube={handleMovieClickYouTube} />
+              <MovieDeleteTable posts={movies} />
 
               <div className="flex mt-4">
                 <Image src="/content/note.svg" className="h-5 mr-1" width={24} height={20} alt="" />
                 歌: 自分の登録数{karaokes != null ? karaokes.length : 0}
               </div>
               <div className="flex flex-col">
-                <KaraokeDeleteTable posts={karaokes} handleMovieClickYouTube={handleMovieClickYouTube} />
+                <KaraokeDeleteTable posts={karaokes} />
               </div>
             </div>
           </div>

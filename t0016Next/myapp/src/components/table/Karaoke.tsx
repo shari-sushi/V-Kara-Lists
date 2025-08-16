@@ -13,13 +13,13 @@ import { useAuth } from "@/providers/AuthProvider";
 import Image from "next/image";
 import { useHasWindow } from "@/hooks/useHasWindow";
 import { toFullYouTubeVideoURL } from "@/util/toFullYouTubeVideoURL/toFullYouTubeVideoURL";
+import { useVideo } from "@/providers/VideoProvider";
+import { dummyKaraokeArray } from "@/util/dummyData/dummyData";
 
 type KaraokeTableProps = {
   posts: ReceivedKaraoke[];
-  handleMovieClickYouTube: (url: string, arg1: number) => void;
 };
 
-export const YouTubePlayerContext = React.createContext({} as { handleMovieClickYouTube(movieId: string, time: number): void });
 const SelectPostContext = React.createContext(
   {} as {
     setSelectedPost: (arg0: ReceivedKaraoke) => void;
@@ -98,10 +98,10 @@ const PaginationReturnPostColumns: Column<ReceivedKaraoke>[] = [
     Header: "曲名(Click it)",
     accessor: "KaraokeId",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      const { handleMovieClickYouTube } = useContext(YouTubePlayerContext); //表示ページにyoutubeのカレントデータを渡す
       const { setSelectedPost } = useContext(SelectPostContext);
+      const { updateVideo } = useVideo();
       const handleClickPlay = (post: ReceivedKaraoke) => {
-        handleMovieClickYouTube(row.original.MovieUrl, timeStringToSecondNum(row.original.SingStart));
+        updateVideo(extractVideoId(row.original.MovieUrl), timeStringToSecondNum(row.original.SingStart));
         setSelectedPost(post);
       };
 
@@ -143,14 +143,13 @@ const PaginationReturnPostColumns: Column<ReceivedKaraoke>[] = [
 ];
 
 type KaraokeTableReturnPostProps = {
-  posts: ReceivedKaraoke[];
-  handleMovieClickYouTube: (arg0: string, arg1: number) => void;
+  karaokes: ReceivedKaraoke[];
   setSelectedPost: (arg0: ReceivedKaraoke) => void;
 };
 
-export function KaraokePaginationTable({ posts, handleMovieClickYouTube, setSelectedPost }: KaraokeTableReturnPostProps) {
-  const data: ReceivedKaraoke[] = posts;
+export function KaraokePaginationTable({ karaokes, setSelectedPost }: KaraokeTableReturnPostProps) {
   const maxPageSize = 99999;
+  const data = useMemo(() => karaokes || dummyKaraokeArray, [karaokes]);
 
   const {
     getTableProps,
@@ -170,7 +169,7 @@ export function KaraokePaginationTable({ posts, handleMovieClickYouTube, setSele
   } = useTable(
     {
       columns: PaginationReturnPostColumns,
-      data,
+      data: data,
       initialState: { pageIndex: 0, pageSize: 25 },
     },
     useSortBy,
@@ -180,68 +179,66 @@ export function KaraokePaginationTable({ posts, handleMovieClickYouTube, setSele
 
   return (
     <SelectPostContext.Provider value={{ setSelectedPost }}>
-      <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
-        <div id="tab" className=" ">
-          <div className="flex bg-[#B7A692] mt-1 py-1 px-2 md:px-3 rounded-t-xl md:rounded-t-2xl max-w-[400px] ">
-            <button className={`${TableTW.pageNationDouble} md:mx-1`} onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-              {"<<"}
-            </button>
-            <button className={`${TableTW.pageNationSingle} sm:mx-0.5 md:mx-1`} onClick={() => previousPage()} disabled={!canPreviousPage}>
-              {"<"}
-            </button>
-            <span>
-              <strong className="sm:mx-0.5 ">
-                {pageIndex + 1} / {pageOptions.length}
-              </strong>
-            </span>
-            <button className={`${TableTW.pageNationSingle} sm:mx-1`} onClick={() => nextPage()} disabled={!canNextPage}>
-              {">"}
-            </button>
-            <button className={`${TableTW.pageNationDouble} md:mx-1`} onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-              {">>"}
-            </button>
+      <div id="tab" className=" ">
+        <div className="flex bg-[#B7A692] mt-1 py-1 px-2 md:px-3 rounded-t-xl md:rounded-t-2xl max-w-[400px] ">
+          <button className={`${TableTW.pageNationDouble} md:mx-1`} onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+            {"<<"}
+          </button>
+          <button className={`${TableTW.pageNationSingle} sm:mx-0.5 md:mx-1`} onClick={() => previousPage()} disabled={!canPreviousPage}>
+            {"<"}
+          </button>
+          <span>
+            <strong className="sm:mx-0.5 ">
+              {pageIndex + 1} / {pageOptions.length}
+            </strong>
+          </span>
+          <button className={`${TableTW.pageNationSingle} sm:mx-1`} onClick={() => nextPage()} disabled={!canNextPage}>
+            {">"}
+          </button>
+          <button className={`${TableTW.pageNationDouble} md:mx-1`} onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+            {">>"}
+          </button>
 
-            <select className="text-right" value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))}>
-              {[25, 50, 75, 100, maxPageSize].map((pageSize) => (
-                <option key={pageSize} value={pageSize}>
-                  {pageSize !== maxPageSize ? `Show ${pageSize}` : `Show all`}
-                </option>
-              ))}
-            </select>
-            <span className="mx-0.5 sm:mx-2 ">全{posts.length}件</span>
-          </div>
+          <select className="text-right" value={pageSize} onChange={(e) => setPageSize(Number(e.target.value))}>
+            {[25, 50, 75, 100, maxPageSize].map((pageSize) => (
+              <option key={pageSize} value={pageSize}>
+                {pageSize !== maxPageSize ? `Show ${pageSize}` : `Show all`}
+              </option>
+            ))}
+          </select>
+          <span className="mx-0.5 sm:mx-2 ">全{data.length}件</span>
         </div>
-        <div className="w-full overflow-scroll md:overflow-hidden">
-          <table {...getTableProps()} className={`${TableTW.regular}`}>
-            <thead>
-              {headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
-                  {headerGroup.headers.map((column) => (
-                    <th {...column.getHeaderProps(column.getSortByToggleProps())} key={column.id}>
-                      {column.render("Header")}
-                      <span>{column.isSorted ? column.isSortedDesc ? "🔽" : "🔼" : <Image src="/content/sort.svg" width={24} height={20} alt="Sortable mark" className="inline mx-1 h-5" />}</span>
-                    </th>
+      </div>
+      <div className="w-full overflow-scroll md:overflow-hidden">
+        <table {...getTableProps()} className={`${TableTW.regular}`}>
+          <thead>
+            {headerGroups.map((headerGroup) => (
+              <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
+                {headerGroup.headers.map((column) => (
+                  <th {...column.getHeaderProps(column.getSortByToggleProps())} key={column.id}>
+                    {column.render("Header")}
+                    <span>{column.isSorted ? column.isSortedDesc ? "🔽" : "🔼" : <Image src="/content/sort.svg" width={24} height={20} alt="Sortable mark" className="inline mx-1 h-5" />}</span>
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {page.map((row) => {
+              prepareRow(row);
+              return (
+                <tr {...row.getRowProps()} className={`${TableTW.regularTr}`} key={row.id}>
+                  {row.cells.map((cell, i) => (
+                    <td {...cell.getCellProps()} key={i}>
+                      {cell.render("Cell")}
+                    </td>
                   ))}
                 </tr>
-              ))}
-            </thead>
-            <tbody {...getTableBodyProps()}>
-              {page.map((row) => {
-                prepareRow(row);
-                return (
-                  <tr {...row.getRowProps()} className={`${TableTW.regularTr}`} key={row.id}>
-                    {row.cells.map((cell, i) => (
-                      <td {...cell.getCellProps()} key={i}>
-                        {cell.render("Cell")}
-                      </td>
-                    ))}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </YouTubePlayerContext.Provider>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </SelectPostContext.Provider>
   );
 }
@@ -267,8 +264,7 @@ const ThinColumns: Column<ReceivedKaraoke>[] = [
     Header: "曲名(Click it)",
     accessor: "KaraokeId",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      const { handleMovieClickYouTube } = useContext(YouTubePlayerContext);
-
+      const { updateVideo } = useVideo();
       const [isDisplay, setIsDisplay] = useState<boolean>(false);
       const handleClick = async () => {
         const url = "https://" + row.original.MovieUrl + "&t=" + timeStringToSecondNum(row.original.SingStart);
@@ -279,7 +275,7 @@ const ThinColumns: Column<ReceivedKaraoke>[] = [
 
       return (
         <span className="relative flex w-auto">
-          <button className={`flex overflow-hidden ${LinkTW.base}`} onClick={() => handleMovieClickYouTube(row.original.MovieUrl, timeStringToSecondNum(row.original.SingStart))}>
+          <button className={`flex overflow-hidden ${LinkTW.base}`} onClick={() => updateVideo(extractVideoId(row.original.MovieUrl), timeStringToSecondNum(row.original.SingStart))}>
             <Image src="/content/play_black.svg" className="w-5 mr-1 bottom-0 " width={24} height={20} alt={""} />
             {row.original.SongName}
           </button>
@@ -303,50 +299,49 @@ const ThinColumns: Column<ReceivedKaraoke>[] = [
   },
 ];
 
-export const KaraokeThinTable = ({ posts: karaoke, handleMovieClickYouTube }: KaraokeTableProps) => {
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns: ThinColumns, data: karaoke }, useSortBy, useRowSelect);
+export const KaraokeThinTable = ({ posts }: KaraokeTableProps) => {
+  const data = posts || ([] as ReceivedKaraoke[]);
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns: ThinColumns, data }, useSortBy, useRowSelect);
 
   return (
-    <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
-      <div className="w-full ">
-        <table {...getTableProps()} className={`${TableTW.regular} `}>
-          <thead className={`${TableTW.regularThead}`}>
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()} key={`karoake_thin_header_group_${headerGroup.id}`}>
-                {headerGroup.headers.map((column, i) => (
-                  <th {...column.getHeaderProps(column.getSortByToggleProps())} className="px-2" key={`karoake_thin_header_${headerGroup.id}_${i}`}>
-                    {column.render("Header")}
-                    {column.isSorted ? column.isSortedDesc ? "🔽" : "🔼" : <Image src="/content/sort.svg" width={24} height={20} alt="Sortable mark" className="inline-block w-6 h-5" />}
-                  </th>
-                ))}
+    <div className="w-full ">
+      <table {...getTableProps()} className={`${TableTW.regular} `}>
+        <thead className={`${TableTW.regularThead}`}>
+          {headerGroups.map((headerGroup) => (
+            <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
+              {headerGroup.headers.map((column, i) => (
+                <th {...column.getHeaderProps(column.getSortByToggleProps())} className="px-2" key={`karoake_thin_table_header_${i}`}>
+                  {column.render("Header")}
+                  {column.isSorted ? column.isSortedDesc ? "🔽" : "🔼" : <Image src="/content/sort.svg" width={24} height={20} alt="Sortable mark" className="inline-block w-6 h-5" />}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {rows.map((row, i) => {
+            prepareRow(row);
+            return (
+              <tr {...row.getRowProps()} className={`${TableTW.regularTr}`} key={i}>
+                {row.cells.map((cell, j) => {
+                  return (
+                    <td {...cell.getCellProps()} key={j}>
+                      {cell.render("Cell")}
+                    </td>
+                  );
+                })}
               </tr>
-            ))}
-          </thead>
-          <tbody {...getTableBodyProps()}>
-            {rows.map((row, rI) => {
-              prepareRow(row);
-              return (
-                <tr {...row.getRowProps()} className={`${TableTW.regularTr}`} key={rI}>
-                  {row.cells.map((cell, cI) => {
-                    return (
-                      <td {...cell.getCellProps()} key={cI}>
-                        {cell.render("Cell")}
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </YouTubePlayerContext.Provider>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
   );
 };
 
 ///////////////////////////
 //  delete用
-export function KaraokeDeleteTable({ posts: karaokes, handleMovieClickYouTube }: KaraokeTableProps) {
+export function KaraokeDeleteTable({ posts: karaokes }: KaraokeTableProps) {
   const maxPageSize = 1000;
   const {
     getTableProps,
@@ -374,7 +369,7 @@ export function KaraokeDeleteTable({ posts: karaokes, handleMovieClickYouTube }:
   );
 
   return (
-    <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
+    <>
       <div id="tab" className=" ">
         <div className="flex bg-[#B7A692] mt-1 py-1 px-2 md:px-3 rounded-t-xl md:rounded-t-2xl max-w-[400px] ">
           <button className={`${TableTW.pageNationDouble} md:mx-1`} onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
@@ -432,7 +427,7 @@ export function KaraokeDeleteTable({ posts: karaokes, handleMovieClickYouTube }:
           </tbody>
         </table>
       </div>
-    </YouTubePlayerContext.Provider>
+    </>
   );
 }
 
@@ -521,11 +516,12 @@ const random5columns: Column<ReceivedKaraoke>[] = [
     Header: "曲名(Click it)",
     accessor: "KaraokeId",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      const { handleMovieClickYouTube } = useContext(YouTubePlayerContext);
       const [isDisplay, setIsDisplay] = useState<boolean>(false);
+      const { updateVideo } = useVideo();
       const playSong = (post: ReceivedKaraoke) => {
-        handleMovieClickYouTube(post.MovieUrl, timeStringToSecondNum(post.SingStart));
+        updateVideo(extractVideoId(post.MovieUrl), timeStringToSecondNum(post.SingStart));
       };
+
       const clipUrl = async () => {
         await navigator.clipboard.writeText(toFullYouTubeVideoURL(row.original.MovieUrl, row.original.SingStart));
         setIsDisplay(true);
@@ -559,7 +555,7 @@ const random5columns: Column<ReceivedKaraoke>[] = [
   },
 ];
 
-export const KaraokeMinRandomTable = ({ posts: karaokes, handleMovieClickYouTube }: KaraokeTableProps) => {
+export const KaraokeMinRandomTable = ({ posts: karaokes }: KaraokeTableProps) => {
   const hasWindow = useHasWindow();
   const shuffledData = useMemo(() => shuffleArray(karaokes, 5), [karaokes]);
   const { getTableProps, getTableBodyProps, headerGroups, prepareRow, page } = useTable(
@@ -572,7 +568,7 @@ export const KaraokeMinRandomTable = ({ posts: karaokes, handleMovieClickYouTube
   );
 
   return (
-    <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
+    <>
       {hasWindow && (
         <div>
           <div className="flex ml-5">
@@ -609,6 +605,6 @@ export const KaraokeMinRandomTable = ({ posts: karaokes, handleMovieClickYouTube
           </div>
         </div>
       )}
-    </YouTubePlayerContext.Provider>
+    </>
   );
 };

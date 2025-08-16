@@ -16,6 +16,7 @@ import { ContextType } from "@/types/server";
 import { NotLoggedIn } from "@/components/layout/Main";
 import { ToClickTW } from "@/styles/tailwiind";
 import { checkLoggedin } from "@/util/webStrage/cookie";
+import { useVideo } from "@/providers/VideoProvider";
 
 const pageName = "MyPage";
 
@@ -29,8 +30,8 @@ type Mypage = {
 };
 
 const MyPage = ({ data, isSignin }: Mypage) => {
-  const [currentMovieId, setCurrentMovieId] = useState<string>("Bjsn-QpwmvU"); //こむぎ ワールドイズマイン
-  const [start, setStart] = useState<number>(8091);
+  //こむぎ ワールドイズマイン
+  const { videoState, updateVideo } = useVideo({ youtubeId: "Bjsn-QpwmvU", startTime: 8091 });
   const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke);
 
   if (!isSignin) {
@@ -47,22 +48,17 @@ const MyPage = ({ data, isSignin }: Mypage) => {
   const movies = data?.vtubers_movies_u_created || ([] as ReceivedMovie[]);
   const karaokes = data?.vtubers_movies_karaokes_u_created || ([] as ReceivedKaraoke[]);
 
-  const handleMovieClickYouTube = (url: string, start: number) => {
-    setCurrentMovieId(extractVideoId(url));
-    setStart(start);
-  };
   const handleMovieClickYouTubeDemoMovie = () => {
     const demoUrl = "HunsO-8Eo7Q";
     const startTimeCreateOfDemo = 130;
-    setCurrentMovieId(demoUrl);
-    setStart(startTimeCreateOfDemo);
+    updateVideo(extractVideoId(demoUrl), startTimeCreateOfDemo);
   };
 
   return (
     <Layout pageName={pageName} isSignin={isSignin}>
       <div className="flex flex-col max-w-[1000px] justify-ite">
         <div className="flex mx-auto mt-6">
-          <YouTubePlayer videoId={currentMovieId} start={start} />
+          <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
         </div>
 
         {vtubers.length + movies.length + karaokes.length === 0 ? (
@@ -121,7 +117,7 @@ const MyPage = ({ data, isSignin }: Mypage) => {
                       <Image src="/content/movie.svg" width={20} height={20} alt="Movie Icon" className="h-5 mr-1" />
                       <h2>歌枠(動画): 登録数{movies.length}</h2>
                     </div>
-                    <MovieTable posts={movies} handleMovieClickYouTube={handleMovieClickYouTube} />
+                    <MovieTable posts={movies} />
                     <br />
                   </div>
 
@@ -130,7 +126,7 @@ const MyPage = ({ data, isSignin }: Mypage) => {
                     <h2>歌: 登録数{karaokes.length}</h2>
                   </div>
 
-                  <KaraokePaginationTable posts={karaokes} handleMovieClickYouTube={handleMovieClickYouTube} setSelectedPost={setSelectedPost} />
+                  <KaraokePaginationTable karaokes={karaokes} setSelectedPost={setSelectedPost} />
                 </div>
               </div>
             </div>

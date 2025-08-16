@@ -9,24 +9,18 @@ import { ToDeleteContext } from "@/pages/crud/delete";
 import { LinkTW, TableCss } from "@/styles/tailwiind";
 import { useAuth } from "@/providers/AuthProvider";
 import Image from "next/image";
+import { useVideo } from "@/providers/VideoProvider";
 
 // topページ, mypage用
 type MovieTableProps = {
   posts: ReceivedMovie[];
-  handleMovieClickYouTube: (arg0: string, arg1: number) => void;
 };
 
-export const YouTubePlayerContext = React.createContext(
-  {} as {
-    handleMovieClickYouTube(movieId: string, time: number): void;
-  }
-);
-
-export function MovieTable({ posts: movies, handleMovieClickYouTube }: MovieTableProps) {
+export function MovieTable({ posts: movies }: MovieTableProps) {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: movies }, useSortBy, useRowSelect);
 
   return (
-    <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
+    <>
       <div className="overflow-scroll md:overflow-hidden">
         <table {...getTableProps()} className={`${TableCss.regular} `}>
           <thead className={`${TableCss.regularThead}`}>
@@ -60,7 +54,7 @@ export function MovieTable({ posts: movies, handleMovieClickYouTube }: MovieTabl
           </tbody>
         </table>
       </div>
-    </YouTubePlayerContext.Provider>
+    </>
   );
 }
 
@@ -83,10 +77,11 @@ const columns: Column<ReceivedMovie>[] = [
     Header: "歌枠 (Click it)",
     accessor: "MovieTitle",
     Cell: ({ row }: { row: { original: ReceivedMovie } }) => {
-      const { handleMovieClickYouTube } = useContext(YouTubePlayerContext);
+      const { updateVideo } = useVideo();
+
       return (
         <span className="relative">
-          <button className={`flex ${LinkTW.base}`} onClick={() => handleMovieClickYouTube(row.original.MovieUrl, 1)}>
+          <button className={`flex ${LinkTW.base}`} onClick={() => updateVideo(extractVideoId(row.original.MovieUrl), 1)}>
             <Image src="/content/play_black.svg" className="w-5 mr-2" alt="" width={24} height={20} />
             {row.original.MovieTitle}
           </button>
@@ -171,15 +166,14 @@ function FavoriteColumn({ count, isFav, movie }: FavoriteColumn) {
 ///////////////////////////////////
 type MovieDeleteTableProps = {
   posts: ReceivedMovie[];
-  handleMovieClickYouTube: (arg0: string, arg1: number) => void;
 };
 
-export function MovieDeleteTable({ posts, handleMovieClickYouTube }: MovieDeleteTableProps) {
+export function MovieDeleteTable({ posts }: MovieDeleteTableProps) {
   const data = posts || {};
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns: deleteColumns, data }, useSortBy, useRowSelect);
 
   return (
-    <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
+    <>
       <div className="w-full overflow-scroll md:overflow-hidden">
         <table {...getTableProps()} className={`${TableCss.regular}`}>
           <thead className={`${TableCss.regularThead}`}>
@@ -212,7 +206,7 @@ export function MovieDeleteTable({ posts, handleMovieClickYouTube }: MovieDelete
           </tbody>
         </table>
       </div>
-    </YouTubePlayerContext.Provider>
+    </>
   );
 }
 

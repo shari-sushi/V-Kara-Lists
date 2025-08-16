@@ -15,6 +15,7 @@ export const YouTubePlayer = ({ videoId, start, sizeLevel = 5 }: { videoId: stri
   let height = windowWHeight;
   let width = windowWidth;
 
+  // NOTE: スマホを想定しているが、PC向けにもちゃんと対応できてる…はず
   if (isHorizontally) {
     if (windowWidth > 950) {
       height = 255;

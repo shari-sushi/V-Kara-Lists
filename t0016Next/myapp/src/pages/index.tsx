@@ -1,4 +1,3 @@
-import { useState } from "react";
 import Link from "next/link";
 import https from "https";
 import axios, { AxiosRequestConfig } from "axios";
@@ -16,6 +15,7 @@ import { TopPageNotice } from "@/features/notice/notice";
 import { checkLoggedin } from "@/util/webStrage/cookie";
 import { timeStringToSecondNum, extractVideoId } from "@/util";
 import { generateRandomNumber } from "@/components/SomeFunction";
+import { useVideo } from "@/providers/VideoProvider";
 
 const pageName = "Top";
 
@@ -43,30 +43,30 @@ const TopPage = ({ posts, isSignin }: TopPageProps) => {
 };
 
 const MainItem = ({ posts }: TopPageProps) => {
-  const url = "www.youtube.com/watch?v=E7x2TZ1_Ys4"; // 【オフコラボ】#VTuberカラオケ女子会 ～ノイタミナアニメ縛り～【朝ノ瑠璃／久遠たま／柾花音／ChumuNote】
-  const stringTime = "36 * 60 + 41"; //  (柾花音) Departures 〜あなたにおくるアイの歌〜 / EGOIST / TVアニメ『ギルティクラウン』ED
-  const playKaraokeNumber = generateRandomNumber(posts?.latest_karaokes.length);
+  const playKaraokeNumber = generateRandomNumber(posts.latest_karaokes.length - 1);
 
-  const primaryYoutubeUrl = extractVideoId(posts?.latest_karaokes[playKaraokeNumber].MovieUrl || url);
-  const primaryYoutubeStartTime = timeStringToSecondNum(posts?.latest_karaokes[playKaraokeNumber].SingStart || stringTime);
-  const [currentMovieId, setCurrentMovieId] = useState<string>(primaryYoutubeUrl);
-  const [start, setStart] = useState<number>(primaryYoutubeStartTime);
+  const { videoState } = useVideo({
+    youtubeId: extractVideoId(posts.latest_karaokes[playKaraokeNumber].MovieUrl),
+    startTime: timeStringToSecondNum(posts.latest_karaokes[playKaraokeNumber].SingStart),
+    isPlaying: true,
+  });
 
-  const handleMovieClickYouTube = (url: string, start: number) => {
-    //クリティカルな環境バグなので再発時用に残しておく
-    // if (currentMovieId == ExtractVideoId(url)) {
-    // setStart(-1);
-    // setStart(start);
-    // } else {
-    setCurrentMovieId(extractVideoId(url));
-    // setStart(start);
-    //以下をonReady発火させられれば、ユーザー環境による差を少なくできる気がする
-    // setTimeout(function () {
-    // setStart(-1);
-    setStart(start);
-    // }, 1400); //local環境で、1100ms 高確率で✖, 1300ms:✖が少なくない //短すぎるとエラーになる注意
-    // }
-  };
+  // const handleMovieClickYouTube = (url: string, start: number) => {
+  //   updateVideo(extractVideoId(url), start);
+  //   //クリティカルな環境バグなので再発時用に残しておく
+  //   // if (currentMovieId == ExtractVideoId(url)) {
+  //   // setStart(-1);
+  //   // setStart(start);
+  //   // } else {
+  //   // setCurrentMovieId(extractVideoId(url));
+  //   // setStart(start);
+  //   //以下をonReady発火させられれば、ユーザー環境による差を少なくできる気がする
+  //   // setTimeout(function () {
+  //   // setStart(-1);
+  //   // setStart(start);
+  //   // }, 1400); //local環境で、1100ms 高確率で✖, 1300ms:✖が少なくない //短すぎるとエラーになる注意
+  //   // }
+  // };
 
   return (
     <div className="flex flex-col justify-center">
@@ -80,7 +80,7 @@ const MainItem = ({ posts }: TopPageProps) => {
         {/* 左側の要素 */}
         <div className="flex flex-col mr-1 ">
           <div className="relative flex justify-center">
-            <YouTubePlayer videoId={currentMovieId} start={start} />
+            <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
           </div>
           <span className="relative flex md:top-2 justify-center md:mb-3">{"音量差 注意（特に個人→大手）"}</span>
         </div>
@@ -96,7 +96,7 @@ const MainItem = ({ posts }: TopPageProps) => {
 
           {posts && (
             <div id="table" className="absolute mt-7 m w-[98%] md:w-[99%] overflow-y-scroll h-[82%] md:h-[88%] ">
-              <KaraokeThinTable posts={posts?.latest_karaokes} handleMovieClickYouTube={handleMovieClickYouTube} />
+              <KaraokeThinTable posts={posts?.latest_karaokes} />
             </div>
           )}
           {!posts && <FailedMessage />}
@@ -117,12 +117,12 @@ const MainItem = ({ posts }: TopPageProps) => {
               <Image src="/content/movie.svg" className="h-5 mr-1" width={24} height={20} alt="movie icon" />
               歌枠(動画)
             </h2>
-            {posts && <MovieTable posts={posts?.vtubers_movies} handleMovieClickYouTube={handleMovieClickYouTube} />}
+            {posts && <MovieTable posts={posts?.vtubers_movies} />}
             <br />
             <h2 className="flex">
               <Image src="/content/note.svg" className="h-5 mr-1" width={24} height={20} alt="note icon" />歌
             </h2>
-            {posts && <KaraokeMinRandomTable posts={posts.vtubers_movies_karaokes} handleMovieClickYouTube={handleMovieClickYouTube} />}
+            {posts && <KaraokeMinRandomTable posts={posts.vtubers_movies_karaokes} />}
           </div>
         </div>
       </div>

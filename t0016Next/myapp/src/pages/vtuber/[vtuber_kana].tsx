@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import https from "https";
 import axios, { AxiosRequestConfig } from "axios";
 import Link from "next/link";
-
 import { domain } from "@/../env";
 import { Layout } from "@/components/layout/Layout";
 import { ToClickTW } from "@/styles/tailwiind";
@@ -15,6 +14,7 @@ import { GetServerSidePropsContext } from "next";
 import { generateRandomNumber } from "@/components/SomeFunction";
 import KaraokeFilterTableWithoutVTuberName from "@/components/table-tanstack/Karaoke/KaraokeFilterTableWithoutVTuberName";
 import { checkLoggedin } from "@/util/webStrage/cookie";
+import { useVideo } from "@/providers/VideoProvider";
 
 const pageName = "Vtuber特設ページ"; // VTuberの名前になるようにレンダリングフェーズで変更している
 
@@ -37,13 +37,7 @@ export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
   const primaryYoutubeUrl = extractVideoId(karaokes[playKaraokeNumber]?.MovieUrl || url);
   const primaryYoutubeStartTime = timeStringToSecondNum(karaokes[playKaraokeNumber]?.SingStart || stringTime);
 
-  const [currentMovieId, setCurrentMovieId] = useState<string>(primaryYoutubeUrl);
-  const [start, setStart] = useState<number>(primaryYoutubeStartTime);
-
-  const handleMovieClickYouTube = (url: string, start: number) => {
-    setCurrentMovieId(extractVideoId(url));
-    setStart(start);
-  };
+  const { videoState } = useVideo({ youtubeId: primaryYoutubeUrl, startTime: primaryYoutubeStartTime });
 
   const [selectedMovie, setSelectedMovie] = useState<string>("");
 
@@ -65,7 +59,7 @@ export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
                 {/* 左側の要素 */}
                 <div className="flex flex-col mr-1 ">
                   <div className="relative flex  justify-center">
-                    <YouTubePlayer videoId={currentMovieId} start={start} />
+                    <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
                   </div>
                 </div>
 
@@ -96,7 +90,7 @@ export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
               {/* 左側の要素 */}
               <div className="flex flex-col mr-1 ">
                 <div className="relative flex  justify-center">
-                  <YouTubePlayer videoId={currentMovieId} start={start} />
+                  <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
                 </div>
               </div>
 
@@ -123,7 +117,7 @@ export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
           </div>
         </div>
         <div className="flex flex-col w-full">
-          <KaraokeFilterTableWithoutVTuberName posts={filterKaraokesByUrl(karaokes, selectedMovie)} handleMovieClickYouTube={handleMovieClickYouTube} setSelectedPost={setSelectedPost} />
+          <KaraokeFilterTableWithoutVTuberName posts={filterKaraokesByUrl(karaokes, selectedMovie)} setSelectedPost={setSelectedPost} />
         </div>
       </div>
     </Layout>

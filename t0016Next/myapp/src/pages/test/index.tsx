@@ -1,28 +1,20 @@
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import https from "https";
 import axios, { AxiosRequestConfig } from "axios";
 import Image from "next/image";
-
 import { domain } from "@/../../env";
-import type {
-  ReceivedVtuber,
-  ReceivedMovie,
-  ReceivedKaraoke,
-} from "@/types/vtuber_content";
+import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from "@/types/vtuber_content";
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer";
-import { timeStringToSecondNum, extractVideoId } from "@/util";
 import { Layout } from "@/components/layout/Layout";
 import { VtuberTable } from "@/components/table/Vtuber";
 import { MovieTable } from "@/components/table/Movie";
-import {
-  KaraokeThinTable,
-  KaraokeMinRandomTable,
-} from "@/components/table/Karaoke";
+import { KaraokeThinTable, KaraokeMinRandomTable } from "@/components/table/Karaoke";
 import { ToClickTW } from "@/styles/tailwiind";
 import { ContextType } from "@/types/server";
 import { TestLink } from "./multi";
 import { checkLoggedin } from "@/util/webStrage/cookie";
+import { useVideo } from "@/providers/VideoProvider";
 
 const lastUpdatedAtString = "2024.12.15";
 
@@ -45,13 +37,8 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
   const movies: ReceivedMovie[] = posts?.vtubers_movies || [];
   const karaokes: ReceivedKaraoke[] = posts?.vtubers_movies_karaokes || [];
   const latestKaraokes: ReceivedKaraoke[] = posts?.latest_karaokes || [];
-  const [start, setStart] = useState<number>(timeStringToSecondNum("00:06:45"));
-  const [currentMovieId, setCurrentMovieId] = useState<string>("AlHRqSsF--8");
-
-  const handleMovieClickYouTube = (url: string, start: number) => {
-    setCurrentMovieId(extractVideoId(url));
-    setStart(start);
-  };
+  const { videoState } = useVideo();
+  const { youtubeId, startTime } = videoState;
 
   return (
     <Layout pageName={pageName} isSignin={isSignin}>
@@ -85,8 +72,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
           <hr />
           process.env.EXSAMPLE_TEST={process.env.EXSAMPLE_TEST}
           <br />
-          ※取得できないとき、`process.env.EXSAMPLE_TEST=`と空となる
-          ※3/25時点ではEXSAMPLE_TESTを設定してない
+          ※取得できないとき、`process.env.EXSAMPLE_TEST=`と空となる ※3/25時点ではEXSAMPLE_TESTを設定してない
           <br />
         </div>
       </div>
@@ -94,18 +80,11 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
         <div className="flex flex-col ">
           <hgroup className="pb-1 md:pb-3 ">
             <a>
-              videoId= {currentMovieId}, start= {start}秒 ={" "}
-              {Math.floor(start / 60)}分 {Math.floor(start % 60)}秒
+              videoId= {youtubeId}, start= {startTime}秒 = {Math.floor(startTime / 60)}分 {Math.floor(startTime % 60)}秒
             </a>
-            <h1 className="flex justify-center text-xl sm:text-2xl md:text-3xl font-bold underline ">
-              V-kara (VTuber-karaoke-Lists)
-            </h1>
-            <h2 className="flex justify-center text-sm  md:text-base">
-              「推し」の「歌枠」の聴きたい「歌」
-            </h2>
-            <h2 className="flex justify-center text-xs ms:text-sm md:text-base ">
-              「ささっと把握」、「さくっと再生」、「ばばっと布教」
-            </h2>
+            <h1 className="flex justify-center text-xl sm:text-2xl md:text-3xl font-bold underline ">V-kara (VTuber-karaoke-Lists)</h1>
+            <h2 className="flex justify-center text-sm  md:text-base">「推し」の「歌枠」の聴きたい「歌」</h2>
+            <h2 className="flex justify-center text-xs ms:text-sm md:text-base ">「ささっと把握」、「さくっと再生」、「ばばっと布教」</h2>
           </hgroup>
         </div>
 
@@ -120,45 +99,26 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
             {/* 左側の要素 */}
             <div className="flex flex-col mr-1 ">
               <div className="relative flex  justify-center">
-                <YouTubePlayer videoId={currentMovieId} start={start} />
+                <YouTubePlayer videoId={youtubeId} start={startTime} />
               </div>
-              <span className="relative flex md:top-2 justify-center md:mb-3">
-                {"音量差 注意（特に個人→大手）"}
-              </span>
+              <span className="relative flex md:top-2 justify-center md:mb-3">{"音量差 注意（特に個人→大手）"}</span>
             </div>
 
             {/* 右側の要素 */}
-            <div
-              id="right"
-              className={`relative w-full h-full border px-1 rounded `}
-            >
-              <span className="mx-2 mt-1 absolute w-[70%]">
-                最近登録された50曲
-              </span>
+            <div id="right" className={`relative w-full h-full border px-1 rounded `}>
+              <span className="mx-2 mt-1 absolute w-[70%]">最近登録された50曲</span>
 
               <Link
                 href={`/sings/karaoke`}
                 className={`${ToClickTW.regular}
                      absolute flex right-1 top-[1px]  `}
               >
-                <Image
-                  src="/content/note.svg"
-                  width={20}
-                  height={20}
-                  alt="Note Icon"
-                  className="h-5 mx-1"
-                />
+                <Image src="/content/note.svg" width={20} height={20} alt="Note Icon" className="h-5 mx-1" />
                 もっと見る
               </Link>
 
-              <div
-                id="table"
-                className="absolute  mt-7 h-[82%] md:h-[88%] w-[98%] md:w-[99%] "
-              >
-                <KaraokeThinTable
-                  posts={latestKaraokes}
-                  handleMovieClickYouTube={handleMovieClickYouTube}
-                />
+              <div id="table" className="absolute  mt-7 h-[82%] md:h-[88%] w-[98%] md:w-[99%] ">
+                <KaraokeThinTable posts={latestKaraokes} />
               </div>
             </div>
           </div>
@@ -173,13 +133,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
           >
             <div className="mt-4 max-w-[1000px] ">
               <div className="flex ">
-                <Image
-                  src="/content/human_white.svg"
-                  width={20}
-                  height={20}
-                  alt="Note Icon"
-                  className="h-5 mx-1"
-                />
+                <Image src="/content/human_white.svg" width={20} height={20} alt="Note Icon" className="h-5 mx-1" />
 
                 <h2 className="h-5 flex-1 mb-1">配信者</h2>
               </div>
@@ -187,34 +141,15 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
               <br />
 
               <h2 className="flex">
-                <Image
-                  src="/content/movie.svg"
-                  width={20}
-                  height={20}
-                  alt="Note Icon"
-                  className="h-5 mx-1"
-                />
+                <Image src="/content/movie.svg" width={20} height={20} alt="Note Icon" className="h-5 mx-1" />
                 歌枠(動画)
               </h2>
-              <MovieTable
-                posts={movies}
-                handleMovieClickYouTube={handleMovieClickYouTube}
-              />
+              <MovieTable posts={movies} />
               <br />
               <h2 className="flex">
-                <Image
-                  src="/content/note.svg"
-                  width={20}
-                  height={20}
-                  alt="Note Icon"
-                  className="h-5 mx-1"
-                />
-                歌
+                <Image src="/content/note.svg" width={20} height={20} alt="Note Icon" className="h-5 mx-1" />歌
               </h2>
-              <KaraokeMinRandomTable
-                posts={karaokes}
-                handleMovieClickYouTube={handleMovieClickYouTube}
-              />
+              <KaraokeMinRandomTable posts={karaokes} />
             </div>
           </div>
         </div>
@@ -226,12 +161,7 @@ export default TopPage;
 
 export async function getServerSideProps(context: ContextType) {
   const { sessionToken, isLoggedin } = checkLoggedin(context);
-  console.log(
-    "pageName, sessionToken, isLoggedin =",
-    pageName,
-    sessionToken,
-    isLoggedin
-  ); // 会員、非会員、どのページかの記録のため
+  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin); // 会員、非会員、どのページかの記録のため
 
   const httpsAgent = new https.Agent({ rejectUnauthorized: false });
   const options: AxiosRequestConfig = {
@@ -244,10 +174,7 @@ export async function getServerSideProps(context: ContextType) {
 
   let resData = null;
   try {
-    const res = await axios.get(
-      `${domain.backendHost}/vcontents/dummy-top-page`,
-      options
-    );
+    const res = await axios.get(`${domain.backendHost}/vcontents/dummy-top-page`, options);
     resData = res.data;
   } catch (error) {
     console.log("erroe in axios.get:", error);
