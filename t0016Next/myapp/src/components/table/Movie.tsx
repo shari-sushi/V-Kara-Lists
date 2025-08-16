@@ -22,9 +22,8 @@ export const YouTubePlayerContext = React.createContext(
   }
 );
 
-export function MovieTable({ posts, handleMovieClickYouTube }: MovieTableProps) {
-  const data = posts || [];
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data }, useSortBy, useRowSelect);
+export function MovieTable({ posts: movies, handleMovieClickYouTube }: MovieTableProps) {
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data: movies }, useSortBy, useRowSelect);
 
   return (
     <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
@@ -33,8 +32,8 @@ export function MovieTable({ posts, handleMovieClickYouTube }: MovieTableProps) 
           <thead className={`${TableCss.regularThead}`}>
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()} key={`record_${headerGroup.id}`}>
-                {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps(column.getSortByToggleProps())} key={column.id}>
+                {headerGroup.headers.map((column, cI) => (
+                  <th {...column.getHeaderProps(column.getSortByToggleProps())} key={cI}>
                     {column.render("Header")}
                     <span>{column.isSorted ? column.isSortedDesc ? "🔽" : "🔼" : <Image src="/content/sort.svg" className="inline mx-1 h-5" alt={"Sortable mark"} width={24} height={20} />}</span>
                   </th>
@@ -45,6 +44,7 @@ export function MovieTable({ posts, handleMovieClickYouTube }: MovieTableProps) 
           <tbody {...getTableBodyProps()}>
             {rows.map((row, i) => {
               prepareRow(row);
+
               return (
                 <tr {...row.getRowProps()} className={`${TableCss.regularTr}`} key={i}>
                   {row.cells.map((cell, j) => {
@@ -137,7 +137,9 @@ function FavoriteColumn({ count, isFav, movie }: FavoriteColumn) {
         MovieUrl: movie,
       };
       if (isFavNow) {
-        const response = await axiosClient.delete(`${domain.backendHost}/fav/unfavorite/movie`, { data: reqBody });
+        const response = await axiosClient.delete(`${domain.backendHost}/fav/unfavorite/movie`, {
+          data: reqBody,
+        });
         if (!response.status) {
           throw new Error(response.statusText);
         }

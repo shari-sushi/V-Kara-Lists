@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext, useMemo } from "react";
 import { useTable, usePagination, useSortBy, Column, useRowSelect } from "react-table";
 import axios from "axios";
 import Link from "next/link";
@@ -12,6 +12,7 @@ import { LinkTW, TableCss as TableTW } from "@/styles/tailwiind";
 import { useAuth } from "@/providers/AuthProvider";
 import Image from "next/image";
 import { useHasWindow } from "@/hooks/useHasWindow";
+import { toFullYouTubeVideoURL } from "@/util/toFullYouTubeVideoURL/toFullYouTubeVideoURL";
 
 type KaraokeTableProps = {
   posts: ReceivedKaraoke[];
@@ -57,7 +58,9 @@ function FavoriteColumn({ count, isFav: initialFav, movie, karaoke }: FavoriteCo
         KaraokeId: karaoke,
       };
       if (isFavorite) {
-        const response = await axiosClient.delete(`${domain.backendHost}/fav/unfavorite/karaoke`, { data: reqBody });
+        const response = await axiosClient.delete(`${domain.backendHost}/fav/unfavorite/karaoke`, {
+          data: reqBody,
+        });
         if (!response.status) {
           throw new Error(response.statusText);
         }
@@ -300,9 +303,8 @@ const ThinColumns: Column<ReceivedKaraoke>[] = [
   },
 ];
 
-export const KaraokeThinTable = ({ posts, handleMovieClickYouTube }: KaraokeTableProps) => {
-  const data = posts || ([] as ReceivedKaraoke[]);
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns: ThinColumns, data }, useSortBy, useRowSelect);
+export const KaraokeThinTable = ({ posts: karaoke, handleMovieClickYouTube }: KaraokeTableProps) => {
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns: ThinColumns, data: karaoke }, useSortBy, useRowSelect);
 
   return (
     <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
@@ -310,9 +312,9 @@ export const KaraokeThinTable = ({ posts, handleMovieClickYouTube }: KaraokeTabl
         <table {...getTableProps()} className={`${TableTW.regular} `}>
           <thead className={`${TableTW.regularThead}`}>
             {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
+              <tr {...headerGroup.getHeaderGroupProps()} key={`karoake_thin_header_group_${headerGroup.id}`}>
                 {headerGroup.headers.map((column, i) => (
-                  <th {...column.getHeaderProps(column.getSortByToggleProps())} className="px-2" key={`karoake_thin_table_header_${i}`}>
+                  <th {...column.getHeaderProps(column.getSortByToggleProps())} className="px-2" key={`karoake_thin_header_${headerGroup.id}_${i}`}>
                     {column.render("Header")}
                     {column.isSorted ? column.isSortedDesc ? "🔽" : "🔼" : <Image src="/content/sort.svg" width={24} height={20} alt="Sortable mark" className="inline-block w-6 h-5" />}
                   </th>
@@ -321,13 +323,13 @@ export const KaraokeThinTable = ({ posts, handleMovieClickYouTube }: KaraokeTabl
             ))}
           </thead>
           <tbody {...getTableBodyProps()}>
-            {rows.map((row, i) => {
+            {rows.map((row, rI) => {
               prepareRow(row);
               return (
-                <tr {...row.getRowProps()} className={`${TableTW.regularTr}`} key={i}>
-                  {row.cells.map((cell, j) => {
+                <tr {...row.getRowProps()} className={`${TableTW.regularTr}`} key={rI}>
+                  {row.cells.map((cell, cI) => {
                     return (
-                      <td {...cell.getCellProps()} key={j}>
+                      <td {...cell.getCellProps()} key={cI}>
                         {cell.render("Cell")}
                       </td>
                     );
@@ -520,30 +522,25 @@ const random5columns: Column<ReceivedKaraoke>[] = [
     accessor: "KaraokeId",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
       const { handleMovieClickYouTube } = useContext(YouTubePlayerContext);
-
-      const handleClickSongName = (post: ReceivedKaraoke) => {
+      const [isDisplay, setIsDisplay] = useState<boolean>(false);
+      const playSong = (post: ReceivedKaraoke) => {
         handleMovieClickYouTube(post.MovieUrl, timeStringToSecondNum(post.SingStart));
       };
-
-      const [isDisplay, setIsDisplay] = useState<boolean>(false);
-      const handleClickClipUrl = async () => {
-        const url = "https://" + row.original.MovieUrl + "&t=" + timeStringToSecondNum(row.original.SingStart);
-        await navigator.clipboard.writeText(url);
+      const clipUrl = async () => {
+        await navigator.clipboard.writeText(toFullYouTubeVideoURL(row.original.MovieUrl, row.original.SingStart));
         setIsDisplay(true);
         setTimeout(() => setIsDisplay(false), 2000);
       };
-
       return (
         <div className="relative flex">
           <div className="flex flex-row">
-            <button className="flex" onClick={() => handleClickSongName(row.original)}>
+            <button className="flex" onClick={() => playSong(row.original)}>
               <Image src="/content/play_black.svg" className="w-5 mr-1 " alt={""} width={24} height={20} />
               {row.original.SongName}
             </button>
           </div>
-
           <div className="flex flex-row">
-            <button className="absolute right-0" onClick={handleClickClipUrl}>
+            <button className="absolute right-0" onClick={clipUrl}>
               <Image src="/content/copy_gray.svg" className="h-5 mr-2 flex hover:bg-[#B7A692] stroke-2  rounded-md" alt={""} width={18} height={18} />
             </button>
             {isDisplay && <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">URL was copied</div>}
@@ -564,10 +561,11 @@ const random5columns: Column<ReceivedKaraoke>[] = [
 
 export const KaraokeMinRandomTable = ({ posts: karaokes, handleMovieClickYouTube }: KaraokeTableProps) => {
   const hasWindow = useHasWindow();
+  const shuffledData = useMemo(() => shuffleArray(karaokes, 5), [karaokes]);
   const { getTableProps, getTableBodyProps, headerGroups, prepareRow, page } = useTable(
     {
       columns: random5columns,
-      data: shuffleArray(karaokes),
+      data: shuffledData,
       initialState: { pageIndex: 0, pageSize: 5 },
     },
     usePagination
@@ -577,17 +575,17 @@ export const KaraokeMinRandomTable = ({ posts: karaokes, handleMovieClickYouTube
     <YouTubePlayerContext.Provider value={{ handleMovieClickYouTube }}>
       {hasWindow && (
         <div>
-          <div className="flex ml-5 ">
-            <h2 className="flex mr-1">ランダム5件表示中 (登録数{karaokes.length}件)</h2>
+          <div className="flex ml-5">
+            <h2 className="flex mr-1">ランダム5件表示中 (全{karaokes.length}件)</h2>
           </div>
           <div className="w-full overflow-scroll md:overflow-hidden">
-            <table {...getTableProps()} className={`${TableTW.minRandom} `}>
+            <table {...getTableProps()} className={`${TableTW.minRandom}`}>
               <thead className={`${TableTW.regularThead}`}>
-                {headerGroups.map((headerGroup, i) => (
-                  <tr {...headerGroup.getHeaderGroupProps()} key={`delete_header_${i}`}>
-                    {headerGroup.headers.map((column, i) => (
-                      <th {...column.getHeaderProps()} key={i}>
-                        {column.render("Header")}{" "}
+                {headerGroups.map((headerGroup, hI) => (
+                  <tr {...headerGroup.getHeaderGroupProps()} key={hI}>
+                    {headerGroup.headers.map((column, cI) => (
+                      <th {...column.getHeaderProps()} key={cI}>
+                        {column.render("Header")}
                       </th>
                     ))}
                   </tr>

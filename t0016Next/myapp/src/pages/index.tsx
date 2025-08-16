@@ -122,7 +122,7 @@ const MainItem = ({ posts }: TopPageProps) => {
             <h2 className="flex">
               <Image src="/content/note.svg" className="h-5 mr-1" width={24} height={20} alt="note icon" />歌
             </h2>
-            {posts && <KaraokeMinRandomTable posts={posts?.vtubers_movies_karaokes} handleMovieClickYouTube={handleMovieClickYouTube} />}
+            {posts && <KaraokeMinRandomTable posts={posts.vtubers_movies_karaokes} handleMovieClickYouTube={handleMovieClickYouTube} />}
           </div>
         </div>
       </div>
