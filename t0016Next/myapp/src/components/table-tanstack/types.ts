@@ -13,6 +13,5 @@ export type KaraokeTableFilterInputProps = {
 
 export type KaraokeTableReturnPostProps = {
   posts: ReceivedKaraoke[];
-  handleMovieClickYouTube: (arg0: string, arg1: number) => void;
   setSelectedPost: (arg0: ReceivedKaraoke) => void;
 };

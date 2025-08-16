@@ -6,10 +6,11 @@ import Link from "next/link";
 import { domain } from "@/../env";
 import { ReceivedKaraoke, FavoriteKaraoke } from "@/types/vtuber_content";
 import { LinkTW, TableCss as TableTW } from "@/styles/tailwiind";
-import { timeStringToSecondNum } from "@/util";
 import { useAuth } from "@/providers/AuthProvider";
+import { extractVideoId, timeStringToSecondNum } from "@/util";
 import { TableCss } from "@/styles/tailwiind";
 import type { KaraokeTableFilterInputProps, KaraokeTablePaginationButtonsProps } from "./types";
+import { useVideo } from "@/providers/VideoProvider";
 
 // 今後こっち(tasnstack)に移行していく
 // TODO : 雑多に集めすぎたので、フォルダ分け
@@ -112,11 +113,11 @@ export const KaraokeBasicColumns: ColumnDef<ReceivedKaraoke>[] = [
     enableSorting: true,
     cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const { handleMovieClickYouTube } = useContext(YouTubePlayerContext);
+      const { updateVideo } = useVideo();
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const { setSelectedPost } = useContext(SeletctPostContext);
       const handleClickPlay = (post: ReceivedKaraoke) => {
-        handleMovieClickYouTube(row.original.MovieUrl, timeStringToSecondNum(row.original.SingStart));
+        updateVideo(extractVideoId(row.original.MovieUrl), timeStringToSecondNum(row.original.SingStart));
         setSelectedPost(post);
       };
       // eslint-disable-next-line react-hooks/rules-of-hooks

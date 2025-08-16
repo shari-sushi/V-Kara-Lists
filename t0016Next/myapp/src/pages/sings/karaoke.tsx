@@ -9,12 +9,14 @@ import { ToClickTW } from "@/styles/tailwiind";
 import type { ReceivedKaraoke, ReceivedMovie, ReceivedVtuber } from "@/types/vtuber_content";
 import type { ContextType } from "@/types/server";
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer";
-import { timeStringToSecondNum, extractVideoId } from "@/util";
+import { timeStringToSecondNum } from "@/util";
 import { DropDownVtuber } from "@/components/dropDown/Vtuber";
 import { DropDownMovie } from "@/components/dropDown/Movie";
 import KaraokeGlobalFilterTable from "@/components/table-tanstack/Karaoke/KaraokeGlobalFilterTable";
 import { checkLoggedin } from "@/util/webStrage/cookie";
 import { findVtuber } from "@/components/form/Common";
+import { useVideo } from "@/providers/VideoProvider";
+import { dummyKaraokeArray } from "@/util/dummyData/dummyData";
 
 const pageName = "カラオケ(全曲)";
 
@@ -29,17 +31,9 @@ type TopPage = {
 };
 
 export default function SingsPage({ posts, isSignin }: TopPage) {
-  const karaokes: ReceivedKaraoke[] = useMemo(() => posts?.vtubers_movies_karaokes || [], [posts]);
-
-  // ようつべ用
-  const primaryYoutubeUrl = "5WzeYsoGCZc"; //船長　kORHSmXcYNc, 00:08:29
-  const primaryYoutubeStartTime = timeStringToSecondNum("00:22:04");
-  const [currentMovieId, setCurrentMovieId] = useState<string>(primaryYoutubeUrl);
-  const [start, setStart] = useState<number>(primaryYoutubeStartTime);
-  const handleMovieClickYouTube = (url: string, start: number) => {
-    setCurrentMovieId(extractVideoId(url));
-    setStart(start);
-  };
+  const karaokes: ReceivedKaraoke[] = useMemo(() => posts?.vtubers_movies_karaokes || dummyKaraokeArray, [posts]);
+  //船長　kORHSmXcYNc, 00:08:29
+  const { videoState } = useVideo({ youtubeId: "5WzeYsoGCZc", startTime: timeStringToSecondNum("00:22:04") });
 
   const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke | undefined>(undefined);
 
@@ -50,6 +44,7 @@ export default function SingsPage({ posts, isSignin }: TopPage) {
     // TODO: 実装
   };
 
+  // TODO: useEffectをやめてコールバックで操作する
   useEffect(() => {
     const filteredKaraokes = FilterKaraokesByParentContent(karaokes, selectedVtuber, selectedMovie);
     setFilteredKaraokes(filteredKaraokes);
@@ -70,7 +65,7 @@ export default function SingsPage({ posts, isSignin }: TopPage) {
               {/* 左側の要素 */}
               <div className="flex flex-col mr-1 ">
                 <div className="relative flex justify-center">
-                  <YouTubePlayer videoId={currentMovieId} start={start} />
+                  <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
                 </div>
               </div>
 
@@ -91,7 +86,7 @@ export default function SingsPage({ posts, isSignin }: TopPage) {
           </div>
         </div>
         <div className="flex flex-col w-full">
-          <KaraokeGlobalFilterTable posts={filteredKaraokes} handleMovieClickYouTube={handleMovieClickYouTube} setSelectedPost={setSelectedPost} />
+          <KaraokeGlobalFilterTable posts={filteredKaraokes} setSelectedPost={setSelectedPost} />
         </div>
       </div>
     </Layout>

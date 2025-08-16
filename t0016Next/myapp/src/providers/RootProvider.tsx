@@ -1,3 +1,4 @@
+import { VideoProvider } from "./VideoProvider";
 import { AuthProvider } from "./AuthProvider";
 
 interface RootProviderProps {
@@ -6,5 +7,9 @@ interface RootProviderProps {
 }
 
 export const RootProvider = ({ children, isSignin }: RootProviderProps) => {
-  return <AuthProvider isSignin={isSignin}>{children}</AuthProvider>;
+  return (
+    <AuthProvider isSignin={isSignin}>
+      <VideoProvider>{children}</VideoProvider>
+    </AuthProvider>
+  );
 };
