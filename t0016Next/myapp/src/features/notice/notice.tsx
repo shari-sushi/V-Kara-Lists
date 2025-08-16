@@ -17,10 +17,10 @@ export const TopPageNotice = () => {
           </div>
         </div>
       </div>
-      <div className="ml-4">
+      <ul className="ml-4">
         <li>{NoticeItems[0].content}</li>
         <li>{NoticeItems[1].content}</li>
-      </div>
+      </ul>
 
       {isDisplay && (
         <div className="fixed inset-0 flex items-center justify-center z-10">
@@ -89,8 +89,10 @@ const NoticeItems: NoticeItem[] = [
       <>
         <NoticeLink href="/crud/create">「データ登録」</NoticeLink>
         ページの動画登録にて、
-        <li className="ml-4">URLの入力が簡単に</li>
-        <li className="ml-4">URLで動画タイトルを取得できるように</li>
+        <ul className="ml-4">
+          <li>URLの入力が簡単に</li>
+          <li>URLで動画タイトルを取得できるように</li>
+        </ul>
       </>
     ),
   },

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 export const useHasWindow = () => {
   const [hasWindow, setHasWindow] = useState<boolean>(false);
@@ -9,5 +9,5 @@ export const useHasWindow = () => {
     }
   }, []);
 
-  return hasWindow;
+  return useMemo(() => hasWindow, [hasWindow]);
 };
