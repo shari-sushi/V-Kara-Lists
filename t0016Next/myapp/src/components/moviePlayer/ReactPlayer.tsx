@@ -1,3 +1,4 @@
+import { useRef, useEffect, useState } from "react";
 import ReactPlayer from "react-player";
 
 interface YoutubePlayerProps {
@@ -10,7 +11,22 @@ interface YoutubePlayerProps {
 }
 
 export const YoutubePlayer = ({ videoId, start, style }: YoutubePlayerProps) => {
-  const src = `https://www.youtube.com/watch?v=${videoId}&start=${start}`;
-
-  return <ReactPlayer src={src} height={style.height} width={style.width} controls autoPlay />;
+  return (
+    // TODO: startが変わるたびに動画が再読み込みになってしまうので、正規の方法を探す
+    //       startが同じなら無反応になるし
+    <div key={`${videoId}_${start}`}>
+      <ReactPlayer
+        src={`https://www.youtube.com/watch?v=${videoId}`}
+        height={style.height}
+        width={style.width}
+        controls
+        playing
+        config={{
+          youtube: {
+            start: start,
+          },
+        }}
+      />
+    </div>
+  );
 };
