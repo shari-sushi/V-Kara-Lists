@@ -1,6 +1,6 @@
 import { useVideo } from "@/providers/VideoProvider";
 
-export const ToggleVideoPositionButton = ({ isDisplayText, textSize }: { isDisplayText: boolean; textSize?: string }) => {
+export const ToggleVideoPositionButton = ({ isDisplayText, textSize }: { isDisplayText?: boolean; textSize?: string }) => {
   const { videoState, togglePosition } = useVideo();
 
   // NOTE: デザイン模索中
@@ -8,7 +8,7 @@ export const ToggleVideoPositionButton = ({ isDisplayText, textSize }: { isDispl
   const text = "動画を固定";
   return (
     <div className="flex h-full items-center">
-      {isDisplayText === true && <span className={`${textSize ?? "text-xs"}`}>{text}</span>}
+      {isDisplayText !== false && <span className={`${textSize ?? "text-xs"}`}>{text}</span>}
       <label className="flex h-full items-center">
         <input type="checkbox" checked={videoState.position === "footer"} className="peer sr-only" onChange={() => togglePosition()} />
         <span

@@ -156,7 +156,7 @@ const Header = ({ pageName }: HeaderProps) => {
           <a href="#pageTop" />
           <TitleLink />
         </div>
-        <ToggleVideoPositionButton />
+        <ToggleVideoPositionButton isDisplayText={false} />
         <div className={``}>
           <div className=" h-6 flex float-right justify-end z-30  items-center ">
             <Link href="/" className={`${ToClickTW.regular} mr-1 w-10 `}>
@@ -224,7 +224,7 @@ const Header = ({ pageName }: HeaderProps) => {
                     <div className="mt-10" />
                     <div className="w-fit text-xl -ml-2">設定</div>
                     <div className={`${ToClickTW.hamburger} h-8 pl-2`} onClick={() => togglePosition()}>
-                      <ToggleVideoPositionButton textSize="" />
+                      <ToggleVideoPositionButton textSize="text-base" />
                     </div>
                   </div>
                 </div>
