@@ -15,6 +15,7 @@ import { ToClickTW } from "@/styles/tailwiind";
 import { NotLoggedIn } from "@/components/layout/Main";
 import Image from "next/image";
 import { checkLoggedin } from "@/util/webStrage/cookie";
+import { useVideo } from "@/providers/VideoProvider";
 
 const pageName = "コンテンツ削除";
 
@@ -281,6 +282,14 @@ export function DeleteDecideButton({ posts, selectedVtuberId, selectedMovieUrl, 
     setToDeleteMovieUrl("");
     setToDeleteKaraokeId(0);
   };
+
+  const { videoState, changePosition } = useVideo();
+  // TODO: ちゃんとした制御機構を用意する
+  useEffect(() => {
+    if (videoState.position !== "in-content") {
+      changePosition("in-content");
+    }
+  }, [videoState.position, changePosition]);
 
   return (
     <div className="mid-w-1/2 min-h-3/1">

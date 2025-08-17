@@ -13,6 +13,7 @@ import { timeStringToSecondNum, extractVideoId } from "@/util";
 import { GestLogin } from "@/components/button/User";
 import { NotLoggedIn } from "@/components/layout/Main";
 import { checkLoggedin } from "@/util/webStrage/cookie";
+import { useVideo } from "@/providers/VideoProvider";
 
 const pageName = "コンテンツ編集";
 
@@ -39,6 +40,14 @@ export const EditPage = ({ posts, isSignin }: EditPageProps) => {
     //中身空でもKaraokeのoptinosを空にしてくれるんだが…
     // setSelectedKaraoke(0);
   };
+
+  const { videoState, changePosition } = useVideo();
+  // TODO: ちゃんとした制御機構を用意する
+  useEffect(() => {
+    if (videoState.position !== "in-content") {
+      changePosition("in-content");
+    }
+  }, [videoState.position, changePosition]);
 
   useEffect(() => {
     if (selectedVtuber && selectedMovie && selectedKaraoke) {

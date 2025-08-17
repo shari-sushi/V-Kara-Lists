@@ -78,12 +78,15 @@ const MainItem = ({ posts }: TopPageProps) => {
                 `}
       >
         {/* 左側の要素 */}
-        <div className="flex flex-col mr-1 ">
-          <div className="relative flex justify-center">
-            <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
+        {/* TODO: 動画はVideoLayoutで常に表示するようにしつつ、ここではスペーサーであるAltBoxを表示/非表示するようにする */}
+        {videoState.position === "in-content" && (
+          <div className="flex flex-col mr-1 ">
+            <div className="relative flex justify-center">
+              <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
+            </div>
+            <span className="relative flex md:top-2 justify-center md:mb-3">{"音量差 注意（特に個人→大手）"}</span>
           </div>
-          <span className="relative flex md:top-2 justify-center md:mb-3">{"音量差 注意（特に個人→大手）"}</span>
-        </div>
+        )}
 
         {/* 右側の要素 */}
         <div id="right" className={`relative w-full h-full border px-1 rounded `}>

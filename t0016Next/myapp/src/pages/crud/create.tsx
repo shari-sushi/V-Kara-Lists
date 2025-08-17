@@ -12,6 +12,7 @@ import { CreateForm } from "@/components/form/CreateContentForm";
 import { NotLoggedIn } from "@/components/layout/Main";
 import { checkLoggedin } from "@/util/webStrage/cookie";
 import { CreateContentFormDescription } from "@/features/description";
+import { useVideo } from "@/providers/VideoProvider";
 
 const pageName = "コンテンツ登録";
 
@@ -29,6 +30,14 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
   const [selectedKaraokeId, setSelectedKaraokeId] = useState<number>(0);
   const [currentVideoId, setCurrentVideoId] = useState<string>("9ehwhQJ50gs");
   const [currentStart, setCurrentStart] = useState<number>(0);
+
+  const { videoState, changePosition } = useVideo();
+  // TODO: ちゃんとした制御機構を用意する
+  useEffect(() => {
+    if (videoState.position !== "in-content") {
+      changePosition("in-content");
+    }
+  }, [videoState.position, changePosition]);
 
   useEffect(() => {
     const foundMovie = movies.find((movies) => movies.MovieUrl === selectedMovieUrl);

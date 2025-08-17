@@ -44,6 +44,8 @@ export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
   // propsとして必要
   const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke);
 
+  const isVideoInContent = videoState.position === "in-content";
+
   if (karaokes.length == 0) {
     return (
       <Layout pageName={pageName} isSignin={isSignin}>
@@ -57,12 +59,13 @@ export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
                                 top-0 p-1 `}
               >
                 {/* 左側の要素 */}
-                <div className="flex flex-col mr-1 ">
-                  <div className="relative flex  justify-center">
-                    <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
+                {isVideoInContent && (
+                  <div className="flex flex-col mr-1 ">
+                    <div className="relative flex  justify-center">
+                      <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
+                    </div>
                   </div>
-                </div>
-
+                )}
                 {/* 右側の要素 */}
                 <div id="right" className={`relative  px-1 rounded border`}>
                   <NotFoundVtuber />
@@ -79,35 +82,33 @@ export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
     <Layout pageName={`${karaokes[0].VtuberName}`} isSignin={isSignin}>
       <div className="flex flex-col w-full max-w-[1000px] mx-auto">
         <div className={`pt-6 flex flex-col items-center`}>
-          <div className={`flex`}>
-            <div
-              id="feature"
-              className={`flex flex-col md:flex-row bg-[#657261] rounded
-                                max-w-[1000px]  md:h-[265px] h-full w-full mx-auto
-                                top-0 p-1
-                            `}
-            >
+          <div className={`flex w-full ${isVideoInContent ? "" : "max-w-[600px]"}`}>
+            <div id="feature" className={`flex flex-col items-center md:flex-row bg-[#657261] rounded max-w-[calc(100vw)] md:max-w-[1000px] md:h-[265px] h-full w-full mx-auto p-1`}>
               {/* 左側の要素 */}
-              <div className="flex flex-col mr-1 ">
-                <div className="relative flex  justify-center">
-                  <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
+              {isVideoInContent && (
+                <div className="mr-1 md:mb-0 mb-1">
+                  <div className="relative flex justify-center">
+                    <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* 右側の要素 */}
-              <div id="right" className={`relative  px-1 rounded border`}>
+              <div id="right" className={`relative px-1 rounded border w-full max-w-[600px] p-0.5 flex flex-col justify-between h-full`}>
                 <div className="flex py-3 text-black bg-[#FFF6E4] justify-center rounded-xl">
-                  <span className="text-xl font-bold mr-2">{karaokes?.[0].VtuberName}</span>
+                  <span className="text-xl font-bold mr-2">{karaokes[0].VtuberName}</span>
                   <span className="mt-1">の歌枠</span>
                 </div>
-                <span>動画絞込み（入力できます）</span>
-                <DropDownAllMovie
-                  preMovies={posts?.vtubers_movies}
-                  setSelectedMovie={setSelectedMovie}
-                  // clearMovieHandler={clearMovieHandler}
-                />
-                <div className="pt-5">
-                  <span>お探しの歌枠や歌がありませんか？</span> <br />
+                <div>
+                  <span>動画絞込み（入力できます）</span>
+                  <DropDownAllMovie
+                    preMovies={posts?.vtubers_movies}
+                    setSelectedMovie={setSelectedMovie}
+                    // clearMovieHandler={clearMovieHandler}
+                  />
+                </div>
+                <div className="md:pt-5 pt-2">
+                  <div>お探しの歌枠や歌がありませんか？</div>
                   <Link className={`${ToClickTW.regular} justify-center float-right px-3 mr-2`} href="/crud/create">
                     データを登録する
                   </Link>

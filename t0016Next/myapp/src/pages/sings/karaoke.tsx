@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from "react";
 import https from "https";
 import axios, { AxiosRequestConfig } from "axios";
 import Link from "next/link";
-
 import { domain } from "@/../env";
 import { Layout } from "@/components/layout/Layout";
 import { ToClickTW } from "@/styles/tailwiind";
@@ -54,32 +53,31 @@ export default function SingsPage({ posts, isSignin }: TopPage) {
     <Layout pageName={pageName} isSignin={isSignin}>
       <div className="flex flex-col w-full max-w-[1000px] mx-auto">
         <div className={`pt-6 flex flex-col items-center`}>
-          <div className={`flex`}>
-            <div
-              id="feature"
-              className={`flex flex-col md:flex-row bg-[#657261] rounded
-                                max-w-[1000px]  md:h-[265px] h-full w-full mx-auto
-                                top-0 p-1
-                            `}
-            >
+          <div className={`flex ${videoState.position === "in-content" ? "" : "w-full max-w-[600px]"}`}>
+            <div id="feature" className={`flex flex-col md:flex-row bg-[#657261] rounded p-1 w-full mx-auto max-w-[1000px]`}>
               {/* 左側の要素 */}
-              <div className="flex flex-col mr-1 ">
-                <div className="relative flex justify-center">
-                  <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
+              {/* TODO: 動画はVideoLayoutで常に表示するようにしつつ、ここではスペーサーであるAltBoxを表示/非表示するようにする */}
+              {videoState.position === "in-content" && (
+                <div className="flex flex-col mr-1 ">
+                  <div className="relative flex justify-center">
+                    <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* 右側の要素 */}
-              <div id="right" className={`relative  px-1 rounded border`}>
+              <div id="right" className={`relative px-1 rounded border ${videoState.position !== "in-content" ? "w-full" : ""}`}>
                 <h1 className="text-lg">絞込み（入力できます）</h1>
                 <DropDownVtuber selectedVtuber={findVtuber(posts.vtubers, selectedVtuber)} posts={posts} onVtuberSelect={setSelectedVtuber} defaultMenuIsOpen={false} />
 
                 <DropDownMovie posts={posts} selectedVtuber={selectedVtuber} setSelectedMovie={setSelectedMovie} clearMovieHandler={clearMovieHandler} />
-                <div className="pt-3">
-                  <span>お探しの歌枠や歌がありませんか？</span> <br />
-                  <Link className={`${ToClickTW.regular} justify-center float-right px-3 mr-2`} href="/crud/create">
-                    データを登録する
-                  </Link>
+                <div className="pt-3 flex justify-end">
+                  <div className="w-fit">
+                    <span>お探しの歌枠や歌がありませんか？</span> <br />
+                    <Link className={`${ToClickTW.regular} justify-center float-right px-3 mr-2`} href="/crud/create">
+                      データを登録する
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
