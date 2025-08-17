@@ -223,9 +223,9 @@ const Header = ({ pageName }: HeaderProps) => {
                     )}
                     <div className="mt-10" />
                     <div className="w-fit text-xl -ml-2">設定</div>
-                    <Link href="/crud/edit" className={`${ToClickTW.hamburger} h-8 pl-2`} onClick={() => togglePosition()}>
+                    <div className={`${ToClickTW.hamburger} h-8 pl-2`} onClick={() => togglePosition()}>
                       <ToggleVideoPositionButton textSize="" />
-                    </Link>
+                    </div>
                   </div>
                 </div>
               </div>
