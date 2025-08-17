@@ -1,48 +1,23 @@
+import { useCalcVideoPlayerSize, VideoPlayerSizeLevel } from "@/hooks/useCalcVideoPlayerSize";
 import YouTube from "react-youtube";
-import { getWindowSize } from "@/features/layout/Layout";
-import { useHasWindow } from "@/hooks/useHasWindow";
+import { YoutubePlayer } from "./ReactPlayer";
 
-export const YouTubePlayer = ({ videoId, start, sizeLevel = 5 }: { videoId: string; start: number; sizeLevel?: number }) => {
-  const hasWindow = useHasWindow();
-  if (hasWindow == null) {
-    return null;
+interface YoutubePlayerProps {
+  videoId: string;
+  start: number;
+  sizeLevel?: VideoPlayerSizeLevel;
+}
+
+export const YouTubePlayer = ({ videoId, start, sizeLevel = 1 }: YoutubePlayerProps) => {
+  const { height, width, hasWindow } = useCalcVideoPlayerSize(sizeLevel);
+  if (!hasWindow) {
+    return <div style={{ height, width }} />;
   }
 
-  const { height: windowWHeight, width: windowWidth } = getWindowSize();
-  const aspectRatio = 9 / 16;
-  const isHorizontally = windowWidth > windowWHeight;
-
-  let height = windowWHeight;
-  let width = windowWidth;
-
-  // NOTE: スマホを想定しているが、PC向けにもちゃんと対応できてる…はず
-  if (isHorizontally) {
-    if (windowWidth > 950) {
-      height = 255;
-      width = Math.round(height / aspectRatio);
-    } else {
-      width = Math.round(windowWidth / 2);
-      height = Math.round((windowWidth / 2) * aspectRatio);
-    }
-  }
-
-  if (!isHorizontally) {
-    if (windowWidth >= 950) {
-      height = 255;
-      width = Math.round(height / aspectRatio);
-    } else if (windowWidth > 500) {
-      width = Math.round(windowWidth * 0.48);
-      height = Math.round(windowWidth * 0.48 * aspectRatio);
-    } else {
-      width = Math.round(windowWHeight * 0.48);
-      height = Math.round(windowWHeight * 0.48 * aspectRatio);
-    }
-  }
-
-  return <PreYouTubePlayer videoId={videoId} start={start} windowSize={{ height, width }} />;
+  return <YoutubePlayer videoId={videoId} start={start} style={{ height, width }} />;
 };
 
-type YoutubePlayerProps = {
+type PreYoutubePlayerProps = {
   videoId: string;
   start?: number;
   opts?: YouTube;
@@ -50,14 +25,8 @@ type YoutubePlayerProps = {
   windowSize: { width: number; height: number };
 };
 
-// const onPlayerReady = (event: { target: YT.Player }) => {
-// access to player in all event handlers via event.target
-// event.target.pauseVideo();
-// }
-// onReady = onPlayerReady,
-
 // 単一再生
-export const PreYouTubePlayer: React.FC<YoutubePlayerProps> = ({
+const PreYouTubePlayer: React.FC<PreYoutubePlayerProps> = ({
   videoId,
   start,
   windowSize,

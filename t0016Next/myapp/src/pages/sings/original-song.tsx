@@ -28,18 +28,15 @@ export default function SingsPage({ vtubers_movies_karaokes: karaokes = dummyKar
 
   return (
     <Layout pageName={pageName} isSignin={isSignin}>
-      <div className="absolute flex justify-center w-screen h-screen opacity-85 inset-0 bg-[#1f2724] z-10 ">
-        <div className="text-2xl font-bold my-[20%] bg- ">
-          開発中...... <br />
-          <br />
-          coming soon......
-          <button></button>
-        </div>
-      </div>
       <div className="flex flex-col w-full max-w-[1000px] mx-auto">
         <div className={`pt-6 flex flex-col items-center`}>
-          <div className={`flex `}>
-            <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
+          {videoState.position === "in-content" && (
+            <div className={`flex `}>
+              <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
+            </div>
+          )}
+          <div>
+            <span>※オリ曲の登録機能は未実装です※</span>
           </div>
           <div className="flex flex-col w-full">
             <KaraokePaginationTable karaokes={karaokes} setSelectedPost={setSelectedPost} />

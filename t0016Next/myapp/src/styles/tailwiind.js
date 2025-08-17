@@ -1,5 +1,5 @@
 export const HeaderCss = {
-  regular: "fixed w-full bg-[#252525]  md:w-full z-20",
+  regular: "fixed w-full bg-[#252525] h-7 md:w-full z-20",
 };
 
 export const FooterTW = {

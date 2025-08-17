@@ -54,12 +54,16 @@ const MyPage = ({ data, isSignin }: Mypage) => {
     updateVideo(extractVideoId(demoUrl), startTimeCreateOfDemo);
   };
 
+  const isVideoInContent = videoState.position === "in-content";
+
   return (
     <Layout pageName={pageName} isSignin={isSignin}>
       <div className="flex flex-col max-w-[1000px] justify-ite">
-        <div className="flex mx-auto mt-6">
-          <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
-        </div>
+        {isVideoInContent && (
+          <div className="flex mx-auto mt-6">
+            <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
+          </div>
+        )}
 
         {vtubers.length + movies.length + karaokes.length === 0 ? (
           <div
