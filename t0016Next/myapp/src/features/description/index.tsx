@@ -1,1 +1,1 @@
-export * from "./CreateContentFormDescription";
+export * from "./CreateContentFormDescription"

@@ -1,10 +1,10 @@
-import React from "react";
+import React from "react"
 
-import { Layout } from "@/components/layout/Layout";
-import { SigninForm } from "@/components/form/User";
+import { Layout } from "@/components/layout/Layout"
+import { SigninForm } from "@/components/form/User"
 
 export function SigninPage() {
-  const pageName = "Login";
+  const pageName = "Login"
 
   return (
     <Layout pageName={pageName} isSignin={false}>
@@ -14,7 +14,7 @@ export function SigninPage() {
         </div>
       </div>
     </Layout>
-  );
+  )
 }
 
-export default SigninPage;
+export default SigninPage

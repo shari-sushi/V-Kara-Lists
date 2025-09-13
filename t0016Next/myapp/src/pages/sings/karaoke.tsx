@@ -1,53 +1,53 @@
-import React, { useState, useEffect, useMemo } from "react";
-import https from "https";
-import axios, { AxiosRequestConfig } from "axios";
-import Link from "next/link";
-import { domain } from "@/../env";
-import { Layout } from "@/components/layout/Layout";
-import { ToClickTW } from "@/styles/tailwiind";
-import type { ReceivedKaraoke, ReceivedMovie, ReceivedVtuber } from "@/types/vtuber_content";
-import type { ContextType } from "@/types/server";
-import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer";
-import { timeStringToSecondNum } from "@/util";
-import { DropDownVtuber } from "@/components/dropDown/Vtuber";
-import { DropDownMovie } from "@/components/dropDown/Movie";
-import KaraokeGlobalFilterTable from "@/components/table-tanstack/Karaoke/KaraokeGlobalFilterTable";
-import { checkLoggedin } from "@/util/webStrage/cookie";
-import { findVtuber } from "@/components/form/Common";
-import { useVideo } from "@/providers/VideoProvider";
-import { dummyKaraokeArray } from "@/util/dummyData/dummyData";
+import React, { useState, useEffect, useMemo } from "react"
+import https from "https"
+import axios, { AxiosRequestConfig } from "axios"
+import Link from "next/link"
+import { domain } from "@/../env"
+import { Layout } from "@/components/layout/Layout"
+import { ToClickTW } from "@/styles/tailwiind"
+import type { ReceivedKaraoke, ReceivedMovie, ReceivedVtuber } from "@/types/vtuber_content"
+import type { ContextType } from "@/types/server"
+import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
+import { timeStringToSecondNum } from "@/util"
+import { DropDownVtuber } from "@/components/dropDown/Vtuber"
+import { DropDownMovie } from "@/components/dropDown/Movie"
+import KaraokeGlobalFilterTable from "@/components/table-tanstack/Karaoke/KaraokeGlobalFilterTable"
+import { checkLoggedin } from "@/util/webStrage/cookie"
+import { findVtuber } from "@/components/form/Common"
+import { useVideo } from "@/providers/VideoProvider"
+import { dummyKaraokeArray } from "@/util/dummyData/dummyData"
 
-const pageName = "カラオケ(全曲)";
+const pageName = "カラオケ(全曲)"
 
 type TopPage = {
   posts: {
-    vtubers: ReceivedVtuber[];
-    vtubers_movies: ReceivedMovie[];
-    vtubers_movies_karaokes: ReceivedKaraoke[];
-    latest_karaokes: ReceivedKaraoke[];
-  };
-  isSignin: boolean;
-};
+    vtubers: ReceivedVtuber[]
+    vtubers_movies: ReceivedMovie[]
+    vtubers_movies_karaokes: ReceivedKaraoke[]
+    latest_karaokes: ReceivedKaraoke[]
+  }
+  isSignin: boolean
+}
 
 export default function SingsPage({ posts, isSignin }: TopPage) {
-  const karaokes: ReceivedKaraoke[] = useMemo(() => posts?.vtubers_movies_karaokes || dummyKaraokeArray, [posts]);
+  const karaokes: ReceivedKaraoke[] = useMemo(() => posts?.vtubers_movies_karaokes || dummyKaraokeArray, [posts])
   //船長　kORHSmXcYNc, 00:08:29
-  const { videoState } = useVideo({ youtubeId: "5WzeYsoGCZc", startTime: timeStringToSecondNum("00:22:04") });
+  const { videoState } = useVideo({ youtubeId: "5WzeYsoGCZc", startTime: timeStringToSecondNum("00:22:04") })
 
-  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke | undefined>(undefined);
+  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke | undefined>(undefined)
 
-  const [selectedVtuber, setSelectedVtuber] = useState<number>(0);
-  const [selectedMovie, setSelectedMovie] = useState<string>("");
-  const [filteredKaraokes, setFilteredKaraokes] = useState<ReceivedKaraoke[]>([]);
+  const [selectedVtuber, setSelectedVtuber] = useState<number>(0)
+  const [selectedMovie, setSelectedMovie] = useState<string>("")
+  const [filteredKaraokes, setFilteredKaraokes] = useState<ReceivedKaraoke[]>([])
   const clearMovieHandler = () => {
     // TODO: 実装
-  };
+  }
 
   // TODO: useEffectをやめてコールバックで操作する
   useEffect(() => {
-    const filteredKaraokes = FilterKaraokesByParentContent(karaokes, selectedVtuber, selectedMovie);
-    setFilteredKaraokes(filteredKaraokes);
-  }, [selectedVtuber, selectedMovie, karaokes]);
+    const filteredKaraokes = FilterKaraokesByParentContent(karaokes, selectedVtuber, selectedMovie)
+    setFilteredKaraokes(filteredKaraokes)
+  }, [selectedVtuber, selectedMovie, karaokes])
 
   return (
     <Layout pageName={pageName} isSignin={isSignin}>
@@ -88,45 +88,45 @@ export default function SingsPage({ posts, isSignin }: TopPage) {
         </div>
       </div>
     </Layout>
-  );
+  )
 }
 
 const FilterKaraokesByParentContent = (karaokes: ReceivedKaraoke[], selectedVtuber: number, selectedMovie: string) => {
   if (selectedVtuber == 0 && selectedMovie == "") {
-    return karaokes;
+    return karaokes
   } else if (selectedVtuber != 0 && selectedMovie == "") {
-    const choiceKaraoke = karaokes.filter((karaokes: ReceivedKaraoke) => karaokes.VtuberId === selectedVtuber);
-    return choiceKaraoke;
+    const choiceKaraoke = karaokes.filter((karaokes: ReceivedKaraoke) => karaokes.VtuberId === selectedVtuber)
+    return choiceKaraoke
   } else {
-    const choiceKaraoke = karaokes.filter((karaokes: ReceivedKaraoke) => karaokes.MovieUrl === selectedMovie);
-    return choiceKaraoke;
+    const choiceKaraoke = karaokes.filter((karaokes: ReceivedKaraoke) => karaokes.MovieUrl === selectedMovie)
+    return choiceKaraoke
   }
-};
+}
 
 export async function getServerSideProps(context: ContextType) {
-  const { sessionToken, isLoggedin } = checkLoggedin(context);
-  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin); // 会員、非会員、どのページかの記録のため
+  const { sessionToken, isLoggedin } = checkLoggedin(context)
+  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin) // 会員、非会員、どのページかの記録のため
 
-  const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+  const httpsAgent = new https.Agent({ rejectUnauthorized: false })
   const options: AxiosRequestConfig = {
     headers: {
       cookie: `auth-token=${sessionToken}`,
     },
     withCredentials: true,
     httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
-  };
+  }
 
-  let resData = null;
+  let resData = null
   try {
-    const res = await axios.get(`${domain.backendHost}/vcontents/`, options);
-    resData = res.data;
+    const res = await axios.get(`${domain.backendHost}/vcontents/`, options)
+    resData = res.data
   } catch (error) {
-    console.log("erroe in axios.get:", error);
+    console.log("erroe in axios.get:", error)
   }
   return {
     props: {
       posts: resData,
       isSignin: isLoggedin,
     },
-  };
+  }
 }

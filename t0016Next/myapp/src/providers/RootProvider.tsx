@@ -1,9 +1,9 @@
-import { VideoProvider } from "./VideoProvider";
-import { AuthProvider } from "./AuthProvider";
+import { VideoProvider } from "./VideoProvider"
+import { AuthProvider } from "./AuthProvider"
 
 interface RootProviderProps {
-  children: React.ReactNode;
-  isSignin: boolean;
+  children: React.ReactNode
+  isSignin: boolean
 }
 
 export const RootProvider = ({ children, isSignin }: RootProviderProps) => {
@@ -11,5 +11,5 @@ export const RootProvider = ({ children, isSignin }: RootProviderProps) => {
     <AuthProvider isSignin={isSignin}>
       <VideoProvider>{children}</VideoProvider>
     </AuthProvider>
-  );
-};
+  )
+}

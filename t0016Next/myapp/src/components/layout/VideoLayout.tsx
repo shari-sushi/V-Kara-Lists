@@ -1,9 +1,9 @@
-import { FOOTER_POSITION, useVideo } from "@/providers/VideoProvider";
-import { VKaraVideoPlayer } from "./VKaraVideoPlayer";
+import { FOOTER_POSITION, useVideo } from "@/providers/VideoProvider"
+import { VKaraVideoPlayer } from "./VKaraVideoPlayer"
 
 export const VideoLayout = () => {
-  const { videoState } = useVideo();
-  const isAbsolute = videoState.position === "in-content";
+  const { videoState } = useVideo()
+  const isAbsolute = videoState.position === "in-content"
 
   return (
     <div>
@@ -14,5 +14,5 @@ export const VideoLayout = () => {
       {/* TODO: 動画のコントローラーをここに配置 */}
       {/* <VideoController /> */}
     </div>
-  );
-};
+  )
+}

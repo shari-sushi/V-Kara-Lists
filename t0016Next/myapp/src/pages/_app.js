@@ -1,9 +1,9 @@
-import "../styles/global.css";
-import { RootProvider } from "@/providers/RootProvider";
-import { VideoLayout } from "@/components/layout/VideoLayout";
+import "../styles/global.css"
+import { RootProvider } from "@/providers/RootProvider"
+import { VideoLayout } from "@/components/layout/VideoLayout"
 
 export default function App({ Component, pageProps }) {
-  const isSignin = pageProps.isSignin || false;
+  const isSignin = pageProps.isSignin || false
 
   return (
     <RootProvider isSignin={isSignin}>
@@ -12,5 +12,5 @@ export default function App({ Component, pageProps }) {
         <VideoLayout />
       </div>
     </RootProvider>
-  );
+  )
 }

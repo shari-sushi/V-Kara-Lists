@@ -26,4 +26,4 @@ export const DropStyle = {
     ...provided,
     backgroundColor: "#eee",
   }),
-};
+}

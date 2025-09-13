@@ -1,38 +1,38 @@
-import React, { useState } from "react";
-import https from "https";
-import axios, { AxiosRequestConfig } from "axios";
-import Link from "next/link";
-import Image from "next/image";
+import React, { useState } from "react"
+import https from "https"
+import axios, { AxiosRequestConfig } from "axios"
+import Link from "next/link"
+import Image from "next/image"
 
-import { domain } from "@/../env";
-import { Layout } from "@/components/layout/Layout";
-import type { ReceivedKaraoke, ReceivedVtuber, ReceivedMovie } from "../../types/vtuber_content"; //type{}で型情報のみインポート
-import { VtuberTable } from "@/components/table/Vtuber";
-import { MovieTable } from "@/components/table/Movie";
-import { KaraokePaginationTable } from "@/components/table/Karaoke";
-import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer";
-import { extractVideoId } from "@/util";
-import { ContextType } from "@/types/server";
-import { NotLoggedIn } from "@/components/layout/Main";
-import { ToClickTW } from "@/styles/tailwiind";
-import { checkLoggedin } from "@/util/webStrage/cookie";
-import { useVideo } from "@/providers/VideoProvider";
+import { domain } from "@/../env"
+import { Layout } from "@/components/layout/Layout"
+import type { ReceivedKaraoke, ReceivedVtuber, ReceivedMovie } from "../../types/vtuber_content" //type{}で型情報のみインポート
+import { VtuberTable } from "@/components/table/Vtuber"
+import { MovieTable } from "@/components/table/Movie"
+import { KaraokePaginationTable } from "@/components/table/Karaoke"
+import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
+import { extractVideoId } from "@/util"
+import { ContextType } from "@/types/server"
+import { NotLoggedIn } from "@/components/layout/Main"
+import { ToClickTW } from "@/styles/tailwiind"
+import { checkLoggedin } from "@/util/webStrage/cookie"
+import { useVideo } from "@/providers/VideoProvider"
 
-const pageName = "MyPage";
+const pageName = "MyPage"
 
 type Mypage = {
   data: {
-    vtubers_movies_karaokes_u_created: ReceivedKaraoke[];
-    vtubers_movies_u_created: ReceivedMovie[];
-    vtubers_u_created: ReceivedVtuber[];
-  };
-  isSignin: boolean;
-};
+    vtubers_movies_karaokes_u_created: ReceivedKaraoke[]
+    vtubers_movies_u_created: ReceivedMovie[]
+    vtubers_u_created: ReceivedVtuber[]
+  }
+  isSignin: boolean
+}
 
 const MyPage = ({ data, isSignin }: Mypage) => {
   //こむぎ ワールドイズマイン
-  const { videoState, updateVideo } = useVideo({ youtubeId: "Bjsn-QpwmvU", startTime: 8091 });
-  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke);
+  const { videoState, updateVideo } = useVideo({ youtubeId: "Bjsn-QpwmvU", startTime: 8091 })
+  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
 
   if (!isSignin) {
     return (
@@ -41,20 +41,20 @@ const MyPage = ({ data, isSignin }: Mypage) => {
           <NotLoggedIn />
         </div>
       </Layout>
-    );
+    )
   }
 
-  const vtubers = data?.vtubers_u_created || ([] as ReceivedVtuber[]);
-  const movies = data?.vtubers_movies_u_created || ([] as ReceivedMovie[]);
-  const karaokes = data?.vtubers_movies_karaokes_u_created || ([] as ReceivedKaraoke[]);
+  const vtubers = data?.vtubers_u_created || ([] as ReceivedVtuber[])
+  const movies = data?.vtubers_movies_u_created || ([] as ReceivedMovie[])
+  const karaokes = data?.vtubers_movies_karaokes_u_created || ([] as ReceivedKaraoke[])
 
   const handleMovieClickYouTubeDemoMovie = () => {
-    const demoUrl = "HunsO-8Eo7Q";
-    const startTimeCreateOfDemo = 130;
-    updateVideo(extractVideoId(demoUrl), startTimeCreateOfDemo);
-  };
+    const demoUrl = "HunsO-8Eo7Q"
+    const startTimeCreateOfDemo = 130
+    updateVideo(extractVideoId(demoUrl), startTimeCreateOfDemo)
+  }
 
-  const isVideoInContent = videoState.position === "in-content";
+  const isVideoInContent = videoState.position === "in-content"
 
   return (
     <Layout pageName={pageName} isSignin={isSignin}>
@@ -144,41 +144,41 @@ const MyPage = ({ data, isSignin }: Mypage) => {
         </div>
       </div>
     </Layout>
-  );
-};
+  )
+}
 
-export default MyPage;
+export default MyPage
 
 export async function getServerSideProps(context: ContextType) {
-  const { sessionToken, isLoggedin } = checkLoggedin(context);
-  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin); // 会員、非会員、どのページかの記録のため
+  const { sessionToken, isLoggedin } = checkLoggedin(context)
+  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin) // 会員、非会員、どのページかの記録のため
 
-  const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+  const httpsAgent = new https.Agent({ rejectUnauthorized: false })
   const options: AxiosRequestConfig = {
     headers: {
       cookie: `auth-token=${sessionToken}`,
     },
     withCredentials: true,
     httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
-  };
+  }
 
   try {
-    const res = await axios.get(`${domain.backendHost}/users/mypage`, options);
-    const resData = res.data;
+    const res = await axios.get(`${domain.backendHost}/users/mypage`, options)
+    const resData = res.data
 
     return {
       props: {
         data: resData,
         isSignin: isLoggedin,
       },
-    };
+    }
   } catch (error) {
-    console.log("erroe in axios.get:", error);
+    console.log("erroe in axios.get:", error)
   }
   return {
     props: {
       data: null,
       isSignin: isLoggedin,
     },
-  };
+  }
 }

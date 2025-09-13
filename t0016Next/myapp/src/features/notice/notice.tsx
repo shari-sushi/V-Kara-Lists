@@ -1,11 +1,11 @@
-import { ToggleVideoPositionButton } from "@/components/button/ToggleVideoPositionButton";
-import Link from "next/link";
-import { useState } from "react";
+import { ToggleVideoPositionButton } from "@/components/button/ToggleVideoPositionButton"
+import Link from "next/link"
+import { useState } from "react"
 
 export const TopPageNotice = () => {
-  const [isDisplay, setIsDisplay] = useState(false);
+  const [isDisplay, setIsDisplay] = useState(false)
 
-  const [isHoverButton, setIsHoverButton] = useState(false);
+  const [isHoverButton, setIsHoverButton] = useState(false)
 
   return (
     <div className="flex flex-col items-center max-w-[1000px] m-auto mb-2">
@@ -39,7 +39,7 @@ export const TopPageNotice = () => {
             <div
               className={`flex justify-center items-center w-[40%] h-10 rounded-md p-1 bg-[#776D5C] text-white font-semibold shadow-sm shadow-black hover:shadow-inner hover:shadow-[#FFF6E4]`}
               onClick={() => {
-                setIsDisplay(false);
+                setIsDisplay(false)
               }}
             >
               閉じる
@@ -48,22 +48,22 @@ export const TopPageNotice = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
 const NoticeLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
   return (
     <Link href={href} className="font-bold hover:opacity-50 hover:underline">
       {children}
     </Link>
-  );
-};
+  )
+}
 
 type NoticeItem = {
-  data: string;
-  title?: React.ReactNode;
-  content?: React.ReactNode;
-};
+  data: string
+  title?: React.ReactNode
+  content?: React.ReactNode
+}
 
 const NoticeItems: NoticeItem[] = [
   {
@@ -174,4 +174,4 @@ const NoticeItems: NoticeItem[] = [
       </>
     ),
   },
-];
+]

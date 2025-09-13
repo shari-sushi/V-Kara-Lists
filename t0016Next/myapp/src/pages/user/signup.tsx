@@ -1,9 +1,9 @@
-import React from "react";
+import React from "react"
 
-import { Layout } from "@/components/layout/Layout";
-import { SignupForm } from "@/components/form/User";
+import { Layout } from "@/components/layout/Layout"
+import { SignupForm } from "@/components/form/User"
 
-const pageName = "Sign up";
+const pageName = "Sign up"
 
 export function Signup() {
   return (
@@ -14,7 +14,7 @@ export function Signup() {
         </div>
       </div>
     </Layout>
-  );
+  )
 }
 
-export default Signup;
+export default Signup

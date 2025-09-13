@@ -1,28 +1,28 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable, SortingState, getSortedRowModel, getFilteredRowModel } from "@tanstack/react-table";
-import { ReceivedKaraoke } from "@/types/vtuber_content";
-import { KaraokeBasicColumns, KaraokeTableAFilterInput, KaraokeTableFilterInput, KaraokeTablePagenationButtons, SeletctPostContext, YouTubePlayerContext } from "../Commons";
-import { TableCss } from "@/styles/tailwiind";
-import type { KaraokeTableReturnPostProps } from "../types";
-import Image from "next/image";
+import React, { useState, useEffect, useMemo } from "react"
+import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable, SortingState, getSortedRowModel, getFilteredRowModel } from "@tanstack/react-table"
+import { ReceivedKaraoke } from "@/types/vtuber_content"
+import { KaraokeBasicColumns, KaraokeTableAFilterInput, KaraokeTableFilterInput, KaraokeTablePagenationButtons, SeletctPostContext, YouTubePlayerContext } from "../Commons"
+import { TableCss } from "@/styles/tailwiind"
+import type { KaraokeTableReturnPostProps } from "../types"
+import Image from "next/image"
 
 export default function KaraokeFilterTableWithoutVTuberName({ posts: karaokes, setSelectedPost }: KaraokeTableReturnPostProps) {
-  const maxPageSize = 99999;
-  const [data, setData] = useState<ReceivedKaraoke[]>(karaokes);
+  const maxPageSize = 99999
+  const [data, setData] = useState<ReceivedKaraoke[]>(karaokes)
 
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = React.useState<SortingState>([])
 
-  const initialPageIndex = 0;
-  const initialPageSize = 25;
+  const initialPageIndex = 0
+  const initialPageSize = 25
 
   useEffect(() => {
     const fetchData = async () => {
-      setData(await karaokes);
-    };
-    fetchData();
-  }, [karaokes]);
+      setData(await karaokes)
+    }
+    fetchData()
+  }, [karaokes])
 
-  const columns = useMemo(() => KaraokeBasicColumns, []);
+  const columns = useMemo(() => KaraokeBasicColumns, [])
 
   const table = useReactTable({
     columns,
@@ -40,7 +40,7 @@ export default function KaraokeFilterTableWithoutVTuberName({ posts: karaokes, s
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
     isMultiSortEvent: () => false,
-  });
+  })
   return (
     <SeletctPostContext.Provider value={{ setSelectedPost }}>
       <div id="tab" className="bg-red">
@@ -62,8 +62,8 @@ export default function KaraokeFilterTableWithoutVTuberName({ posts: karaokes, s
                               ? header.column.getNextSortingOrder() === "asc"
                                 ? "Sort ascending"
                                 : header.column.getNextSortingOrder() === "desc"
-                                ? "Sort descending"
-                                : "Clear sort"
+                                  ? "Sort descending"
+                                  : "Clear sort"
                               : undefined
                           }
                         >
@@ -90,10 +90,10 @@ export default function KaraokeFilterTableWithoutVTuberName({ posts: karaokes, s
                         <td key={cell.id} className="px-2 border-gray-400">
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
-                      );
+                      )
                     })}
                   </tr>
-                );
+                )
               })}
             </tbody>
           </table>
@@ -101,5 +101,5 @@ export default function KaraokeFilterTableWithoutVTuberName({ posts: karaokes, s
         </main>
       </div>
     </SeletctPostContext.Provider>
-  );
+  )
 }

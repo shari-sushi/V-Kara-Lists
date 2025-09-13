@@ -1,11 +1,11 @@
-import { useVideo } from "@/providers/VideoProvider";
+import { useVideo } from "@/providers/VideoProvider"
 
 export const ToggleVideoPositionButton = ({ isDisplayText, textSize }: { isDisplayText?: boolean; textSize?: string }) => {
-  const { videoState, togglePosition } = useVideo();
+  const { videoState, togglePosition } = useVideo()
 
   // NOTE: デザイン模索中
   // 本物のトグルならこっち
-  const text = "動画を固定";
+  const text = "動画を固定"
   return (
     <div className="flex h-full items-center">
       {isDisplayText !== false && <span className={`${textSize ?? "text-xs"}`}>{text}</span>}
@@ -17,7 +17,7 @@ export const ToggleVideoPositionButton = ({ isDisplayText, textSize }: { isDispl
         ></span>
       </label>
     </div>
-  );
+  )
 
   // 色が変わるだけのボタンはこっち
   // const videoPosition = videoState.position === "footer" ? "再生場所：下" : "再生場所：中";
@@ -29,4 +29,4 @@ export const ToggleVideoPositionButton = ({ isDisplayText, textSize }: { isDispl
   //     <span className="text-xs">{videoPosition}</span>
   //   </div>
   // );
-};
+}

@@ -1,13 +1,13 @@
-import React from "react";
-import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable, SortingState, getSortedRowModel, getFilteredRowModel } from "@tanstack/react-table";
-import { TableCss } from "@/styles/tailwiind";
-import { KaraokeGlobalFilterColumns, KaraokeTableAFilterInput, KaraokeTableFilterInput, KaraokeTablePagenationButtons, SeletctPostContext, YouTubePlayerContext } from "../Commons";
-import { KaraokeTableReturnPostProps } from "../types";
-import Image from "next/image";
+import React from "react"
+import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable, SortingState, getSortedRowModel, getFilteredRowModel } from "@tanstack/react-table"
+import { TableCss } from "@/styles/tailwiind"
+import { KaraokeGlobalFilterColumns, KaraokeTableAFilterInput, KaraokeTableFilterInput, KaraokeTablePagenationButtons, SeletctPostContext, YouTubePlayerContext } from "../Commons"
+import { KaraokeTableReturnPostProps } from "../types"
+import Image from "next/image"
 
 export default function KaraokeGlobalFilterTable({ posts: karaokes, setSelectedPost }: KaraokeTableReturnPostProps) {
-  const maxPageSize = 99999;
-  const [sortState, setSortState] = React.useState<SortingState>([]);
+  const maxPageSize = 99999
+  const [sortState, setSortState] = React.useState<SortingState>([])
 
   const table = useReactTable({
     columns: KaraokeGlobalFilterColumns,
@@ -25,7 +25,7 @@ export default function KaraokeGlobalFilterTable({ posts: karaokes, setSelectedP
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSortState,
     isMultiSortEvent: () => false,
-  });
+  })
   return (
     <SeletctPostContext.Provider value={{ setSelectedPost }}>
       <div id="tab" className="bg-red">
@@ -47,8 +47,8 @@ export default function KaraokeGlobalFilterTable({ posts: karaokes, setSelectedP
                               ? header.column.getNextSortingOrder() === "asc"
                                 ? "Sort ascending"
                                 : header.column.getNextSortingOrder() === "desc"
-                                ? "Sort descending"
-                                : "Clear sort"
+                                  ? "Sort descending"
+                                  : "Clear sort"
                               : undefined
                           }
                         >
@@ -75,10 +75,10 @@ export default function KaraokeGlobalFilterTable({ posts: karaokes, setSelectedP
                         <td key={cell.id} className="px-2 border-gray-400">
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </td>
-                      );
+                      )
                     })}
                   </tr>
-                );
+                )
               })}
             </tbody>
           </table>
@@ -86,5 +86,5 @@ export default function KaraokeGlobalFilterTable({ posts: karaokes, setSelectedP
         </main>
       </div>
     </SeletctPostContext.Provider>
-  );
+  )
 }

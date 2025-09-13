@@ -1,34 +1,34 @@
-import Link from "next/link";
-import https from "https";
-import axios, { AxiosRequestConfig } from "axios";
-import { domain } from "@/../env";
-import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from "@/types/vtuber_content";
-import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer";
-import { Layout } from "@/components/layout/Layout";
-import { VtuberTable } from "@/components/table/Vtuber";
-import { MovieTable } from "@/components/table/Movie";
-import { KaraokeThinTable, KaraokeMinRandomTable } from "@/components/table/Karaoke";
-import { ToClickTW } from "@/styles/tailwiind";
-import { ContextType } from "@/types/server";
-import Image from "next/image";
-import { TopPageNotice } from "@/features/notice/notice";
-import { checkLoggedin } from "@/util/webStrage/cookie";
-import { timeStringToSecondNum, extractVideoId } from "@/util";
-import { generateRandomNumber } from "@/components/SomeFunction";
-import { useVideo } from "@/providers/VideoProvider";
+import Link from "next/link"
+import https from "https"
+import axios, { AxiosRequestConfig } from "axios"
+import { domain } from "@/../env"
+import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from "@/types/vtuber_content"
+import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
+import { Layout } from "@/components/layout/Layout"
+import { VtuberTable } from "@/components/table/Vtuber"
+import { MovieTable } from "@/components/table/Movie"
+import { KaraokeThinTable, KaraokeMinRandomTable } from "@/components/table/Karaoke"
+import { ToClickTW } from "@/styles/tailwiind"
+import { ContextType } from "@/types/server"
+import Image from "next/image"
+import { TopPageNotice } from "@/features/notice/notice"
+import { checkLoggedin } from "@/util/webStrage/cookie"
+import { timeStringToSecondNum, extractVideoId } from "@/util"
+import { generateRandomNumber } from "@/components/SomeFunction"
+import { useVideo } from "@/providers/VideoProvider"
 
-const pageName = "Top";
+const pageName = "Top"
 
 // NOTE: SSRだからか、res失敗でundefinedになる様子
 type TopPageProps = {
   posts: {
-    vtubers: ReceivedVtuber[];
-    vtubers_movies: ReceivedMovie[];
-    vtubers_movies_karaokes: ReceivedKaraoke[];
-    latest_karaokes: ReceivedKaraoke[];
-  };
-  isSignin: boolean;
-};
+    vtubers: ReceivedVtuber[]
+    vtubers_movies: ReceivedMovie[]
+    vtubers_movies_karaokes: ReceivedKaraoke[]
+    latest_karaokes: ReceivedKaraoke[]
+  }
+  isSignin: boolean
+}
 
 const TopPage = ({ posts, isSignin }: TopPageProps) => {
   return (
@@ -39,17 +39,17 @@ const TopPage = ({ posts, isSignin }: TopPageProps) => {
         <MainItem posts={posts} isSignin={isSignin} />
       </div>
     </Layout>
-  );
-};
+  )
+}
 
 const MainItem = ({ posts }: TopPageProps) => {
-  const playKaraokeNumber = generateRandomNumber(posts.latest_karaokes.length - 1);
+  const playKaraokeNumber = generateRandomNumber(posts.latest_karaokes.length - 1)
 
   const { videoState } = useVideo({
     youtubeId: extractVideoId(posts.latest_karaokes[playKaraokeNumber].MovieUrl),
     startTime: timeStringToSecondNum(posts.latest_karaokes[playKaraokeNumber].SingStart),
     isPlaying: true,
-  });
+  })
 
   // const handleMovieClickYouTube = (url: string, start: number) => {
   //   updateVideo(extractVideoId(url), start);
@@ -130,9 +130,9 @@ const MainItem = ({ posts }: TopPageProps) => {
         </div>
       </div>
     </div>
-  );
-};
-export default TopPage;
+  )
+}
+export default TopPage
 
 const TitleGroup = () => {
   return (
@@ -143,8 +143,8 @@ const TitleGroup = () => {
         <h2 className="flex justify-center text-xs ms:text-sm md:text-base ">「ささっと把握」、「さくっと再生」、「ばばっと布教」</h2>
       </hgroup>
     </div>
-  );
-};
+  )
+}
 
 const FailedMessage = () => {
   return (
@@ -158,35 +158,35 @@ const FailedMessage = () => {
         <span>にDMいただけますと幸いです。</span>
       </div>
     </div>
-  );
-};
+  )
+}
 
 export async function getServerSideProps(context: ContextType) {
-  const { sessionToken, isLoggedin } = checkLoggedin(context);
-  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin); // 会員、非会員、どのページかの記録のため
+  const { sessionToken, isLoggedin } = checkLoggedin(context)
+  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin) // 会員、非会員、どのページかの記録のため
 
-  const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+  const httpsAgent = new https.Agent({ rejectUnauthorized: false })
   const options: AxiosRequestConfig = {
     headers: {
       cookie: `auth-token=${sessionToken}`,
     },
     withCredentials: true,
     httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
-  };
+  }
 
   // TODO: 型付け
-  let resData: TopPageProps | null = null;
+  let resData: TopPageProps | null = null
 
   try {
-    const res = await axios.get(`${domain.backendHost}/vcontents/`, options);
-    resData = res.data;
+    const res = await axios.get(`${domain.backendHost}/vcontents/`, options)
+    resData = res.data
   } catch (error) {
-    console.log("erroe in axios.get:", error);
+    console.log("erroe in axios.get:", error)
   }
   return {
     props: {
       posts: resData,
       isSignin: isLoggedin,
     },
-  };
+  }
 }

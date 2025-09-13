@@ -1,101 +1,101 @@
-import React, { useRef, useState } from "react";
-import { TestLink } from "../multi";
-import Image from "next/image";
+import React, { useRef, useState } from "react"
+import { TestLink } from "../multi"
+import Image from "next/image"
 
 // 参考：https://zenn.dev/yuyan/articles/f35da08770a135
 
-const SUPPORTED_MIME_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/gif"];
-const MAX_ATTACHMENT_BYTE_SIZE = 5 * 1024 * 1024; // 5MB
-const MAX_ATTACHMENT_COUNT = 4;
+const SUPPORTED_MIME_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/gif"]
+const MAX_ATTACHMENT_BYTE_SIZE = 5 * 1024 * 1024 // 5MB
+const MAX_ATTACHMENT_COUNT = 4
 
 export interface PrePostImage {
-  previewID: string;
-  url: string;
-  isLoading: boolean;
+  previewID: string
+  url: string
+  isLoading: boolean
 }
 
 export const ImageComponent = () => {
-  const [imagePreviews, setImagePreviews] = useState<PrePostImage[]>([]);
-  const inputFileRef = useRef<HTMLInputElement>(null);
+  const [imagePreviews, setImagePreviews] = useState<PrePostImage[]>([])
+  const inputFileRef = useRef<HTMLInputElement>(null)
 
   const handleFileLoad = (files: File[]) => {
     if (files.length === 0) {
-      return;
+      return
     }
 
     if (imagePreviews.length + files.length > MAX_ATTACHMENT_COUNT) {
-      return;
+      return
     }
-    const items = Array.from(files);
+    const items = Array.from(files)
 
-    let totalFilesSize = 0;
+    let totalFilesSize = 0
     items.forEach((file) => {
-      totalFilesSize += file.size;
+      totalFilesSize += file.size
       if (totalFilesSize > MAX_ATTACHMENT_BYTE_SIZE) {
-        return;
+        return
       }
 
-      const previewID = Math.random().toString(36).slice(-8);
-      setImagePreviews((images) => [...images, { previewID, url: "", isLoading: true }]);
+      const previewID = Math.random().toString(36).slice(-8)
+      setImagePreviews((images) => [...images, { previewID, url: "", isLoading: true }])
 
-      const reader = new FileReader();
+      const reader = new FileReader()
       reader.onload = () => {
-        const result = reader.result;
+        const result = reader.result
         if (typeof result !== "string") {
-          return;
+          return
         }
 
-        setImagePreviews((prevImages) => prevImages.map((image) => (image.previewID === previewID ? { ...image, url: result, isLoading: false } : image)));
-      };
+        setImagePreviews((prevImages) => prevImages.map((image) => (image.previewID === previewID ? { ...image, url: result, isLoading: false } : image)))
+      }
 
-      reader.onerror = () => {};
+      reader.onerror = () => {}
 
-      reader.readAsDataURL(file as Blob);
-    });
+      reader.readAsDataURL(file as Blob)
+    })
 
     // NOTE: 同じファイルを重複選択できるようにしてる
     if (inputFileRef.current) {
-      inputFileRef.current.value = "";
+      inputFileRef.current.value = ""
     }
-  };
+  }
 
   const handleInputFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files == null) return;
-    handleFileLoad(Array.from(files));
-  };
+    const files = e.target.files
+    if (files == null) return
+    handleFileLoad(Array.from(files))
+  }
 
   const handlePasteFile = (pasteEvent: React.ClipboardEvent<HTMLDivElement>) => {
     handleFileLoad(
       Array.from(pasteEvent.clipboardData.items).reduce((files, item) => {
-        if (item.kind !== "file") return files;
-        const file = item.getAsFile();
+        if (item.kind !== "file") return files
+        const file = item.getAsFile()
 
-        if (file == null) return files;
+        if (file == null) return files
 
         if (!SUPPORTED_MIME_TYPES.includes(file.type)) {
-          return files;
+          return files
         }
 
-        files.push(file);
+        files.push(file)
 
-        return files;
+        return files
       }, [] as File[])
-    );
-  };
+    )
+  }
 
   const deleteImage = (uid: string) => {
-    setImagePreviews((images) => images.filter((image) => image.previewID !== uid));
-  };
+    setImagePreviews((images) => images.filter((image) => image.previewID !== uid))
+  }
 
   const submit = () => {
     if (imagePreviews.some((image) => image.isLoading)) {
-      return;
+      return
     }
 
     // createPost({ text, images: imagePreviews });
-  };
-  console.log(SUPPORTED_MIME_TYPES.join(","));
+  }
+  console.log(SUPPORTED_MIME_TYPES.join(","))
   return (
     <div className="p-2 rounded space-y-2 ">
       <div className="pb-4">
@@ -147,31 +147,31 @@ export const ImageComponent = () => {
         </div>
       </div>
     </div>
-  );
-};
-export default ImageComponent;
+  )
+}
+export default ImageComponent
 
 interface PrePostFilesProps {
-  className?: string;
-  hiddenButton?: boolean;
-  images: PrePostImage[];
-  setImages: React.Dispatch<React.SetStateAction<PrePostImage[]>>;
+  className?: string
+  hiddenButton?: boolean
+  images: PrePostImage[]
+  setImages: React.Dispatch<React.SetStateAction<PrePostImage[]>>
 }
 
 export interface PrePostImage {
-  previewID: string;
-  url: string;
-  isLoading: boolean;
+  previewID: string
+  url: string
+  isLoading: boolean
 }
 
 export const PrePostFiles = ({ className, hiddenButton, images, setImages }: PrePostFilesProps) => {
   if (images.length === 0) {
-    return null;
+    return null
   }
 
   const deleteImage = (uid: string) => {
-    setImages((images) => images.filter((image) => image.previewID !== uid));
-  };
+    setImages((images) => images.filter((image) => image.previewID !== uid))
+  }
 
   return (
     <div className={`relative rounded-md w-full select-none ${className}`}>
@@ -206,21 +206,21 @@ export const PrePostFiles = ({ className, hiddenButton, images, setImages }: Pre
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
 export interface DeleteButtonProps {
-  onClick: () => void;
-  height?: number;
-  width?: number;
-  roundedClass?: string;
+  onClick: () => void
+  height?: number
+  width?: number
+  roundedClass?: string
 }
 
 export const DeleteButton = ({ onClick, height = 24, width = 24, roundedClass }: DeleteButtonProps) => {
   const handleClick = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    onClick();
-  };
+    event.stopPropagation()
+    onClick()
+  }
 
   return (
     <div className={`${roundedClass}  h-fit w-fit justify-start items-center cursor-pointer bg-on-secondary-container hover:bg-on-surface`} onClick={handleClick}>
@@ -228,8 +228,8 @@ export const DeleteButton = ({ onClick, height = 24, width = 24, roundedClass }:
         <path d="m376-300 104-104 104 104 56-56-104-104 104-104-56-56-104 104-104-104-56 56 104 104-104 104 56 56Zm-96 180q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520Zm-400 0v520-520Z" />
       </svg>
     </div>
-  );
-};
+  )
+}
 
 // plus photo
 {

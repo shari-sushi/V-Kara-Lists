@@ -1,18 +1,18 @@
-import { Layout } from "@/components/layout/Layout";
-import { TestLink } from "../multi";
-import { useState } from "react";
+import { Layout } from "@/components/layout/Layout"
+import { TestLink } from "../multi"
+import { useState } from "react"
 
 // for template
-const pageName = "test/upload";
-const pageNum = 0;
+const pageName = "test/upload"
+const pageNum = 0
 
-const errorMessagesName = "aと入力してください";
+const errorMessagesName = "aと入力してください"
 export const App = () => {
-  const [name, setName] = useState("初期値");
+  const [name, setName] = useState("初期値")
   const { handleInput: handleInputName, isValid: isValidName } = useValidate({
     onInput: setName,
     regularExpression: /a/,
-  });
+  })
 
   return (
     <Layout pageName={pageName} isSignin={false}>
@@ -30,36 +30,34 @@ export const App = () => {
       <div>現在のname: {name}</div>
       <div>
         エラーメッセージ：
-        {isValidName && (
-          <span className="text-xs text-red-200">{errorMessagesName}</span>
-        )}
+        {isValidName && <span className="text-xs text-red-200">{errorMessagesName}</span>}
       </div>
     </Layout>
-  );
-};
+  )
+}
 
-export default App;
+export default App
 
 type useValidateType = {
-  onInput: (value: string) => void;
+  onInput: (value: string) => void
   // errorMessages: string[];
-  regularExpression: RegExp;
-};
+  regularExpression: RegExp
+}
 
 const useValidate = ({ onInput, regularExpression }: useValidateType) => {
-  const [errorMess, setErrorMessages] = useState<string[]>([]);
-  const [isValid, setIsValid] = useState<boolean>(false);
+  const [errorMess, setErrorMessages] = useState<string[]>([])
+  const [isValid, setIsValid] = useState<boolean>(false)
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onInput(e.target.value);
+    onInput(e.target.value)
     if (!regularExpression.test(e.target.value)) {
-      setErrorMessages([]);
-      setIsValid(true);
+      setErrorMessages([])
+      setIsValid(true)
     } else {
-      setErrorMessages(errorMess);
-      setIsValid(false);
+      setErrorMessages(errorMess)
+      setIsValid(false)
     }
-  };
+  }
 
-  return { isValid, handleInput };
-};
+  return { isValid, handleInput }
+}

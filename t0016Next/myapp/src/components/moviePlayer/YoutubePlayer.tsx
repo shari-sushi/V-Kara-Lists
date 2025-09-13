@@ -1,29 +1,29 @@
-import { useCalcVideoPlayerSize, VideoPlayerSizeLevel } from "@/hooks/useCalcVideoPlayerSize";
-import YouTube from "react-youtube";
-import { YoutubePlayer } from "./ReactPlayer";
+import { useCalcVideoPlayerSize, VideoPlayerSizeLevel } from "@/hooks/useCalcVideoPlayerSize"
+import YouTube from "react-youtube"
+import { YoutubePlayer } from "./ReactPlayer"
 
 interface YoutubePlayerProps {
-  videoId: string;
-  start: number;
-  sizeLevel?: VideoPlayerSizeLevel;
+  videoId: string
+  start: number
+  sizeLevel?: VideoPlayerSizeLevel
 }
 
 export const YouTubePlayer = ({ videoId, start, sizeLevel = 1 }: YoutubePlayerProps) => {
-  const { height, width, hasWindow } = useCalcVideoPlayerSize(sizeLevel);
+  const { height, width, hasWindow } = useCalcVideoPlayerSize(sizeLevel)
   if (!hasWindow) {
-    return <div style={{ height, width }} />;
+    return <div style={{ height, width }} />
   }
 
-  return <YoutubePlayer videoId={videoId} start={start} style={{ height, width }} />;
-};
+  return <YoutubePlayer videoId={videoId} start={start} style={{ height, width }} />
+}
 
 type PreYoutubePlayerProps = {
-  videoId: string;
-  start?: number;
-  opts?: YouTube;
-  onReady?: (event: { target: YT.Player }) => void;
-  windowSize: { width: number; height: number };
-};
+  videoId: string
+  start?: number
+  opts?: YouTube
+  onReady?: (event: { target: YT.Player }) => void
+  windowSize: { width: number; height: number }
+}
 
 // 単一再生
 const PreYouTubePlayer: React.FC<PreYoutubePlayerProps> = ({
@@ -51,8 +51,8 @@ const PreYouTubePlayer: React.FC<PreYoutubePlayerProps> = ({
       opts={opts}
       //  onReady={onReady}
     />
-  );
-};
+  )
+}
 
 // ///////////////////////////////////
 // // // コードではどうにもならないバグが再発生したときにすぐ戻せるように保存
