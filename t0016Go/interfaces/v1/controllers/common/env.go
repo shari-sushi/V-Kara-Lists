@@ -12,9 +12,9 @@ var goEnv = os.Getenv("GO_ENV")                      //ローカルpc上での�
 var isDockerCompose = os.Getenv("IS_DOCKER_COMPOSE") //docckercompos.ymlにのみ =true と記載
 
 var IsOnCloud = (goEnv == "" && isDockerCompose == "")
-var IsOnLoclaWithDockerCompose = (goEnv == "" && isDockerCompose == "true")
-var IsOnLoclaWithOutDockerCompose = (goEnv == "development" && isDockerCompose == "")
-var IsOnLocal = (IsOnLoclaWithDockerCompose || IsOnLoclaWithOutDockerCompose)
+var IsOnLocalWithDockerCompose = (goEnv == "" && isDockerCompose == "true")
+var IsOnLocalWithOutDockerCompose = (goEnv == "development" && isDockerCompose == "")
+var IsOnLocal = (IsOnLocalWithDockerCompose || IsOnLocalWithOutDockerCompose)
 
 func GetEnvHostDomain() string {
 	if IsOnCloud {
