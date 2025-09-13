@@ -1,64 +1,64 @@
-import { useEffect, useState, useMemo } from "react";
-import Link from "next/link";
-import https from "https";
-import axios, { AxiosRequestConfig } from "axios";
+import { useEffect, useState, useMemo } from "react"
+import Link from "next/link"
+import https from "https"
+import axios, { AxiosRequestConfig } from "axios"
 
-import { domain } from "@/../env";
-import type { ReceivedMovie, ReceivedKaraoke } from "@/types/vtuber_content";
-import type { ContextType } from "@/types/server";
-import { EditPageProps, EditForm } from "@/components/form/EditContentForm";
-import { Layout } from "@/components/layout/Layout";
-import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer";
-import { timeStringToSecondNum, extractVideoId } from "@/util";
-import { GestLogin } from "@/components/button/User";
-import { NotLoggedIn } from "@/components/layout/Main";
-import { checkLoggedin } from "@/util/webStrage/cookie";
-import { useVideo } from "@/providers/VideoProvider";
+import { domain } from "@/../env"
+import type { ReceivedMovie, ReceivedKaraoke } from "@/types/vtuber_content"
+import type { ContextType } from "@/types/server"
+import { EditPageProps, EditForm } from "@/components/form/EditContentForm"
+import { Layout } from "@/components/layout/Layout"
+import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
+import { timeStringToSecondNum, extractVideoId } from "@/util"
+import { GestLogin } from "@/components/button/User"
+import { NotLoggedIn } from "@/components/layout/Main"
+import { checkLoggedin } from "@/util/webStrage/cookie"
+import { useVideo } from "@/providers/VideoProvider"
 
-const pageName = "コンテンツ編集";
+const pageName = "コンテンツ編集"
 
 export const EditPage = ({ posts, isSignin }: EditPageProps) => {
-  const [selectedVtuber, setSelectedVtuber] = useState<number>(0);
-  const [selectedMovie, setSelectedMovie] = useState<string>("");
-  const [selectedKaraoke, setSelectedKaraoke] = useState<number>(0);
-  const [currentVideoId, setCurrentVideoId] = useState<string>("AAsRtnbDs-0");
-  const [currentStart, setCurrentStart] = useState<number>(27);
+  const [selectedVtuber, setSelectedVtuber] = useState<number>(0)
+  const [selectedMovie, setSelectedMovie] = useState<string>("")
+  const [selectedKaraoke, setSelectedKaraoke] = useState<number>(0)
+  const [currentVideoId, setCurrentVideoId] = useState<string>("AAsRtnbDs-0")
+  const [currentStart, setCurrentStart] = useState<number>(27)
 
-  const movies = useMemo(() => posts?.vtubers_movies_karaokes || [{} as ReceivedMovie], [posts]);
-  const karaokes = useMemo(() => posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke], [posts]);
+  const movies = useMemo(() => posts?.vtubers_movies_karaokes || [{} as ReceivedMovie], [posts])
+  const karaokes = useMemo(() => posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke], [posts])
 
   useEffect(() => {
-    const foundMovie = movies.find((movies) => movies.MovieUrl === selectedMovie);
+    const foundMovie = movies.find((movies) => movies.MovieUrl === selectedMovie)
     if (foundMovie) {
-      const foundYoutubeId = extractVideoId(foundMovie.MovieUrl);
-      setCurrentVideoId(foundYoutubeId);
-      setCurrentStart(1);
+      const foundYoutubeId = extractVideoId(foundMovie.MovieUrl)
+      setCurrentVideoId(foundYoutubeId)
+      setCurrentStart(1)
     }
-  }, [selectedMovie, setCurrentVideoId, setCurrentStart, movies]);
+  }, [selectedMovie, setCurrentVideoId, setCurrentStart, movies])
 
   const clearMovieHandler = () => {
     //中身空でもKaraokeのoptinosを空にしてくれるんだが…
     // setSelectedKaraoke(0);
-  };
+  }
 
-  const { videoState, changePosition } = useVideo();
+  const { videoState, changePosition } = useVideo()
   // TODO: ちゃんとした制御機構を用意する
   useEffect(() => {
     if (videoState.position !== "in-content") {
-      changePosition("in-content");
+      changePosition("in-content")
     }
-  }, [videoState.position, changePosition]);
+  }, [videoState.position, changePosition])
 
   useEffect(() => {
     if (selectedVtuber && selectedMovie && selectedKaraoke) {
-      const foundMovies = karaokes.filter((karaoke) => karaoke.MovieUrl === selectedMovie);
-      const foundKaraoke = foundMovies.find((foundMovie) => foundMovie.KaraokeId === selectedKaraoke);
+      const foundMovies = karaokes.filter((karaoke) => karaoke.MovieUrl === selectedMovie)
+      const foundKaraoke = foundMovies.find((foundMovie) => foundMovie.KaraokeId === selectedKaraoke)
       if (foundKaraoke) {
-        const foundSingStart = timeStringToSecondNum(foundKaraoke.SingStart);
-        setCurrentStart(foundSingStart);
+        const foundSingStart = timeStringToSecondNum(foundKaraoke.SingStart)
+        setCurrentStart(foundSingStart)
       }
     }
-  }, [selectedVtuber, selectedMovie, selectedKaraoke, karaokes]);
+  }, [selectedVtuber, selectedMovie, selectedKaraoke, karaokes])
 
   if (!isSignin) {
     return (
@@ -67,7 +67,7 @@ export const EditPage = ({ posts, isSignin }: EditPageProps) => {
           <NotLoggedIn />
         </div>
       </Layout>
-    );
+    )
   }
 
   if (!isSignin) {
@@ -83,7 +83,7 @@ export const EditPage = ({ posts, isSignin }: EditPageProps) => {
         </Link>
         <GestLogin />
       </div>
-    );
+    )
   }
 
   return (
@@ -130,39 +130,39 @@ export const EditPage = ({ posts, isSignin }: EditPageProps) => {
         </div>
       </div>
     </Layout>
-  );
-};
-export default EditPage;
+  )
+}
+export default EditPage
 
 export async function getServerSideProps(context: ContextType) {
-  const { sessionToken, isLoggedin } = checkLoggedin(context);
-  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin); // 会員、非会員、どのページかの記録のため
+  const { sessionToken, isLoggedin } = checkLoggedin(context)
+  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin) // 会員、非会員、どのページかの記録のため
 
-  const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+  const httpsAgent = new https.Agent({ rejectUnauthorized: false })
   const options: AxiosRequestConfig = {
     headers: {
       cookie: `auth-token=${sessionToken}`,
     },
     withCredentials: true,
     httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
-  };
+  }
 
   try {
-    const res = await axios.get(`${domain.backendHost}/vcontents/`, options);
-    const resData = res.data;
+    const res = await axios.get(`${domain.backendHost}/vcontents/`, options)
+    const resData = res.data
     return {
       props: {
         posts: resData,
         isSignin: isLoggedin,
       },
-    };
+    }
   } catch (error) {
-    console.log("erroe in axios.get:", error);
+    console.log("erroe in axios.get:", error)
   }
   return {
     props: {
       posts: null,
       isSignin: isLoggedin,
     },
-  };
+  }
 }

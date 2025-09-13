@@ -1,9 +1,9 @@
-import { Layout } from "@/components/layout/Layout";
-import { TestLink } from "./multi";
+import { Layout } from "@/components/layout/Layout"
+import { TestLink } from "./multi"
 
 // for template
-const pageName = "test/upload";
-const pageNum = 0;
+const pageName = "test/upload"
+const pageNum = 0
 
 export const App = () => {
   return (
@@ -15,7 +15,7 @@ export const App = () => {
         </button>
       </div>
     </Layout>
-  );
-};
+  )
+}
 
-export default App;
+export default App

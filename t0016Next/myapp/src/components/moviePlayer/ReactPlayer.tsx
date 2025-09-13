@@ -1,25 +1,25 @@
-import { useRef, useEffect, useState, useId } from "react";
-import ReactPlayer from "react-player";
+import { useRef, useEffect, useState, useId } from "react"
+import ReactPlayer from "react-player"
 
 interface YoutubePlayerProps {
-  videoId: string;
-  start: number;
+  videoId: string
+  start: number
   style: {
-    height: number;
-    width: number;
-  };
+    height: number
+    width: number
+  }
 }
 
 export const YoutubePlayer = ({ videoId, start, style }: YoutubePlayerProps) => {
-  const playerRef = useRef<HTMLMediaElement | null>(null);
+  const playerRef = useRef<HTMLMediaElement | null>(null)
 
   // だめだった。toSeekもだめだしなんなん？
   // 動画を指定した位置から再生するFunc
   const offSetStart = (offSetSeconds: number) => {
     if (playerRef != null && playerRef.current != null) {
-      playerRef.current.fastSeek(offSetSeconds);
+      playerRef.current.fastSeek(offSetSeconds)
     }
-  };
+  }
 
   return (
     // TODO: startが変わるたびに動画が再読み込みになってしまうので、正規の方法を探す
@@ -31,7 +31,7 @@ export const YoutubePlayer = ({ videoId, start, style }: YoutubePlayerProps) => 
         width={style.width}
         controls
         onReady={() => {
-          offSetStart(start);
+          offSetStart(start)
         }}
         playing
         config={{
@@ -41,5 +41,5 @@ export const YoutubePlayer = ({ videoId, start, style }: YoutubePlayerProps) => 
         }}
       />
     </div>
-  );
-};
+  )
+}

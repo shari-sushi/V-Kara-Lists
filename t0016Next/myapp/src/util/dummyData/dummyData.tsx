@@ -1,4 +1,4 @@
-import { ReceivedKaraoke } from "@/types/vtuber_content";
+import { ReceivedKaraoke } from "@/types/vtuber_content"
 
 export const dummyKaraokeArray: ReceivedKaraoke[] = [
   {
@@ -20,4 +20,4 @@ export const dummyKaraokeArray: ReceivedKaraoke[] = [
     Count: 530,
     IsFav: false,
   },
-];
+]

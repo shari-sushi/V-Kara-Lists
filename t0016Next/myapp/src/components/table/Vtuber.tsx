@@ -1,19 +1,19 @@
-import React, { useContext } from "react";
-import { useTable, useSortBy, Column, useRowSelect } from "react-table";
-import Link from "next/link";
-import { ReceivedVtuber } from "@/types/vtuber_content";
-import TableStyle from "@/styles/table.module.css";
-import { ToDeleteContext } from "@/pages/crud/delete";
-import { LinkTW, TableCss } from "@/styles/tailwiind";
-import Image from "next/image";
+import React, { useContext } from "react"
+import { useTable, useSortBy, Column, useRowSelect } from "react-table"
+import Link from "next/link"
+import { ReceivedVtuber } from "@/types/vtuber_content"
+import TableStyle from "@/styles/table.module.css"
+import { ToDeleteContext } from "@/pages/crud/delete"
+import { LinkTW, TableCss } from "@/styles/tailwiind"
+import Image from "next/image"
 
 type VtuberTableProps = {
-  posts: ReceivedVtuber[];
-};
+  posts: ReceivedVtuber[]
+}
 
 export function VtuberTable({ posts }: VtuberTableProps) {
-  const data = posts || [];
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data }, useSortBy, useRowSelect);
+  const data = posts || []
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data }, useSortBy, useRowSelect)
 
   return (
     <div className="w-full overflow-scroll md:overflow-hidden">
@@ -32,7 +32,7 @@ export function VtuberTable({ posts }: VtuberTableProps) {
         </thead>
         <tbody {...getTableBodyProps()} className="">
           {rows.map((row, i) => {
-            prepareRow(row);
+            prepareRow(row)
             return (
               <tr {...row.getRowProps()} className={`${TableCss.regularTr}`} key={i}>
                 {row.cells.map((cell, j) => {
@@ -40,15 +40,15 @@ export function VtuberTable({ posts }: VtuberTableProps) {
                     <td {...cell.getCellProps()} className={TableStyle.td} key={j}>
                       {cell.render("Cell")}
                     </td>
-                  );
+                  )
                 })}
               </tr>
-            );
+            )
           })}
         </tbody>
       </table>
     </div>
-  );
+  )
 }
 
 const columns: Column<ReceivedVtuber>[] = [
@@ -63,7 +63,7 @@ const columns: Column<ReceivedVtuber>[] = [
             {row.original.VtuberName}
           </Link>
         </span>
-      );
+      )
     },
   },
   { Header: "kana", accessor: "VtuberKana" },
@@ -80,19 +80,19 @@ const columns: Column<ReceivedVtuber>[] = [
             </Link>
           )) || <span className={`relative pl-7`}>未登録</span>}
         </div>
-      );
+      )
     },
   },
-];
+]
 
 /////////////////////////////////////////////////////
 type VtuberDeleteTableProps = {
-  posts: ReceivedVtuber[];
-};
+  posts: ReceivedVtuber[]
+}
 
 export function VtuberDeleteTable({ posts }: VtuberDeleteTableProps) {
-  const data = posts || [{} as ReceivedVtuber];
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns: deleteColumns, data }, useSortBy, useRowSelect);
+  const data = posts || [{} as ReceivedVtuber]
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns: deleteColumns, data }, useSortBy, useRowSelect)
 
   return (
     <div className="w-full overflow-scroll md:overflow-hidden">
@@ -111,7 +111,7 @@ export function VtuberDeleteTable({ posts }: VtuberDeleteTableProps) {
         </thead>
         <tbody {...getTableBodyProps()}>
           {rows.map((row, i) => {
-            prepareRow(row);
+            prepareRow(row)
             return (
               <tr {...row.getRowProps()} className={`${TableCss.regularTr}`} key={i}>
                 {row.cells.map((cell, j) => {
@@ -119,15 +119,15 @@ export function VtuberDeleteTable({ posts }: VtuberDeleteTableProps) {
                     <td {...cell.getCellProps()} key={j}>
                       {cell.render("Cell")}
                     </td>
-                  );
+                  )
                 })}
               </tr>
-            );
+            )
           })}
         </tbody>
       </table>
     </div>
-  );
+  )
 }
 
 const deleteColumns: Column<ReceivedVtuber>[] = [
@@ -146,17 +146,17 @@ const deleteColumns: Column<ReceivedVtuber>[] = [
             </Link>
           )) || <span className={`pl-7`}>未登録</span>}
         </div>
-      );
+      )
     },
   },
   {
     Header: "削除",
     accessor: "VtuberId",
     Cell: ({ row }: { row: { original: ReceivedVtuber } }) => {
-      const { setToDeleteVtuberId } = useContext(ToDeleteContext);
+      const { setToDeleteVtuberId } = useContext(ToDeleteContext)
       const clickHandler = () => {
-        setToDeleteVtuberId(row.original.VtuberId);
-      };
+        setToDeleteVtuberId(row.original.VtuberId)
+      }
       return (
         <>
           {row.original.VtuberId != undefined && (
@@ -165,7 +165,7 @@ const deleteColumns: Column<ReceivedVtuber>[] = [
             </button>
           )}
         </>
-      );
+      )
     },
   },
-];
+]

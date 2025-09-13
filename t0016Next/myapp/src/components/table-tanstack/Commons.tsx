@@ -1,78 +1,78 @@
-import { useState, useContext, createContext } from "react";
-import { ColumnDef } from "@tanstack/react-table";
-import axios from "axios";
-import Image from "next/image";
-import Link from "next/link";
-import { domain } from "@/../env";
-import { ReceivedKaraoke, FavoriteKaraoke } from "@/types/vtuber_content";
-import { LinkTW, TableCss as TableTW } from "@/styles/tailwiind";
-import { useAuth } from "@/providers/AuthProvider";
-import { extractVideoId, timeStringToSecondNum } from "@/util";
-import { TableCss } from "@/styles/tailwiind";
-import type { KaraokeTableFilterInputProps, KaraokeTablePaginationButtonsProps } from "./types";
-import { useVideo } from "@/providers/VideoProvider";
+import { useState, useContext, createContext } from "react"
+import { ColumnDef } from "@tanstack/react-table"
+import axios from "axios"
+import Image from "next/image"
+import Link from "next/link"
+import { domain } from "@/../env"
+import { ReceivedKaraoke, FavoriteKaraoke } from "@/types/vtuber_content"
+import { LinkTW, TableCss as TableTW } from "@/styles/tailwiind"
+import { useAuth } from "@/providers/AuthProvider"
+import { extractVideoId, timeStringToSecondNum } from "@/util"
+import { TableCss } from "@/styles/tailwiind"
+import type { KaraokeTableFilterInputProps, KaraokeTablePaginationButtonsProps } from "./types"
+import { useVideo } from "@/providers/VideoProvider"
 
 // 今後こっち(tasnstack)に移行していく
 // TODO : 雑多に集めすぎたので、フォルダ分け
 
 export const YouTubePlayerContext = createContext(
   {} as {
-    handleMovieClickYouTube(movieId: string, time: number): void;
+    handleMovieClickYouTube(movieId: string, time: number): void
   }
-);
+)
 
 export const SeletctPostContext = createContext(
   {} as {
-    setSelectedPost: (arg0: ReceivedKaraoke) => void;
+    setSelectedPost: (arg0: ReceivedKaraoke) => void
   }
-);
+)
 
 export type FavoriteColumnProps = {
-  count: number;
-  isFav: boolean;
-  movie: string;
-  karaoke: number;
-};
+  count: number
+  isFav: boolean
+  movie: string
+  karaoke: number
+}
 
 export function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumnProps) {
-  const [isFavNow, setIsCheck] = useState(isFav);
-  const [isDisplay, setIsDisplay] = useState<boolean>(false);
-  const { isSignin } = useAuth();
+  const [isFavNow, setIsCheck] = useState(isFav)
+  const [isDisplay, setIsDisplay] = useState<boolean>(false)
+  const { isSignin } = useAuth()
   const handleClick = async () => {
     if (isSignin == false) {
-      setIsDisplay(true);
-      setTimeout(() => setIsDisplay(false), 1500);
-      return;
+      setIsDisplay(true)
+      setTimeout(() => setIsDisplay(false), 1500)
+      return
     }
 
-    setIsCheck(!isFavNow);
+    setIsCheck(!isFavNow)
     const axiosClient = axios.create({
       withCredentials: true,
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    })
 
     try {
       const reqBody: FavoriteKaraoke = {
         MovieUrl: movie,
         KaraokeId: karaoke,
-      };
+      }
       if (isFavNow) {
-        const response = await axiosClient.delete(`${domain.backendHost}/fav/unfavorite/karaoke`, { data: reqBody });
+        const response = await axiosClient.delete(`${domain.backendHost}/fav/unfavorite/karaoke`, { data: reqBody })
         if (!response.status) {
-          throw new Error(response.statusText);
+          throw new Error(response.statusText)
         }
       } else {
-        const response = await axiosClient.post(`${domain.backendHost}/fav/favorite/karaoke`, reqBody);
+        const response = await axiosClient.post(`${domain.backendHost}/fav/favorite/karaoke`, reqBody)
         if (!response.status) {
-          throw new Error(response.statusText);
+          throw new Error(response.statusText)
         }
       }
     } catch (err) {
-      console.error(err);
+      console.error(err)
     }
-  };
+  }
   return (
     <div className="flex justify-center">
       <button className={TableTW.favoriteColumn} onClick={handleClick}>
@@ -85,7 +85,7 @@ export function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumnP
         {isDisplay && <div className={TableCss.NeedLoginMessage}>ログインが必要です</div>}
       </button>
     </div>
-  );
+  )
 }
 
 export const ColumnVtuberName: ColumnDef<ReceivedKaraoke>[] = [
@@ -101,10 +101,10 @@ export const ColumnVtuberName: ColumnDef<ReceivedKaraoke>[] = [
             {row.original.VtuberName}
           </Link>
         </div>
-      );
+      )
     },
   },
-];
+]
 
 export const KaraokeBasicColumns: ColumnDef<ReceivedKaraoke>[] = [
   {
@@ -113,22 +113,22 @@ export const KaraokeBasicColumns: ColumnDef<ReceivedKaraoke>[] = [
     enableSorting: true,
     cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const { updateVideo } = useVideo();
+      const { updateVideo } = useVideo()
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const { setSelectedPost } = useContext(SeletctPostContext);
+      const { setSelectedPost } = useContext(SeletctPostContext)
       const handleClickPlay = (post: ReceivedKaraoke) => {
-        updateVideo(extractVideoId(row.original.MovieUrl), timeStringToSecondNum(row.original.SingStart));
-        setSelectedPost(post);
-      };
+        updateVideo(extractVideoId(row.original.MovieUrl), timeStringToSecondNum(row.original.SingStart))
+        setSelectedPost(post)
+      }
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      const [isDisplay, setIsDisplay] = useState<boolean>(false);
+      const [isDisplay, setIsDisplay] = useState<boolean>(false)
       const handleClick = async () => {
-        const url = "https://" + row.original.MovieUrl + "&t=" + timeStringToSecondNum(row.original.SingStart);
-        await navigator.clipboard.writeText(url);
-        setIsDisplay(true);
-        setSelectedPost(row.original);
-        setTimeout(() => setIsDisplay(false), 2000);
-      };
+        const url = "https://" + row.original.MovieUrl + "&t=" + timeStringToSecondNum(row.original.SingStart)
+        await navigator.clipboard.writeText(url)
+        setIsDisplay(true)
+        setSelectedPost(row.original)
+        setTimeout(() => setIsDisplay(false), 2000)
+      }
 
       return (
         <div className="relative flex w-auto">
@@ -144,7 +144,7 @@ export const KaraokeBasicColumns: ColumnDef<ReceivedKaraoke>[] = [
             {isDisplay && <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">URL was copied</div>}
           </div>
         </div>
-      );
+      )
     },
   },
   { header: "再生開始", accessorKey: "SingStart", enableSorting: true },
@@ -154,10 +154,10 @@ export const KaraokeBasicColumns: ColumnDef<ReceivedKaraoke>[] = [
     accessorKey: "Count",
     enableSorting: true,
     cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} movie={row.original.MovieUrl} karaoke={row.original.KaraokeId} />;
+      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} movie={row.original.MovieUrl} karaoke={row.original.KaraokeId} />
     },
   },
-];
+]
 
 export const KaraokeGlobalFilterColumns: ColumnDef<ReceivedKaraoke>[] = [
   // TODO:　クリックでfilterしたい
@@ -172,11 +172,11 @@ export const KaraokeGlobalFilterColumns: ColumnDef<ReceivedKaraoke>[] = [
             {row.original.VtuberName}
           </Link>
         </div>
-      );
+      )
     },
   },
   ...KaraokeBasicColumns,
-];
+]
 
 // TODO : schemeに配信日カラムを追加し、それでソートできるようにする。↓な感じで表示変換しつつできるらしい。
 // {
@@ -197,7 +197,7 @@ export const KaraokeTableAFilterInput = ({ table, accesKey }: KaraokeTableFilter
         {/* TODO : form要素を使うと、padding merginがなんか崩れる。崩れないならreset要素実装したい。 */}
         <input className="bg-gray-200 text-gray-800 w-12 mb-0.5" placeholder={`num...`} onChange={(e) => table.getColumn(`${accesKey}`)?.setFilterValue(e.target.value)} />
       </div>
-    );
+    )
   }
 
   return (
@@ -205,8 +205,8 @@ export const KaraokeTableAFilterInput = ({ table, accesKey }: KaraokeTableFilter
       {/* TODO : form要素を使うと、padding merginがなんか崩れる。崩れないならreset要素実装したい。 */}
       <input className="bg-gray-200 text-gray-800 w-full mb-0.5" placeholder={`filter...`} onChange={(e) => table.getColumn(`${accesKey}`)?.setFilterValue(e.target.value)} />
     </div>
-  );
-};
+  )
+}
 
 export const KaraokeTableFilterInput = ({ table }: KaraokeTableFilterInputProps) => {
   return (
@@ -215,12 +215,12 @@ export const KaraokeTableFilterInput = ({ table }: KaraokeTableFilterInputProps)
         className="bg-gray-200 text-gray-800 w-full rounded-sm "
         placeholder="filter from all Columns..."
         onChange={(e) => {
-          table.setGlobalFilter(e.target.value);
+          table.setGlobalFilter(e.target.value)
         }}
       />
     </div>
-  );
-};
+  )
+}
 
 //  TODO : Vtuber, Movie, Karaikeのテーブル全部で使いまわせるように出来ると思う
 export const KaraokeTablePagenationButtons = ({ table, maxPageSize }: KaraokeTablePaginationButtonsProps) => {
@@ -246,7 +246,7 @@ export const KaraokeTablePagenationButtons = ({ table, maxPageSize }: KaraokeTab
         className="text-right"
         value={table.getState().pagination.pageSize}
         onChange={(e) => {
-          table.setPageSize(Number(e.target.value));
+          table.setPageSize(Number(e.target.value))
         }}
       >
         {[25, 50, 75, 100, maxPageSize].map((pageSize) => (
@@ -256,5 +256,5 @@ export const KaraokeTablePagenationButtons = ({ table, maxPageSize }: KaraokeTab
         ))}
       </select>
     </div>
-  );
-};
+  )
+}

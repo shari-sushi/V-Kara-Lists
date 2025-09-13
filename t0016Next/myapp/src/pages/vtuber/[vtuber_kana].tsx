@@ -1,50 +1,50 @@
-import React, { useState, useMemo } from "react";
-import https from "https";
-import axios, { AxiosRequestConfig } from "axios";
-import Link from "next/link";
-import { domain } from "@/../env";
-import { Layout } from "@/components/layout/Layout";
-import { ToClickTW } from "@/styles/tailwiind";
-import type { ReceivedKaraoke, ReceivedMovie } from "@/types/vtuber_content";
-import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer";
-import { timeStringToSecondNum, extractVideoId } from "@/util";
-import { DropDownAllMovie } from "@/components/dropDown/Movie";
-import { NotFoundVtuber } from "@/components/layout/Main";
-import { GetServerSidePropsContext } from "next";
-import { generateRandomNumber } from "@/components/SomeFunction";
-import KaraokeFilterTableWithoutVTuberName from "@/components/table-tanstack/Karaoke/KaraokeFilterTableWithoutVTuberName";
-import { checkLoggedin } from "@/util/webStrage/cookie";
-import { useVideo } from "@/providers/VideoProvider";
+import React, { useState, useMemo } from "react"
+import https from "https"
+import axios, { AxiosRequestConfig } from "axios"
+import Link from "next/link"
+import { domain } from "@/../env"
+import { Layout } from "@/components/layout/Layout"
+import { ToClickTW } from "@/styles/tailwiind"
+import type { ReceivedKaraoke, ReceivedMovie } from "@/types/vtuber_content"
+import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
+import { timeStringToSecondNum, extractVideoId } from "@/util"
+import { DropDownAllMovie } from "@/components/dropDown/Movie"
+import { NotFoundVtuber } from "@/components/layout/Main"
+import { GetServerSidePropsContext } from "next"
+import { generateRandomNumber } from "@/components/SomeFunction"
+import KaraokeFilterTableWithoutVTuberName from "@/components/table-tanstack/Karaoke/KaraokeFilterTableWithoutVTuberName"
+import { checkLoggedin } from "@/util/webStrage/cookie"
+import { useVideo } from "@/providers/VideoProvider"
 
-const pageName = "Vtuber特設ページ"; // VTuberの名前になるようにレンダリングフェーズで変更している
+const pageName = "Vtuber特設ページ" // VTuberの名前になるようにレンダリングフェーズで変更している
 
 type VtuberPage = {
   posts: {
-    vtubers_movies: ReceivedMovie[];
-    vtubers_movies_karaokes: ReceivedKaraoke[];
-  };
-  isSignin: boolean;
-};
+    vtubers_movies: ReceivedMovie[]
+    vtubers_movies_karaokes: ReceivedKaraoke[]
+  }
+  isSignin: boolean
+}
 
 export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
-  const karaokes: ReceivedKaraoke[] = useMemo(() => posts?.vtubers_movies_karaokes || [], [posts]);
+  const karaokes: ReceivedKaraoke[] = useMemo(() => posts?.vtubers_movies_karaokes || [], [posts])
 
-  const playKaraokeNumber = generateRandomNumber(karaokes.length);
+  const playKaraokeNumber = generateRandomNumber(karaokes.length)
 
   // TODO: ロジック正しいか確認。動画がkaraokesから選ばれてtimeが初期値になることはないか。動画は0番目や最終番目も選ばれるか。
-  const url = "www.youtube.com/watch?v=kORHSmXcYNc"; // 船長
-  const stringTime = "00:08:29"; // ピンクレディー メドレー
-  const primaryYoutubeUrl = extractVideoId(karaokes[playKaraokeNumber]?.MovieUrl || url);
-  const primaryYoutubeStartTime = timeStringToSecondNum(karaokes[playKaraokeNumber]?.SingStart || stringTime);
+  const url = "www.youtube.com/watch?v=kORHSmXcYNc" // 船長
+  const stringTime = "00:08:29" // ピンクレディー メドレー
+  const primaryYoutubeUrl = extractVideoId(karaokes[playKaraokeNumber]?.MovieUrl || url)
+  const primaryYoutubeStartTime = timeStringToSecondNum(karaokes[playKaraokeNumber]?.SingStart || stringTime)
 
-  const { videoState } = useVideo({ youtubeId: primaryYoutubeUrl, startTime: primaryYoutubeStartTime });
+  const { videoState } = useVideo({ youtubeId: primaryYoutubeUrl, startTime: primaryYoutubeStartTime })
 
-  const [selectedMovie, setSelectedMovie] = useState<string>("");
+  const [selectedMovie, setSelectedMovie] = useState<string>("")
 
   // propsとして必要
-  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke);
+  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
 
-  const isVideoInContent = videoState.position === "in-content";
+  const isVideoInContent = videoState.position === "in-content"
 
   if (karaokes.length == 0) {
     return (
@@ -75,7 +75,7 @@ export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
           </div>
         </div>
       </Layout>
-    );
+    )
   }
 
   return (
@@ -122,42 +122,42 @@ export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
         </div>
       </div>
     </Layout>
-  );
+  )
 }
 
 const filterKaraokesByUrl = (karaokes: ReceivedKaraoke[], url: string) => {
   if (url == "") {
-    return karaokes;
+    return karaokes
   }
-  return karaokes.filter((ks) => ks.MovieUrl === url);
-};
+  return karaokes.filter((ks) => ks.MovieUrl === url)
+}
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const kana = context.query.vtuber_kana;
+  const kana = context.query.vtuber_kana
 
-  const { sessionToken, isLoggedin } = checkLoggedin(context);
-  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin); // 会員、非会員、どのページかの記録のため
+  const { sessionToken, isLoggedin } = checkLoggedin(context)
+  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin) // 会員、非会員、どのページかの記録のため
 
-  const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+  const httpsAgent = new https.Agent({ rejectUnauthorized: false })
   const options: AxiosRequestConfig = {
     headers: {
       cookie: `auth-token=${sessionToken}`,
     },
     withCredentials: true,
     httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
-  };
+  }
 
-  let resData = null;
+  let resData = null
   try {
-    const res = await axios.get(`${domain.backendHost}/vcontents/vtuber/${kana}`, options);
-    resData = res.data;
+    const res = await axios.get(`${domain.backendHost}/vcontents/vtuber/${kana}`, options)
+    resData = res.data
   } catch (error) {
-    console.log(`error in axios.get with \`/vcontents/vtuber/${kana}\`: `, error);
+    console.log(`error in axios.get with \`/vcontents/vtuber/${kana}\`: `, error)
   }
   return {
     props: {
       posts: resData,
       isSignin: isLoggedin,
     },
-  };
+  }
 }

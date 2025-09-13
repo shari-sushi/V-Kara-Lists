@@ -1,37 +1,32 @@
-import React from "react";
-import Select from "react-select";
+import React from "react"
+import Select from "react-select"
 
-import type { BasicDataProps, ReceivedVtuber } from "@/types/vtuber_content";
-import { DropStyle } from "./common";
+import type { BasicDataProps, ReceivedVtuber } from "@/types/vtuber_content"
+import { DropStyle } from "./common"
 
 type vtuberListsProps = {
-  value: number;
-  label: string;
-};
+  value: number
+  label: string
+}
 
 type DropDownVtuberProps = {
-  posts: BasicDataProps;
-  selectedVtuber: ReceivedVtuber | undefined;
-  onVtuberSelect: (vtuberId: number) => void;
-  defaultMenuIsOpen: boolean;
-};
+  posts: BasicDataProps
+  selectedVtuber: ReceivedVtuber | undefined
+  onVtuberSelect: (vtuberId: number) => void
+  defaultMenuIsOpen: boolean
+}
 
-export const DropDownVtuber = ({
-  posts,
-  selectedVtuber,
-  onVtuberSelect,
-  defaultMenuIsOpen,
-}: DropDownVtuberProps) => {
-  const vtubers = posts?.vtubers || [{} as ReceivedVtuber];
-  const vtuberOptions = makeVtuberOptions(vtubers);
+export const DropDownVtuber = ({ posts, selectedVtuber, onVtuberSelect, defaultMenuIsOpen }: DropDownVtuberProps) => {
+  const vtubers = posts?.vtubers || [{} as ReceivedVtuber]
+  const vtuberOptions = makeVtuberOptions(vtubers)
 
   const onChange = (option: vtuberListsProps | null) => {
     if (option) {
-      onVtuberSelect(option.value);
+      onVtuberSelect(option.value)
     } else {
-      onVtuberSelect(0);
+      onVtuberSelect(0)
     }
-  };
+  }
 
   if (selectedVtuber == null) {
     return (
@@ -50,7 +45,7 @@ export const DropDownVtuber = ({
         styles={DropStyle}
         onChange={onChange}
       />
-    );
+    )
   }
 
   return (
@@ -70,16 +65,16 @@ export const DropDownVtuber = ({
       styles={DropStyle}
       onChange={onChange}
     />
-  );
-};
+  )
+}
 
 const makeVtuberOptions = (posts: ReceivedVtuber[]): vtuberListsProps[] => {
-  return posts.map((vtuber: ReceivedVtuber) => makeVtuberOption(vtuber));
-};
+  return posts.map((vtuber: ReceivedVtuber) => makeVtuberOption(vtuber))
+}
 
 const makeVtuberOption = (vtuber: ReceivedVtuber): vtuberListsProps => {
   return {
     value: vtuber.VtuberId,
     label: vtuber.VtuberName,
-  };
-};
+  }
+}

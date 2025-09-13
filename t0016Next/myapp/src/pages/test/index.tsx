@@ -1,44 +1,44 @@
-import React from "react";
-import Link from "next/link";
-import https from "https";
-import axios, { AxiosRequestConfig } from "axios";
-import Image from "next/image";
-import { domain } from "@/../../env";
-import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from "@/types/vtuber_content";
-import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer";
-import { Layout } from "@/components/layout/Layout";
-import { VtuberTable } from "@/components/table/Vtuber";
-import { MovieTable } from "@/components/table/Movie";
-import { KaraokeThinTable, KaraokeMinRandomTable } from "@/components/table/Karaoke";
-import { ToClickTW } from "@/styles/tailwiind";
-import { ContextType } from "@/types/server";
-import { TestLink } from "./multi";
-import { checkLoggedin } from "@/util/webStrage/cookie";
-import { useVideo } from "@/providers/VideoProvider";
+import React from "react"
+import Link from "next/link"
+import https from "https"
+import axios, { AxiosRequestConfig } from "axios"
+import Image from "next/image"
+import { domain } from "@/../../env"
+import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from "@/types/vtuber_content"
+import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
+import { Layout } from "@/components/layout/Layout"
+import { VtuberTable } from "@/components/table/Vtuber"
+import { MovieTable } from "@/components/table/Movie"
+import { KaraokeThinTable, KaraokeMinRandomTable } from "@/components/table/Karaoke"
+import { ToClickTW } from "@/styles/tailwiind"
+import { ContextType } from "@/types/server"
+import { TestLink } from "./multi"
+import { checkLoggedin } from "@/util/webStrage/cookie"
+import { useVideo } from "@/providers/VideoProvider"
 
-const lastUpdatedAtString = "2024.12.15";
+const lastUpdatedAtString = "2024.12.15"
 
-const pageName = "test";
-const pageNum = 0;
+const pageName = "test"
+const pageNum = 0
 
 // http://localhost:80/test
 type TopPage = {
   posts: {
-    vtubers: ReceivedVtuber[];
-    vtubers_movies: ReceivedMovie[];
-    vtubers_movies_karaokes: ReceivedKaraoke[];
-    latest_karaokes: ReceivedKaraoke[];
-  };
-  isSignin: boolean;
-};
+    vtubers: ReceivedVtuber[]
+    vtubers_movies: ReceivedMovie[]
+    vtubers_movies_karaokes: ReceivedKaraoke[]
+    latest_karaokes: ReceivedKaraoke[]
+  }
+  isSignin: boolean
+}
 
 const TopPage = ({ posts, isSignin }: TopPage) => {
-  const vtubers: ReceivedVtuber[] = posts?.vtubers || [];
-  const movies: ReceivedMovie[] = posts?.vtubers_movies || [];
-  const karaokes: ReceivedKaraoke[] = posts?.vtubers_movies_karaokes || [];
-  const latestKaraokes: ReceivedKaraoke[] = posts?.latest_karaokes || [];
-  const { videoState } = useVideo();
-  const { youtubeId, startTime } = videoState;
+  const vtubers: ReceivedVtuber[] = posts?.vtubers || []
+  const movies: ReceivedMovie[] = posts?.vtubers_movies || []
+  const karaokes: ReceivedKaraoke[] = posts?.vtubers_movies_karaokes || []
+  const latestKaraokes: ReceivedKaraoke[] = posts?.latest_karaokes || []
+  const { videoState } = useVideo()
+  const { youtubeId, startTime } = videoState
 
   return (
     <Layout pageName={pageName} isSignin={isSignin}>
@@ -155,34 +155,34 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
         </div>
       </div>
     </Layout>
-  );
-};
-export default TopPage;
+  )
+}
+export default TopPage
 
 export async function getServerSideProps(context: ContextType) {
-  const { sessionToken, isLoggedin } = checkLoggedin(context);
-  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin); // 会員、非会員、どのページかの記録のため
+  const { sessionToken, isLoggedin } = checkLoggedin(context)
+  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin) // 会員、非会員、どのページかの記録のため
 
-  const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+  const httpsAgent = new https.Agent({ rejectUnauthorized: false })
   const options: AxiosRequestConfig = {
     headers: {
       cookie: `auth-token=${sessionToken}`,
     },
     withCredentials: true,
     httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
-  };
+  }
 
-  let resData = null;
+  let resData = null
   try {
-    const res = await axios.get(`${domain.backendHost}/vcontents/dummy-top-page`, options);
-    resData = res.data;
+    const res = await axios.get(`${domain.backendHost}/vcontents/dummy-top-page`, options)
+    resData = res.data
   } catch (error) {
-    console.log("erroe in axios.get:", error);
+    console.log("erroe in axios.get:", error)
   }
   return {
     props: {
       posts: resData,
       isSignin: isLoggedin,
     },
-  };
+  }
 }

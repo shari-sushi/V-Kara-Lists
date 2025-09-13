@@ -1,9 +1,9 @@
-import { ToClickTW } from "@/styles/tailwiind";
-import { CrudContentType, ReceivedVtuber } from "@/types/vtuber_content";
+import { ToClickTW } from "@/styles/tailwiind"
+import { CrudContentType, ReceivedVtuber } from "@/types/vtuber_content"
 
 interface SelectCrudContentProps {
-  contentType: string;
-  setContentType: (type: CrudContentType) => void;
+  contentType: string
+  setContentType: (type: CrudContentType) => void
 }
 
 export const CrudContentSelector = ({ contentType, setContentType }: SelectCrudContentProps) => {
@@ -37,31 +37,31 @@ export const CrudContentSelector = ({ contentType, setContentType }: SelectCrudC
         </button>
       </div>
     </div>
-  );
-};
+  )
+}
 
 type getYoutubeVideoProps = {
-  movieId: string;
-  isSnippet?: boolean;
-  isContentDetails?: boolean;
-  isStatus?: boolean;
-  isStatistics?: boolean;
-  isPlayer?: boolean;
-  isTopicDetails?: boolean;
-  isRecordingDetails?: boolean;
-  isFileDetails?: boolean;
-  isProcessingDetails?: boolean;
-  isSuggestions?: boolean;
-  isLiveStreamingDetails?: boolean;
-  isLocalizations?: boolean;
-  fullOption?: boolean;
-};
+  movieId: string
+  isSnippet?: boolean
+  isContentDetails?: boolean
+  isStatus?: boolean
+  isStatistics?: boolean
+  isPlayer?: boolean
+  isTopicDetails?: boolean
+  isRecordingDetails?: boolean
+  isFileDetails?: boolean
+  isProcessingDetails?: boolean
+  isSuggestions?: boolean
+  isLiveStreamingDetails?: boolean
+  isLocalizations?: boolean
+  fullOption?: boolean
+}
 
 // NEMO: 悪意ある者に見つかりにくい命名にした
 // 大した問題にならないレベルの権限しか与えてない
 // (現状、アプリに垂れ流してるから.envに移したとこでだし。)
 // const SHARI = process.env.NEXT_PUBLIC_SHARI;
-const SHARI = "AIzaSyA8Q7F0VIx-JKZDwK0qvNn0ZIZd472FmwI";
+const SHARI = "AIzaSyA8Q7F0VIx-JKZDwK0qvNn0ZIZd472FmwI"
 
 export const getYoutubeVideo = async ({
   movieId,
@@ -97,21 +97,21 @@ export const getYoutubeVideo = async ({
       `${isProcessingDetails ? "&part=processingDetails" : ""}` +
       `${isSuggestions ? "&part=suggestions" : ""}` +
       `${isLiveStreamingDetails ? "&part=liveStreamingDetails" : ""}` +
-      `${isLocalizations ? "&part=localizations" : ""}`;
+      `${isLocalizations ? "&part=localizations" : ""}`
 
   try {
-    const res = await fetch(url);
+    const res = await fetch(url)
     if (!res.ok) {
-      throw new Error("error in getYoutubeMovie");
+      throw new Error("error in getYoutubeMovie")
     }
-    return await res.json();
+    return await res.json()
   } catch (error) {
-    console.error("error in getYoutubeMovie:", error);
-    return null;
+    console.error("error in getYoutubeMovie:", error)
+    return null
   }
-};
+}
 
 export const findVtuber = (vtubers: ReceivedVtuber[] | undefined, vtuberId: number) => {
-  if (!vtubers) return undefined;
-  return vtubers.find((vtuber) => vtuber.VtuberId === vtuberId);
-};
+  if (!vtubers) return undefined
+  return vtubers.find((vtuber) => vtuber.VtuberId === vtuberId)
+}

@@ -1,79 +1,79 @@
-import React, { useState, useContext, useMemo } from "react";
-import { useTable, usePagination, useSortBy, Column, useRowSelect } from "react-table";
-import axios from "axios";
-import Link from "next/link";
+import React, { useState, useContext, useMemo } from "react"
+import { useTable, usePagination, useSortBy, Column, useRowSelect } from "react-table"
+import axios from "axios"
+import Link from "next/link"
 
-import { domain } from "@/../env";
-import { timeStringToSecondNum, extractVideoId } from "@/util";
-import { shuffleArray } from "../SomeFunction";
-import { ReceivedKaraoke, FavoriteKaraoke } from "@/types/vtuber_content";
-import { ToDeleteContext } from "@/pages/crud/delete";
-import { LinkTW, TableCss as TableTW } from "@/styles/tailwiind";
-import { useAuth } from "@/providers/AuthProvider";
-import Image from "next/image";
-import { useHasWindow } from "@/hooks/useHasWindow";
-import { toFullYouTubeVideoURL } from "@/util/toFullYouTubeVideoURL/toFullYouTubeVideoURL";
-import { useVideo } from "@/providers/VideoProvider";
-import { dummyKaraokeArray } from "@/util/dummyData/dummyData";
+import { domain } from "@/../env"
+import { timeStringToSecondNum, extractVideoId } from "@/util"
+import { shuffleArray } from "../SomeFunction"
+import { ReceivedKaraoke, FavoriteKaraoke } from "@/types/vtuber_content"
+import { ToDeleteContext } from "@/pages/crud/delete"
+import { LinkTW, TableCss as TableTW } from "@/styles/tailwiind"
+import { useAuth } from "@/providers/AuthProvider"
+import Image from "next/image"
+import { useHasWindow } from "@/hooks/useHasWindow"
+import { toFullYouTubeVideoURL } from "@/util/toFullYouTubeVideoURL/toFullYouTubeVideoURL"
+import { useVideo } from "@/providers/VideoProvider"
+import { dummyKaraokeArray } from "@/util/dummyData/dummyData"
 
 type KaraokeTableProps = {
-  posts: ReceivedKaraoke[];
-};
+  posts: ReceivedKaraoke[]
+}
 
 const SelectPostContext = React.createContext(
   {} as {
-    setSelectedPost: (arg0: ReceivedKaraoke) => void;
+    setSelectedPost: (arg0: ReceivedKaraoke) => void
   }
-);
+)
 
 type FavoriteColumnProps = {
-  count: number;
-  isFav: boolean;
-  movie: string;
-  karaoke: number;
-};
+  count: number
+  isFav: boolean
+  movie: string
+  karaoke: number
+}
 
 function FavoriteColumn({ count, isFav: initialFav, movie, karaoke }: FavoriteColumnProps) {
-  const [isFavorite, setIsFavorite] = useState(initialFav);
-  const [isDisplay, setIsDisplay] = useState<boolean>(false);
-  const { isSignin } = useAuth();
+  const [isFavorite, setIsFavorite] = useState(initialFav)
+  const [isDisplay, setIsDisplay] = useState<boolean>(false)
+  const { isSignin } = useAuth()
   const handleClick = async () => {
     if (!isSignin) {
-      setIsDisplay(true);
-      setTimeout(() => setIsDisplay(false), 1500);
-      return;
+      setIsDisplay(true)
+      setTimeout(() => setIsDisplay(false), 1500)
+      return
     }
 
-    setIsFavorite(!isFavorite);
+    setIsFavorite(!isFavorite)
     const axiosClient = axios.create({
       withCredentials: true,
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    })
 
     try {
       const reqBody: FavoriteKaraoke = {
         MovieUrl: movie,
         KaraokeId: karaoke,
-      };
+      }
       if (isFavorite) {
         const response = await axiosClient.delete(`${domain.backendHost}/fav/unfavorite/karaoke`, {
           data: reqBody,
-        });
+        })
         if (!response.status) {
-          throw new Error(response.statusText);
+          throw new Error(response.statusText)
         }
       } else {
-        const response = await axiosClient.post(`${domain.backendHost}/fav/favorite/karaoke`, reqBody);
+        const response = await axiosClient.post(`${domain.backendHost}/fav/favorite/karaoke`, reqBody)
         if (!response.status) {
-          throw new Error(response.statusText);
+          throw new Error(response.statusText)
         }
       }
     } catch (err) {
-      console.error(err);
+      console.error(err)
     }
-  };
+  }
 
   return (
     <div className="flex justify-center">
@@ -87,7 +87,7 @@ function FavoriteColumn({ count, isFav: initialFav, movie, karaoke }: FavoriteCo
         {isDisplay && <div className={TableTW.NeedLoginMessage}>ログインが必要です</div>}
       </button>
     </div>
-  );
+  )
 }
 
 ///////////////////////////////////////////////////////////////
@@ -98,21 +98,21 @@ const PaginationReturnPostColumns: Column<ReceivedKaraoke>[] = [
     Header: "曲名(Click it)",
     accessor: "KaraokeId",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      const { setSelectedPost } = useContext(SelectPostContext);
-      const { updateVideo } = useVideo();
+      const { setSelectedPost } = useContext(SelectPostContext)
+      const { updateVideo } = useVideo()
       const handleClickPlay = (post: ReceivedKaraoke) => {
-        updateVideo(extractVideoId(row.original.MovieUrl), timeStringToSecondNum(row.original.SingStart));
-        setSelectedPost(post);
-      };
+        updateVideo(extractVideoId(row.original.MovieUrl), timeStringToSecondNum(row.original.SingStart))
+        setSelectedPost(post)
+      }
 
-      const [isDisplay, setIsDisplay] = useState<boolean>(false);
+      const [isDisplay, setIsDisplay] = useState<boolean>(false)
       const handleClick = async () => {
-        const url = "https://" + row.original.MovieUrl + "&t=" + timeStringToSecondNum(row.original.SingStart);
-        await navigator.clipboard.writeText(url);
-        setIsDisplay(true);
-        setSelectedPost(row.original);
-        setTimeout(() => setIsDisplay(false), 2000);
-      };
+        const url = "https://" + row.original.MovieUrl + "&t=" + timeStringToSecondNum(row.original.SingStart)
+        await navigator.clipboard.writeText(url)
+        setIsDisplay(true)
+        setSelectedPost(row.original)
+        setTimeout(() => setIsDisplay(false), 2000)
+      }
 
       return (
         <div className="relative flex w-auto">
@@ -128,7 +128,7 @@ const PaginationReturnPostColumns: Column<ReceivedKaraoke>[] = [
             {isDisplay && <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">URL was copied</div>}
           </span>
         </div>
-      );
+      )
     },
   },
   { Header: "再生開始", accessor: "SingStart" },
@@ -137,19 +137,19 @@ const PaginationReturnPostColumns: Column<ReceivedKaraoke>[] = [
     Header: "いいね",
     accessor: "Count",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} movie={row.original.MovieUrl} karaoke={row.original.KaraokeId} />;
+      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} movie={row.original.MovieUrl} karaoke={row.original.KaraokeId} />
     },
   },
-];
+]
 
 type KaraokeTableReturnPostProps = {
-  karaokes: ReceivedKaraoke[];
-  setSelectedPost: (arg0: ReceivedKaraoke) => void;
-};
+  karaokes: ReceivedKaraoke[]
+  setSelectedPost: (arg0: ReceivedKaraoke) => void
+}
 
 export function KaraokePaginationTable({ karaokes, setSelectedPost }: KaraokeTableReturnPostProps) {
-  const maxPageSize = 99999;
-  const data = useMemo(() => karaokes || dummyKaraokeArray, [karaokes]);
+  const maxPageSize = 99999
+  const data = useMemo(() => karaokes || dummyKaraokeArray, [karaokes])
 
   const {
     getTableProps,
@@ -175,7 +175,7 @@ export function KaraokePaginationTable({ karaokes, setSelectedPost }: KaraokeTab
     useSortBy,
     usePagination,
     useRowSelect
-  );
+  )
 
   return (
     <SelectPostContext.Provider value={{ setSelectedPost }}>
@@ -225,7 +225,7 @@ export function KaraokePaginationTable({ karaokes, setSelectedPost }: KaraokeTab
           </thead>
           <tbody {...getTableBodyProps()}>
             {page.map((row) => {
-              prepareRow(row);
+              prepareRow(row)
               return (
                 <tr {...row.getRowProps()} className={`${TableTW.regularTr}`} key={row.id}>
                   {row.cells.map((cell, i) => (
@@ -234,13 +234,13 @@ export function KaraokePaginationTable({ karaokes, setSelectedPost }: KaraokeTab
                     </td>
                   ))}
                 </tr>
-              );
+              )
             })}
           </tbody>
         </table>
       </div>
     </SelectPostContext.Provider>
-  );
+  )
 }
 
 ///////////////////////////////////////////////////
@@ -257,21 +257,21 @@ const ThinColumns: Column<ReceivedKaraoke>[] = [
             {row.original.VtuberName}
           </Link>
         </span>
-      );
+      )
     },
   },
   {
     Header: "曲名(Click it)",
     accessor: "KaraokeId",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      const { updateVideo } = useVideo();
-      const [isDisplay, setIsDisplay] = useState<boolean>(false);
+      const { updateVideo } = useVideo()
+      const [isDisplay, setIsDisplay] = useState<boolean>(false)
       const handleClick = async () => {
-        const url = "https://" + row.original.MovieUrl + "&t=" + timeStringToSecondNum(row.original.SingStart);
-        await navigator.clipboard.writeText(url);
-        setIsDisplay(true);
-        setTimeout(() => setIsDisplay(false), 2000);
-      };
+        const url = "https://" + row.original.MovieUrl + "&t=" + timeStringToSecondNum(row.original.SingStart)
+        await navigator.clipboard.writeText(url)
+        setIsDisplay(true)
+        setTimeout(() => setIsDisplay(false), 2000)
+      }
 
       return (
         <span className="relative flex w-auto">
@@ -287,21 +287,21 @@ const ThinColumns: Column<ReceivedKaraoke>[] = [
             {isDisplay && <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">URL was copied</div>}
           </span>
         </span>
-      );
+      )
     },
   },
   {
     Header: "いいね",
     accessor: "Count",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} movie={row.original.MovieUrl} karaoke={row.original.KaraokeId} />;
+      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} movie={row.original.MovieUrl} karaoke={row.original.KaraokeId} />
     },
   },
-];
+]
 
 export const KaraokeThinTable = ({ posts }: KaraokeTableProps) => {
-  const data = posts || ([] as ReceivedKaraoke[]);
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns: ThinColumns, data }, useSortBy, useRowSelect);
+  const data = posts || ([] as ReceivedKaraoke[])
+  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns: ThinColumns, data }, useSortBy, useRowSelect)
 
   return (
     <div className="w-full ">
@@ -320,7 +320,7 @@ export const KaraokeThinTable = ({ posts }: KaraokeTableProps) => {
         </thead>
         <tbody {...getTableBodyProps()}>
           {rows.map((row, i) => {
-            prepareRow(row);
+            prepareRow(row)
             return (
               <tr {...row.getRowProps()} className={`${TableTW.regularTr}`} key={i}>
                 {row.cells.map((cell, j) => {
@@ -328,21 +328,21 @@ export const KaraokeThinTable = ({ posts }: KaraokeTableProps) => {
                     <td {...cell.getCellProps()} key={j}>
                       {cell.render("Cell")}
                     </td>
-                  );
+                  )
                 })}
               </tr>
-            );
+            )
           })}
         </tbody>
       </table>
     </div>
-  );
-};
+  )
+}
 
 ///////////////////////////
 //  delete用
 export function KaraokeDeleteTable({ posts: karaokes }: KaraokeTableProps) {
-  const maxPageSize = 1000;
+  const maxPageSize = 1000
   const {
     getTableProps,
     getTableBodyProps,
@@ -366,7 +366,7 @@ export function KaraokeDeleteTable({ posts: karaokes }: KaraokeTableProps) {
       initialState: { pageIndex: 0, pageSize: 25 },
     },
     usePagination
-  );
+  )
 
   return (
     <>
@@ -413,7 +413,7 @@ export function KaraokeDeleteTable({ posts: karaokes }: KaraokeTableProps) {
           </thead>
           <tbody {...getTableBodyProps()}>
             {page.map((row, i) => {
-              prepareRow(row);
+              prepareRow(row)
               return (
                 <tr {...row.getRowProps()} className={`${TableTW.regularTr}`} key={i}>
                   {row.cells.map((cell, j) => (
@@ -422,13 +422,13 @@ export function KaraokeDeleteTable({ posts: karaokes }: KaraokeTableProps) {
                     </td>
                   ))}
                 </tr>
-              );
+              )
             })}
           </tbody>
         </table>
       </div>
     </>
-  );
+  )
 }
 
 const deleteColumns: Column<ReceivedKaraoke>[] = [
@@ -443,20 +443,20 @@ const deleteColumns: Column<ReceivedKaraoke>[] = [
             {row.original.VtuberName}
           </Link>
         </span>
-      );
+      )
     },
   },
   {
     Header: "曲",
     accessor: "SongName",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      const { setCurrentVideoId, setCurrentStart } = useContext(ToDeleteContext);
+      const { setCurrentVideoId, setCurrentStart } = useContext(ToDeleteContext)
       const clickHandler = (url: string, SingStart: string) => {
-        setCurrentVideoId(extractVideoId(url));
+        setCurrentVideoId(extractVideoId(url))
         // setTimeout(() => setCurrentStart(　// youtube iframバグ対策。再発に備えてコメントアウトで残しておく
-        timeStringToSecondNum(SingStart);
+        timeStringToSecondNum(SingStart)
         // ), 1450);
-      };
+      }
       return (
         <span className="relative">
           <button className="flex" onClick={() => clickHandler(row.original.MovieUrl, row.original.SingStart)}>
@@ -464,7 +464,7 @@ const deleteColumns: Column<ReceivedKaraoke>[] = [
             {row.original.SongName}
           </button>
         </span>
-      );
+      )
     },
   },
   { Header: "再生開始", accessor: "SingStart" },
@@ -473,12 +473,12 @@ const deleteColumns: Column<ReceivedKaraoke>[] = [
     Header: "削除",
     accessor: "KaraokeId",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      const { setToDeleteVtuberId, setToDeleteMovieUrl, setToDeleteKaraokeId } = useContext(ToDeleteContext);
+      const { setToDeleteVtuberId, setToDeleteMovieUrl, setToDeleteKaraokeId } = useContext(ToDeleteContext)
       const clickHandler = () => {
-        setToDeleteVtuberId(row.original.VtuberId);
-        setToDeleteMovieUrl(row.original.MovieUrl);
-        setToDeleteKaraokeId(row.original.KaraokeId);
-      };
+        setToDeleteVtuberId(row.original.VtuberId)
+        setToDeleteMovieUrl(row.original.MovieUrl)
+        setToDeleteKaraokeId(row.original.KaraokeId)
+      }
       return (
         <>
           {row.original.KaraokeId != undefined && (
@@ -487,10 +487,10 @@ const deleteColumns: Column<ReceivedKaraoke>[] = [
             </button>
           )}
         </>
-      );
+      )
     },
   },
-];
+]
 
 ///////////////////////////////////////////////////
 // // top youtube横
@@ -509,24 +509,24 @@ const random5columns: Column<ReceivedKaraoke>[] = [
             {row.original.VtuberName}
           </Link>
         </span>
-      );
+      )
     },
   },
   {
     Header: "曲名(Click it)",
     accessor: "KaraokeId",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      const [isDisplay, setIsDisplay] = useState<boolean>(false);
-      const { updateVideo } = useVideo();
+      const [isDisplay, setIsDisplay] = useState<boolean>(false)
+      const { updateVideo } = useVideo()
       const playSong = (post: ReceivedKaraoke) => {
-        updateVideo(extractVideoId(post.MovieUrl), timeStringToSecondNum(post.SingStart));
-      };
+        updateVideo(extractVideoId(post.MovieUrl), timeStringToSecondNum(post.SingStart))
+      }
 
       const clipUrl = async () => {
-        await navigator.clipboard.writeText(toFullYouTubeVideoURL(row.original.MovieUrl, row.original.SingStart));
-        setIsDisplay(true);
-        setTimeout(() => setIsDisplay(false), 2000);
-      };
+        await navigator.clipboard.writeText(toFullYouTubeVideoURL(row.original.MovieUrl, row.original.SingStart))
+        setIsDisplay(true)
+        setTimeout(() => setIsDisplay(false), 2000)
+      }
       return (
         <div className="relative flex">
           <div className="flex flex-row">
@@ -542,7 +542,7 @@ const random5columns: Column<ReceivedKaraoke>[] = [
             {isDisplay && <div className="absolute bg-[#B7A692] rounded-2xl right-0 top-0 px-2 w-[130px]">URL was copied</div>}
           </div>
         </div>
-      );
+      )
     },
   },
   { Header: "再生開始", accessor: "SingStart" },
@@ -550,14 +550,14 @@ const random5columns: Column<ReceivedKaraoke>[] = [
     Header: "いいね",
     accessor: "Count",
     Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} movie={row.original.MovieUrl} karaoke={row.original.KaraokeId} />;
+      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} movie={row.original.MovieUrl} karaoke={row.original.KaraokeId} />
     },
   },
-];
+]
 
 export const KaraokeMinRandomTable = ({ posts: karaokes }: KaraokeTableProps) => {
-  const hasWindow = useHasWindow();
-  const shuffledData = useMemo(() => shuffleArray(karaokes, 5), [karaokes]);
+  const hasWindow = useHasWindow()
+  const shuffledData = useMemo(() => shuffleArray(karaokes, 5), [karaokes])
   const { getTableProps, getTableBodyProps, headerGroups, prepareRow, page } = useTable(
     {
       columns: random5columns,
@@ -565,7 +565,7 @@ export const KaraokeMinRandomTable = ({ posts: karaokes }: KaraokeTableProps) =>
       initialState: { pageIndex: 0, pageSize: 5 },
     },
     usePagination
-  );
+  )
 
   return (
     <>
@@ -589,7 +589,7 @@ export const KaraokeMinRandomTable = ({ posts: karaokes }: KaraokeTableProps) =>
               </thead>
               <tbody {...getTableBodyProps()}>
                 {page.map((row, rI) => {
-                  prepareRow(row);
+                  prepareRow(row)
                   return (
                     <tr {...row.getRowProps()} className={TableTW.regularTr} key={rI}>
                       {row.cells.map((cell, cI) => (
@@ -598,7 +598,7 @@ export const KaraokeMinRandomTable = ({ posts: karaokes }: KaraokeTableProps) =>
                         </td>
                       ))}
                     </tr>
-                  );
+                  )
                 })}
               </tbody>
             </table>
@@ -606,5 +606,5 @@ export const KaraokeMinRandomTable = ({ posts: karaokes }: KaraokeTableProps) =>
         </div>
       )}
     </>
-  );
-};
+  )
+}

@@ -1,30 +1,30 @@
-import React, { useState } from "react";
-import https from "https";
-import { AxiosRequestConfig } from "axios";
-import type { ReceivedKaraoke } from "@/types/vtuber_content";
-import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer";
-import { timeStringToSecondNum, extractVideoId } from "@/util";
-import { KaraokePaginationTable } from "@/components/table/Karaoke";
-import { Layout } from "@/components/layout/Layout";
-import { ContextType } from "@/types/server";
-import { checkLoggedin } from "@/util/webStrage/cookie";
-import { useVideo } from "@/providers/VideoProvider";
-import { dummyKaraokeArray } from "@/util/dummyData/dummyData";
+import React, { useState } from "react"
+import https from "https"
+import { AxiosRequestConfig } from "axios"
+import type { ReceivedKaraoke } from "@/types/vtuber_content"
+import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
+import { timeStringToSecondNum, extractVideoId } from "@/util"
+import { KaraokePaginationTable } from "@/components/table/Karaoke"
+import { Layout } from "@/components/layout/Layout"
+import { ContextType } from "@/types/server"
+import { checkLoggedin } from "@/util/webStrage/cookie"
+import { useVideo } from "@/providers/VideoProvider"
+import { dummyKaraokeArray } from "@/util/dummyData/dummyData"
 
-const pageName = "オリ曲";
+const pageName = "オリ曲"
 
 type PostsAndCheckSignin = {
-  vtubers_movies_karaokes: ReceivedKaraoke[];
-  isSignin: boolean;
-};
+  vtubers_movies_karaokes: ReceivedKaraoke[]
+  isSignin: boolean
+}
 
 export default function SingsPage({ vtubers_movies_karaokes: karaokes = dummyKaraokeArray, isSignin }: PostsAndCheckSignin) {
   const { videoState } = useVideo(
     // おいもオリ曲 00:00:00
     { youtubeId: "HcpFGZNusBw", startTime: timeStringToSecondNum("00:00:00"), isPlaying: true }
-  );
+  )
 
-  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke);
+  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
 
   return (
     <Layout pageName={pageName} isSignin={isSignin}>
@@ -44,21 +44,21 @@ export default function SingsPage({ vtubers_movies_karaokes: karaokes = dummyKar
         </div>
       </div>
     </Layout>
-  );
+  )
 }
 
 export async function getServerSideProps(context: ContextType) {
-  const { sessionToken, isLoggedin } = checkLoggedin(context);
-  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin); // 会員、非会員、どのページかの記録のため
+  const { sessionToken, isLoggedin } = checkLoggedin(context)
+  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin) // 会員、非会員、どのページかの記録のため
 
-  const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+  const httpsAgent = new https.Agent({ rejectUnauthorized: false })
   const options: AxiosRequestConfig = {
     headers: {
       cookie: `auth-token=${sessionToken}`,
     },
     withCredentials: true,
     httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
-  };
+  }
 
   // let resData: PostsAndCheckSignin | undefined = [] as PostsAndCheckSignin[];
   // try {
@@ -73,6 +73,6 @@ export async function getServerSideProps(context: ContextType) {
       karaokes: dummyKaraokeArray,
       isSignin: isLoggedin,
     },
-  };
+  }
   // }
 }

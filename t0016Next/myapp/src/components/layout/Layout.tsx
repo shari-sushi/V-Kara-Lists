@@ -1,22 +1,22 @@
-import Head from "next/head";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { useAuth } from "@/providers/AuthProvider";
-import { GestLogin, GestLoginForHamburger } from "../button/User";
-import { HeaderCss, FooterTW } from "@/styles/tailwiind";
-import { ToClickTW } from "@/styles/tailwiind";
-import { getWindowSize } from "@/features/layout/Layout";
-import { CreateLink, DeleteLink, EditLink, KaraokeLink, OriginalSongLink, LoginLink, MyPageLink, ProfileLink, SignUpLink, TitleLink, TopLink } from "../button/link/Humbarger";
-import Image from "next/image";
-import { ToggleVideoPositionButton } from "../button/ToggleVideoPositionButton";
-import { useVideo } from "@/providers/VideoProvider";
+import Head from "next/head"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import React, { useEffect, useState } from "react"
+import { useAuth } from "@/providers/AuthProvider"
+import { GestLogin, GestLoginForHamburger } from "../button/User"
+import { HeaderCss, FooterTW } from "@/styles/tailwiind"
+import { ToClickTW } from "@/styles/tailwiind"
+import { getWindowSize } from "@/features/layout/Layout"
+import { CreateLink, DeleteLink, EditLink, KaraokeLink, OriginalSongLink, LoginLink, MyPageLink, ProfileLink, SignUpLink, TitleLink, TopLink } from "../button/link/Humbarger"
+import Image from "next/image"
+import { ToggleVideoPositionButton } from "../button/ToggleVideoPositionButton"
+import { useVideo } from "@/providers/VideoProvider"
 
 type LayoutProps = {
-  pageName: string;
-  children: any;
-  isSignin: boolean;
-};
+  pageName: string
+  children: any
+  isSignin: boolean
+}
 
 export function Layout({ pageName, children, isSignin }: LayoutProps) {
   return (
@@ -36,25 +36,25 @@ export function Layout({ pageName, children, isSignin }: LayoutProps) {
       </main>
       <Footer />
     </div>
-  );
+  )
 }
 
 type HeaderProps = {
-  pageName: string;
-};
-const md = 768;
+  pageName: string
+}
+const md = 768
 
 const Header = ({ pageName }: HeaderProps) => {
-  const pathName = usePathname();
-  const { isSignin } = useAuth();
-  const [isOpen, setIsOpen] = useState<Boolean>(false);
-  const [width, setWidth] = useState<number>(900);
-  const { togglePosition } = useVideo();
+  const pathName = usePathname()
+  const { isSignin } = useAuth()
+  const [isOpen, setIsOpen] = useState<Boolean>(false)
+  const [width, setWidth] = useState<number>(900)
+  const { togglePosition } = useVideo()
 
   useEffect(() => {
-    const { width } = getWindowSize();
-    setWidth(width);
-  }, []);
+    const { width } = getWindowSize()
+    setWidth(width)
+  }, [])
 
   if (width > md) {
     return (
@@ -148,7 +148,7 @@ const Header = ({ pageName }: HeaderProps) => {
           </div>
         </header>
       </div>
-    );
+    )
   } else {
     return (
       <header className={`${HeaderCss.regular} flex justify-between w-full z-40`}>
@@ -233,14 +233,14 @@ const Header = ({ pageName }: HeaderProps) => {
           )}
         </div>
       </header>
-    );
+    )
   }
-};
+}
 
 const Footer = () => {
   // videoPlayer用のスペース。videoStateで管理して動的にしたい
-  return <div style={{ height: 200 }} />;
-};
+  return <div style={{ height: 200 }} />
+}
 
 // NOTE: Footerの残骸。playerを非表示にできるようにしたときに使う予定
 // const pathName = usePathname();
