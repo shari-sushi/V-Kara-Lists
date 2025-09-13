@@ -39,10 +39,10 @@ func routingV1(r *gin.Engine) {
 
 			// /vtuber, /movie, /karaokeの文字列はフロント側で比較演算に使われてる
 			// データ新規登録
+			// TODO: 複数形のpathを用意して、複数登録対応にする(既存のpathも残す)
 			vcontents.POST("/create/vtuber", controller.CreateVtuber)
 			vcontents.POST("/create/movie", controller.CreateMovie)
 			vcontents.POST("/create/karaoke", controller.CreateKaraoke)
-			vcontents.POST("/create/karaoke-multi", controller.CreateKaraokes)
 
 			//データ編集
 			vcontents.POST("/edit/vtuber", controller.EditVtuber)
