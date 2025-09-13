@@ -10,6 +10,14 @@ V-karaはその欠点を補い、歌の検索、視聴、布教までシーム�
 　ただし、コンテンツ情報はユーザーによる入力が必要で、ユーザー同士で作り上げるDBのような立ち位置です。<br/>
 ※ゲストログイン可能です。<br/>
 <br/>
+また、将来的にはVtuber自信がこのサイトを使う価値が出せればと思っています。<br/>
+- Vtuberが営業を掛けるときにアピールしたい歌のリンクをここでサクッと見つけられる
+- 何を歌うか迷った時に良く歌う歌を確認できる
+- 自分の歌(非オリ曲)で何が人気なのかいいね数で確認できる 
+  (いいね機能自体がデメリットもあるので悩ましいですが）
+- 自分の同じ歌で検索することで、徐々に上達してるか確認できる
+
+<br/>
 ※私の経歴や独学時の開発体験についてはリリースと同時に記事を書きましたのでそちらをご覧下さい。<br/>
 [Qiita:【30歳/完全未経験/独学】webアプリを作製しました【Golang, Next.js, MySQL, Docker, GitHub Actions CI, AWS Fargate on ECS】](https://qiita.com/shari_sushi/items/ed4a06518d29e5c87d77)
 
@@ -20,6 +28,7 @@ V-karaはその欠点を補い、歌の検索、視聴、布教までシーム�
   <img width="700" height="1107" alt="image" src="https://github.com/user-attachments/assets/7943acdd-f7fb-4238-bdf6-f5fad3c6cc88" /><br/>
 - Vtuber、歌枠(動画)、その中で歌っている歌の登録<br/>
   <img width="700" height="891" alt="image" src="https://github.com/user-attachments/assets/e1637531-477f-4c40-9a88-f7aa3469de39" /><br/>
+
 
 ### 補助機能
 ※この欄は諸々の理由で滅多に更新しません。
