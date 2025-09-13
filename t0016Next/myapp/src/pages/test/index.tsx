@@ -17,7 +17,7 @@ import { VtuberTable } from "@/components/table/Vtuber";
 import { MovieTable } from "@/components/table/Movie";
 import {
   KaraokeThinTable,
-  KaraokeMinRandamTable,
+  KaraokeMinRandomTable,
 } from "@/components/table/Karaoke";
 import { ToClickTW } from "@/styles/tailwiind";
 import { ContextType } from "@/types/server";
@@ -211,7 +211,7 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
                 />
                 歌
               </h2>
-              <KaraokeMinRandamTable
+              <KaraokeMinRandomTable
                 posts={karaokes}
                 handleMovieClickYouTube={handleMovieClickYouTube}
               />
