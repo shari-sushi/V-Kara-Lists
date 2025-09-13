@@ -18,12 +18,16 @@ func init() {
 
 func main() {
 	r := gin.Default()
+
+	AllowOrigins := []string{}
+	if common.IsOnLocal {
+		AllowOrigins = append(AllowOrigins, "http://localhost:3005", "https://localhost:3005")
+	} else if common.IsOnCloud {
+		AllowOrigins = append(AllowOrigins, "http://v-karaoke.com", "https://v-karaoke.com")
+	}
+
 	r.Use(cors.New(cors.Config{
-		AllowOrigins: []string{
-			"http://localhost:3005", "https://localhost:3005",
-			"http://v-karaoke.com", "https://v-karaoke.com",
-			"http://backend.v-karaoke.com", "https://backend.v-karaoke.com",
-		},
+		AllowOrigins: AllowOrigins,
 		AllowMethods: []string{"POST", "GET", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders: []string{
 			"Origin", "Content-Length", "Content-Type", "Cookie",

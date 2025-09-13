@@ -20,9 +20,13 @@ type SqlHandler struct {
 
 // 似たような処理がSetListenerIdintoCookie()にもあるので、envを変更するときは注意
 func GetEnvVar() {
+	fmt.Println("----環境変数取得：開始----")
 	if common.IsOnCloud {
 		//クラウド環境
 		fmt.Println("クラウド環境で起動")
+		if common.DEPLOY_ENV == "EC2_DOCKER_COMPOSE" && common.DEPLOY_DB_ENV == "RDS" {
+			fmt.Println("EC2のdocker composeで起動")
+		}
 	} else if common.IsOnLocalWithDockerCompose {
 		// ローカルのdocker上(compose使用)
 		fmt.Println("ローカルのdockerコンテナ内で起動")
@@ -37,8 +41,8 @@ func GetEnvVar() {
 		}
 	}
 
-	guest := os.Getenv("GUEST_USER_NAME")
-	fmt.Printf("「%v」の中身が空でなければ環境変数を読み込めてるはず。 \n", guest)
+	fmt.Printf("guest:「%v」の中身が空でなければ環境変数の読み込みは成功してる\n", os.Getenv("GUEST_USER_NAME"))
+	fmt.Println("----環境変数取得：終了----")
 }
 
 func dbInit() database.SqlHandler {

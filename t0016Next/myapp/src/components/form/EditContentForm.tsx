@@ -1,92 +1,67 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import axios from "axios";
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import axios from "axios"
 
-import { domain } from "@/../env";
-import type { CrudDate, BasicDataProps } from "@/types/vtuber_content";
-import { DropDownVtuber } from "@/components/dropDown/Vtuber";
-import { DropDownMovie } from "@/components/dropDown/Movie";
-import { ValidateEdit } from "@/util";
-import { FormTW, ToClickTW } from "@/styles/tailwiind";
-import { DropDownKaraoke } from "../dropDown/Karaoke";
-import { CrudContentSelector } from "@/components/form/Common";
-import router from "next/router";
+import { domain } from "@/../env"
+import type { CrudDate, BasicDataProps } from "@/types/vtuber_content"
+import { DropDownVtuber } from "@/components/dropDown/Vtuber"
+import { DropDownMovie } from "@/components/dropDown/Movie"
+import { ValidateEdit } from "@/util"
+import { FormTW, ToClickTW } from "@/styles/tailwiind"
+import { DropDownKaraoke } from "../dropDown/Karaoke"
+import { CrudContentSelector, findVtuber } from "@/components/form/Common"
+import router from "next/router"
 
 export type EditPageProps = {
-  posts: BasicDataProps;
-  isSignin: boolean;
-};
+  posts: BasicDataProps
+  isSignin: boolean
+}
 
 type EditDataProps = {
-  posts: BasicDataProps;
-  selectedVtuber: number;
-  selectedMovie: string;
-  selectedKaraoke: number;
-  setSelectedVtuber: (arg0: number) => void;
-  setSelectedMovie: (arg0: string) => void;
-  setSelectedKaraoke: (arg0: number) => void;
-  clearMovieHandler: () => void;
-};
+  posts: BasicDataProps
+  selectedVtuber: number
+  selectedMovie: string
+  selectedKaraoke: number
+  setSelectedVtuber: (arg0: number) => void
+  setSelectedMovie: (arg0: string) => void
+  setSelectedKaraoke: (arg0: number) => void
+  clearMovieHandler: () => void
+}
 type EditVtuber = {
-  VtuberId: number;
-  VtuberName: string | undefined;
-  VtuberKana: string | undefined;
-  IntroMovieUrl: string | null | undefined;
-};
+  VtuberId: number
+  VtuberName: string | undefined
+  VtuberKana: string | undefined
+  IntroMovieUrl: string | null | undefined
+}
 type EditMovie = {
-  VtuberId: number;
-  MovieTitle: string | undefined;
-  MovieUrl: string;
-};
+  VtuberId: number
+  MovieTitle: string | undefined
+  MovieUrl: string
+}
 type EditKaraoke = {
-  MovieUrl: string;
-  KaraokeId: number;
-  SongName: string | undefined;
-  SingStart: string | undefined;
-};
+  MovieUrl: string
+  KaraokeId: number
+  SongName: string | undefined
+  SingStart: string | undefined
+}
 
-export function EditForm({
-  posts,
-  selectedVtuber,
-  selectedMovie,
-  selectedKaraoke,
-  setSelectedVtuber,
-  setSelectedMovie,
-  setSelectedKaraoke,
-  clearMovieHandler,
-}: EditDataProps) {
-  const vtubers = posts?.vtubers;
-  const movies = posts?.vtubers_movies;
-  const karaokes = posts?.vtubers_movies_karaokes;
+export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke, setSelectedVtuber, setSelectedMovie, setSelectedKaraoke, clearMovieHandler }: EditDataProps) {
+  const vtubers = posts?.vtubers
+  const movies = posts?.vtubers_movies
+  const karaokes = posts?.vtubers_movies_karaokes
 
-  const foundVtuber = vtubers?.find(
-    (vtuber) => vtuber.VtuberId === selectedVtuber
-  );
-  const foundMovie = movies?.find((movie) => movie.MovieUrl === selectedMovie);
-  const foundKaraoke = karaokes?.find(
-    (karaoke) => karaoke.KaraokeId === selectedKaraoke
-  );
+  const foundVtuber = vtubers?.find((vtuber) => vtuber.VtuberId === selectedVtuber)
+  const foundMovie = movies?.find((movie) => movie.MovieUrl === selectedMovie)
+  const foundKaraoke = karaokes?.find((karaoke) => karaoke.KaraokeId === selectedKaraoke)
 
-  const [vtuberNameInput, setVtuberNameInput] = useState(
-    foundVtuber?.VtuberName ?? ""
-  );
-  const [VtuberKanaInput, setVtuberKanaInput] = useState(
-    foundVtuber?.VtuberKana ?? ""
-  );
-  const [IntroMovieUrInput, setIntroMovieUrInput] = useState(
-    foundVtuber?.IntroMovieUrl ?? ""
-  );
-  const [MovieTitleInput, setMovieTitleInput] = useState(
-    foundMovie?.MovieTitle ?? ""
-  );
-  const [SingStartInput, setSingStartInput] = useState(
-    foundKaraoke?.SingStart ?? ""
-  );
-  const [SongNameInput, setSongNameInput] = useState(
-    foundKaraoke?.SongName ?? ""
-  );
+  const [vtuberNameInput, setVtuberNameInput] = useState(foundVtuber?.VtuberName ?? "")
+  const [VtuberKanaInput, setVtuberKanaInput] = useState(foundVtuber?.VtuberKana ?? "")
+  const [IntroMovieUrInput, setIntroMovieUrInput] = useState(foundVtuber?.IntroMovieUrl ?? "")
+  const [MovieTitleInput, setMovieTitleInput] = useState(foundMovie?.MovieTitle ?? "")
+  const [SingStartInput, setSingStartInput] = useState(foundKaraoke?.SingStart ?? "")
+  const [SongNameInput, setSongNameInput] = useState(foundKaraoke?.SongName ?? "")
 
-  const [crudContentType, setCrudContentType] = useState<string>("karaoke");
+  const [crudContentType, setCrudContentType] = useState<string>("karaoke")
 
   const axiosClient = axios.create({
     baseURL: `${domain.backendHost}/vcontents`,
@@ -94,20 +69,20 @@ export function EditForm({
     headers: {
       "Content-Type": "application/json",
     },
-  });
+  })
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CrudDate>({ reValidateMode: "onChange" });
+  } = useForm<CrudDate>({ reValidateMode: "onChange" })
 
   const resultDisplay = () => {
-    let result = window.confirm("編集完了しました。\nページを更新しますか？");
+    let result = window.confirm("編集完了しました。\nページを更新しますか？")
     if (result) {
-      router.reload();
+      router.reload()
     }
-  };
+  }
 
   const onSubmit = async (CrudData: CrudDate) => {
     if (crudContentType === "vtuber") {
@@ -117,18 +92,16 @@ export function EditForm({
           VtuberName: CrudData.VtuberName || foundVtuber?.VtuberName,
           VtuberKana: CrudData.VtuberKana || foundVtuber?.VtuberKana,
           IntroMovieUrl: CrudData.IntroMovieUrl || foundVtuber?.IntroMovieUrl,
-        };
-        const response = await axiosClient.post("/edit/vtuber", reqBody);
+        }
+        const response = await axiosClient.post("/edit/vtuber", reqBody)
         if (response.status) {
-          resultDisplay();
+          resultDisplay()
         } else {
-          throw new Error(response.statusText);
+          throw new Error(response.statusText)
         }
       } catch (err) {
-        alert(
-          "編集失敗\nご自身で登録したデータのみ編集できます。マイページで確認してください。\n解決しない場合は開発者へお知らせいただけると幸いです。"
-        );
-        console.error(err);
+        alert("編集失敗\nご自身で登録したデータのみ編集できます。マイページで確認してください。\n解決しない場合は開発者へお知らせいただけると幸いです。")
+        console.error(err)
       }
     } else if (crudContentType === "movie") {
       try {
@@ -136,18 +109,16 @@ export function EditForm({
           VtuberId: selectedVtuber, //既存値
           MovieUrl: selectedMovie, //既存値
           MovieTitle: CrudData.MovieTitle || foundMovie?.MovieTitle,
-        };
-        const response = await axiosClient.post("/edit/movie", reqBody);
+        }
+        const response = await axiosClient.post("/edit/movie", reqBody)
         if (response.status) {
-          resultDisplay();
+          resultDisplay()
         } else {
-          throw new Error(response.statusText);
+          throw new Error(response.statusText)
         }
       } catch (err) {
-        alert(
-          "編集失敗 \n ご自身で登録したデータのみ編集できます。マイページで確認してください。\n解決しない場合は開発者へお知らせいただけると幸いです。"
-        );
-        console.error(err);
+        alert("編集失敗 \n ご自身で登録したデータのみ編集できます。マイページで確認してください。\n解決しない場合は開発者へお知らせいただけると幸いです。")
+        console.error(err)
       }
     } else if (crudContentType === "karaoke") {
       try {
@@ -156,25 +127,21 @@ export function EditForm({
           KaraokeId: selectedKaraoke, //既存値
           SongName: CrudData.SongName || foundKaraoke?.SongName,
           SingStart: CrudData.SingStart || foundKaraoke?.SingStart,
-        };
-        const response = await axiosClient.post("/edit/karaoke", reqBody);
+        }
+        const response = await axiosClient.post("/edit/karaoke", reqBody)
         if (response.status) {
-          resultDisplay();
+          resultDisplay()
         } else {
-          throw new Error(response.statusText);
+          throw new Error(response.statusText)
         }
       } catch (err) {
-        alert(
-          "編集失敗\nご自身で登録したデータなのかマイページで確認してください。\n解決しない場合は開発者へお知らせいただけると幸いです。"
-        );
-        console.error(err);
+        alert("編集失敗\nご自身で登録したデータなのかマイページで確認してください。\n解決しない場合は開発者へお知らせいただけると幸いです。")
+        console.error(err)
       }
     } else {
-      console.log(
-        "編集するデータの種類(vtuber, movie, karaoke)の選択で想定外のエラーが発生しました。"
-      );
+      console.log("編集するデータの種類(vtuber, movie, karaoke)の選択で想定外のエラーが発生しました。")
     }
-  };
+  }
 
   return (
     <div
@@ -183,19 +150,14 @@ export function EditForm({
     >
       <div id="selectContent" className="w-full mx-1 md:mx-3 ">
         <div className="flex flex-col justify-center w-full text-black font-bold">
-          <CrudContentSelector
-            contentType={crudContentType}
-            setContentType={setCrudContentType}
-          />
+          <CrudContentSelector contentType={crudContentType} setContentType={setCrudContentType} />
         </div>
       </div>
 
       <hr className={`${FormTW.horizon}`} />
 
       <div id="selectData" className="flex flex-col">
-        <div className="mx-auto text-black">
-          編集するデータを選択してください
-        </div>
+        <div className="mx-auto text-black">編集するデータを選択してください</div>
         <div className="pb-3">
           <div className="h-7">
             {selectedVtuber == 0 && (
@@ -205,11 +167,7 @@ export function EditForm({
             )}
           </div>
           <div className="bottom-0">
-            <DropDownVtuber
-              posts={posts}
-              onVtuberSelect={setSelectedVtuber}
-              defaultMenuIsOpen={false}
-            />
+            <DropDownVtuber selectedVtuber={findVtuber(vtubers, selectedVtuber)} posts={posts} onVtuberSelect={setSelectedVtuber} defaultMenuIsOpen={false} />
           </div>
         </div>
         {(crudContentType === "movie" || crudContentType === "karaoke") && (
@@ -221,12 +179,7 @@ export function EditForm({
                 </span>
               )}
             </div>
-            <DropDownMovie
-              posts={posts}
-              selectedVtuber={selectedVtuber}
-              setSelectedMovie={setSelectedMovie}
-              clearMovieHandler={clearMovieHandler}
-            />
+            <DropDownMovie posts={posts} selectedVtuber={selectedVtuber} setSelectedMovie={setSelectedMovie} clearMovieHandler={clearMovieHandler} />
           </div>
         )}
         {crudContentType === "karaoke" && (
@@ -238,11 +191,7 @@ export function EditForm({
                 </span>
               )}
             </div>
-            <DropDownKaraoke
-              posts={posts}
-              selectedMovie={selectedMovie}
-              onKaraokeSelect={setSelectedKaraoke}
-            />
+            <DropDownKaraoke posts={posts} selectedMovie={selectedMovie} onKaraokeSelect={setSelectedKaraoke} />
           </div>
         )}
       </div>
@@ -285,15 +234,10 @@ export function EditForm({
                 <input
                   className={`${ToClickTW.input}`}
                   {...register("IntroMovieUrl", ValidateEdit.IntroMovieUrl)}
-                  placeholder={
-                    foundVtuber?.IntroMovieUrl ||
-                    "例:www.youtube.com/watch?v=AlHRqSsF--8&t=75"
-                  }
+                  placeholder={foundVtuber?.IntroMovieUrl || "例:www.youtube.com/watch?v=AlHRqSsF--8&t=75"}
                   onChange={(e) => setIntroMovieUrInput(e.target.value)}
                 />
-                <span className="text-black">
-                  {errors.IntroMovieUrl?.message}
-                </span>
+                <span className="text-black">{errors.IntroMovieUrl?.message}</span>
               </div>
               <div className="flex flex-col text-black">
                 <span>* クエリで時間指定可能</span>
@@ -308,9 +252,7 @@ export function EditForm({
             <div className="pt-4">
               <div className="mb-3">
                 <div className="">
-                  <span className="block text-gray-700 text-sm font-bold">
-                    動画タイトル:
-                  </span>
+                  <span className="block text-gray-700 text-sm font-bold">動画タイトル:</span>
                 </div>
                 <input
                   className={`${ToClickTW.input}`}
@@ -321,9 +263,7 @@ export function EditForm({
                 <span className="text-black">{errors.MovieTitle?.message}</span>
               </div>
               <div className="flex">
-                <span className={`${FormTW.label}`}>
-                  歌枠の URL は編集できません
-                </span>
+                <span className={`${FormTW.label}`}>歌枠の URL は編集できません</span>
               </div>
             </div>
           )}
@@ -358,15 +298,12 @@ export function EditForm({
           <hr className={`${FormTW.horizon}`} />
 
           <div className="flex justify-center">
-            <button
-              type="submit"
-              className={`${ToClickTW.decide} m-4 w-[100px] `}
-            >
+            <button type="submit" className={`${ToClickTW.decide} m-4 w-[100px] `}>
               編集確定
             </button>
           </div>
         </form>
       </div>
     </div>
-  );
+  )
 }

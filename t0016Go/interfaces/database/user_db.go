@@ -11,7 +11,6 @@ type UserRepository struct {
 }
 
 func (db *UserRepository) CreateUser(user domain.Listener) (domain.Listener, error) {
-	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	err := db.Create(&user).Error
 	if err != nil {
 		return user, err
@@ -20,7 +19,6 @@ func (db *UserRepository) CreateUser(user domain.Listener) (domain.Listener, err
 }
 
 func (db *UserRepository) FindUserByEmail(email string) (domain.Listener, error) {
-	fmt.Print("interfaces/database/vtuber_content_db.go \n")
 	var user domain.Listener
 	err := db.Where("email = ?", email).First(&user).Error
 	if err != nil {

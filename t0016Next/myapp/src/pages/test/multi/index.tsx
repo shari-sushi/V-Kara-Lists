@@ -1,41 +1,38 @@
-import React from "react";
-import { Layout } from "@/components/layout/Layout";
+import React from "react"
+import { Layout } from "@/components/layout/Layout"
 
-import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer";
+import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
 
-const pageNum = 0;
-const pageName = "test";
+const pageNum = 0
+const pageName = "test"
 // http://localhost:80/test/multi
 const TopPage = () => {
-  const currentMovieId = "HLvwenXhslI";
-  const start = 0;
+  const currentMovieId = "HLvwenXhslI"
+  const start = 0
   return (
     <Layout pageName={pageName} isSignin={false}>
       <TestLink thisPageNum={pageNum} />
       視聴回数カウント確認用。※youtubeページで直接見ないこと。 5/27時点で1回。
       <YouTubePlayer videoId={currentMovieId} start={start} />
     </Layout>
-  );
-};
-export default TopPage;
+  )
+}
+export default TopPage
 
-import Link from "next/link";
+import Link from "next/link"
 
 // // https://dev.classmethod.jp/articles/introduce-tanstack-table/
-const titles = ["index", "Filtering-puls"];
+const titles = ["index", "Filtering-puls"]
 
 export function TestLink({ thisPageNum }: { thisPageNum?: number }) {
   return (
     <div>
-      <Link
-        href={`/test`}
-        className="float-left bg-green-200 text-[#000000] font-extrabold px-4 min-w-5 rounded-full "
-      >
+      <Link href={`/test`} className="float-left bg-green-200 text-[#000000] font-extrabold px-4 min-w-5 rounded-full ">
         test-top
       </Link>
       {titles?.map((item: string, index: number) => {
-        const isThisPage = thisPageNum === index;
-        const isIndexPage = index === 0;
+        const isThisPage = thisPageNum === index
+        const isIndexPage = index === 0
         return (
           // eslint-disable-next-line react/jsx-key
           <Link
@@ -47,20 +44,14 @@ export function TestLink({ thisPageNum }: { thisPageNum?: number }) {
           >
             {index}:{item}
           </Link>
-        );
+        )
       })}
-      <Link
-        href="/test/form-validate"
-        className="float-left bg-green-200 text-[#000000] font-extrabold px-4 min-w-5 rounded-full "
-      >
+      <Link href="/test/form-validate" className="float-left bg-green-200 text-[#000000] font-extrabold px-4 min-w-5 rounded-full ">
         form-validate
       </Link>
-      <Link
-        href="/test/upload"
-        className="float-left bg-green-200 text-[#000000] font-extrabold px-4 min-w-5 rounded-full "
-      >
+      <Link href="/test/upload" className="float-left bg-green-200 text-[#000000] font-extrabold px-4 min-w-5 rounded-full ">
         upload-file
       </Link>
     </div>
-  );
+  )
 }

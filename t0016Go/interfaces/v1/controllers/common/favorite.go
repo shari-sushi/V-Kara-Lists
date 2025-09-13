@@ -1,13 +1,10 @@
 package common
 
 import (
-	"fmt"
-
 	"github.com/sharin-sushi/0016go_next_relation/domain"
 )
 
 func AddIsFavToMovieWithFav(mosWithFavCnts []domain.TransmitMovie, myFavs []domain.ReceivedFavorite) []domain.TransmitMovie {
-	fmt.Print("AddIsFavToMovieWithFav\n")
 	var transmitData []domain.TransmitMovie
 	for _, moWithFavCnt := range mosWithFavCnts {
 		isFav := returnIsFavEachMovieUrl(myFavs, moWithFavCnt.MovieUrl)
@@ -34,7 +31,6 @@ func returnIsFavEachMovieUrl(myFavs []domain.ReceivedFavorite, movieUrl string) 
 }
 
 func AddIsFavToKaraokeWithFav(kasWithFavCnts []domain.TransmitKaraoke, myFavs []domain.ReceivedFavorite) []domain.TransmitKaraoke {
-	fmt.Print(" AddIsFavToKaraokeWithFav\n")
 	var transmitData []domain.TransmitKaraoke
 	for _, kaWithFavCnt := range kasWithFavCnts {
 		isFav := returnIsFavEachKaraokeIdByListenerId(myFavs, kaWithFavCnt.KaraokeId)

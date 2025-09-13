@@ -20,7 +20,7 @@ var costString string
 
 func InitCryptVar() {
 	var err error
-	fmt.Println("start to godotenv.Load")
+	fmt.Println("-----start to godotenv.Load-----")
 	if err = godotenv.Load(".env", "../.env"); err != nil {
 		fmt.Println("failed to godotenv at init() in cryptgo (on Cloud)", err.Error())
 	}
@@ -37,10 +37,9 @@ func InitCryptVar() {
 }
 
 func initAesEnv() {
-	fmt.Println("start to initAesEnv")
+	fmt.Println("-----start to initAesEnv-----")
 	costString = os.Getenv("BCRYPT_COST")
 	envAesKey := os.Getenv("AES_KEY")
-	fmt.Println("envAesKey", envAesKey)
 	aesKey = []byte(envAesKey)
 	aesIv, _ = hex.DecodeString(os.Getenv("AES_IV"))
 }
@@ -96,7 +95,6 @@ func DecryptFromAES(encryptedEmail string) (string, error) {
 	cbcDecrypter.CryptBlocks(decrypted, byteDecoded)
 
 	email := string(pkcs7Unpad(decrypted))
-	fmt.Println(email)
 	return email, nil
 }
 

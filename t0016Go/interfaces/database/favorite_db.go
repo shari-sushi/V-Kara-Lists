@@ -11,7 +11,6 @@ type FavoriteRepository struct {
 }
 
 func (db *FavoriteRepository) CountMovieFavorites() ([]domain.TransmitMovie, error) {
-	fmt.Print("interfaces/database/favorite.go\n")
 	var fav domain.Favorite
 	var favCnt []domain.TransmitMovie
 	err := db.Model(&fav).Select("movie_url").Where("karaoke_id = 0").Group("movie_url").Find(&favCnt).Error
@@ -22,7 +21,6 @@ func (db *FavoriteRepository) CountMovieFavorites() ([]domain.TransmitMovie, err
 }
 
 func (db *FavoriteRepository) CountKaraokeFavorites() ([]domain.TransmitKaraoke, error) {
-	fmt.Print("interfaces/database/favorite.go \n")
 	var fav domain.Favorite
 	var favCnt []domain.TransmitKaraoke
 	err := db.Model(&fav).Select("karaoke_id").Where("where karaoke_id != 0").Group("karoke_list_id").Find(&favCnt).Error
@@ -33,20 +31,16 @@ func (db *FavoriteRepository) CountKaraokeFavorites() ([]domain.TransmitKaraoke,
 }
 
 func (db *FavoriteRepository) DeleteMovieFavorite(fav domain.Favorite) error {
-	fmt.Print("interfaces/database/favorite.go\n")
 	whereQu := fmt.Sprintf("listener_id = %v AND movie_url = '%v' AND karaoke_id = 0", fav.ListenerId, fav.MovieUrl)
 	err := db.Where(whereQu).Delete(&fav).Error
-	fmt.Print("check\n")
 	if err != nil {
 		return err
 	}
-	fmt.Print("check2 \n")
 
 	return err
 }
 
 func (db *FavoriteRepository) DeleteKaraokeFavorite(fav domain.Favorite) error {
-	fmt.Print("interfaces/database/favorite.go\n")
 	whereQu := fmt.Sprintf("listener_id = %v AND movie_url = '%v' AND karaoke_id = %v", fav.ListenerId, fav.MovieUrl, fav.KaraokeId)
 	err := db.Where(whereQu).Delete(&fav).Error
 	if err != nil {
@@ -56,7 +50,6 @@ func (db *FavoriteRepository) DeleteKaraokeFavorite(fav domain.Favorite) error {
 }
 
 func (db *FavoriteRepository) GetVtubersMoviesWithFavCnts() ([]domain.TransmitMovie, error) {
-	fmt.Print("interfaces/database/favorite.go \n")
 	var TmMos []domain.TransmitMovie
 	var err error
 
@@ -79,7 +72,6 @@ func (db *FavoriteRepository) GetVtubersMoviesWithFavCnts() ([]domain.TransmitMo
 }
 
 func (db *FavoriteRepository) GetVtubersMoviesKaraokesWithFavCnts() ([]domain.TransmitKaraoke, error) {
-	fmt.Print("interfaces/database/favorite.go \n")
 	var TmKas []domain.TransmitKaraoke
 	var err error
 
@@ -104,7 +96,6 @@ func (db *FavoriteRepository) GetVtubersMoviesKaraokesWithFavCnts() ([]domain.Tr
 }
 
 func (db *FavoriteRepository) GetVtubersMoviesKaraokesByVtuerKanaWithFavCnts(kana string) ([]domain.TransmitKaraoke, error) {
-	fmt.Print("interfaces/database/favorite.go \n")
 	var TmKas []domain.TransmitKaraoke
 	var err error
 
@@ -129,7 +120,6 @@ func (db *FavoriteRepository) GetVtubersMoviesKaraokesByVtuerKanaWithFavCnts(kan
 }
 
 func (db *FavoriteRepository) GetLatest50VtubersMoviesKaraokesWithFavCnts(guestId domain.ListenerId) ([]domain.TransmitKaraoke, error) {
-	fmt.Print("interfaces/database/favorite.go \n")
 	var TmKas []domain.TransmitKaraoke
 	var err error
 
@@ -158,18 +148,15 @@ func (db *FavoriteRepository) GetLatest50VtubersMoviesKaraokesWithFavCnts(guestI
 }
 
 func (db *FavoriteRepository) FindFavoritesCreatedByListenerId(lId domain.ListenerId) ([]domain.ReceivedFavorite, error) {
-	fmt.Print("interfaces/database/favorite_db.go \n")
 	var favs []domain.Favorite
 	var receivedfavs []domain.ReceivedFavorite
 
 	result := db.Select("id, listener_id, movie_url, karaoke_id").Where("listener_id=?", lId).Model(&favs).Scan(&receivedfavs)
 	fmt.Printf("recfavs:\n %+v\n", receivedfavs)
-	fmt.Printf("&recfavs:\n%+v\n", &receivedfavs)
 	return receivedfavs, result.Error
 }
 
 func (db *FavoriteRepository) FindFavoriteUnscopedByFavOrUnfavRegistry(fav domain.Favorite) domain.Favorite {
-	fmt.Print("interfaces/database/favorite.go\n")
 	whereQu := fmt.Sprintf("listener_id = '%v' AND movie_url = '%v' AND karaoke_id = '%v'", fav.ListenerId, fav.MovieUrl, fav.KaraokeId)
 	err := db.Unscoped().Where(whereQu).First(&fav).Error
 	fmt.Printf("FindFavoriteUnscopedByFavOrUnfavRegistry got err=%v\n", err)
@@ -177,7 +164,6 @@ func (db *FavoriteRepository) FindFavoriteUnscopedByFavOrUnfavRegistry(fav domai
 }
 
 func (db *FavoriteRepository) CreateMovieFavorite(fav domain.Favorite) error {
-	fmt.Print("interfaces/database/favorite.go\n")
 	err := db.Create(&fav).Error
 	if err != nil {
 		return err
@@ -186,7 +172,6 @@ func (db *FavoriteRepository) CreateMovieFavorite(fav domain.Favorite) error {
 }
 
 func (db *FavoriteRepository) CreateKaraokeFavorite(fav domain.Favorite) error {
-	fmt.Print("interfaces/database/favorite.go\n")
 	err := db.Create(&fav).Error
 	if err != nil {
 		return err
@@ -195,7 +180,6 @@ func (db *FavoriteRepository) CreateKaraokeFavorite(fav domain.Favorite) error {
 }
 
 func (db *FavoriteRepository) UpdateMovieFavorite(fav domain.Favorite) error {
-	fmt.Print("interfaces/database/favorite.go\n")
 	err := db.Unscoped().Model(fav).Update("deleted_at", nil).Error
 	if err != nil {
 		return err
@@ -204,7 +188,6 @@ func (db *FavoriteRepository) UpdateMovieFavorite(fav domain.Favorite) error {
 }
 
 func (db *FavoriteRepository) UpdateKaraokeFavorite(fav domain.Favorite) error {
-	fmt.Print("interfaces/database/favorite.go\n")
 	whereQu := fmt.Sprintf("listener_id = '%v' AND movie_url = '%v' AND karaoke_id = %v", fav.ListenerId, fav.MovieUrl, fav.KaraokeId)
 	err := db.Unscoped().Model(fav).Where(whereQu).Update("deleted_at", nil).Error
 	if err != nil {
@@ -215,7 +198,6 @@ func (db *FavoriteRepository) UpdateKaraokeFavorite(fav domain.Favorite) error {
 
 // 使ってない？
 func (db *FavoriteRepository) FindVtubersCreatedByListenerId(lId domain.ListenerId) ([]domain.Vtuber, error) {
-	fmt.Print("interfaces/database/favorite.go \n")
 	var vts []domain.Vtuber
 	err := db.Where("vtuber_inputter_id = ?", lId).Find(&vts).Error
 	if err != nil {
@@ -225,7 +207,6 @@ func (db *FavoriteRepository) FindVtubersCreatedByListenerId(lId domain.Listener
 }
 
 func (db *FavoriteRepository) FindMoviesCreatedByListenerId(lId domain.ListenerId) ([]domain.TransmitMovie, error) {
-	fmt.Print("interfaces/database/favorite.go \n")
 	var TmMos []domain.TransmitMovie
 	var err error
 
@@ -248,7 +229,6 @@ func (db *FavoriteRepository) FindMoviesCreatedByListenerId(lId domain.ListenerI
 }
 
 func (db *FavoriteRepository) FindKaraokesCreatedByListenerId(lId domain.ListenerId) ([]domain.TransmitKaraoke, error) {
-	fmt.Print("interfaces/database/favorite.go \n")
 	var TmKas []domain.TransmitKaraoke
 	var err error
 
@@ -272,7 +252,6 @@ func (db *FavoriteRepository) FindKaraokesCreatedByListenerId(lId domain.Listene
 	return TmKas, nil
 }
 func (db *FavoriteRepository) FindMoviesFavoritedByListenerId(lId domain.ListenerId) ([]domain.TransmitMovie, error) {
-	fmt.Print("interfaces/database/favorite.go\n")
 	var Mos []domain.Movie
 	var tmMos []domain.TransmitMovie
 	var err error
@@ -285,7 +264,6 @@ func (db *FavoriteRepository) FindMoviesFavoritedByListenerId(lId domain.Listene
 	return tmMos, err
 }
 func (db *FavoriteRepository) FindKaraokesFavoritedByListenerId(lId domain.ListenerId) ([]domain.TransmitKaraoke, error) {
-	fmt.Print("interfaces/database/favorite.go\n")
 	var err error
 	var tmKas []domain.TransmitKaraoke
 	var Kas []domain.Karaoke

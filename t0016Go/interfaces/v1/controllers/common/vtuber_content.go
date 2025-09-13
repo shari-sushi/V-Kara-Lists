@@ -27,7 +27,7 @@ func ValidateVtuber(v domain.Vtuber) error {
 func NormalizeMovie(m domain.Movie) domain.Movie {
 	// m.VtuberId = strings.TrimSpace(m.SingStart)
 	m.MovieTitle = strings.TrimSpace(m.MovieTitle)
-	m.MovieUrl = strings.TrimSpace(m.MovieUrl)
+	m.MovieUrl = domain.MovieUrl(strings.TrimSpace(string(m.MovieUrl)))
 	// m.MovieInputterId = strings.TrimSpace(m.MovieInputterId)
 	return m
 }
@@ -38,7 +38,7 @@ func ValidateMovie(k domain.Movie) error {
 
 func NormalizeKaraoke(k domain.Karaoke) domain.Karaoke {
 	// k.VtuberId = strings.TrimSpace(k.VtuberId)
-	k.MovieUrl = strings.TrimSpace(k.MovieUrl)
+	k.MovieUrl = domain.MovieUrl(strings.TrimSpace(string(k.MovieUrl)))
 	k.SingStart = strings.TrimSpace(k.SingStart)
 	k.SongName = strings.TrimSpace(k.SongName)
 	// k.KaraokeInputterId = strings.TrimSpace(k.KaraokeInputterId)
