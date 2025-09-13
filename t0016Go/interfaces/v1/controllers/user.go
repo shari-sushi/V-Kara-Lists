@@ -12,7 +12,6 @@ import (
 var guestID = common.GetGuestListenerID()
 
 func (controller *Controller) CreateUser(c *gin.Context) {
-	fmt.Printf("start `CreateUser` at interfaces/v1/controllers/users.go \n")
 	var user domain.Listener
 	if err := c.ShouldBind(&user); err != nil {
 		fmt.Println("err.Error:", err.Error())
@@ -30,7 +29,7 @@ func (controller *Controller) CreateUser(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Println("user:", user)
+
 	emailAES, err := common.EncryptByAES(user.Email)
 	if err != nil {
 		fmt.Println("err.Error:", err.Error())
@@ -42,9 +41,8 @@ func (controller *Controller) CreateUser(c *gin.Context) {
 	}
 
 	if _, err := controller.UserInteractor.FindUserByEmail(emailAES); err == nil {
-		fmt.Println("メアドが重複のため会員登録却下")
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "the E-mail address already in use",
+			"message": "E-mail address already exist",
 		})
 		return
 	}
@@ -85,8 +83,6 @@ func (controller *Controller) CreateUser(c *gin.Context) {
 }
 
 func (controller *Controller) LogicalDeleteUser(c *gin.Context) {
-	fmt.Printf("start `LogicalDeleteUser` at interfaces/v1/controllers/users.go \n")
-
 	tokenLId, err := common.TakeListenerIdFromJWT(c)
 	fmt.Printf("tokenLId = %v \n", tokenLId)
 
@@ -120,8 +116,6 @@ func (controller *Controller) LogicalDeleteUser(c *gin.Context) {
 }
 
 func (controller *Controller) LogIn(c *gin.Context) {
-	fmt.Printf("start `LogIn` at interfaces/v1/controllers/users.go \n")
-
 	var user domain.Listener
 	if err := c.ShouldBind(&user); err != nil {
 		fmt.Printf("err: LogIn ShouldBind, %v\n", err.Error())
@@ -185,8 +179,8 @@ func Logout(c *gin.Context) {
 }
 
 func GuestLogIn(c *gin.Context) {
-	fmt.Println(guestID)
 	common.SetListenerIdintoCookie(c, guestID)
+	fmt.Println("gestLogined", guestID)
 	c.JSON(http.StatusOK, gin.H{
 		"message":      "Successfully Guest Logged In",
 		"listenerName": "guest",

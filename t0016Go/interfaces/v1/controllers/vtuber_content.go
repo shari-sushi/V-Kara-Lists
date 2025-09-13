@@ -45,7 +45,7 @@ func (c *Controller) ReturnVtuberPageData(cont *gin.Context) {
 		errs = append(errs, err)
 	}
 	vtuberId := VtsMosKasWithFavofVtu[0].VtuberId
-	MosOfVtu, err := c.VtuberContentInteractor.GetMoviesUrlTitlebyVtuber(vtuberId)
+	MosOfVtu, err := c.VtuberContentInteractor.GetMoviesUrlTitleByVtuber(vtuberId)
 	if err != nil {
 		fmt.Print("err:", err)
 		errs = append(errs, err)
@@ -150,7 +150,7 @@ func (controller *Controller) CreateKaraoke(c *gin.Context) {
 		return
 	}
 	listenerId, err := common.TakeListenerIdFromJWT(c)
-	fmt.Println("listenerId", listenerId)
+	fmt.Println("created karaoke by listenerId: ", listenerId)
 	if err != nil {
 		fmt.Println("err: jwt,", err)
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -170,7 +170,51 @@ func (controller *Controller) CreateKaraoke(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully Registered the New Karaoke",
 	})
+}
 
+// NOTE: この関数はMVCを意識しているため他の未経験時代の関数より責務を多く持つ
+func (controller *Controller) CreateKaraokes(c *gin.Context) {
+	var karaokes []domain.Karaoke
+	if err := c.ShouldBind(&karaokes); err != nil {
+		fmt.Println("err: ShoulBind karaoke,", err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "failed request body",
+		})
+
+		return
+	}
+
+	listenerId, err := common.TakeListenerIdFromJWT(c)
+	fmt.Println("created some karaokes by listenerId:", listenerId)
+	if err != nil {
+		fmt.Println("err: jwt,", err)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "failed to fetch listener info",
+		})
+
+		return
+	}
+
+	if _, err := controller.VtuberContentInteractor.GetMovie(karaokes[0].MovieUrl); err != nil {
+		fmt.Println("error : get movie,", err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "failed to registor songs, must registor video before songs",
+		})
+	}
+
+	if err := controller.VtuberContentInteractor.CreateKaraokes(listenerId, karaokes[0].MovieUrl, karaokes); err != nil {
+		fmt.Println("err: create karaoke,", err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "failed to registere karaokes",
+		})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "registered the New Karaoke",
+		"created": karaokes,
+	})
 }
 
 func (controller *Controller) EditVtuber(c *gin.Context) {
@@ -202,12 +246,14 @@ func (controller *Controller) EditVtuber(c *gin.Context) {
 		})
 		return
 	}
+
 	if err := controller.VtuberContentInteractor.UpdateVtuber(vtuber); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Inputter can modify each data",
 		})
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully Update",
 	})
@@ -222,6 +268,7 @@ func (controller *Controller) EditMovie(c *gin.Context) {
 		})
 		return
 	}
+
 	var Movie domain.Movie
 	if err := c.ShouldBind(&Movie); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -229,7 +276,7 @@ func (controller *Controller) EditMovie(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Printf("shouldBind Movie:%v \n ", Movie)
+
 	Movie.MovieInputterId = listenerId
 	if isAuth, err := controller.VtuberContentInteractor.VerifyUserModifyMovie(listenerId, Movie); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -242,6 +289,7 @@ func (controller *Controller) EditMovie(c *gin.Context) {
 		})
 		return
 	}
+
 	if err := controller.VtuberContentInteractor.UpdateMovie(Movie); err != nil {
 		fmt.Println("err:", err)
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -264,6 +312,7 @@ func (controller *Controller) EditKaraoke(c *gin.Context) {
 		})
 		return
 	}
+
 	var Karaoke domain.Karaoke
 	if err := c.ShouldBind(&Karaoke); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -271,6 +320,7 @@ func (controller *Controller) EditKaraoke(c *gin.Context) {
 		})
 		return
 	}
+
 	Karaoke.KaraokeInputterId = listenerId
 	if isAuth, err := controller.VtuberContentInteractor.VerifyUserModifyKaraoke(listenerId, Karaoke); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -291,6 +341,7 @@ func (controller *Controller) EditKaraoke(c *gin.Context) {
 			return
 		}
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully Update",
 	})
@@ -487,7 +538,7 @@ func (controller *Controller) ReturnTopPageData(c *gin.Context) {
 	}
 
 	listenerId, err := common.TakeListenerIdFromJWT(c) //非ログイン時でもデータは送付する
-	fmt.Printf("listenerId=%v\n", listenerId)
+	fmt.Printf("deleted karaoke by listenerId: %v\n", listenerId)
 	if err != nil || listenerId == 0 {
 		fmt.Println("err:", err)
 		errs = append(errs, err)

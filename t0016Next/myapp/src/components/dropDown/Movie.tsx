@@ -1,65 +1,52 @@
-import React, { useState, useEffect, useMemo } from "react";
-import Select from "react-select";
-import type { BasicDataProps, ReceivedMovie } from "@/types/vtuber_content";
-import { DropStyle } from "./common";
+import React, { useState, useEffect, useMemo } from "react"
+import Select from "react-select"
+import type { BasicDataProps, ReceivedMovie } from "@/types/vtuber_content"
+import { DropStyle } from "./common"
 
 // DropDonwMo, Kaについは、on~~Seletがnillとか0なら処理を止めべき
 type MovieOptions = {
-  value: string;
-  label: string;
-};
+  value: string
+  label: string
+}
 
 type DropDownMovieProps = {
-  posts: BasicDataProps;
-  selectedVtuber: number;
-  setSelectedMovie: (movieUrl: string) => void;
-  clearMovieHandler: () => void;
-};
+  posts: BasicDataProps
+  selectedVtuber: number
+  setSelectedMovie: (movieUrl: string) => void
+  clearMovieHandler: () => void
+}
 
-export const DropDownMovie = ({
-  posts,
-  selectedVtuber,
-  setSelectedMovie,
-  clearMovieHandler,
-}: DropDownMovieProps) => {
-  const movies = useMemo(
-    () => posts?.vtubers_movies || [{} as ReceivedMovie],
-    [posts]
-  );
+export const DropDownMovie = ({ posts, selectedVtuber, setSelectedMovie, clearMovieHandler }: DropDownMovieProps) => {
+  const movies = useMemo(() => posts?.vtubers_movies || [{} as ReceivedMovie], [posts])
 
   const handleMovieClear = () => {
-    setSelectedMovie("");
-    clearMovieHandler();
-  };
-  const [movieOptions, setMovieOptions] = useState<MovieOptions[]>([]);
+    setSelectedMovie("")
+    clearMovieHandler()
+  }
+  const [movieOptions, setMovieOptions] = useState<MovieOptions[]>([])
 
   useEffect(() => {
     if (!selectedVtuber) {
-      setMovieOptions([]);
-      setSelectedMovie("");
+      setMovieOptions([])
+      setSelectedMovie("")
       // ここで表示も消したい。消し方不明
-      return;
+      return
     } else {
       const filterMoviesBySelectedVtuber = async () => {
         try {
-          const movieDatum = movies.filter(
-            (movies: ReceivedMovie) => movies.VtuberId === selectedVtuber
-          );
+          const movieDatum = movies.filter((movies: ReceivedMovie) => movies.VtuberId === selectedVtuber)
           const movieOptions = movieDatum.map((movie: ReceivedMovie) => ({
             value: movie.MovieUrl,
             label: movie.MovieTitle,
-          }));
-          setMovieOptions(movieOptions);
+          }))
+          setMovieOptions(movieOptions)
         } catch (error) {
-          console.error(
-            "Error: failed to filter Movies By Selected Vtuber in /dropDown/:",
-            error
-          );
+          console.error("Error: failed to filter Movies By Selected Vtuber in /dropDown/:", error)
         }
-      };
-      filterMoviesBySelectedVtuber();
+      }
+      filterMoviesBySelectedVtuber()
     }
-  }, [selectedVtuber, setSelectedMovie, movies]);
+  }, [selectedVtuber, setSelectedMovie, movies])
 
   return (
     <Select
@@ -78,26 +65,23 @@ export const DropDownMovie = ({
       options={movieOptions}
       onChange={(option) => {
         if (option) {
-          setSelectedMovie(option.value);
+          setSelectedMovie(option.value)
         } else {
-          handleMovieClear();
+          handleMovieClear()
         }
       }}
     />
-  );
-};
+  )
+}
 
 type DropDownAllMovieProps = {
-  preMovies: ReceivedMovie[];
-  setSelectedMovie: (value: string) => void;
+  preMovies: ReceivedMovie[]
+  setSelectedMovie: (value: string) => void
   // ✩１
   // clearMovieHandler: () => void;
-};
+}
 
-export const DropDownAllMovie = ({
-  preMovies,
-  setSelectedMovie,
-}: DropDownAllMovieProps) => {
+export const DropDownAllMovie = ({ preMovies, setSelectedMovie }: DropDownAllMovieProps) => {
   // ✩１
   // const handleMovieClear = () => {
   // setSelectedMovie("");
@@ -107,7 +91,7 @@ export const DropDownAllMovie = ({
   const movieOptions = preMovies?.map((movie: ReceivedMovie) => ({
     value: movie.MovieUrl,
     label: movie.MovieTitle,
-  }));
+  }))
 
   return (
     <Select
@@ -125,13 +109,13 @@ export const DropDownAllMovie = ({
       options={movieOptions}
       onChange={(option) => {
         if (option) {
-          setSelectedMovie(option.value);
+          setSelectedMovie(option.value)
         } else {
-          setSelectedMovie("");
+          setSelectedMovie("")
           // ✩１(↓がある時は↑が不要)
           // handleMovieClear();
         }
       }}
     />
-  );
-};
+  )
+}

@@ -8,13 +8,16 @@ import (
 	"github.com/sharin-sushi/0016go_next_relation/domain"
 )
 
-var goEnv = os.Getenv("GO_ENV")                      //ローカルpc上でのみ設定 =development と記載
-var isDockerCompose = os.Getenv("IS_DOCKER_COMPOSE") //docckercompos.ymlにのみ =true と記載
+// TODO: 無駄に複雑になってしまったのでシンプルにする
+var goEnv = os.Getenv("GO_ENV")                      // ローカルpc上でのみ設定 =development と記載
+var isDockerCompose = os.Getenv("IS_DOCKER_COMPOSE") // docker-compose.ymlにのみ =true と記載
+var DEPLOY_ENV = os.Getenv("DEPLOY_ENV")             // EC2用 docker-compose.ymlにのみ =EC2_DOCKER_COMPOSE と記載
+var DEPLOY_DB_ENV = os.Getenv("DEPLOY_DB_ENV")       // EC2用 docker-compose.ymlにのみ =RDS と記載
 
-var IsOnCloud = (goEnv == "" && isDockerCompose == "")
+var IsOnCloud = (goEnv == "" && isDockerCompose == "") || (DEPLOY_ENV == "EC2_DOCKER_COMPOSE" && DEPLOY_DB_ENV == "RDS")
 var IsOnLocalWithDockerCompose = (goEnv == "" && isDockerCompose == "true")
 var IsOnLocalWithOutDockerCompose = (goEnv == "development" && isDockerCompose == "")
-var IsOnLocal = (IsOnLocalWithDockerCompose || IsOnLocalWithOutDockerCompose)
+var IsOnLocal = !IsOnCloud && IsOnLocalWithDockerCompose || IsOnLocalWithOutDockerCompose
 
 func GetEnvHostDomain() string {
 	if IsOnCloud {
