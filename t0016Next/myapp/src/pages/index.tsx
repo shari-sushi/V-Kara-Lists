@@ -43,11 +43,11 @@ const TopPage = ({ posts, isSignin }: TopPageProps) => {
 }
 
 const MainItem = ({ posts }: TopPageProps) => {
-  const playKaraokeNumber = generateRandomNumber(posts.latest_karaokes.length - 1)
+  const playKaraokeNumber = posts?.latest_karaokes?.length ? generateRandomNumber(posts.latest_karaokes.length - 1) : 0
 
   const { videoState } = useVideo({
-    youtubeId: extractVideoId(posts.latest_karaokes[playKaraokeNumber].MovieUrl),
-    startTime: timeStringToSecondNum(posts.latest_karaokes[playKaraokeNumber].SingStart),
+    youtubeId: extractVideoId(posts?.latest_karaokes[playKaraokeNumber]?.MovieUrl ?? ""),
+    startTime: timeStringToSecondNum(posts?.latest_karaokes[playKaraokeNumber]?.SingStart ?? ""),
     isPlaying: true,
   })
 
