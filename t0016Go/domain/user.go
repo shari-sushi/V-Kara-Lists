@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-//// User
+// // User
 type ListenerId int
 type Listener struct {
 	ListenerId   ListenerId     `gorm:"type:int(11);primaryKey"`

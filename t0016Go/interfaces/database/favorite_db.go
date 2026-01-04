@@ -95,7 +95,7 @@ func (db *FavoriteRepository) GetVtubersMoviesKaraokesWithFavCnts() ([]domain.Tr
 	return TmKas, nil
 }
 
-func (db *FavoriteRepository) GetVtubersMoviesKaraokesByVtuerKanaWithFavCnts(kana string) ([]domain.TransmitKaraoke, error) {
+func (db *FavoriteRepository) GetVtubersMoviesKaraokesByVtuberKanaWithFavCnts(kana string) ([]domain.TransmitKaraoke, error) {
 	var TmKas []domain.TransmitKaraoke
 	var err error
 
@@ -149,11 +149,11 @@ func (db *FavoriteRepository) GetLatest50VtubersMoviesKaraokesWithFavCnts(guestI
 
 func (db *FavoriteRepository) FindFavoritesCreatedByListenerId(lId domain.ListenerId) ([]domain.ReceivedFavorite, error) {
 	var favs []domain.Favorite
-	var receivedfavs []domain.ReceivedFavorite
+	var receivedFavs []domain.ReceivedFavorite
 
-	result := db.Select("id, listener_id, movie_url, karaoke_id").Where("listener_id=?", lId).Model(&favs).Scan(&receivedfavs)
-	fmt.Printf("recfavs:\n %+v\n", receivedfavs)
-	return receivedfavs, result.Error
+	result := db.Select("id, listener_id, movie_url, karaoke_id").Where("listener_id=?", lId).Model(&favs).Scan(&receivedFavs)
+	fmt.Printf("recfavs:\n %+v\n", receivedFavs)
+	return receivedFavs, result.Error
 }
 
 func (db *FavoriteRepository) FindFavoriteUnscopedByFavOrUnfavRegistry(fav domain.Favorite) domain.Favorite {

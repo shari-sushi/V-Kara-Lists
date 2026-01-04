@@ -15,6 +15,7 @@ func (db *UserRepository) CreateUser(user domain.Listener) (domain.Listener, err
 	if err != nil {
 		return user, err
 	}
+
 	return user, nil
 }
 
@@ -24,19 +25,24 @@ func (db *UserRepository) FindUserByEmail(email string) (domain.Listener, error)
 	if err != nil {
 		return user, err
 	}
-	return user, err
+
+	return user, nil
 }
+
 func (db *UserRepository) LogIn(user domain.Listener) (domain.Listener, error) {
 	if err := db.First(&user, user.ListenerId).Error; err != nil {
 		return user, err
 	}
+
 	return user, nil
 }
+
 func (db *UserRepository) LogicalDeleteUser(user domain.Listener) error {
 	err := db.Delete(&user, &user.ListenerId).Error
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -47,5 +53,6 @@ func (db *UserRepository) FindUserByListenerId(ListenerId domain.ListenerId) (do
 	if err != nil {
 		return user, err
 	}
-	return user, err
+
+	return user, nil
 }

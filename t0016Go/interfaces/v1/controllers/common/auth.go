@@ -13,7 +13,7 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation"
 )
 
-func SetListenerIdintoCookie(c *gin.Context, ListenerId domain.ListenerId) (err error) {
+func SetListenerIdIntoCookie(c *gin.Context, ListenerId domain.ListenerId) (err error) {
 	var token string
 	token, err = GenerateToken(int(ListenerId))
 	if err != nil {
