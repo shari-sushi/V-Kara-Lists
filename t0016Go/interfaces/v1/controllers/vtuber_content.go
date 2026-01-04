@@ -39,7 +39,7 @@ func (c *Controller) ReturnVtuberPageData(cont *gin.Context) {
 	fmt.Println("kana", kana)
 	var errs []error
 
-	VtsMosKasWithFavofVtu, err := c.FavoriteInteractor.GetVtubersMoviesKaraokesByVtuerKanaWithFavCnts(kana)
+	VtsMosKasWithFavofVtu, err := c.FavoriteInteractor.GetVtubersMoviesKaraokesByVtuberKanaWithFavCnts(kana)
 	if err != nil {
 		fmt.Print("err:", err)
 		errs = append(errs, err)
@@ -589,7 +589,7 @@ func (controller *Controller) ReturnOriginalSongPage(c *gin.Context) {
 }
 
 // dropdown用
-func (controller *Controller) GetVtuverMovieKaraoke(c *gin.Context) {
+func (controller *Controller) GetVtuberMovieKaraoke(c *gin.Context) {
 	var errs []error
 	allVts, err := controller.VtuberContentInteractor.GetVtubers()
 	if err != nil {
