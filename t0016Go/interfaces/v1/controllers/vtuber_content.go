@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -150,7 +151,6 @@ func (controller *Controller) CreateKaraoke(c *gin.Context) {
 		return
 	}
 	listenerId, err := common.TakeListenerIdFromJWT(c)
-	fmt.Println("created karaoke by listenerId: ", listenerId)
 	if err != nil {
 		fmt.Println("err: jwt,", err)
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -167,53 +167,61 @@ func (controller *Controller) CreateKaraoke(c *gin.Context) {
 		})
 		return
 	}
+	fmt.Println("created karaoke by listenerId: ", listenerId)
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully Registered the New Karaoke",
 	})
 }
 
-// NOTE: この関数はMVCを意識しているため他の未経験時代の関数より責務を多く持つ
 func (controller *Controller) CreateKaraokes(c *gin.Context) {
 	var karaokes []domain.Karaoke
 	if err := c.ShouldBind(&karaokes); err != nil {
-		fmt.Println("err: ShoulBind karaoke,", err)
+		log.Println("err: ShouldBind karaokes,", err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "failed request body",
+			"message": "Invalid request body",
 		})
+		return
+	}
 
+	if len(karaokes) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Karaokes array is empty",
+		})
 		return
 	}
 
 	listenerId, err := common.TakeListenerIdFromJWT(c)
-	fmt.Println("created some karaokes by listenerId:", listenerId)
 	if err != nil {
-		fmt.Println("err: jwt,", err)
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "failed to fetch listener info",
+		log.Println("err: jwt,", err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Error fetching listener info",
 		})
-
 		return
 	}
 
-	if _, err := controller.VtuberContentInteractor.GetMovie(karaokes[0].MovieUrl); err != nil {
-		fmt.Println("error : get movie,", err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "failed to registor songs, must registor video before songs",
-		})
+	// すべてのカラオケが同じMovieUrlを持つことを確認
+	movieUrl := karaokes[0].MovieUrl
+	for _, k := range karaokes {
+		if k.MovieUrl != movieUrl {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "All karaokes must have the same MovieUrl",
+			})
+			return
+		}
 	}
 
-	if err := controller.VtuberContentInteractor.CreateKaraokes(listenerId, karaokes[0].MovieUrl, karaokes); err != nil {
-		fmt.Println("err: create karaoke,", err)
+	if err := controller.VtuberContentInteractor.CreateKaraokes(listenerId, movieUrl, karaokes); err != nil {
+		log.Println("err: create karaokes,", err)
 		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "failed to registere karaokes",
+			"message": "Invailed Registered the New Karaokes",
 		})
-
 		return
 	}
 
+	log.Println("created karaokes by listenerId: ", listenerId)
 	c.JSON(http.StatusOK, gin.H{
-		"message": "registered the New Karaoke",
-		"created": karaokes,
+		"message": "Successfully Registered the New Karaokes",
 	})
 }
 

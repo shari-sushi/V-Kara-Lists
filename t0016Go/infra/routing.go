@@ -43,6 +43,7 @@ func routingV1(r *gin.Engine) {
 			vcontents.POST("/create/vtuber", c.CreateVtuber)
 			vcontents.POST("/create/movie", c.CreateMovie)
 			vcontents.POST("/create/karaoke", c.CreateKaraoke)
+			vcontents.POST("/create/karaokes", c.CreateKaraoke)
 
 			//データ編集
 			vcontents.POST("/edit/vtuber", c.EditVtuber)
