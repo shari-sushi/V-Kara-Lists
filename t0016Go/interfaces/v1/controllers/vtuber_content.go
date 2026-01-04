@@ -523,12 +523,10 @@ func (controller *Controller) ReturnTopPageData(c *gin.Context) {
 	}
 	VtsMosWithFav, err := controller.FavoriteInteractor.GetVtubersMoviesWithFavCnts()
 	if err != nil {
-		fmt.Print("err:", err)
 		errs = append(errs, err)
 	}
 	VtsMosKasWithFav, err := controller.FavoriteInteractor.GetVtubersMoviesKaraokesWithFavCnts()
 	if err != nil {
-		fmt.Print("err:", err)
 		errs = append(errs, err)
 	}
 
@@ -538,20 +536,20 @@ func (controller *Controller) ReturnTopPageData(c *gin.Context) {
 	}
 
 	listenerId, err := common.TakeListenerIdFromJWT(c) //非ログイン時でもデータは送付する
-	fmt.Printf("deleted karaoke by listenerId: %v\n", listenerId)
 	if err != nil || listenerId == 0 {
-		fmt.Println("err:", err)
 		errs = append(errs, err)
+
 		c.JSON(http.StatusOK, gin.H{
-			"vtubers":                 allVts,
-			"vtubers_movies":          VtsMosWithFav,
-			"vtubers_movies_karaokes": VtsMosKasWithFav,
-			"latest_karaokes":         LatestVtsMosKasWithFav,
+			"vtubers":                 common.EnsureSlice(allVts),
+			"vtubers_movies":          common.EnsureSlice(VtsMosWithFav),
+			"vtubers_movies_karaokes": common.EnsureSlice(VtsMosKasWithFav),
+			"latest_karaokes":         common.EnsureSlice(LatestVtsMosKasWithFav),
 			"error":                   errs,
 			"message":                 "dont you Loged in ?",
 		})
 		return
 	}
+
 	myFav, err := controller.FavoriteInteractor.FindFavoritesCreatedByListenerId(listenerId)
 	if err != nil {
 		fmt.Println("err:", err)
@@ -562,10 +560,10 @@ func (controller *Controller) ReturnTopPageData(c *gin.Context) {
 	TransmitLatestKaraoes := common.AddIsFavToKaraokeWithFav(LatestVtsMosKasWithFav, myFav)
 
 	c.JSON(http.StatusOK, gin.H{
-		"vtubers":                 allVts,
-		"vtubers_movies":          TransmitMovies,
-		"vtubers_movies_karaokes": TransmitKaraokes,
-		"latest_karaokes":         TransmitLatestKaraoes,
+		"vtubers":                 common.EnsureSlice(allVts),
+		"vtubers_movies":          common.EnsureSlice(TransmitMovies),
+		"vtubers_movies_karaokes": common.EnsureSlice(TransmitKaraokes),
+		"latest_karaokes":         common.EnsureSlice(TransmitLatestKaraoes),
 		"error":                   errs,
 	})
 }
@@ -615,10 +613,10 @@ func (controller *Controller) GetVtuberMovieKaraoke(c *gin.Context) {
 }
 
 func (controller *Controller) ReturnDummyTopPage(c *gin.Context) {
-	controller.ReturnTestpage(c)
+	controller.ReturnTestPage(c)
 }
 
-func (controller *Controller) ReturnTestpage(c *gin.Context) {
+func (controller *Controller) ReturnTestPage(c *gin.Context) {
 	var errs []error
 	var allVts []domain.Vtuber
 	var VtsMosWithFav []domain.TransmitMovie

@@ -43,14 +43,14 @@ const TopPage = ({ posts, isSignin }: TopPageProps) => {
 }
 
 const MainItem = ({ posts }: TopPageProps) => {
-  const playKaraokeNumber = generateRandomNumber(posts.latest_karaokes.length - 1)
-
+  const hasKaraokes = posts.latest_karaokes.length > 0
+  const playKaraokeNumber = hasKaraokes ? generateRandomNumber(posts.latest_karaokes.length - 1) : 0
   const { videoState } = useVideo({
-    youtubeId: extractVideoId(posts.latest_karaokes[playKaraokeNumber].MovieUrl),
-    startTime: timeStringToSecondNum(posts.latest_karaokes[playKaraokeNumber].SingStart),
-    isPlaying: true,
+    // データが無い時、音恋宮の花に亡霊
+    youtubeId: hasKaraokes ? extractVideoId(posts.latest_karaokes[playKaraokeNumber].MovieUrl) : "jgGA5hVNpyM",
+    startTime: hasKaraokes ? timeStringToSecondNum(posts.latest_karaokes[playKaraokeNumber].SingStart) : 3718,
+    isPlaying: hasKaraokes,
   })
-
   // const handleMovieClickYouTube = (url: string, start: number) => {
   //   updateVideo(extractVideoId(url), start);
   //   //クリティカルな環境バグなので再発時用に残しておく
