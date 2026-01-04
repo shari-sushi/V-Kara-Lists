@@ -14,7 +14,7 @@ func (db *VtuberContentRepository) GetVtubers() ([]domain.Vtuber, error) {
 	var vts []domain.Vtuber
 	err := db.Find(&vts).Error
 	if err != nil {
-		return nil, err
+		return []domain.Vtuber{}, err
 	}
 	return vts, nil
 }
