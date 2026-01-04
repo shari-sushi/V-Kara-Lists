@@ -3,17 +3,9 @@ import { domain } from "../../../env"
 import { BasicDataProps } from "@/types/vtuber_content"
 import https from "https"
 import axios, { AxiosRequestConfig } from "axios"
-
-import type { ReceivedMovie, ReceivedKaraoke } from "@/types/vtuber_content"
 import type { ContextType } from "@/types/server"
-import { Layout } from "@/components/layout/Layout"
-import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
-import { timeStringToSecondNum, extractVideoId } from "@/util"
-import { CreateForm, CreatePageProps } from "@/components/form/CreateContentForm"
-import { NotLoggedIn } from "@/components/layout/Main"
+import { CreatePageProps } from "@/components/form/CreateContentForm/CreateContentForm"
 import { checkLoggedin } from "@/util/webStrage/cookie"
-import { CreateContentFormDescription } from "@/features/description"
-import { set } from "react-hook-form"
 
 export default function App({ posts: data, isSignin }: CreatePageProps) {
   const [posts, setPosts] = useState(data)

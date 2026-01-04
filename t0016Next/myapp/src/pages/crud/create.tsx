@@ -8,7 +8,7 @@ import type { ContextType } from "@/types/server"
 import { Layout } from "@/components/layout/Layout"
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
 import { timeStringToSecondNum, extractVideoId } from "@/util"
-import { CreateForm } from "@/components/form/CreateContentForm"
+import { CreateForm } from "@/components/form/CreateContentForm/CreateContentForm"
 import { NotLoggedIn } from "@/components/layout/Main"
 import { checkLoggedin } from "@/util/webStrage/cookie"
 import { CreateContentFormDescription } from "@/features/description"
@@ -49,9 +49,8 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
   }, [movies, selectedMovieUrl])
 
   const clearMovieHandler = () => {
-    //中身空でもKaraokeのoptinosを空にしてくれるんだが…
+    // 中身空でもKaraokeのoptionsを空にしてくれるんだが…
     // でもこの関数をまるっと消すとダメ
-    // setSelectedKaraoke(0);
   }
 
   useEffect(() => {
@@ -68,9 +67,7 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
   if (!isSignin) {
     return (
       <Layout pageName={pageName} isSignin={isSignin}>
-        <div>
-          <NotLoggedIn />
-        </div>
+        <NotLoggedIn />
       </Layout>
     )
   }
@@ -135,6 +132,7 @@ export async function getServerSideProps(context: ContextType) {
   }
   return {
     props: {
+      // TODO: nullを渡さないように修正
       posts: null,
       isSignin: isLoggedin,
     },
