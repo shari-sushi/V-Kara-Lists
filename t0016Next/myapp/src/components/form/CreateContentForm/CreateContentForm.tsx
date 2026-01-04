@@ -1,17 +1,17 @@
 import React, { useState } from "react"
-import { FieldError, set, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import axios from "axios"
-
 import { domain } from "@/../env"
-import type { CrudDate, BasicDataProps, CrudContentType, ReceivedVtuber, ReceivedMovie } from "@/types/vtuber_content"
+import type { CrudDate, BasicDataProps, CrudContentType } from "@/types/vtuber_content"
 import { DropDownVtuber } from "@/components/dropDown/Vtuber"
-import { DropDownMovie } from "@/components/dropDown/Movie"
-import { DropDownKaraoke } from "@/components/dropDown/Karaoke"
 import { extractVideoId, ValidateCreate } from "@/util"
 import { FormTW, ToClickTW } from "@/styles/tailwiind"
-import { DisableBox, NeedBox } from "@/components/box/Box"
+import { NeedBox } from "@/components/box/Box"
 import { getYoutubeVideo, CrudContentSelector, findVtuber } from "@/components/form/Common"
 import router from "next/router"
+import KaraokesFormItem from "./KaraokesFormItem"
+import { FormLabel } from "./FormLabel"
+import { ErrorMessage } from "./ErrorMessage"
 
 export type CreatePageProps = {
   posts: BasicDataProps
@@ -58,15 +58,13 @@ export function CreateForm({
   setCurrentVideoId,
 }: CreateDataProps) {
   const [crudContentType, setCrudContentType] = useState<CrudContentType>("movie")
-  const [vtubers, setVtubers] = useState(posts?.vtubers)
-  const [movies, setMovies] = useState(posts?.vtubers_movies)
-  const [karaokes, setKaraokes] = useState(posts?.vtubers_movies_karaokes)
+  const { vtubers, vtubers_movies: videos, vtubers_movies_karaokes: karaokes } = posts
   const [isOkVideoTitle, setIsOkVideoTitle] = useState(false)
   const [isAbleVideoTitleInput, setIsAbleVideoTitleInput] = useState(false)
   const [isDisplayHint, setIsDisplayHint] = useState(false)
 
   const foundVtuber = vtubers?.find((vtuber) => vtuber.VtuberId === selectedVtuberId)
-  const foundMovie = movies?.find((movie) => movie.MovieUrl === selectedMovieUrl)
+  const foundMovie = videos?.find((movie) => movie.MovieUrl === selectedMovieUrl)
   const foundKaraoke = karaokes?.find((karaoke) => karaoke.KaraokeId === selectedKaraokeId)
 
   const axiosClient = axios.create({
@@ -306,59 +304,19 @@ export function CreateForm({
             )}
 
             {crudContentType === "karaoke" && (
-              <>
-                <div className="flex flex-col w-full">
-                  <span className="text-black text-center">親データを選択してください</span>
-                  <div className="pb-3">
-                    <div className={`${FormTW.label}`}>
-                      VTuber
-                      <NeedBox />
-                    </div>
-                    <DropDownVtuber posts={posts} onVtuberSelect={setSelectedVtuberId} defaultMenuIsOpen={false} selectedVtuber={findVtuber(vtubers, selectedVtuberId)} />
-                    {selectedVtuberId == 0 && (
-                      <div className="text-[#ff3f3f] text-sm">
-                        <div className="text-[#ff3f3f] ">チャンネルを選択してください</div>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex flex-col w-full ">
-                    <div className={`${FormTW.label}`}>
-                      動画(歌枠)
-                      <NeedBox />
-                    </div>
-                    <DropDownMovie posts={posts} selectedVtuber={selectedVtuberId} setSelectedMovie={setSelectedMovieUrl} clearMovieHandler={clearMovieHandler} />
-                    {selectedMovieUrl == "" && <div className="text-[#ff3f3f] ">動画を選択してください</div>}
-                  </div>
-                </div>
-                <hr className={`${FormTW.horizon}`} />
-                <div id="decide" className=" ">
-                  <div className="flex flex-col justify-center mt-1 my-3">
-                    <span className="text-black text-center">
-                      登録済みか確認(選択で再生されます)
-                      <br />
-                      同じ動画で複数曲を登録する際は、「曲(〇回目)」としてください。
-                    </span>
-                    <DropDownKaraoke posts={posts} selectedMovie={selectedMovieUrl} onKaraokeSelect={setSelectedKaraokeId} />
-                  </div>
-                </div>
-                <hr className={`${FormTW.horizon}`} />
-                <div className="flex flex-col">
-                  <h2 className="text-black mx-auto">登録するデータを入力してください</h2>
-                  <div className="flex flex-col gap-y-3">
-                    <div>
-                      <FormLabel label="曲" need />
-                      <input className={`${ToClickTW.input}`} {...register("SongName", ValidateCreate.SongName)} placeholder={foundKaraoke?.SongName || "曲"} />
-                      <ErrorMessage errorField={errors.SongName} />
-                    </div>
-                    <div>
-                      <FormLabel label="開始時間" need />
-                      <input className={`${ToClickTW.input}`} type="time" step="1" {...register("SingStart", ValidateCreate.SingStart)} />
-                      <ErrorMessage errorField={errors.SingStart} />
-                    </div>
-                  </div>
-                </div>
-              </>
+              <KaraokesFormItem
+                posts={posts}
+                selectedVtuberId={selectedVtuberId}
+                selectedMovieUrl={selectedMovieUrl}
+                setSelectedVtuberId={setSelectedVtuberId}
+                setSelectedMovieUrl={setSelectedMovieUrl}
+                clearMovieHandler={clearMovieHandler}
+                setSelectedKaraokeId={setSelectedKaraokeId}
+                foundKaraoke={foundKaraoke}
+                vtubers={vtubers}
+                register={register}
+                errors={errors}
+              />
             )}
           </div>
           <hr className={`${FormTW.horizon}`} />
@@ -447,32 +405,6 @@ export function CreateForm({
       </div>
     </div>
   )
-}
-
-type FormLabelProps = {
-  label: string
-  need?: boolean
-  autoForm?: boolean
-  bodyNote?: React.ReactNode
-}
-
-const FormLabel = ({ label, bodyNote, need, autoForm }: FormLabelProps) => {
-  return (
-    <div className={`${FormTW.label}`}>
-      {label}
-      <div className="inline-flex">{bodyNote}</div>
-      {need && <NeedBox />}
-      {autoForm && <DisableBox />}
-    </div>
-  )
-}
-
-type ErrorMessageProps = {
-  errorField: FieldError | undefined
-}
-
-const ErrorMessage = ({ errorField }: ErrorMessageProps) => {
-  return <span className="text-red-500">{errorField?.message}</span>
 }
 
 type InputMovieUrlHintBoxProps = {
