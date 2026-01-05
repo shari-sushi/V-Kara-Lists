@@ -46,6 +46,22 @@ func NormalizeKaraoke(k domain.Karaoke) domain.Karaoke {
 }
 
 func ValidateKaraoke(k domain.Karaoke) error {
+	if k.KaraokeInputterId == GetGuestListenerID() {
+		return validation.ValidateStruct(&k,
+			validation.Field(&k.MovieUrl,
+				validation.Required.Error("movie url is required"),
+				validation.Length(4, 40).Error("Password needs 4 ~ 40 chars"),
+			),
+			validation.Field(&k.SingStart,
+				validation.Required.Error("sing start is required"),
+				validation.Length(4, 20).Error("sing start needs 8"),
+			),
+			validation.Field(&k.SongName,
+				validation.Required.Error("song name is required"),
+			),
+		)
+	}
+
 	return validation.ValidateStruct(&k,
 		validation.Field(&k.KaraokeInputterId,
 			validation.Required.Error("karaoke inputter id is required"),
