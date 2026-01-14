@@ -1,7 +1,6 @@
 import { useEffect, useState, useMemo } from "react"
 import https from "https"
 import axios, { AxiosRequestConfig } from "axios"
-
 import { domain } from "@/../env"
 import type { ReceivedMovie, ReceivedKaraoke, BasicDataProps } from "@/types/vtuber_content"
 import type { ContextType } from "@/types/server"
@@ -13,15 +12,26 @@ import { NotLoggedIn } from "@/components/layout/Main"
 import { checkLoggedin } from "@/util/webStrage/cookie"
 import { CreateContentFormDescription } from "@/features/description"
 import { useVideo } from "@/providers/VideoProvider"
+import { FailedMessage } from "@/components/Message/FailedMessage"
 
 const pageName = "コンテンツ登録"
 
 type CreatePageProps = {
   posts: BasicDataProps
   isSignin: boolean
+  hasError: boolean
 }
 
-export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
+export const CreatePage = ({ posts, isSignin, hasError }: CreatePageProps) => {
+  return (
+    <Layout pageName={pageName} isSignin={isSignin}>
+      {hasError && <FailedMessage />}
+      <MainItem posts={posts} isSignin={isSignin} hasError={hasError} />
+    </Layout>
+  )
+}
+
+const MainItem = ({ posts, isSignin }: CreatePageProps) => {
   const movies = useMemo(() => posts?.vtubers_movies || ([] as ReceivedMovie[]), [posts])
   const karaokes = useMemo(() => posts?.vtubers_movies_karaokes || ([] as ReceivedKaraoke[]), [posts])
 
@@ -73,37 +83,35 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
   }
 
   return (
-    <Layout pageName={pageName} isSignin={isSignin}>
-      <div id="body" className="flex flex-col w-full">
-        <CreateContentFormDescription />
-
-        <div id="feature" className={`flex flex-col w-full max-w-[1000px] mx-auto`}>
-          <div className="inline-block flex-col top-0 mx-auto ">
-            <div className="inline-block mx-auto md:mx-0 md:min-h-[255px] p-0 md:px-3">
-              <YouTubePlayer videoId={currentVideoId} start={currentStart} />
-            </div>
+    <div id="body" className="flex flex-col w-full">
+      <CreateContentFormDescription />
+      <div id="feature" className={`flex flex-col w-full max-w-[1000px] mx-auto`}>
+        <div className="inline-block flex-col top-0 mx-auto ">
+          <div className="inline-block mx-auto md:mx-0 md:min-h-[255px] p-0 md:px-3">
+            <YouTubePlayer videoId={currentVideoId} start={currentStart} />
           </div>
-
-          <div id="form" className={`inline-block flex-col top-0 max-w-[1000px] h-[600px]`}>
-            <div className="mt-1">
-              <CreateForm
-                posts={posts}
-                selectedVtuberId={selectedVtuberId}
-                selectedMovieUrl={selectedMovieUrl}
-                selectedKaraokeId={selectedKaraokeId}
-                setSelectedVtuberId={setSelectedVtuberId}
-                setSelectedMovieUrl={setSelectedMovieUrl}
-                setSelectedKaraokeId={setSelectedKaraokeId}
-                clearMovieHandler={clearMovieHandler}
-                setCurrentVideoId={setCurrentVideoId}
-              />
-            </div>
+        </div>
+        <div id="form" className={`inline-block flex-col top-0 max-w-[1000px] h-[600px]`}>
+          <div className="mt-1">
+            <CreateForm
+              posts={posts}
+              selectedVtuberId={selectedVtuberId}
+              selectedMovieUrl={selectedMovieUrl}
+              selectedKaraokeId={selectedKaraokeId}
+              setSelectedVtuberId={setSelectedVtuberId}
+              setSelectedMovieUrl={setSelectedMovieUrl}
+              setSelectedKaraokeId={setSelectedKaraokeId}
+              clearMovieHandler={clearMovieHandler}
+              setCurrentVideoId={setCurrentVideoId}
+            />
           </div>
         </div>
       </div>
-    </Layout>
+    </div>
   )
 }
+
+export default CreatePage
 
 export async function getServerSideProps(context: ContextType) {
   const { sessionToken, isLoggedin } = checkLoggedin(context)
@@ -118,24 +126,28 @@ export async function getServerSideProps(context: ContextType) {
     httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
   }
 
+  // apiをリソース毎に分けるまでの仮
+  let resData: BasicDataProps | undefined = undefined
+  let hasError: boolean = true
+
   try {
     const res = await axios.get(`${domain.backendHost}/vcontents/`, options)
-    const resData = res.data
-    return {
-      props: {
-        posts: resData,
-        isSignin: isLoggedin,
-      },
-    }
+    resData = res.data as BasicDataProps
+    hasError = false
   } catch (error) {
+    resData = {
+      vtubers: [],
+      vtubers_movies: [],
+      vtubers_movies_karaokes: [],
+    }
     console.log("erroe in axios.get:", error)
   }
+
   return {
     props: {
-      // TODO: nullを渡さないように修正
-      posts: null,
+      posts: resData,
       isSignin: isLoggedin,
-    },
+      hasError: hasError,
+    } as CreatePageProps,
   }
 }
-export default CreatePage

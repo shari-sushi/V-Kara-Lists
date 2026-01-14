@@ -13,13 +13,14 @@ import { DropDownVtuber } from "@/components/dropDown/Vtuber"
 import { DropDownMovie } from "@/components/dropDown/Movie"
 import KaraokeGlobalFilterTable from "@/components/table-tanstack/Karaoke/KaraokeGlobalFilterTable"
 import { checkLoggedin } from "@/util/webStrage/cookie"
-import { findVtuber } from "@/components/form/Common"
+import { findVtuber } from "@/components/form/util/getYoutubeVideo"
 import { useVideo } from "@/providers/VideoProvider"
 import { dummyKaraokeArray } from "@/util/dummyData/dummyData"
+import { FailedMessage } from "@/components/Message/FailedMessage"
 
 const pageName = "カラオケ(全曲)"
 
-type TopPage = {
+type TopPageProps = {
   posts: {
     vtubers: ReceivedVtuber[]
     vtubers_movies: ReceivedMovie[]
@@ -27,9 +28,19 @@ type TopPage = {
     latest_karaokes: ReceivedKaraoke[]
   }
   isSignin: boolean
+  hasError: boolean
 }
 
-export default function SingsPage({ posts, isSignin }: TopPage) {
+export default function SingsPage({ posts, isSignin, hasError }: TopPageProps) {
+  return (
+    <Layout pageName={pageName} isSignin={isSignin}>
+      {hasError && <FailedMessage />}
+      <MainItem posts={posts} isSignin={isSignin} hasError={hasError} />
+    </Layout>
+  )
+}
+
+const MainItem = ({ posts }: TopPageProps) => {
   const karaokes: ReceivedKaraoke[] = useMemo(() => posts?.vtubers_movies_karaokes || dummyKaraokeArray, [posts])
   //船長　kORHSmXcYNc, 00:08:29
   const { videoState } = useVideo({ youtubeId: "5WzeYsoGCZc", startTime: timeStringToSecondNum("00:22:04") })
@@ -50,44 +61,42 @@ export default function SingsPage({ posts, isSignin }: TopPage) {
   }, [selectedVtuber, selectedMovie, karaokes])
 
   return (
-    <Layout pageName={pageName} isSignin={isSignin}>
-      <div className="flex flex-col w-full max-w-[1000px] mx-auto">
-        <div className={`pt-6 flex flex-col items-center`}>
-          <div className={`flex ${videoState.position === "in-content" ? "" : "w-full max-w-[600px]"}`}>
-            <div id="feature" className={`flex flex-col md:flex-row bg-[#657261] rounded p-1 w-full mx-auto max-w-[1000px]`}>
-              {/* 左側の要素 */}
-              {/* TODO: 動画はVideoLayoutで常に表示するようにしつつ、ここではスペーサーであるAltBoxを表示/非表示するようにする */}
-              {videoState.position === "in-content" && (
-                <div className="flex flex-col mr-1 ">
-                  <div className="relative flex justify-center">
-                    <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
-                  </div>
+    <div className="flex flex-col w-full max-w-[1000px] mx-auto">
+      <div className={`pt-6 flex flex-col items-center`}>
+        <div className={`flex ${videoState.position === "in-content" ? "" : "w-full max-w-[600px]"}`}>
+          <div id="feature" className={`flex flex-col md:flex-row bg-[#657261] rounded p-1 w-full mx-auto max-w-[1000px]`}>
+            {/* 左側の要素 */}
+            {/* TODO: 動画はVideoLayoutで常に表示するようにしつつ、ここではスペーサーであるAltBoxを表示/非表示するようにする */}
+            {videoState.position === "in-content" && (
+              <div className="flex flex-col mr-1 ">
+                <div className="relative flex justify-center">
+                  <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* 右側の要素 */}
-              <div id="right" className={`relative px-1 rounded border ${videoState.position !== "in-content" ? "w-full" : ""}`}>
-                <h1 className="text-lg">絞込み（入力できます）</h1>
-                <DropDownVtuber selectedVtuber={findVtuber(posts.vtubers, selectedVtuber)} posts={posts} onVtuberSelect={setSelectedVtuber} defaultMenuIsOpen={false} />
+            {/* 右側の要素 */}
+            <div id="right" className={`relative px-1 rounded border ${videoState.position !== "in-content" ? "w-full" : ""}`}>
+              <h1 className="text-lg">絞込み（入力できます）</h1>
+              <DropDownVtuber selectedVtuber={findVtuber(posts.vtubers, selectedVtuber)} posts={posts} onSelectVtuber={setSelectedVtuber} defaultMenuIsOpen={false} />
 
-                <DropDownMovie posts={posts} selectedVtuber={selectedVtuber} setSelectedMovie={setSelectedMovie} clearMovieHandler={clearMovieHandler} />
-                <div className="pt-3 flex justify-end">
-                  <div className="w-fit">
-                    <span>お探しの歌枠や歌がありませんか？</span> <br />
-                    <Link className={`${ToClickTW.regular} justify-center float-right px-3 mr-2`} href="/crud/create">
-                      データを登録する
-                    </Link>
-                  </div>
+              <DropDownMovie posts={posts} selectedVtuber={selectedVtuber} setSelectedMovie={setSelectedMovie} clearMovieHandler={clearMovieHandler} />
+              <div className="pt-3 flex justify-end">
+                <div className="w-fit">
+                  <span>お探しの歌枠や歌がありませんか？</span> <br />
+                  <Link className={`${ToClickTW.regular} justify-center float-right px-3 mr-2`} href="/crud/create">
+                    データを登録する
+                  </Link>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="flex flex-col w-full">
-          <KaraokeGlobalFilterTable posts={filteredKaraokes} setSelectedPost={setSelectedPost} />
-        </div>
       </div>
-    </Layout>
+      <div className="flex flex-col w-full">
+        <KaraokeGlobalFilterTable posts={filteredKaraokes} setSelectedPost={setSelectedPost} />
+      </div>
+    </div>
   )
 }
 
@@ -116,17 +125,35 @@ export async function getServerSideProps(context: ContextType) {
     httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
   }
 
-  let resData = null
+  // apiをリソース毎に分けるまでの仮
+  type PageResponse = {
+    vtubers: ReceivedVtuber[]
+    vtubers_movies: ReceivedMovie[]
+    vtubers_movies_karaokes: ReceivedKaraoke[]
+    latest_karaokes: ReceivedKaraoke[]
+  }
+
+  let resData: PageResponse | undefined = undefined
+  let hasError: boolean = true
+
   try {
     const res = await axios.get(`${domain.backendHost}/vcontents/`, options)
-    resData = res.data
+    resData = res.data as PageResponse
+    hasError = false
   } catch (error) {
     console.log("erroe in axios.get:", error)
+    resData = {
+      vtubers: [],
+      vtubers_movies: [],
+      vtubers_movies_karaokes: [],
+      latest_karaokes: [],
+    }
   }
   return {
     props: {
       posts: resData,
       isSignin: isLoggedin,
-    },
+      hasError: hasError,
+    } as TopPageProps,
   }
 }
