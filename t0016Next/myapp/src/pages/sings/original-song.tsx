@@ -10,15 +10,26 @@ import { ContextType } from "@/types/server"
 import { checkLoggedin } from "@/util/webStrage/cookie"
 import { useVideo } from "@/providers/VideoProvider"
 import { dummyKaraokeArray } from "@/util/dummyData/dummyData"
+import { FailedMessage } from "@/components/Message/FailedMessage"
 
 const pageName = "オリ曲"
 
 type PostsAndCheckSignin = {
   vtubers_movies_karaokes: ReceivedKaraoke[]
   isSignin: boolean
+  hasError: boolean
 }
 
-export default function SingsPage({ vtubers_movies_karaokes: karaokes = dummyKaraokeArray, isSignin }: PostsAndCheckSignin) {
+export default function SingsPage({ vtubers_movies_karaokes: karaokes = dummyKaraokeArray, isSignin, hasError }: PostsAndCheckSignin) {
+  return (
+    <Layout pageName={pageName} isSignin={isSignin}>
+      {hasError && <FailedMessage />}
+      <MainItem vtubers_movies_karaokes={karaokes} isSignin={isSignin} hasError={hasError} />
+    </Layout>
+  )
+}
+
+const MainItem = ({ vtubers_movies_karaokes: karaokes = dummyKaraokeArray }: PostsAndCheckSignin) => {
   const { videoState } = useVideo(
     // おいもオリ曲 00:00:00
     { youtubeId: "HcpFGZNusBw", startTime: timeStringToSecondNum("00:00:00"), isPlaying: true }
@@ -27,23 +38,20 @@ export default function SingsPage({ vtubers_movies_karaokes: karaokes = dummyKar
   const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
 
   return (
-    <Layout pageName={pageName} isSignin={isSignin}>
-      <div className="flex flex-col w-full max-w-[1000px] mx-auto">
-        <div className={`pt-6 flex flex-col items-center`}>
-          {videoState.position === "in-content" && (
-            <div className={`flex `}>
-              <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
-            </div>
-          )}
-          <div>
-            <span>※オリ曲の登録機能は未実装です※</span>
+    <div className="flex flex-col w-full max-w-[1000px] mx-auto">
+      <span className="w-full text-center">※オリ曲の登録機能は実装中です※</span>
+      <div className={`pt-6 flex flex-col items-center`}>
+        {videoState.position === "in-content" && (
+          <div className={`flex `}>
+            <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
           </div>
-          <div className="flex flex-col w-full">
-            <KaraokePaginationTable karaokes={karaokes} setSelectedPost={setSelectedPost} />
-          </div>
+        )}
+        <div></div>
+        <div className="flex flex-col w-full">
+          <KaraokePaginationTable karaokes={karaokes} setSelectedPost={setSelectedPost} />
         </div>
       </div>
-    </Layout>
+    </div>
   )
 }
 

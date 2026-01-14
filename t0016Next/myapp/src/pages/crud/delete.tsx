@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from "react"
 import https from "https"
 import axios, { AxiosRequestConfig } from "axios"
-
 import { domain } from "@/../env"
 import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from "@/types/vtuber_content"
 import type { ContextType } from "@/types/server"
@@ -16,21 +15,29 @@ import { NotLoggedIn } from "@/components/layout/Main"
 import Image from "next/image"
 import { checkLoggedin } from "@/util/webStrage/cookie"
 import { useVideo } from "@/providers/VideoProvider"
+import { FailedMessage } from "@/components/Message/FailedMessage"
 
 const pageName = "コンテンツ削除"
 
-export const ToDeleteContext = React.createContext(
-  {} as {
-    toDeleteVtuberId: number
-    setToDeleteVtuberId: React.Dispatch<React.SetStateAction<number>>
-    toDeleteMovieUrl: string
-    setToDeleteMovieUrl: React.Dispatch<React.SetStateAction<string>>
-    toDeleteKaraokeId: number
-    setToDeleteKaraokeId: React.Dispatch<React.SetStateAction<number>>
-    setCurrentVideoId: React.Dispatch<React.SetStateAction<string>>
-    setCurrentStart: React.Dispatch<React.SetStateAction<number>>
-  }
-)
+export const ToDeleteContext = React.createContext<{
+  toDeleteVtuberId: number
+  setToDeleteVtuberId: React.Dispatch<React.SetStateAction<number>>
+  toDeleteMovieUrl: string
+  setToDeleteMovieUrl: React.Dispatch<React.SetStateAction<string>>
+  toDeleteKaraokeId: number
+  setToDeleteKaraokeId: React.Dispatch<React.SetStateAction<number>>
+  setCurrentVideoId: React.Dispatch<React.SetStateAction<string>>
+  setCurrentStart: React.Dispatch<React.SetStateAction<number>>
+}>({
+  toDeleteVtuberId: 0,
+  setToDeleteVtuberId: () => {},
+  toDeleteMovieUrl: "",
+  setToDeleteMovieUrl: () => {},
+  toDeleteKaraokeId: 0,
+  setToDeleteKaraokeId: () => {},
+  setCurrentVideoId: () => {},
+  setCurrentStart: () => {},
+})
 
 type MyPagePosts = {
   vtubers_movies_karaokes_u_created: ReceivedKaraoke[]
@@ -43,9 +50,27 @@ type MyPagePosts = {
 type DeletePageProps = {
   posts: MyPagePosts
   isSignin: boolean
+  hasError: boolean
 }
 
-export const DeletePage = ({ posts, isSignin }: DeletePageProps) => {
+export const DeletePage = ({ posts, isSignin, hasError }: DeletePageProps) => {
+  if (!isSignin) {
+    return (
+      <Layout pageName={pageName} isSignin={isSignin}>
+        <NotLoggedIn />
+      </Layout>
+    )
+  }
+
+  return (
+    <Layout pageName={pageName} isSignin={isSignin}>
+      {hasError && <FailedMessage />}
+      <MainItem posts={posts} isSignin={isSignin} hasError={hasError} />
+    </Layout>
+  )
+}
+
+const MainItem = ({ posts }: DeletePageProps) => {
   const vtubers = posts?.vtubers_u_created != null ? posts.vtubers_u_created : ([] as ReceivedVtuber[])
   const movies = useMemo(() => (posts?.vtubers_movies_u_created != null ? posts.vtubers_movies_u_created : ([] as ReceivedMovie[])), [posts])
   const karaokes = useMemo(() => (posts?.vtubers_movies_karaokes_u_created != null ? posts.vtubers_movies_karaokes_u_created : ([] as ReceivedKaraoke[])), [posts])
@@ -79,83 +104,71 @@ export const DeletePage = ({ posts, isSignin }: DeletePageProps) => {
     }
   }, [toDeleteMovieUrl, toDeleteKaraokeId, movies, toDeleteVtuberId, karaokes])
 
-  if (!isSignin) {
-    return (
-      <Layout pageName={pageName} isSignin={isSignin}>
-        <div>
-          <NotLoggedIn />
-        </div>
-      </Layout>
-    )
-  }
-
   return (
-    <Layout pageName={pageName} isSignin={isSignin}>
-      <ToDeleteContext.Provider
-        value={{
-          toDeleteVtuberId,
-          setToDeleteVtuberId,
-          toDeleteMovieUrl,
-          setToDeleteMovieUrl,
-          toDeleteKaraokeId,
-          setToDeleteKaraokeId,
-          setCurrentStart,
-          setCurrentVideoId,
-        }}
-      >
-        <div className="">
-          <div id="decideBottun" className="fixed z-40">
-            <div className="">
-              <DeleteDecideButton posts={posts} selectedVtuberId={toDeleteVtuberId} selectedMovieUrl={toDeleteMovieUrl} selectedKaraokeId={toDeleteKaraokeId} />
-            </div>
+    <ToDeleteContext.Provider
+      value={{
+        toDeleteVtuberId,
+        setToDeleteVtuberId,
+        toDeleteMovieUrl,
+        setToDeleteMovieUrl,
+        toDeleteKaraokeId,
+        setToDeleteKaraokeId,
+        setCurrentStart,
+        setCurrentVideoId,
+      }}
+    >
+      <div className="">
+        <div id="decideBottun" className="fixed z-40">
+          <div className="">
+            <DeleteDecideButton posts={posts} selectedVtuberId={toDeleteVtuberId} selectedMovieUrl={toDeleteMovieUrl} selectedKaraokeId={toDeleteKaraokeId} />
+          </div>
+        </div>
+
+        <div className="flex flex-col justify-center">
+          <div className="inline-block text-sm mb-4 mt-2 mx-auto">
+            <h1>会員の方へ</h1>
+            <li>現在、データの編集・削除はデータ登録者とサイト管理者しかできないようにロックしています。</li>
+            <li>ご自身の登録データはmypageでも確認できます。</li>
           </div>
 
-          <div className="flex flex-col justify-center">
-            <div className="inline-block text-sm mb-4 mt-2 mx-auto">
-              <h1>会員の方へ</h1>
-              <li>現在、データの編集・削除はデータ登録者とサイト管理者しかできないようにロックしています。</li>
-              <li>ご自身の登録データはmypageでも確認できます。</li>
-            </div>
+          <div className={`mx-auto`}>
+            <YouTubePlayer videoId={currentVideoId} start={currentStart} />
+          </div>
 
-            <div className={`mx-auto`}>
-              <YouTubePlayer videoId={currentVideoId} start={currentStart} />
-            </div>
-
-            <div
-              id="feature"
-              className={`flex-col md:flex-row justify-center
+          <div
+            id="feature"
+            className={`flex-col md:flex-row justify-center
                             max-w-[1000px] w-full mx-auto inline-block
                             top-0 p-1
                            `}
-            >
-              <div className="flex mt-1 md:mt-4 ">
-                <Image src="/content/human_white.svg" className="h-5 mr-1" width={24} height={20} alt="" />
-                配信者: 自分の登録数{vtubers.length}
-              </div>
-              <VtuberDeleteTable posts={vtubers} />
-              <div className="flex mt-4 ">
-                <Image src="/content/movie.svg" className="h-5 mr-1" width={24} height={20} alt="" />
-                歌枠(動画): 自分の登録数{movies.length}
-              </div>
-              <MovieDeleteTable posts={movies} />
+          >
+            <div className="flex mt-1 md:mt-4 ">
+              <Image src="/content/human_white.svg" className="h-5 mr-1" width={24} height={20} alt="" />
+              配信者: 自分の登録数{vtubers.length}
+            </div>
+            <VtuberDeleteTable posts={vtubers} />
+            <div className="flex mt-4 ">
+              <Image src="/content/movie.svg" className="h-5 mr-1" width={24} height={20} alt="" />
+              歌枠(動画): 自分の登録数{movies.length}
+            </div>
+            <MovieDeleteTable posts={movies} />
 
-              <div className="flex mt-4">
-                <Image src="/content/note.svg" className="h-5 mr-1" width={24} height={20} alt="" />
-                歌: 自分の登録数{karaokes != null ? karaokes.length : 0}
-              </div>
-              <div className="flex flex-col">
-                <KaraokeDeleteTable posts={karaokes} />
-              </div>
+            <div className="flex mt-4">
+              <Image src="/content/note.svg" className="h-5 mr-1" width={24} height={20} alt="" />
+              歌: 自分の登録数{karaokes != null ? karaokes.length : 0}
+            </div>
+            <div className="flex flex-col">
+              <KaraokeDeleteTable posts={karaokes} />
             </div>
           </div>
         </div>
-      </ToDeleteContext.Provider>
-    </Layout>
+      </div>
+    </ToDeleteContext.Provider>
   )
 }
 
 export default DeletePage
-/////////////////////////////////////////////////////////////////////////////////////////
+
 type selectedDate = {
   posts: MyPagePosts
   selectedVtuberId: number
@@ -353,23 +366,31 @@ export async function getServerSideProps(context: ContextType) {
     httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
   }
 
+  // apiをリソース毎に分けるまでの仮
+  let resData: MyPagePosts | undefined = undefined
+  let hasError: boolean = true
+
   try {
     const res = await axios.get(`${domain.backendHost}/vcontents/delete/deletePage`, options)
-    const resData = res.data
-
-    return {
-      props: {
-        posts: resData,
-        isSignin: isLoggedin,
-      },
-    }
+    resData = res.data as MyPagePosts
+    hasError = false
   } catch (error) {
+    resData = {
+      all_vtubers: [],
+      all_vtubers_movies: [],
+      vtubers_movies_karaokes_u_created: [],
+      vtubers_movies_u_created: [],
+      vtubers_u_created: [],
+    }
+
     console.log("erroe in axios.get:", error)
   }
+
   return {
     props: {
-      posts: null,
+      posts: resData,
       isSignin: isLoggedin,
-    },
+      hasError: hasError,
+    } as DeletePageProps,
   }
 }
