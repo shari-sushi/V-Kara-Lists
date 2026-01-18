@@ -1,6 +1,10 @@
 import { MovieUrlPattern } from "../regularExpression/VtuberContent"
 
+// HH:MM:SS string を 秒 numberにする
 export const timeStringToSecondNum = (SingStart: string): number => {
+  if (SingStart === "") {
+    return 0
+  }
   const match = SingStart.match(/\d+/g)
   if (!match || match.length !== 3) {
     console.error("Invalid input format:", SingStart)
@@ -9,8 +13,7 @@ export const timeStringToSecondNum = (SingStart: string): number => {
   const hours = Number(match[0])
   const minutes = Number(match[1])
   const seconds = Number(match[2])
-  let totalSeconds = hours * 60 * 60 + minutes * 60 + seconds
-  return totalSeconds
+  return hours * 60 * 60 + minutes * 60 + seconds
 }
 
 export const extractVideoId = (url: string): string => {

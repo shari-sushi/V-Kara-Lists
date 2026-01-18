@@ -68,7 +68,7 @@ func (controller *Controller) CreateUser(c *gin.Context) {
 		return
 	}
 
-	if err := common.SetListenerIdintoCookie(c, newUser.ListenerId); err != nil {
+	if err := common.SetListenerIdIntoCookie(c, newUser.ListenerId); err != nil {
 		fmt.Println("err.Error:", err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "the E-mail address already in use",
@@ -157,7 +157,7 @@ func (controller *Controller) LogIn(c *gin.Context) {
 		return
 	}
 
-	if err := common.SetListenerIdintoCookie(c, foundListener.ListenerId); err != nil {
+	if err := common.SetListenerIdIntoCookie(c, foundListener.ListenerId); err != nil {
 		fmt.Printf("err:, LogIn SetListenerIdintoCookie%v\n", err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "failed Login: failed set cookie. bad system.",
@@ -179,7 +179,7 @@ func Logout(c *gin.Context) {
 }
 
 func GuestLogIn(c *gin.Context) {
-	common.SetListenerIdintoCookie(c, guestID)
+	common.SetListenerIdIntoCookie(c, guestID)
 	fmt.Println("gestLogined", guestID)
 	c.JSON(http.StatusOK, gin.H{
 		"message":      "Successfully Guest Logged In",

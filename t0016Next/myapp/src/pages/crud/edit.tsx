@@ -2,22 +2,46 @@ import { useEffect, useState, useMemo } from "react"
 import Link from "next/link"
 import https from "https"
 import axios, { AxiosRequestConfig } from "axios"
-
 import { domain } from "@/../env"
-import type { ReceivedMovie, ReceivedKaraoke } from "@/types/vtuber_content"
+import type { ReceivedMovie, ReceivedKaraoke, BasicDataProps } from "@/types/vtuber_content"
 import type { ContextType } from "@/types/server"
 import { EditPageProps, EditForm } from "@/components/form/EditContentForm"
 import { Layout } from "@/components/layout/Layout"
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
 import { timeStringToSecondNum, extractVideoId } from "@/util"
-import { GestLogin } from "@/components/button/User"
 import { NotLoggedIn } from "@/components/layout/Main"
 import { checkLoggedin } from "@/util/webStrage/cookie"
 import { useVideo } from "@/providers/VideoProvider"
+import { FailedMessage } from "@/components/Message/FailedMessage"
 
 const pageName = "コンテンツ編集"
 
-export const EditPage = ({ posts, isSignin }: EditPageProps) => {
+export const EditPage = ({ posts, isSignin, hasError }: EditPageProps) => {
+  if (hasError) {
+    return (
+      <Layout pageName={pageName} isSignin={isSignin}>
+        {hasError && <FailedMessage />}
+        <MainItem posts={posts} isSignin={isSignin} hasError={hasError} />
+      </Layout>
+    )
+  }
+
+  if (!isSignin) {
+    return (
+      <Layout pageName={pageName} isSignin={isSignin}>
+        <NotLoggedIn />
+      </Layout>
+    )
+  }
+
+  return (
+    <Layout pageName={pageName} isSignin={isSignin}>
+      <MainItem posts={posts} isSignin={isSignin} hasError={hasError} />
+    </Layout>
+  )
+}
+
+const MainItem = ({ posts }: EditPageProps) => {
   const [selectedVtuber, setSelectedVtuber] = useState<number>(0)
   const [selectedMovie, setSelectedMovie] = useState<string>("")
   const [selectedKaraoke, setSelectedKaraoke] = useState<number>(0)
@@ -60,76 +84,43 @@ export const EditPage = ({ posts, isSignin }: EditPageProps) => {
     }
   }, [selectedVtuber, selectedMovie, selectedKaraoke, karaokes])
 
-  if (!isSignin) {
-    return (
-      <Layout pageName={pageName} isSignin={isSignin}>
-        <div>
-          <NotLoggedIn />
-        </div>
-      </Layout>
-    )
-  }
-
-  if (!isSignin) {
-    return (
-      <div className="by-3 mx-auto">
-        <h1>ログインが必要なサービスです</h1>
-        <Link href={`/user/signin`}>
-          <u>ログイン</u>
-        </Link>
-        <br />
-        <Link href={`/user/signup`}>
-          <u>会員登録</u>
-        </Link>
-        <GestLogin />
-      </div>
-    )
-  }
-
   return (
-    <Layout pageName={pageName} isSignin={isSignin}>
-      <div className="">
-        <div className="flex justify-center text-sm mb-3 ">
-          <span className="">
-            <h1 className="bg-gray-600 w-[180px]">会員の方へ</h1>
-            <li>現在、データの編集・削除はデータ登録者とサイト管理者しかできないようにロックしています。</li>
-            <li>
-              ご自身の登録データは
-              <Link href="/user/mypage" className="underline underline-offset-1">
-                マイページ
-              </Link>
-              で確認できます。
-            </li>
-          </span>
+    <div className="">
+      <div className="flex justify-center text-sm mb-3 ">
+        <span className="">
+          <h1 className="bg-gray-600 w-[180px]">会員の方へ</h1>
+          <li>現在、データの編集・削除はデータ登録者とサイト管理者しかできないようにロックしています。</li>
+          <li>
+            ご自身の登録データは
+            <Link href="/user/mypage" className="underline underline-offset-1">
+              マイページ
+            </Link>
+            で確認できます。
+          </li>
+        </span>
+      </div>
+
+      <div id="feature" className={`flex flex-col  w-full max-w-[1000px] mx-auto`}>
+        <div className="inline-block flex-col top-0 mx-auto ">
+          <div className="inline-block mx-auto md:mx-0 md:min-h-[255px] p-0 md:p-3">
+            <YouTubePlayer videoId={currentVideoId} start={currentStart} />
+          </div>
         </div>
 
-        <div id="feature" className={`flex flex-col  w-full max-w-[1000px] mx-auto`}>
-          <div className="inline-block flex-col top-0 mx-auto ">
-            <div className="inline-block mx-auto md:mx-0 md:min-h-[255px] p-0 md:p-3">
-              <YouTubePlayer videoId={currentVideoId} start={currentStart} />
-            </div>
-          </div>
-
-          <div
-            id="form"
-            className={`
-                       inline-block flex-col w-full top-0 max-w-[1000px] h-[700px]
-                    `}
-          >
-            <EditForm
-              posts={posts}
-              selectedVtuber={selectedVtuber}
-              selectedMovie={selectedMovie}
-              selectedKaraoke={selectedKaraoke}
-              setSelectedVtuber={setSelectedVtuber}
-              setSelectedMovie={setSelectedMovie}
-              setSelectedKaraoke={setSelectedKaraoke}
-              clearMovieHandler={clearMovieHandler}
-            />
-          </div>
+        <div id="form" className={`inline-block flex-col w-full top-0 max-w-[1000px] h-[700px]`}>
+          <EditForm
+            posts={posts}
+            selectedVtuber={selectedVtuber}
+            selectedMovie={selectedMovie}
+            selectedKaraoke={selectedKaraoke}
+            setSelectedVtuber={setSelectedVtuber}
+            setSelectedMovie={setSelectedMovie}
+            setSelectedKaraoke={setSelectedKaraoke}
+            clearMovieHandler={clearMovieHandler}
+          />
         </div>
       </div>
-    </Layout>
+    </div>
   )
 }
 export default EditPage
@@ -147,22 +138,28 @@ export async function getServerSideProps(context: ContextType) {
     httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
   }
 
+  // apiをリソース毎に分けるまでの仮
+  let resData: BasicDataProps | undefined = undefined
+  let hasError: boolean = true
+
   try {
     const res = await axios.get(`${domain.backendHost}/vcontents/`, options)
-    const resData = res.data
-    return {
-      props: {
-        posts: resData,
-        isSignin: isLoggedin,
-      },
-    }
+    resData = res.data as BasicDataProps
+    hasError = false
   } catch (error) {
+    resData = {
+      vtubers: [],
+      vtubers_movies: [],
+      vtubers_movies_karaokes: [],
+    }
     console.log("erroe in axios.get:", error)
   }
+
   return {
     props: {
-      posts: null,
+      posts: resData,
       isSignin: isLoggedin,
-    },
+      hasError: hasError,
+    } as EditPageProps,
   }
 }

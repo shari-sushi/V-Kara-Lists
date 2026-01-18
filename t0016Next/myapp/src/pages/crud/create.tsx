@@ -1,37 +1,77 @@
 import { useEffect, useState, useMemo } from "react"
 import https from "https"
 import axios, { AxiosRequestConfig } from "axios"
-
 import { domain } from "@/../env"
 import type { ReceivedMovie, ReceivedKaraoke, BasicDataProps } from "@/types/vtuber_content"
 import type { ContextType } from "@/types/server"
 import { Layout } from "@/components/layout/Layout"
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
 import { timeStringToSecondNum, extractVideoId } from "@/util"
-import { CreateForm } from "@/components/form/CreateContentForm"
+import { CreateForm } from "@/components/form/CreateContentForm/CreateContentForm"
 import { NotLoggedIn } from "@/components/layout/Main"
 import { checkLoggedin } from "@/util/webStrage/cookie"
 import { CreateContentFormDescription } from "@/features/description"
 import { useVideo } from "@/providers/VideoProvider"
+import { FailedMessage } from "@/components/Message/FailedMessage"
 
 const pageName = "コンテンツ登録"
 
 type CreatePageProps = {
   posts: BasicDataProps
   isSignin: boolean
+  hasError: boolean
 }
 
-export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
+export const CreatePage = ({ posts, isSignin, hasError }: CreatePageProps) => {
+  return (
+    <Layout pageName={pageName} isSignin={isSignin}>
+      {hasError && <FailedMessage />}
+      <MainItem posts={posts} isSignin={isSignin} hasError={hasError} />
+    </Layout>
+  )
+}
+
+const MainItem = ({ posts, isSignin }: CreatePageProps) => {
   const movies = useMemo(() => posts?.vtubers_movies || ([] as ReceivedMovie[]), [posts])
   const karaokes = useMemo(() => posts?.vtubers_movies_karaokes || ([] as ReceivedKaraoke[]), [posts])
 
   const [selectedVtuberId, setSelectedVtuberId] = useState<number>(0)
-  const [selectedMovieUrl, setSelectedMovieUrl] = useState<string>("")
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string>("")
   const [selectedKaraokeId, setSelectedKaraokeId] = useState<number>(0)
   const [currentVideoId, setCurrentVideoId] = useState<string>("9ehwhQJ50gs")
   const [currentStart, setCurrentStart] = useState<number>(0)
 
   const { videoState, changePosition } = useVideo()
+
+  const handleSelectVtuber = (vtuberId: number) => {
+    setSelectedVtuberId(vtuberId)
+  }
+
+  const handleSelectMovie = (videoUrl: string) => {
+    const foundMovie = movies.find((movies) => movies.MovieUrl === videoUrl)
+    if (foundMovie) {
+      setSelectedVideoUrl(videoUrl)
+      const foundYoutubeId = extractVideoId(foundMovie.MovieUrl)
+      setCurrentVideoId(foundYoutubeId)
+      setCurrentStart(1)
+    }
+  }
+
+  const handleSelectKaraokeSong = (songId: number) => {
+    const startTimeStr = karaokes.find((k) => {
+      k.KaraokeId
+    })?.SingStart
+    if (startTimeStr == null) return
+
+    const foundSingStart = timeStringToSecondNum(startTimeStr)
+    setCurrentStart(foundSingStart)
+  }
+
+  const clearMovieHandler = () => {
+    // 中身空でもKaraokeのoptionsを空にしてくれるんだが…
+    // でもこの関数をまるっと消すとダメ
+  }
+
   // TODO: ちゃんとした制御機構を用意する
   useEffect(() => {
     if (videoState.position !== "in-content") {
@@ -39,74 +79,44 @@ export const CreatePage = ({ posts, isSignin }: CreatePageProps) => {
     }
   }, [videoState.position, changePosition])
 
-  useEffect(() => {
-    const foundMovie = movies.find((movies) => movies.MovieUrl === selectedMovieUrl)
-    if (foundMovie) {
-      const foundYoutubeId = extractVideoId(foundMovie.MovieUrl)
-      setCurrentVideoId(foundYoutubeId)
-      setCurrentStart(1)
-    }
-  }, [movies, selectedMovieUrl])
-
-  const clearMovieHandler = () => {
-    //中身空でもKaraokeのoptinosを空にしてくれるんだが…
-    // でもこの関数をまるっと消すとダメ
-    // setSelectedKaraoke(0);
-  }
-
-  useEffect(() => {
-    if (selectedVtuberId && selectedMovieUrl && selectedKaraokeId) {
-      const foundMovies = karaokes.filter((karaoke) => karaoke.MovieUrl === selectedMovieUrl)
-      const foundKaraoke = foundMovies.find((foundMovie) => foundMovie.KaraokeId === selectedKaraokeId)
-      if (foundKaraoke) {
-        const foundSingStart = timeStringToSecondNum(foundKaraoke.SingStart)
-        setCurrentStart(foundSingStart)
-      }
-    }
-  }, [selectedMovieUrl, selectedKaraokeId, selectedVtuberId, karaokes])
-
   if (!isSignin) {
     return (
       <Layout pageName={pageName} isSignin={isSignin}>
-        <div>
-          <NotLoggedIn />
-        </div>
+        <NotLoggedIn />
       </Layout>
     )
   }
 
   return (
-    <Layout pageName={pageName} isSignin={isSignin}>
-      <div id="body" className="flex flex-col w-full">
-        <CreateContentFormDescription />
-
-        <div id="feature" className={`flex flex-col w-full max-w-[1000px] mx-auto`}>
-          <div className="inline-block flex-col top-0 mx-auto ">
-            <div className="inline-block mx-auto md:mx-0 md:min-h-[255px] p-0 md:px-3">
-              <YouTubePlayer videoId={currentVideoId} start={currentStart} />
-            </div>
+    <div id="body" className="flex flex-col w-full">
+      <CreateContentFormDescription />
+      <div id="feature" className={`flex flex-col w-full max-w-[1000px] mx-auto`}>
+        <div className="inline-block flex-col top-0 mx-auto ">
+          <div className="inline-block mx-auto md:mx-0 md:min-h-[255px] p-0 md:px-3">
+            <YouTubePlayer videoId={currentVideoId} start={currentStart} />
           </div>
-
-          <div id="form" className={`inline-block flex-col top-0 max-w-[1000px] h-[600px]`}>
-            <div className="mt-1">
-              <CreateForm
-                posts={posts}
-                selectedVtuberId={selectedVtuberId}
-                selectedMovieUrl={selectedMovieUrl}
-                selectedKaraokeId={selectedKaraokeId}
-                setSelectedVtuberId={setSelectedVtuberId}
-                setSelectedMovieUrl={setSelectedMovieUrl}
-                setSelectedKaraokeId={setSelectedKaraokeId}
-                clearMovieHandler={clearMovieHandler}
-                setCurrentVideoId={setCurrentVideoId}
-              />
-            </div>
+        </div>
+        <div id="form" className={`inline-block flex-col top-0 max-w-[1000px] h-[600px]`}>
+          <div className="mt-1">
+            <CreateForm
+              posts={posts}
+              selectedVtuberId={selectedVtuberId}
+              selectedMovieUrl={selectedVideoUrl}
+              selectedKaraokeId={selectedKaraokeId}
+              selectVtuber={handleSelectVtuber}
+              selectVideo={handleSelectMovie}
+              selectKaraokeSong={handleSelectKaraokeSong}
+              clearMovieHandler={clearMovieHandler}
+              setCurrentVideoId={setCurrentVideoId}
+            />
           </div>
         </div>
       </div>
-    </Layout>
+    </div>
   )
 }
+
+export default CreatePage
 
 export async function getServerSideProps(context: ContextType) {
   const { sessionToken, isLoggedin } = checkLoggedin(context)
@@ -121,23 +131,28 @@ export async function getServerSideProps(context: ContextType) {
     httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
   }
 
+  // apiをリソース毎に分けるまでの仮
+  let resData: BasicDataProps | undefined = undefined
+  let hasError: boolean = true
+
   try {
     const res = await axios.get(`${domain.backendHost}/vcontents/`, options)
-    const resData = res.data
-    return {
-      props: {
-        posts: resData,
-        isSignin: isLoggedin,
-      },
-    }
+    resData = res.data as BasicDataProps
+    hasError = false
   } catch (error) {
+    resData = {
+      vtubers: [],
+      vtubers_movies: [],
+      vtubers_movies_karaokes: [],
+    }
     console.log("erroe in axios.get:", error)
   }
+
   return {
     props: {
-      posts: null,
+      posts: resData,
       isSignin: isLoggedin,
-    },
+      hasError: hasError,
+    } as CreatePageProps,
   }
 }
-export default CreatePage

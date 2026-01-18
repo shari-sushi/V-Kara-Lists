@@ -571,9 +571,7 @@ export const KaraokeMinRandomTable = ({ posts: karaokes }: KaraokeTableProps) =>
     <>
       {hasWindow && (
         <div>
-          <div className="flex ml-5">
-            <h2 className="flex mr-1">ランダム5件表示中 (全{karaokes.length}件)</h2>
-          </div>
+          <h2 className="flex mr-1">ランダム5件表示中 (全{karaokes.length}件)</h2>
           <div className="w-full overflow-scroll md:overflow-hidden">
             <table {...getTableProps()} className={`${TableTW.minRandom}`}>
               <thead className={`${TableTW.regularThead}`}>

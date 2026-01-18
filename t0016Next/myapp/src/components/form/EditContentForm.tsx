@@ -1,20 +1,21 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import axios from "axios"
-
 import { domain } from "@/../env"
-import type { CrudDate, BasicDataProps } from "@/types/vtuber_content"
+import type { BasicDataProps } from "@/types/vtuber_content"
 import { DropDownVtuber } from "@/components/dropDown/Vtuber"
 import { DropDownMovie } from "@/components/dropDown/Movie"
-import { ValidateEdit } from "@/util"
+import { ValidateEditRules } from "@/util"
 import { FormTW, ToClickTW } from "@/styles/tailwiind"
-import { DropDownKaraoke } from "../dropDown/Karaoke"
-import { CrudContentSelector, findVtuber } from "@/components/form/Common"
+import { DropDownKaraokeSongs } from "../dropDown/Karaoke"
+import { findVtuber } from "@/components/form/util/getYoutubeVideo"
 import router from "next/router"
+import { CrudContentSelector } from "./util/CrudContetntSelector"
 
 export type EditPageProps = {
   posts: BasicDataProps
   isSignin: boolean
+  hasError: boolean
 }
 
 type EditDataProps = {
@@ -27,12 +28,16 @@ type EditDataProps = {
   setSelectedKaraoke: (arg0: number) => void
   clearMovieHandler: () => void
 }
+
+export type EditData = EditVtuber & EditMovie & EditKaraoke
+
 type EditVtuber = {
   VtuberId: number
   VtuberName: string | undefined
   VtuberKana: string | undefined
   IntroMovieUrl: string | null | undefined
 }
+
 type EditMovie = {
   VtuberId: number
   MovieTitle: string | undefined
@@ -46,13 +51,11 @@ type EditKaraoke = {
 }
 
 export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke, setSelectedVtuber, setSelectedMovie, setSelectedKaraoke, clearMovieHandler }: EditDataProps) {
-  const vtubers = posts?.vtubers
-  const movies = posts?.vtubers_movies
-  const karaokes = posts?.vtubers_movies_karaokes
+  const { vtubers, vtubers_movies: videos, vtubers_movies_karaokes: karaokeSongs } = posts
 
   const foundVtuber = vtubers?.find((vtuber) => vtuber.VtuberId === selectedVtuber)
-  const foundMovie = movies?.find((movie) => movie.MovieUrl === selectedMovie)
-  const foundKaraoke = karaokes?.find((karaoke) => karaoke.KaraokeId === selectedKaraoke)
+  const foundMovie = videos?.find((video) => video.MovieUrl === selectedMovie)
+  const foundKaraoke = karaokeSongs?.find((songs) => songs.KaraokeId === selectedKaraoke)
 
   const [vtuberNameInput, setVtuberNameInput] = useState(foundVtuber?.VtuberName ?? "")
   const [VtuberKanaInput, setVtuberKanaInput] = useState(foundVtuber?.VtuberKana ?? "")
@@ -75,7 +78,7 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CrudDate>({ reValidateMode: "onChange" })
+  } = useForm<EditData>({ reValidateMode: "onChange" })
 
   const resultDisplay = () => {
     let result = window.confirm("編集完了しました。\nページを更新しますか？")
@@ -84,7 +87,7 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
     }
   }
 
-  const onSubmit = async (CrudData: CrudDate) => {
+  const onSubmit = async (CrudData: EditData) => {
     if (crudContentType === "vtuber") {
       try {
         const reqBody: EditVtuber = {
@@ -167,7 +170,7 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
             )}
           </div>
           <div className="bottom-0">
-            <DropDownVtuber selectedVtuber={findVtuber(vtubers, selectedVtuber)} posts={posts} onVtuberSelect={setSelectedVtuber} defaultMenuIsOpen={false} />
+            <DropDownVtuber vtubers={vtubers} onSelectVtuber={setSelectedVtuber} defaultMenuIsOpen={false} />
           </div>
         </div>
         {(crudContentType === "movie" || crudContentType === "karaoke") && (
@@ -179,7 +182,7 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
                 </span>
               )}
             </div>
-            <DropDownMovie posts={posts} selectedVtuber={selectedVtuber} setSelectedMovie={setSelectedMovie} clearMovieHandler={clearMovieHandler} />
+            <DropDownMovie videos={videos} disabled={selectedVtuber === 0} setSelectedMovie={setSelectedMovie} clearMovieHandler={clearMovieHandler} />
           </div>
         )}
         {crudContentType === "karaoke" && (
@@ -191,7 +194,7 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
                 </span>
               )}
             </div>
-            <DropDownKaraoke posts={posts} selectedMovie={selectedMovie} onKaraokeSelect={setSelectedKaraoke} />
+            <DropDownKaraokeSongs karaokeSongs={karaokeSongs} selectedMovie={selectedMovie} onKaraokeSelect={setSelectedKaraoke} />
           </div>
         )}
       </div>
@@ -200,9 +203,8 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
 
       <div id="form" className="flex flex-col">
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex flex-col  items-center  underline text-lg text-black">
-            <span className="">編集するデータを入力してください</span>
-            <span className="">※空欄ｓにた項目は編集されません</span>
+          <div className="flex flex-col  items-center underline text-lg text-black">
+            <span className="">編集したい項目に入力してください</span>
           </div>
           {crudContentType === "vtuber" && (
             <div>
@@ -212,9 +214,10 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
                 </div>
                 <input
                   className={`${ToClickTW.input}`}
-                  {...register("VtuberName", ValidateEdit.VtuberName)}
-                  placeholder={foundVtuber?.VtuberName || "例:妹望おいも"}
+                  {...register("VtuberName", ValidateEditRules.VtuberName)}
+                  placeholder={foundVtuber?.VtuberName || "Vtuberを選択してください"}
                   onChange={(e) => setVtuberNameInput(e.target.value)}
+                  disabled={foundVtuber == null}
                 />
                 <span className="text-black">{errors.VtuberName?.message}</span>
               </div>
@@ -223,9 +226,10 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
                 <span className={`${FormTW.label}`}>読み(kana):</span>
                 <input
                   className={`${ToClickTW.input}`}
-                  {...register("VtuberKana", ValidateEdit.VtuberKana)}
-                  placeholder={foundVtuber?.VtuberKana || "例:imomochi_oimo"}
+                  {...register("VtuberKana", ValidateEditRules.VtuberKana)}
+                  placeholder={foundVtuber?.VtuberKana}
                   onChange={(e) => setVtuberKanaInput(e.target.value)}
+                  disabled={foundVtuber == null}
                 />
                 <span className="text-black">{errors.VtuberKana?.message}</span>
               </div>
@@ -233,9 +237,10 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
                 <span className={`${FormTW.label}`}>紹介動画URL(*):</span>
                 <input
                   className={`${ToClickTW.input}`}
-                  {...register("IntroMovieUrl", ValidateEdit.IntroMovieUrl)}
+                  {...register("IntroMovieUrl", ValidateEditRules.IntroMovieUrl)}
                   placeholder={foundVtuber?.IntroMovieUrl || "例:www.youtube.com/watch?v=AlHRqSsF--8&t=75"}
                   onChange={(e) => setIntroMovieUrInput(e.target.value)}
+                  disabled={foundMovie == null}
                 />
                 <span className="text-black">{errors.IntroMovieUrl?.message}</span>
               </div>
@@ -256,9 +261,10 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
                 </div>
                 <input
                   className={`${ToClickTW.input}`}
-                  {...register("MovieTitle", ValidateEdit.MovieTitle)}
-                  placeholder={foundMovie?.MovieTitle || "動画タイトル"}
+                  {...register("MovieTitle", ValidateEditRules.MovieTitle)}
+                  placeholder={foundMovie?.MovieTitle || "動画を選択してください"}
                   onChange={(e) => setMovieTitleInput(e.target.value)}
+                  disabled={foundMovie == null}
                 />
                 <span className="text-black">{errors.MovieTitle?.message}</span>
               </div>
@@ -275,9 +281,10 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
               </div>
               <input
                 className={`${ToClickTW.input}`}
-                {...register("SongName", ValidateEdit.SongName)}
-                placeholder={foundKaraoke?.SongName || "曲"}
+                {...register("SongName", ValidateEditRules.SongName)}
+                placeholder={foundKaraoke?.SongName || "曲を選択して下さい"}
                 onChange={(e) => setSongNameInput(e.target.value)}
+                disabled={foundKaraoke == null}
               />
               <span className="text-black">{errors.SongName?.message}</span>
               <div className="flex mt-3">
@@ -287,9 +294,10 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
                 className={`${ToClickTW.input}`}
                 type="time"
                 step="1"
-                {...register("SingStart", ValidateEdit.SingStart)}
-                placeholder={foundKaraoke?.SingStart || "例 00:05:30"}
+                {...register("SingStart", ValidateEditRules.SingStart)}
+                placeholder={foundKaraoke?.SingStart || "曲を選択してください"}
                 onChange={(e) => setSingStartInput(e.target.value)}
+                disabled={foundKaraoke == null}
               />
               <span className="text-black">{errors.SingStart?.message}</span>
             </div>

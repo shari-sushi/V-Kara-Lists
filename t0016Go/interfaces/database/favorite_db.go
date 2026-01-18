@@ -17,7 +17,7 @@ func (db *FavoriteRepository) CountMovieFavorites() ([]domain.TransmitMovie, err
 	if err != nil {
 		return favCnt, err
 	}
-	return favCnt, err
+	return favCnt, nil
 }
 
 func (db *FavoriteRepository) CountKaraokeFavorites() ([]domain.TransmitKaraoke, error) {
@@ -25,9 +25,9 @@ func (db *FavoriteRepository) CountKaraokeFavorites() ([]domain.TransmitKaraoke,
 	var favCnt []domain.TransmitKaraoke
 	err := db.Model(&fav).Select("karaoke_id").Where("where karaoke_id != 0").Group("karoke_list_id").Find(&favCnt).Error
 	if err != nil {
-		return nil, err
+		return favCnt, err
 	}
-	return favCnt, err
+	return favCnt, nil
 }
 
 func (db *FavoriteRepository) DeleteMovieFavorite(fav domain.Favorite) error {
@@ -37,7 +37,7 @@ func (db *FavoriteRepository) DeleteMovieFavorite(fav domain.Favorite) error {
 		return err
 	}
 
-	return err
+	return nil
 }
 
 func (db *FavoriteRepository) DeleteKaraokeFavorite(fav domain.Favorite) error {
@@ -46,7 +46,7 @@ func (db *FavoriteRepository) DeleteKaraokeFavorite(fav domain.Favorite) error {
 	if err != nil {
 		return err
 	}
-	return err
+	return nil
 }
 
 func (db *FavoriteRepository) GetVtubersMoviesWithFavCnts() ([]domain.TransmitMovie, error) {
@@ -65,9 +65,11 @@ func (db *FavoriteRepository) GetVtubersMoviesWithFavCnts() ([]domain.TransmitMo
 	err = db.Model(vt).Select(selectQu1, selectQu2, selectQu3).
 		Joins(joinQu).Where(whereQu).Group(groupQu).
 		Scan(&TmMos).Error
+
 	if err != nil {
-		return nil, err
+		return TmMos, err
 	}
+
 	return TmMos, nil
 }
 
@@ -89,13 +91,15 @@ func (db *FavoriteRepository) GetVtubersMoviesKaraokesWithFavCnts() ([]domain.Tr
 	err = db.Model(vt).Select(selectQu1, selectQu2, selectQu3, selectQu4).
 		Joins(joinQu).Where(whereQu).Group(groupQu).
 		Scan(&TmKas).Error
+
 	if err != nil {
-		return nil, err
+		return TmKas, err
 	}
+
 	return TmKas, nil
 }
 
-func (db *FavoriteRepository) GetVtubersMoviesKaraokesByVtuerKanaWithFavCnts(kana string) ([]domain.TransmitKaraoke, error) {
+func (db *FavoriteRepository) GetVtubersMoviesKaraokesByVtuberKanaWithFavCnts(kana string) ([]domain.TransmitKaraoke, error) {
 	var TmKas []domain.TransmitKaraoke
 	var err error
 
@@ -113,9 +117,11 @@ func (db *FavoriteRepository) GetVtubersMoviesKaraokesByVtuerKanaWithFavCnts(kan
 	err = db.Model(vt).Select(selectQu1, selectQu2, selectQu3, selectQu4).
 		Joins(joinQu).Where(whereQu).Group(groupQu).
 		Scan(&TmKas).Error
+
 	if err != nil {
-		return nil, err
+		return TmKas, err
 	}
+
 	return TmKas, nil
 }
 
@@ -141,25 +147,29 @@ func (db *FavoriteRepository) GetLatest50VtubersMoviesKaraokesWithFavCnts(guestI
 	err = db.Model(vt).Select(selectQu1, selectQu2, selectQu3, selectQu4).
 		Joins(joinQu1).Where(whereQu1).Joins(joinQu2).Where(whereQu2).Group(groupQu).Order(orderQu).Limit(limitQu).
 		Scan(&TmKas).Error
+
 	if err != nil {
-		return nil, err
+		return TmKas, err
 	}
+
 	return TmKas, nil
 }
 
 func (db *FavoriteRepository) FindFavoritesCreatedByListenerId(lId domain.ListenerId) ([]domain.ReceivedFavorite, error) {
 	var favs []domain.Favorite
-	var receivedfavs []domain.ReceivedFavorite
+	var receivedFavs []domain.ReceivedFavorite
 
-	result := db.Select("id, listener_id, movie_url, karaoke_id").Where("listener_id=?", lId).Model(&favs).Scan(&receivedfavs)
-	fmt.Printf("recfavs:\n %+v\n", receivedfavs)
-	return receivedfavs, result.Error
+	result := db.Select("id, listener_id, movie_url, karaoke_id").Where("listener_id=?", lId).Model(&favs).Scan(&receivedFavs)
+	return receivedFavs, result.Error
 }
 
 func (db *FavoriteRepository) FindFavoriteUnscopedByFavOrUnfavRegistry(fav domain.Favorite) domain.Favorite {
 	whereQu := fmt.Sprintf("listener_id = '%v' AND movie_url = '%v' AND karaoke_id = '%v'", fav.ListenerId, fav.MovieUrl, fav.KaraokeId)
 	err := db.Unscoped().Where(whereQu).First(&fav).Error
-	fmt.Printf("FindFavoriteUnscopedByFavOrUnfavRegistry got err=%v\n", err)
+	if err != nil {
+		fmt.Printf("FindFavoriteUnscopedByFavOrUnfavRegistry got err=%v\n", err)
+	}
+
 	return fav
 }
 
@@ -168,7 +178,7 @@ func (db *FavoriteRepository) CreateMovieFavorite(fav domain.Favorite) error {
 	if err != nil {
 		return err
 	}
-	return err
+	return nil
 }
 
 func (db *FavoriteRepository) CreateKaraokeFavorite(fav domain.Favorite) error {
@@ -176,7 +186,7 @@ func (db *FavoriteRepository) CreateKaraokeFavorite(fav domain.Favorite) error {
 	if err != nil {
 		return err
 	}
-	return err
+	return nil
 }
 
 func (db *FavoriteRepository) UpdateMovieFavorite(fav domain.Favorite) error {
@@ -184,7 +194,7 @@ func (db *FavoriteRepository) UpdateMovieFavorite(fav domain.Favorite) error {
 	if err != nil {
 		return err
 	}
-	return err
+	return nil
 }
 
 func (db *FavoriteRepository) UpdateKaraokeFavorite(fav domain.Favorite) error {
@@ -193,7 +203,7 @@ func (db *FavoriteRepository) UpdateKaraokeFavorite(fav domain.Favorite) error {
 	if err != nil {
 		return err
 	}
-	return err
+	return nil
 }
 
 // 使ってない？
@@ -222,9 +232,11 @@ func (db *FavoriteRepository) FindMoviesCreatedByListenerId(lId domain.ListenerI
 	err = db.Model(vt).Select(selectQu1, selectQu2, selectQu3).
 		Joins(joinQu).Where(whereQu).Group(groupQu).
 		Scan(&TmMos).Error
+
 	if err != nil {
-		return nil, err
+		return TmMos, err
 	}
+
 	return TmMos, nil
 }
 
@@ -247,8 +259,9 @@ func (db *FavoriteRepository) FindKaraokesCreatedByListenerId(lId domain.Listene
 		Joins(joinQu).Where(whereQu).Group(groupQu).
 		Scan(&TmKas).Error
 	if err != nil {
-		return nil, err
+		return TmKas, err
 	}
+
 	return TmKas, nil
 }
 func (db *FavoriteRepository) FindMoviesFavoritedByListenerId(lId domain.ListenerId) ([]domain.TransmitMovie, error) {
@@ -259,9 +272,10 @@ func (db *FavoriteRepository) FindMoviesFavoritedByListenerId(lId domain.Listene
 	whereOfVtsMos := fmt.Sprintf("where movies.inputter_listener_id = %v", lId)
 	err = db.Model(Mos).Where(whereOfVtsMos).Joins(joinsQOfVtsMos).Scan(&tmMos).Error
 	if err != nil {
-		return nil, err
+		return tmMos, err
 	}
-	return tmMos, err
+
+	return tmMos, nil
 }
 func (db *FavoriteRepository) FindKaraokesFavoritedByListenerId(lId domain.ListenerId) ([]domain.TransmitKaraoke, error) {
 	var err error
@@ -272,7 +286,8 @@ func (db *FavoriteRepository) FindKaraokesFavoritedByListenerId(lId domain.Liste
 	whereOfVtsMosKas := fmt.Sprintf("where karaoke_lists.inputter_listener_id = %v", lId)
 	err = db.Model(Kas).Where(whereOfVtsMosKas).Joins(joinsQOfVtsMosKas).Scan(&VtsMosKas).Error
 	if err != nil {
-		return nil, err
+		return tmKas, err
 	}
-	return tmKas, err
+
+	return tmKas, nil
 }

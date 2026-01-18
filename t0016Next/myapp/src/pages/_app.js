@@ -8,9 +8,12 @@ import { useRouter } from "next/router"
 export default function App({ Component, pageProps }) {
   const isSignin = pageProps.isSignin || false
   const router = useRouter()
+  const isProduction = process.env.NODE_ENV === "production"
 
   // SPA ページ遷移で PV を飛ばす
   useEffect(() => {
+    if (!isProduction) return
+
     const handleRouteChange = (url) => {
       if (typeof window !== "undefined" && window.gtag) {
         window.gtag("config", "G-XZY96J18P3", {
@@ -23,7 +26,7 @@ export default function App({ Component, pageProps }) {
     return () => {
       router.events.off("routeChangeComplete", handleRouteChange)
     }
-  }, [router.events])
+  }, [router.events, isProduction])
 
   return (
     <>

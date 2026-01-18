@@ -16,10 +16,10 @@ import { checkLoggedin } from "@/util/webStrage/cookie"
 import { timeStringToSecondNum, extractVideoId } from "@/util"
 import { generateRandomNumber } from "@/components/SomeFunction"
 import { useVideo } from "@/providers/VideoProvider"
+import { FailedMessage } from "@/components/Message/FailedMessage"
 
 const pageName = "Top"
 
-// NOTE: SSRだからか、res失敗でundefinedになる様子
 type TopPageProps = {
   posts: {
     vtubers: ReceivedVtuber[]
@@ -28,29 +28,31 @@ type TopPageProps = {
     latest_karaokes: ReceivedKaraoke[]
   }
   isSignin: boolean
+  hasError: boolean
 }
 
-const TopPage = ({ posts, isSignin }: TopPageProps) => {
+const TopPage = ({ posts, isSignin, hasError }: TopPageProps) => {
   return (
     <Layout pageName={pageName} isSignin={isSignin}>
       <div className="pt-1">
         <TitleGroup />
         <TopPageNotice />
-        <MainItem posts={posts} isSignin={isSignin} />
+        <MainItem posts={posts} isSignin={isSignin} hasError={hasError} />
+        {hasError && <FailedMessage />}
       </div>
     </Layout>
   )
 }
 
 const MainItem = ({ posts }: TopPageProps) => {
-  const playKaraokeNumber = generateRandomNumber(posts.latest_karaokes.length - 1)
-
+  const hasKaraokes = posts.latest_karaokes.length > 0
+  const playKaraokeNumber = hasKaraokes ? generateRandomNumber(posts.latest_karaokes.length - 1) : 0
   const { videoState } = useVideo({
-    youtubeId: extractVideoId(posts.latest_karaokes[playKaraokeNumber].MovieUrl),
-    startTime: timeStringToSecondNum(posts.latest_karaokes[playKaraokeNumber].SingStart),
-    isPlaying: true,
+    // データが無い時は 音恋宮 花に亡霊
+    youtubeId: hasKaraokes ? extractVideoId(posts.latest_karaokes[playKaraokeNumber].MovieUrl) : "jgGA5hVNpyM",
+    startTime: hasKaraokes ? timeStringToSecondNum(posts.latest_karaokes[playKaraokeNumber].SingStart) : 3718,
+    isPlaying: hasKaraokes,
   })
-
   // const handleMovieClickYouTube = (url: string, start: number) => {
   //   updateVideo(extractVideoId(url), start);
   //   //クリティカルな環境バグなので再発時用に残しておく
@@ -70,13 +72,7 @@ const MainItem = ({ posts }: TopPageProps) => {
 
   return (
     <div className="flex flex-col justify-center">
-      <div
-        id="feature"
-        className={`flex flex-col md:flex-row bg-[#657261] rounded
-                max-w-[1000px]  md:h-[290px] h-[400px] w-full mx-auto
-                top-0 p-1
-                `}
-      >
+      <div id="feature" className={`flex flex-col md:flex-row bg-[#657261] rounded max-w-[1000px]  md:h-[290px] h-[400px] w-full mx-auto top-0 p-1`}>
         {/* 左側の要素 */}
         {/* TODO: 動画はVideoLayoutで常に表示するようにしつつ、ここではスペーサーであるAltBoxを表示/非表示するようにする */}
         {videoState.position === "in-content" && (
@@ -91,41 +87,36 @@ const MainItem = ({ posts }: TopPageProps) => {
         {/* 右側の要素 */}
         <div id="right" className={`relative w-full h-full border px-1 rounded `}>
           <span className="mx-2 mt-1 absolute w-[70%]">最近登録された50曲</span>
-
           <Link href={`/sings/karaoke`} className={`absolute flex right-1 top-[1px] ${ToClickTW.regular}`}>
-            <Image src="/content/note.svg" className="h-5 mx-1 " width={24} height={20} alt="note image" />
+            <Image src="/content/note.svg" className="h-5 mx-1 " width={24} height={24} alt="note image" />
             もっと見る
           </Link>
-
-          {posts && (
-            <div id="table" className="absolute mt-7 m w-[98%] md:w-[99%] overflow-y-scroll h-[82%] md:h-[88%] ">
-              <KaraokeThinTable posts={posts?.latest_karaokes} />
-            </div>
-          )}
-          {!posts && <FailedMessage />}
+          <div id="table" className="absolute mt-7 m w-[98%] md:w-[99%] overflow-y-scroll h-[82%] md:h-[88%] ">
+            <KaraokeThinTable posts={posts?.latest_karaokes} />
+          </div>
         </div>
       </div>
-
       <div id="feature" className={`flex-col md:flex-row justify-center max-w-[1000px] w-full mx-auto inline-block top-0 p-1`}>
-        <div className="mt-4 max-w-[1000px]">
-          <div className="flex">
-            <Image src="/content/human_white.svg" className="h-5 mr-1" width={24} height={20} alt="humans icon" />
-            <h2 className="h-5 flex-1 mb-1">配信者</h2>
-          </div>
-
+        <div className="mt-4 max-w-[1000px] space-y-5">
           <div>
-            {posts && <VtuberTable posts={posts?.vtubers} />}
-            <br />
+            <div className="flex">
+              <Image src="/content/human_white.svg" className="h-5 mr-1" width={24} height={24} alt="humans icon" />
+              <h2 className="h-5 flex-1 mb-1">配信者</h2>
+            </div>
+            <VtuberTable posts={posts?.vtubers} />
+          </div>
+          <div>
             <h2 className="flex">
-              <Image src="/content/movie.svg" className="h-5 mr-1" width={24} height={20} alt="movie icon" />
+              <Image src="/content/movie.svg" className="h-5 mr-1" width={24} height={24} alt="movie icon" />
               歌枠(動画)
             </h2>
-            {posts && <MovieTable posts={posts?.vtubers_movies} />}
-            <br />
+            <MovieTable posts={posts?.vtubers_movies} />
+          </div>
+          <div>
             <h2 className="flex">
-              <Image src="/content/note.svg" className="h-5 mr-1" width={24} height={20} alt="note icon" />歌
+              <Image src="/content/note.svg" className="h-5 mr-1" width={24} height={24} alt="note icon" />歌
             </h2>
-            {posts && <KaraokeMinRandomTable posts={posts.vtubers_movies_karaokes} />}
+            <KaraokeMinRandomTable posts={posts.vtubers_movies_karaokes} />
           </div>
         </div>
       </div>
@@ -146,21 +137,6 @@ const TitleGroup = () => {
   )
 }
 
-const FailedMessage = () => {
-  return (
-    <div className="flex justify-center py-12">
-      <div className="flex flex-col  items-center bg-[#657261] font-bold text-xl p-6 max-w-[1200px]">
-        <span className="mb-3">データの取得に失敗しました。</span>
-        <span>ページ更新してもこの文章が表示された場合は</span>
-        <Link href="https://twitter.com/shari_susi" className="text-3xl text-[#b3d854] underline hover:opacity-70">
-          開発者のX
-        </Link>
-        <span>にDMいただけますと幸いです。</span>
-      </div>
-    </div>
-  )
-}
-
 export async function getServerSideProps(context: ContextType) {
   const { sessionToken, isLoggedin } = checkLoggedin(context)
   console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin) // 会員、非会員、どのページかの記録のため
@@ -174,19 +150,36 @@ export async function getServerSideProps(context: ContextType) {
     httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
   }
 
-  // TODO: 型付け
-  let resData: TopPageProps | null = null
+  // apiをリソース毎に分けるまでの仮
+  type PageResponse = {
+    vtubers: ReceivedVtuber[]
+    vtubers_movies: ReceivedMovie[]
+    vtubers_movies_karaokes: ReceivedKaraoke[]
+    latest_karaokes: ReceivedKaraoke[]
+  }
+
+  let resData: PageResponse | undefined = undefined
+  let hasError: boolean = true
 
   try {
     const res = await axios.get(`${domain.backendHost}/vcontents/`, options)
-    resData = res.data
+    resData = res.data as PageResponse
+    hasError = false
   } catch (error) {
     console.log("erroe in axios.get:", error)
+    resData = {
+      vtubers: [],
+      vtubers_movies: [],
+      vtubers_movies_karaokes: [],
+      latest_karaokes: [],
+    }
   }
+
   return {
     props: {
-      posts: resData,
       isSignin: isLoggedin,
-    },
+      posts: resData,
+      hasError: hasError,
+    } as TopPageProps,
   }
 }
