@@ -14,7 +14,7 @@ func (db *VtuberContentRepository) GetVtubers() ([]domain.Vtuber, error) {
 	var vts []domain.Vtuber
 	err := db.Find(&vts).Error
 	if err != nil {
-		return nil, err
+		return []domain.Vtuber{}, err
 	}
 	return vts, nil
 }
@@ -96,24 +96,14 @@ func (db *VtuberContentRepository) CreateMovie(M domain.Movie) error {
 	return result.Error
 }
 
-func (db *VtuberContentRepository) CreateKaraoke(K domain.Karaoke) error {
-	var mo domain.Movie
-	mo.MovieUrl = K.MovieUrl
-	if result := db.First(&mo); result.Error != nil {
-		return result.Error
-	}
-	result := db.Create(&K)
-	return result.Error
-}
-
-func (db *VtuberContentRepository) CreateKaraokes(movieUrl domain.MovieUrl, Ks []domain.Karaoke) error {
+func (db *VtuberContentRepository) CreateKaraokes(ks []domain.Karaoke) error {
 	var Mo domain.Movie
-	Mo.MovieUrl = movieUrl
+	Mo.MovieUrl = ks[0].MovieUrl
 	if result := db.First(&Mo); result.Error != nil {
 		return result.Error
 	}
 
-	result := db.Create(&Ks)
+	result := db.Create(&ks)
 	return result.Error
 }
 

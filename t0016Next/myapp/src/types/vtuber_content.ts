@@ -7,17 +7,22 @@ export type BasicDataProps = {
 }
 export type CrudContentType = "none" | "vtuber" | "movie" | "karaoke"
 
-export type CrudDate = {
+export type CreateContentData = {
   VtuberId: number
   VtuberName: string
   VtuberKana: string
   IntroMovieUrl: string | null
   MovieUrl: string
   MovieTitle: string
-  KaraokeId: number
-  SingStart: string
-  SongName: string
+  Songs: {
+    Index: string
+    // TODO: 作成のリクエスト時はid不要なので消す
+    KaraokeId: number
+    SingStart: string
+    SongName: string
+  }[]
 }
+
 //以下、基礎の型３つ
 
 export type VtuberId = number

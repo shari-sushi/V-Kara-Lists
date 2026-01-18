@@ -21,8 +21,7 @@ type VtuberContentRepository interface {
 	GetVtubersMoviesKaraokes() ([]domain.TransmitKaraoke, error)
 	CreateVtuber(domain.Vtuber) error
 	CreateMovie(domain.Movie) error
-	CreateKaraoke(domain.Karaoke) error
-	CreateKaraokes(domain.MovieUrl, []domain.Karaoke) error
+	CreateKaraokes([]domain.Karaoke) error
 	UpdateVtuber(domain.Vtuber) error
 	UpdateMovie(domain.Movie) error
 	UpdateKaraoke(domain.Karaoke) error
@@ -56,7 +55,7 @@ type FavoriteRepository interface {
 
 	GetVtubersMoviesWithFavCnts() ([]domain.TransmitMovie, error)
 	GetVtubersMoviesKaraokesWithFavCnts() ([]domain.TransmitKaraoke, error)
-	GetVtubersMoviesKaraokesByVtuerKanaWithFavCnts(string) ([]domain.TransmitKaraoke, error)
+	GetVtubersMoviesKaraokesByVtuberKanaWithFavCnts(string) ([]domain.TransmitKaraoke, error)
 	GetLatest50VtubersMoviesKaraokesWithFavCnts(domain.ListenerId) ([]domain.TransmitKaraoke, error)
 	// 以下、使ってない？開発中？
 	FindMoviesFavoritedByListenerId(domain.ListenerId) ([]domain.TransmitMovie, error)

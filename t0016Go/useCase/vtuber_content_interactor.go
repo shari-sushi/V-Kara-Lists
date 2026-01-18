@@ -58,6 +58,7 @@ func (interactor *VtuberContentInteractor) CreateVtuber(v domain.Vtuber) error {
 	}
 	return nil
 }
+
 func (interactor *VtuberContentInteractor) CreateMovie(m domain.Movie) error {
 	m = common.NormalizeMovie(m)
 
@@ -71,24 +72,9 @@ func (interactor *VtuberContentInteractor) CreateMovie(m domain.Movie) error {
 	return nil
 }
 
-// TODO: CreateKarokesを使うようにする。いずれ完全移行する。
-func (interactor *VtuberContentInteractor) CreateKaraoke(k domain.Karaoke) error {
-	k = common.NormalizeKaraoke(k)
-	if err := common.ValidateKaraoke(k); err != nil {
-		return err
-	}
-
-	if err := interactor.VtuberContentRepository.CreateKaraoke(k); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// NOTE: この関数はMVCを意識しているため他の未経験時代の関数と異なり、責務が単一
-func (interactor *VtuberContentInteractor) CreateKaraokes(inputterID domain.ListenerId, url domain.MovieUrl, ks []domain.Karaoke) error {
+// NOTE: 未経験時代の関数と異なり、MVCを意識しているため責務が単一
+func (interactor *VtuberContentInteractor) CreateKaraokes(ks []domain.Karaoke) error {
 	for i, k := range ks {
-		k.KaraokeInputterId = inputterID
 		ks[i] = common.NormalizeKaraoke(k)
 
 		if err := common.ValidateKaraoke(k); err != nil {
@@ -96,7 +82,7 @@ func (interactor *VtuberContentInteractor) CreateKaraokes(inputterID domain.List
 		}
 	}
 
-	if err := interactor.VtuberContentRepository.CreateKaraokes(url, ks); err != nil {
+	if err := interactor.VtuberContentRepository.CreateKaraokes(ks); err != nil {
 		return err
 	}
 

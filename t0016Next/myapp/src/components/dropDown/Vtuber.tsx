@@ -1,7 +1,6 @@
 import React from "react"
 import Select from "react-select"
-
-import type { BasicDataProps, ReceivedVtuber } from "@/types/vtuber_content"
+import type { ReceivedVtuber } from "@/types/vtuber_content"
 import { DropStyle } from "./common"
 
 type vtuberListsProps = {
@@ -10,47 +9,24 @@ type vtuberListsProps = {
 }
 
 type DropDownVtuberProps = {
-  posts: BasicDataProps
-  selectedVtuber: ReceivedVtuber | undefined
-  onVtuberSelect: (vtuberId: number) => void
+  vtubers: ReceivedVtuber[]
+  onSelectVtuber: (vtuberId: number) => void
   defaultMenuIsOpen: boolean
 }
 
-export const DropDownVtuber = ({ posts, selectedVtuber, onVtuberSelect, defaultMenuIsOpen }: DropDownVtuberProps) => {
-  const vtubers = posts?.vtubers || [{} as ReceivedVtuber]
+export const DropDownVtuber = ({ vtubers, onSelectVtuber, defaultMenuIsOpen }: DropDownVtuberProps) => {
   const vtuberOptions = makeVtuberOptions(vtubers)
 
   const onChange = (option: vtuberListsProps | null) => {
-    if (option) {
-      onVtuberSelect(option.value)
+    if (option == null) {
+      onSelectVtuber(0)
     } else {
-      onVtuberSelect(0)
+      onSelectVtuber(option.value)
     }
-  }
-
-  if (selectedVtuber == null) {
-    return (
-      <Select
-        id="selectbox"
-        instanceId="selectbox"
-        placeholder="VTuberを検索/選択"
-        className="basic-single"
-        classNamePrefix="select"
-        isClearable
-        isSearchable
-        name="VTuber"
-        options={vtuberOptions}
-        defaultMenuIsOpen={defaultMenuIsOpen}
-        blurInputOnSelect
-        styles={DropStyle}
-        onChange={onChange}
-      />
-    )
   }
 
   return (
     <Select
-      defaultValue={makeVtuberOption(selectedVtuber)}
       id="selectbox"
       instanceId="selectbox"
       placeholder="VTuberを検索/選択"
@@ -68,8 +44,12 @@ export const DropDownVtuber = ({ posts, selectedVtuber, onVtuberSelect, defaultM
   )
 }
 
-const makeVtuberOptions = (posts: ReceivedVtuber[]): vtuberListsProps[] => {
-  return posts.map((vtuber: ReceivedVtuber) => makeVtuberOption(vtuber))
+const makeVtuberOptions = (vtubers: ReceivedVtuber[]): vtuberListsProps[] => {
+  if (vtubers.length == 0) {
+    return []
+  }
+
+  return vtubers.map((vtuber: ReceivedVtuber) => makeVtuberOption(vtuber))
 }
 
 const makeVtuberOption = (vtuber: ReceivedVtuber): vtuberListsProps => {

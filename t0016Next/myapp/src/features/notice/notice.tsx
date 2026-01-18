@@ -14,10 +14,15 @@ export const TopPageNotice = () => {
           <div>〇お知らせ</div>
           <div className="flex text-xs justify-center rounded-md h-[15px] w-[15px] m-0.5 bg-[#776D5C]">？</div>
         </div>
-        <div className="ml-1 flex flex-col justify-start cursor-pointer" onClick={() => setIsDisplay(true)} onMouseEnter={() => setIsHoverButton(true)} onMouseLeave={() => setIsHoverButton(false)}>
+        <ul
+          className="list-disc ml-[18.5px] flex flex-col justify-start cursor-pointer"
+          onClick={() => setIsDisplay(true)}
+          onMouseEnter={() => setIsHoverButton(true)}
+          onMouseLeave={() => setIsHoverButton(false)}
+        >
           <li>{NoticeItems[0].title}</li>
           <li>{NoticeItems[1].title}</li>
-        </div>
+        </ul>
       </div>
 
       {isDisplay && (
@@ -67,6 +72,15 @@ type NoticeItem = {
 
 const NoticeItems: NoticeItem[] = [
   {
+    data: "2026-01-18",
+    title: "曲の複数登録が可能に",
+    content: (
+      <div className="">
+        <NoticeLink href="/crud/create">「データ登録」</NoticeLink>の歌(karaoke)にて、複数同時に登録できるようになりました。
+      </div>
+    ),
+  },
+  {
     data: "2025-08-19",
     title: "ページ移動後も再生動画が維持されるように",
     content: (
@@ -96,7 +110,7 @@ const NoticeItems: NoticeItem[] = [
       <>
         <NoticeLink href="/crud/create">「データ登録」</NoticeLink>
         ページの動画登録にて、
-        <ul className="ml-4">
+        <ul className="list-disc ml-6">
           <li>URLの入力が簡単に</li>
           <li>URLで動画タイトルを取得できるように</li>
         </ul>

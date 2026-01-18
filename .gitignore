@@ -31,3 +31,7 @@ gitコマンド等.txt
 
 # ec2にscpする際の圧縮拡張子
 .gz
+
+# build生成物
+build
+*.tar.gz

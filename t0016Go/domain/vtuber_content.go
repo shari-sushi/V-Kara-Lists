@@ -49,6 +49,10 @@ type Karaoke struct {
 	KaraokeInputterId ListenerId `gorm:"type:int(11)"`                                      //`json:"inputter_id"`
 }
 
+type Karaokes struct {
+	Karaoke []Karaoke
+}
+
 type SongId int
 type OriginalSong struct {
 	ID         SongId     `gorm:"type:int(11);primaryKey"`
