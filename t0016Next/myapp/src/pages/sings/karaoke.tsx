@@ -77,9 +77,9 @@ const MainItem = ({ posts: { latest_karaokes: latestKaraoke, vtubers, vtubers_mo
             {/* 右側の要素 */}
             <div id="right" className={`relative px-1 rounded border ${videoState.position !== "in-content" ? "w-full" : ""}`}>
               <h1 className="text-lg">絞込み（入力できます）</h1>
-              <DropDownVtuber selectedVtuber={findVtuber(vtubers, selectedVtuber)} vtubers={vtubers} onSelectVtuber={setSelectedVtuber} defaultMenuIsOpen={false} />
+              <DropDownVtuber vtubers={vtubers} onSelectVtuber={setSelectedVtuber} defaultMenuIsOpen={false} />
 
-              <DropDownMovie videos={videos} selectedVtuber={selectedVtuber} setSelectedMovie={setSelectedMovie} clearMovieHandler={clearMovieHandler} />
+              <DropDownMovie videos={videos} disabled={selectedVtuber === 0} setSelectedMovie={setSelectedMovie} clearMovieHandler={clearMovieHandler} />
               <div className="pt-3 flex justify-end">
                 <div className="w-fit">
                   <span>お探しの歌枠や歌がありませんか？</span> <br />

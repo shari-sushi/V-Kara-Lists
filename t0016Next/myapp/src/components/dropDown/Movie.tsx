@@ -10,65 +10,58 @@ type MovieOptions = {
 }
 
 type DropDownMovieProps = {
-  videos: ReceivedMovie[]
-  selectedVtuber: number
+  videos: ReceivedMovie[] | undefined
+  disabled: boolean
   setSelectedMovie: (movieUrl: string) => void
   clearMovieHandler: () => void
 }
 
-export const DropDownMovie = ({ videos, selectedVtuber, setSelectedMovie, clearMovieHandler }: DropDownMovieProps) => {
+export const DropDownMovie = ({ videos, disabled, setSelectedMovie, clearMovieHandler }: DropDownMovieProps) => {
   const handleMovieClear = () => {
     setSelectedMovie("")
     clearMovieHandler()
   }
-  const [movieOptions, setMovieOptions] = useState<MovieOptions[]>([])
 
-  useEffect(() => {
-    if (!selectedVtuber) {
-      setMovieOptions([])
-      setSelectedMovie("")
-      // ここで表示も消したい。消し方不明
-      return
-    } else {
-      const filterMoviesBySelectedVtuber = async () => {
-        try {
-          const movieDatum = videos.filter((movies: ReceivedMovie) => movies.VtuberId === selectedVtuber)
-          const movieOptions = movieDatum.map((movie: ReceivedMovie) => ({
-            value: movie.MovieUrl,
-            label: movie.MovieTitle,
-          }))
-          setMovieOptions(movieOptions)
-        } catch (error) {
-          console.error("Error: failed to filter Movies By Selected Vtuber in /dropDown/:", error)
-        }
-      }
-      filterMoviesBySelectedVtuber()
-    }
-  }, [selectedVtuber, videos, setSelectedMovie])
+  const movieOptions = disabled
+    ? undefined
+    : videos?.map((movie: ReceivedMovie) => ({
+        value: movie.MovieUrl,
+        label: movie.MovieTitle,
+      }))
 
   return (
-    <Select
-      id="selectbox"
-      instanceId="selectbox"
-      placeholder="動画タイトルを検索/選択"
-      className="basic-single"
-      classNamePrefix="select"
-      // value={""} //何を入れても選択したものが表示されないだけ
-      isClearable={true}
-      isSearchable={true}
-      name="movie"
-      blurInputOnSelect={true}
-      captureMenuScroll={true}
-      styles={DropStyle}
-      options={movieOptions}
-      onChange={(option) => {
-        if (option) {
-          setSelectedMovie(option.value)
-        } else {
-          handleMovieClear()
+    <div
+      onClick={() => {
+        if (disabled) {
+          alert("VTuber(チャンネル所有者)を選択してください")
         }
       }}
-    />
+      className="cursor-pointer"
+    >
+      <Select
+        id="selectbox"
+        instanceId="selectbox"
+        placeholder="動画タイトルを検索/選択"
+        className="basic-single"
+        classNamePrefix="select"
+        // value={""} //何を入れても選択したものが表示されないだけ
+        isClearable={true}
+        isSearchable={true}
+        name="movie"
+        blurInputOnSelect={true}
+        captureMenuScroll={true}
+        styles={DropStyle}
+        options={movieOptions}
+        onChange={(option) => {
+          if (option) {
+            setSelectedMovie(option.value)
+          } else {
+            handleMovieClear()
+          }
+        }}
+        isDisabled={disabled}
+      />
+    </div>
   )
 }
 

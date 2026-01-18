@@ -1,12 +1,12 @@
 import React from "react"
 import { DropDownVtuber } from "@/components/dropDown/Vtuber"
 import { DropDownMovie } from "@/components/dropDown/Movie"
-import { DropDownKaraoke } from "@/components/dropDown/Karaoke"
+import { DropDownKaraokeSongs } from "@/components/dropDown/Karaoke"
 import { timeStringToSecondNum, ValidateCreateRules } from "@/util"
 import { FormTW, ToClickTW } from "@/styles/tailwiind"
 import { NeedBox } from "@/components/box/Box"
 import { findVtuber } from "@/components/form/util/getYoutubeVideo"
-import { BasicDataProps, CreateContentData, ReceivedVtuber } from "@/types/vtuber_content"
+import { BasicDataProps, CreateContentData, ReceivedMovie, ReceivedVtuber } from "@/types/vtuber_content"
 import { FormLabel } from "./FormLabel"
 import { ErrorMessage } from "./ErrorMessage"
 import { Control, FieldErrors, useFieldArray, UseFormGetValues, UseFormHandleSubmit, UseFormRegister } from "react-hook-form"
@@ -16,9 +16,10 @@ import { KaraokeFormDummyRow } from "./KaraokeFormDummyRow"
 type KaraokesFormItemProps = {
   posts: BasicDataProps
   selectedVtuberId: number
-  selectedMovieUrl: string
+  selectedVideoUrl: string
+  selectedVtuberVideos: ReceivedMovie[] | undefined
   setSelectedVtuberId: (vtuberId: number) => void
-  setSelectedMovieUrl: (movieUrl: string) => void
+  setSelectedVideoUrl: (movieUrl: string) => void
   clearMovieHandler: () => void
   setSelectedKaraokeId: (karaokeId: number) => void
   vtubers: ReceivedVtuber[]
@@ -34,13 +35,14 @@ type KaraokesFormItemProps = {
 }
 
 const KaraokesFormItem = ({
-  posts: { vtubers: vtubers, vtubers_movies: videos, vtubers_movies_karaokes: karaokeSongs },
+  posts: { vtubers: vtubers, vtubers_movies_karaokes: karaokeSongs },
+  selectedVtuberVideos,
   selectedVtuberId,
-  selectedMovieUrl,
+  selectedVideoUrl,
   setSelectedVtuberId,
-  setSelectedMovieUrl,
-  clearMovieHandler,
+  setSelectedVideoUrl,
   setSelectedKaraokeId,
+  clearMovieHandler,
   useFormReturn: {
     control,
     formState: { fieldErrors: errors },
@@ -84,7 +86,7 @@ const KaraokesFormItem = ({
             VTuber
             <NeedBox />
           </div>
-          <DropDownVtuber vtubers={vtubers} onSelectVtuber={setSelectedVtuberId} defaultMenuIsOpen={false} selectedVtuber={findVtuber(vtubers, selectedVtuberId)} />
+          <DropDownVtuber vtubers={vtubers} onSelectVtuber={setSelectedVtuberId} defaultMenuIsOpen={false} />
           {selectedVtuberId == 0 && <div className="text-[#ff3f3f] text-sm">チャンネルを選択してください</div>}
         </div>
 
@@ -93,8 +95,8 @@ const KaraokesFormItem = ({
             動画(歌枠)
             <NeedBox />
           </div>
-          <DropDownMovie videos={videos} selectedVtuber={selectedVtuberId} setSelectedMovie={setSelectedMovieUrl} clearMovieHandler={clearMovieHandler} />
-          {selectedMovieUrl == "" && <div className="text-[#ff3f3f] text-sm">動画を選択してください</div>}
+          <DropDownMovie videos={selectedVtuberVideos} disabled={selectedVtuberId === 0} setSelectedMovie={setSelectedVideoUrl} clearMovieHandler={clearMovieHandler} />
+          {selectedVideoUrl == "" && <div className="text-[#ff3f3f] text-sm">動画を選択してください</div>}
         </div>
       </div>
       <hr className={`${FormTW.horizon}`} />
@@ -105,7 +107,7 @@ const KaraokesFormItem = ({
             <br />
             同じ動画で複数曲を登録する際は、「曲(〇回目)」としてください。
           </span>
-          <DropDownKaraoke karaokeSongs={karaokeSongs} selectedMovie={selectedMovieUrl} onKaraokeSelect={setSelectedKaraokeId} />
+          <DropDownKaraokeSongs karaokeSongs={karaokeSongs} selectedMovie={selectedVideoUrl} onKaraokeSelect={setSelectedKaraokeId} />
         </div>
       </div>
       <hr className={`${FormTW.horizon}`} />

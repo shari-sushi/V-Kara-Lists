@@ -7,7 +7,7 @@ import { DropDownVtuber } from "@/components/dropDown/Vtuber"
 import { DropDownMovie } from "@/components/dropDown/Movie"
 import { ValidateEditRules } from "@/util"
 import { FormTW, ToClickTW } from "@/styles/tailwiind"
-import { DropDownKaraoke } from "../dropDown/Karaoke"
+import { DropDownKaraokeSongs } from "../dropDown/Karaoke"
 import { findVtuber } from "@/components/form/util/getYoutubeVideo"
 import router from "next/router"
 import { CrudContentSelector } from "./util/CrudContetntSelector"
@@ -170,7 +170,7 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
             )}
           </div>
           <div className="bottom-0">
-            <DropDownVtuber selectedVtuber={findVtuber(vtubers, selectedVtuber)} vtubers={vtubers} onSelectVtuber={setSelectedVtuber} defaultMenuIsOpen={false} />
+            <DropDownVtuber vtubers={vtubers} onSelectVtuber={setSelectedVtuber} defaultMenuIsOpen={false} />
           </div>
         </div>
         {(crudContentType === "movie" || crudContentType === "karaoke") && (
@@ -182,7 +182,7 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
                 </span>
               )}
             </div>
-            <DropDownMovie videos={videos} selectedVtuber={selectedVtuber} setSelectedMovie={setSelectedMovie} clearMovieHandler={clearMovieHandler} />
+            <DropDownMovie videos={videos} disabled={selectedVtuber === 0} setSelectedMovie={setSelectedMovie} clearMovieHandler={clearMovieHandler} />
           </div>
         )}
         {crudContentType === "karaoke" && (
@@ -194,7 +194,7 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
                 </span>
               )}
             </div>
-            <DropDownKaraoke karaokeSongs={karaokeSongs} selectedMovie={selectedMovie} onKaraokeSelect={setSelectedKaraoke} />
+            <DropDownKaraokeSongs karaokeSongs={karaokeSongs} selectedMovie={selectedMovie} onKaraokeSelect={setSelectedKaraoke} />
           </div>
         )}
       </div>
