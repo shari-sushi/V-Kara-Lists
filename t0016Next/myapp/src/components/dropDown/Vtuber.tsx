@@ -1,7 +1,6 @@
 import React from "react"
 import Select from "react-select"
-
-import type { BasicDataProps, ReceivedVtuber } from "@/types/vtuber_content"
+import type { ReceivedVtuber } from "@/types/vtuber_content"
 import { DropStyle } from "./common"
 
 type vtuberListsProps = {
@@ -10,21 +9,20 @@ type vtuberListsProps = {
 }
 
 type DropDownVtuberProps = {
-  posts: BasicDataProps
+  vtubers: ReceivedVtuber[]
   selectedVtuber: ReceivedVtuber | undefined
-  onVtuberSelect: (vtuberId: number) => void
+  onSelectVtuber: (vtuberId: number) => void
   defaultMenuIsOpen: boolean
 }
 
-export const DropDownVtuber = ({ posts, selectedVtuber, onVtuberSelect, defaultMenuIsOpen }: DropDownVtuberProps) => {
-  const vtubers = posts?.vtubers || [{} as ReceivedVtuber]
+export const DropDownVtuber = ({ vtubers, selectedVtuber, onSelectVtuber, defaultMenuIsOpen }: DropDownVtuberProps) => {
   const vtuberOptions = makeVtuberOptions(vtubers)
 
   const onChange = (option: vtuberListsProps | null) => {
     if (option) {
-      onVtuberSelect(option.value)
+      onSelectVtuber(option.value)
     } else {
-      onVtuberSelect(0)
+      onSelectVtuber(0)
     }
   }
 
@@ -68,8 +66,12 @@ export const DropDownVtuber = ({ posts, selectedVtuber, onVtuberSelect, defaultM
   )
 }
 
-const makeVtuberOptions = (posts: ReceivedVtuber[]): vtuberListsProps[] => {
-  return posts.map((vtuber: ReceivedVtuber) => makeVtuberOption(vtuber))
+const makeVtuberOptions = (vtubers: ReceivedVtuber[]): vtuberListsProps[] => {
+  if (vtubers.length == 0) {
+    return []
+  }
+
+  return vtubers.map((vtuber: ReceivedVtuber) => makeVtuberOption(vtuber))
 }
 
 const makeVtuberOption = (vtuber: ReceivedVtuber): vtuberListsProps => {
