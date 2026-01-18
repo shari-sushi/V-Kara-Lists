@@ -21,8 +21,7 @@ type VtuberContentRepository interface {
 	GetVtubersMoviesKaraokes() ([]domain.TransmitKaraoke, error)
 	CreateVtuber(domain.Vtuber) error
 	CreateMovie(domain.Movie) error
-	CreateKaraoke(domain.Karaoke) error
-	CreateKaraokes(domain.MovieUrl, []domain.Karaoke) error
+	CreateKaraokes([]domain.Karaoke) error
 	UpdateVtuber(domain.Vtuber) error
 	UpdateMovie(domain.Movie) error
 	UpdateKaraoke(domain.Karaoke) error

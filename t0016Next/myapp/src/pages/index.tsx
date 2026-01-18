@@ -20,7 +20,6 @@ import { FailedMessage } from "@/components/Message/FailedMessage"
 
 const pageName = "Top"
 
-// NOTE: SSRだからか、res失敗でundefinedになる様子
 type TopPageProps = {
   posts: {
     vtubers: ReceivedVtuber[]
@@ -49,7 +48,7 @@ const MainItem = ({ posts }: TopPageProps) => {
   const hasKaraokes = posts.latest_karaokes.length > 0
   const playKaraokeNumber = hasKaraokes ? generateRandomNumber(posts.latest_karaokes.length - 1) : 0
   const { videoState } = useVideo({
-    // データが無い時、音恋宮の花に亡霊
+    // データが無い時は 音恋宮 花に亡霊
     youtubeId: hasKaraokes ? extractVideoId(posts.latest_karaokes[playKaraokeNumber].MovieUrl) : "jgGA5hVNpyM",
     startTime: hasKaraokes ? timeStringToSecondNum(posts.latest_karaokes[playKaraokeNumber].SingStart) : 3718,
     isPlaying: hasKaraokes,

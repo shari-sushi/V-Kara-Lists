@@ -3,7 +3,7 @@
 const vtuberNamePattern = /^.{2,100}$/
 const vtuberKanaPattern = /^[a-z]+(_[a-z]*)?$/
 const introMovieUrlPattern = /^www\.youtube\.com\/watch\?v=[a-zA-Z0-9_\-]{11}(&t=[0-9]+[s]?)?$/
-const movieTitlePattern = /^.{2,100}$/
+const movieTitlePattern = /^.{2,125}$/
 export const MovieUrlPattern = /(^(https:\/\/)??(www\.youtube\.com\/watch\?v=|www\.youtube\.com\/live\/|youtu\.be\/)[a-zA-Z0-9_\-]{11}(&t=\d+)??$)|(^[a-zA-Z0-9_\-]{11}$)/
 // TODO: testコードを書く
 // NOTE: 想定している入力値
@@ -18,7 +18,7 @@ export const MovieUrlPattern = /(^(https:\/\/)??(www\.youtube\.com\/watch\?v=|ww
 const songNamePattern = /^.{1,100}$/
 const singStartPattern = /^[0-9]{2}:[0-9]{2}:[0-9]{2}$/
 
-export const ValidateCreate = {
+export const ValidateCreateRules = {
   VtuberName: {
     required: true,
     pattern: {
@@ -98,7 +98,7 @@ const AdjustMovieUrl = (input: string) => {
 /////////////// edit //////////////
 //  createのrequiredをfalseにしただけ
 
-export const ValidateEdit = {
+export const ValidateEditRules = {
   VtuberName: {
     required: false,
     pattern: {

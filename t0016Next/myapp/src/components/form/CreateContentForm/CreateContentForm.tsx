@@ -1,17 +1,20 @@
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
-import axios from "axios"
-import { domain } from "@/../env"
-import type { CrudDate, BasicDataProps, CrudContentType } from "@/types/vtuber_content"
+import { type BasicDataProps, type CrudContentType, CreateContentData } from "@/types/vtuber_content"
 import { DropDownVtuber } from "@/components/dropDown/Vtuber"
-import { extractVideoId, ValidateCreate } from "@/util"
+import { extractVideoId, ValidateCreateRules } from "@/util"
 import { FormTW, ToClickTW } from "@/styles/tailwiind"
 import { NeedBox } from "@/components/box/Box"
-import { getYoutubeVideo, CrudContentSelector, findVtuber } from "@/components/form/Common"
+import { getYoutubeVideo, findVtuber } from "@/components/form/util/getYoutubeVideo"
 import router from "next/router"
 import KaraokesFormItem from "./KaraokesFormItem"
 import { FormLabel } from "./FormLabel"
 import { ErrorMessage } from "./ErrorMessage"
+import { CrudContentSelector } from "../util/CrudContetntSelector"
+import { getCreateKaraokesReq, getCreateKaraokeVideo, getCreateVtuberReq } from "./getRequest"
+import { api } from "@/api/index"
+import { InputMovieUrlHintBox } from "./InputMovieUrlHintBox"
+import { v4 as uuidv4 } from "uuid"
 
 export type CreatePageProps = {
   posts: BasicDataProps
@@ -28,22 +31,6 @@ type CreateDataProps = {
   setSelectedKaraokeId: (KaraokeId: number) => void
   clearMovieHandler: () => void
   setCurrentVideoId: (videoId: string) => void
-}
-
-type CreateVtuber = {
-  VtuberName: string
-  VtuberKana: string
-  IntroMovieUrl: string | null
-}
-type CreateMovie = {
-  VtuberId: number
-  MovieTitle: string
-  MovieUrl: string
-}
-type CreateKaraoke = {
-  MovieUrl: string
-  SongName: string
-  SingStart: string
 }
 
 export function CreateForm({
@@ -65,15 +52,6 @@ export function CreateForm({
 
   const foundVtuber = vtubers?.find((vtuber) => vtuber.VtuberId === selectedVtuberId)
   const foundMovie = videos?.find((movie) => movie.MovieUrl === selectedMovieUrl)
-  const foundKaraoke = karaokes?.find((karaoke) => karaoke.KaraokeId === selectedKaraokeId)
-
-  const axiosClient = axios.create({
-    baseURL: `${domain.backendHost}/vcontents`,
-    withCredentials: true,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  })
 
   const [isDisplaySuccessModal, setIsDisplaySuccessModal] = useState(false)
   const [isDisplayErrorModal, setIsDisplayErrorModal] = useState(false)
@@ -83,25 +61,35 @@ export function CreateForm({
   }
 
   const {
+    control,
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors: formErrors },
     watch,
     setValue,
-  } = useForm<CrudDate>({ reValidateMode: "onChange" })
+    getValues,
+  } = useForm<CreateContentData>({
+    reValidateMode: "onBlur",
+    defaultValues: defaultCrudData(),
+  })
   const movieUrl = watch("MovieUrl")
   const movieTitle = watch("MovieTitle")
   const [gotMovieErrorMessage, setGotMovieErrorMessage] = useState<string>("")
+
+  const handleSetSelectedMovieUrl = (url: string) => {
+    setSelectedMovieUrl(url)
+    setValue("MovieUrl", url)
+  }
 
   const getTitle = async (e: React.MouseEvent<Element, MouseEvent>) => {
     e.preventDefault()
     e.stopPropagation()
 
     if (movieUrl != "") {
-      const videoYtId = extractVideoId(movieUrl)
+      const youtubeVideoId = extractVideoId(movieUrl)
       try {
         const res = await getYoutubeVideo({
-          movieId: videoYtId,
+          movieId: youtubeVideoId,
           isSnippet: true,
         })
         if (res) {
@@ -117,7 +105,6 @@ export function CreateForm({
         console.error(err)
       }
     } else {
-      // TODO: modalを出す
       setValue("MovieTitle", "")
       setGotMovieErrorMessage("動画URLまたはIDを入力してください")
     }
@@ -132,51 +119,18 @@ export function CreateForm({
     setValue("MovieUrl", "www.youtube.com/watch?v=" + extractVideoId(e.target.value))
   }
 
-  const onSubmit = async (CrudData: CrudDate) => {
+  const onSubmit = async (createData: CreateContentData) => {
     switch (crudContentType) {
       case "vtuber":
-        try {
-          const reqBody: CreateVtuber = {
-            VtuberName: CrudData.VtuberName,
-            VtuberKana: CrudData.VtuberKana,
-            IntroMovieUrl: CrudData.IntroMovieUrl,
-          }
-          await axiosClient.post("/create/vtuber", reqBody)
-          openSuccessModal()
-        } catch (err) {
-          alert("登録失敗: VTuber")
-          console.error(err)
-        }
+        api.CreateVtuber(getCreateVtuberReq(createData), openSuccessModal)
         return
 
       case "movie":
-        try {
-          const reqBody: CreateMovie = {
-            VtuberId: selectedVtuberId, //既存値
-            MovieTitle: movieTitle,
-            MovieUrl: movieUrl,
-          }
-          await axiosClient.post("/create/movie", reqBody)
-          openSuccessModal()
-        } catch (err) {
-          alert("登録失敗: 動画")
-          console.error(err)
-        }
+        api.CreateKaraokeVideo(getCreateKaraokeVideo(createData, selectedVtuberId), openSuccessModal)
         return
 
       case "karaoke":
-        try {
-          const reqBody: CreateKaraoke = {
-            MovieUrl: selectedMovieUrl, //既存値
-            SongName: CrudData.SongName,
-            SingStart: CrudData.SingStart,
-          }
-          await axiosClient.post("/create/karaoke", reqBody)
-          openSuccessModal()
-        } catch (err) {
-          alert("登録失敗: 歌(karaoke)")
-          console.error(err)
-        }
+        api.CreateKaraokes(getCreateKaraokesReq(createData), openSuccessModal)
         return
 
       default:
@@ -194,33 +148,41 @@ export function CreateForm({
       <hr className={`${FormTW.horizon}`} />
 
       <div id="form" className="flex flex-col">
-        <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
+        <form
+          className="flex flex-col"
+          onSubmit={handleSubmit(onSubmit)}
+          onKeyDown={(e: React.KeyboardEvent<HTMLFormElement>) => {
+            if (e.key === "Enter") {
+              e.preventDefault()
+            }
+          }}
+        >
           <div className="flex flex-col">
             {crudContentType === "vtuber" && (
               <div className="flex flex-col">
-                <h2 className="text-black mx-auto">登録するデータを入力してください</h2>
+                <h2 className="text-black mx-auto">登録データの入力</h2>
                 <div className="mb-3">
                   <div className="">
                     <FormLabel label="VTuber" need />
                   </div>
-                  <input className={`${ToClickTW.input}`} {...register("VtuberName", ValidateCreate.VtuberName)} placeholder={foundVtuber?.VtuberName || "例:妹望おいも"} />
-                  <ErrorMessage errorField={errors.VtuberName} />
+                  <input className={`${ToClickTW.input}`} {...register("VtuberName", ValidateCreateRules.VtuberName)} placeholder={foundVtuber?.VtuberName || "例:妹望おいも"} />
+                  <ErrorMessage errorField={formErrors.VtuberName} />
                 </div>
 
                 <div className="mb-3">
                   <FormLabel label="読み(kana)" need />
-                  <input className={`${ToClickTW.input}`} {...register("VtuberKana", ValidateCreate.VtuberKana)} placeholder={foundVtuber?.VtuberKana || "例:imomochi_oimo"} />
-                  <ErrorMessage errorField={errors.VtuberKana} />
+                  <input className={`${ToClickTW.input}`} {...register("VtuberKana", ValidateCreateRules.VtuberKana)} placeholder={foundVtuber?.VtuberKana || "例:imomochi_oimo"} />
+                  <ErrorMessage errorField={formErrors.VtuberKana} />
                 </div>
 
                 <div>
                   <FormLabel label="紹介動画URL *1:" />
                   <input
                     className={`${ToClickTW.input}`}
-                    {...register("IntroMovieUrl", ValidateCreate.IntroMovieUrl)}
+                    {...register("IntroMovieUrl", ValidateCreateRules.IntroMovieUrl)}
                     placeholder={foundVtuber?.IntroMovieUrl || "例:www.youtube.com/watch?v=AlHRqSsF--8&t=75"}
                   />
-                  <ErrorMessage errorField={errors.IntroMovieUrl} />
+                  <ErrorMessage errorField={formErrors.IntroMovieUrl} />
                   <div className="flex flex-col text-black">
                     <span>*1 時間指定方法(&t=秒数)</span>
                     <span className="ml-4">
@@ -234,14 +196,14 @@ export function CreateForm({
             {crudContentType === "movie" && (
               <>
                 <div className="flex flex-col w-full">
-                  <span className="text-black mx-auto">親データを選択してください</span>
+                  <span className="text-black mx-auto">親データの選択</span>
 
                   <div className="pb-3">
                     <div className={`${FormTW.label}`}>
                       VTuber
                       <NeedBox />
                     </div>
-                    <DropDownVtuber posts={posts} onVtuberSelect={setSelectedVtuberId} defaultMenuIsOpen={false} selectedVtuber={findVtuber(vtubers, selectedVtuberId)} />
+                    <DropDownVtuber vtubers={vtubers} onSelectVtuber={setSelectedVtuberId} defaultMenuIsOpen={false} selectedVtuber={findVtuber(vtubers, selectedVtuberId)} />
                     {selectedVtuberId == 0 && <div className="text-[#ff3f3f] text-sm">チャンネルを選択してください</div>}
                   </div>
 
@@ -257,7 +219,7 @@ export function CreateForm({
                       </div>
                       <input
                         className={`${ToClickTW.input}`}
-                        {...register("MovieUrl", ValidateCreate.MovieUrl)}
+                        {...register("MovieUrl", ValidateCreateRules.MovieUrl)}
                         placeholder={foundMovie?.MovieUrl || "例: www.youtube.com/watch?v=AlHRqSsF--8"}
                         onChange={handleChangeInputMovieUrl}
                       />
@@ -278,7 +240,7 @@ export function CreateForm({
                       </div>
                       <span className="text-red-500">{gotMovieErrorMessage}</span>
 
-                      <ErrorMessage errorField={errors.MovieUrl} />
+                      <ErrorMessage errorField={formErrors.MovieUrl} />
                     </div>
                     <div>
                       <div className="flex ">
@@ -292,11 +254,11 @@ export function CreateForm({
                         disabled={!isAbleVideoTitleInput}
                         className={`${ToClickTW.input}`}
                         value={movieTitle}
-                        {...register("MovieTitle", ValidateCreate.MovieTitle)}
+                        {...register("MovieTitle", ValidateCreateRules.MovieTitle)}
                         placeholder={foundMovie?.MovieTitle || "動画タイトル"}
                         onChange={(e) => setValue("MovieTitle", e.target.value)}
                       />
-                      <ErrorMessage errorField={errors.MovieTitle} />
+                      <ErrorMessage errorField={formErrors.MovieTitle} />
                     </div>
                   </div>
                 </div>
@@ -309,13 +271,11 @@ export function CreateForm({
                 selectedVtuberId={selectedVtuberId}
                 selectedMovieUrl={selectedMovieUrl}
                 setSelectedVtuberId={setSelectedVtuberId}
-                setSelectedMovieUrl={setSelectedMovieUrl}
+                setSelectedMovieUrl={handleSetSelectedMovieUrl}
                 clearMovieHandler={clearMovieHandler}
                 setSelectedKaraokeId={setSelectedKaraokeId}
-                foundKaraoke={foundKaraoke}
                 vtubers={vtubers}
-                register={register}
-                errors={errors}
+                useFormReturn={{ register, control, handleSubmit, formState: { fieldErrors: formErrors }, getValues }}
               />
             )}
           </div>
@@ -376,7 +336,7 @@ export function CreateForm({
                   >
                     ？
                   </div>
-                  <button className={`${ToClickTW.buttonNormal} mt-1`} onClick={getTitle}>
+                  <button className={`${ToClickTW.buttonNormal} mt-1`} onClick={getTitle} type="button">
                     動画タイトルを取得
                   </button>
                   <button
@@ -386,6 +346,7 @@ export function CreateForm({
                       e.stopPropagation()
                       setCurrentVideoId(extractVideoId(movieUrl))
                     }}
+                    type="button"
                   >
                     再生
                   </button>
@@ -407,67 +368,19 @@ export function CreateForm({
   )
 }
 
-type InputMovieUrlHintBoxProps = {
-  isDisplay: boolean
-  setIsDisplay: (open: boolean) => void
-}
-
-const InputMovieUrlHintBox = ({ isDisplay, setIsDisplay }: InputMovieUrlHintBoxProps) => {
-  return (
-    <div className="flex relative w-5 text-white ">
-      <div
-        className="flex absolute -top-5 text-xs justify-center rounded-md h-[16px] w-[15px] m-0.5 bg-[#B7A893] hover:bg-[#776D5C] shadow-sm shadow-black hover:shadow-none cursor-pointer"
-        onClick={() => setIsDisplay(true)}
-      >
-        ？
-      </div>
-
-      {isDisplay && (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-          <div className="h-full w-full bg-black opacity-50" onClick={() => setIsDisplay(false)} />
-
-          <div className="absolute z-30 md:top-[150px] items-center min-w-[300px] md:min-w-[600px] md:max-w-3xl w-[90%] py-2 px-4 flex flex-col gap-y-1 bg-[#B7A692] rounded-2xl shadow-lg shadow-black">
-            <div className="w-32 self-start text-center rounded-t-md font-bold bg-[#776D5C]">ヒント💡</div>
-
-            <div className="flex flex-col overflow-y-auto h-60 text-black w-full bg-[#FFF6E4]">
-              <div className=" h-full w-full rounded-b-md px-2">
-                V-Karaでは次のような書き方をURLとして認識できます。
-                <div className="flex flex-col gap-1 pl-3">
-                  <li>
-                    https://youtu.be/<u>SHF-EJiC9qk</u>
-                  </li>
-                  <li>
-                    youtu.be/<u>JXEyM8oZyhg</u>
-                  </li>
-                  <li>
-                    https://www.youtube.com/watch?v=<u>gwgo01UVPvY</u>&t=1342
-                  </li>
-                  <li>
-                    www.youtube.com/watch?v=<u>77lB1lMNOvY</u>&t=1342
-                  </li>
-                  <li>
-                    https://www.youtube.com/live/<u>4OnkujqOMx4</u>
-                  </li>
-                  <li>
-                    www.youtube.com/live/<u>CsOHuZLRQOs</u>
-                  </li>
-                  <li>
-                    <u>R6w92OanMD8</u>
-                  </li>
-                </div>
-              </div>
-            </div>
-            <div
-              className={`flex justify-center items-center w-[40%] h-10 rounded-md p-1 bg-[#776D5C] text-white font-semibold shadow-sm shadow-black hover:shadow-inner hover:shadow-[#FFF6E4]`}
-              onClick={() => {
-                setIsDisplay(false)
-              }}
-            >
-              閉じる
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  )
+const defaultCrudData = (): CreateContentData => {
+  return {
+    VtuberId: 0,
+    VtuberName: "",
+    VtuberKana: "",
+    IntroMovieUrl: "",
+    MovieUrl: "",
+    MovieTitle: "",
+    Songs: Array.from({ length: 1 }, () => ({
+      Index: uuidv4(),
+      KaraokeId: 0,
+      SingStart: "00:00:00",
+      SongName: "",
+    })),
+  }
 }

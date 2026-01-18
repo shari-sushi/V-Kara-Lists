@@ -63,9 +63,9 @@ func ValidateKaraoke(k domain.Karaoke) error {
 	}
 
 	return validation.ValidateStruct(&k,
-		validation.Field(&k.KaraokeInputterId,
-			validation.Required.Error("karaoke inputter id is required"),
-		),
+		// validation.Field(&k.KaraokeInputterId,
+		// 	validation.Required.Error("karaoke inputter id is required"),
+		// ),
 		validation.Field(&k.MovieUrl,
 			validation.Required.Error("movie url is required"),
 			validation.Length(4, 40).Error("Password needs 4 ~ 40 chars"),

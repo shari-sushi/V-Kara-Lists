@@ -40,8 +40,7 @@ export default function SingsPage({ posts, isSignin, hasError }: TopPageProps) {
   )
 }
 
-const MainItem = ({ posts }: TopPageProps) => {
-  const karaokes: ReceivedKaraoke[] = useMemo(() => posts?.vtubers_movies_karaokes || dummyKaraokeArray, [posts])
+const MainItem = ({ posts: { latest_karaokes: latestKaraoke, vtubers, vtubers_movies: videos, vtubers_movies_karaokes: karaokes } }: TopPageProps) => {
   //船長　kORHSmXcYNc, 00:08:29
   const { videoState } = useVideo({ youtubeId: "5WzeYsoGCZc", startTime: timeStringToSecondNum("00:22:04") })
 
@@ -78,9 +77,9 @@ const MainItem = ({ posts }: TopPageProps) => {
             {/* 右側の要素 */}
             <div id="right" className={`relative px-1 rounded border ${videoState.position !== "in-content" ? "w-full" : ""}`}>
               <h1 className="text-lg">絞込み（入力できます）</h1>
-              <DropDownVtuber selectedVtuber={findVtuber(posts.vtubers, selectedVtuber)} posts={posts} onSelectVtuber={setSelectedVtuber} defaultMenuIsOpen={false} />
+              <DropDownVtuber selectedVtuber={findVtuber(vtubers, selectedVtuber)} vtubers={vtubers} onSelectVtuber={setSelectedVtuber} defaultMenuIsOpen={false} />
 
-              <DropDownMovie posts={posts} selectedVtuber={selectedVtuber} setSelectedMovie={setSelectedMovie} clearMovieHandler={clearMovieHandler} />
+              <DropDownMovie videos={videos} selectedVtuber={selectedVtuber} setSelectedMovie={setSelectedMovie} clearMovieHandler={clearMovieHandler} />
               <div className="pt-3 flex justify-end">
                 <div className="w-fit">
                   <span>お探しの歌枠や歌がありませんか？</span> <br />

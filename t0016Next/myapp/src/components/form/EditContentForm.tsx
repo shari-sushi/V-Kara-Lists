@@ -1,20 +1,21 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import axios from "axios"
-
 import { domain } from "@/../env"
-import type { CrudDate, BasicDataProps } from "@/types/vtuber_content"
+import type { BasicDataProps } from "@/types/vtuber_content"
 import { DropDownVtuber } from "@/components/dropDown/Vtuber"
 import { DropDownMovie } from "@/components/dropDown/Movie"
-import { ValidateEdit } from "@/util"
+import { ValidateEditRules } from "@/util"
 import { FormTW, ToClickTW } from "@/styles/tailwiind"
 import { DropDownKaraoke } from "../dropDown/Karaoke"
-import { CrudContentSelector, findVtuber } from "@/components/form/Common"
+import { findVtuber } from "@/components/form/util/getYoutubeVideo"
 import router from "next/router"
+import { CrudContentSelector } from "./util/CrudContetntSelector"
 
 export type EditPageProps = {
   posts: BasicDataProps
   isSignin: boolean
+  hasError: boolean
 }
 
 type EditDataProps = {
@@ -27,6 +28,9 @@ type EditDataProps = {
   setSelectedKaraoke: (arg0: number) => void
   clearMovieHandler: () => void
 }
+
+export type EditData = EditVtuber & EditMovie & EditKaraoke
+
 type EditVtuber = {
   VtuberId: number
   VtuberName: string | undefined
@@ -74,7 +78,7 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CrudDate>({ reValidateMode: "onChange" })
+  } = useForm<EditData>({ reValidateMode: "onChange" })
 
   const resultDisplay = () => {
     let result = window.confirm("編集完了しました。\nページを更新しますか？")
@@ -83,7 +87,7 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
     }
   }
 
-  const onSubmit = async (CrudData: CrudDate) => {
+  const onSubmit = async (CrudData: EditData) => {
     if (crudContentType === "vtuber") {
       try {
         const reqBody: EditVtuber = {
