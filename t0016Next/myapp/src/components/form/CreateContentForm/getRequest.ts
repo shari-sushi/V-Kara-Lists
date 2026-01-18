@@ -1,9 +1,9 @@
-import { CrudData, IsMultipleSongCrudData } from "@/types/vtuber_content"
+import { CreateContentData } from "@/types/vtuber_content"
 import { CreateKaraokeSongsRequest } from "@/api/karaokes"
 import { CreateVtuberRequest } from "@/api/vtubers"
 import { CreateKaraokeVideoRequest } from "@/api/videos"
 
-export const getCreateVtuberReq = (crudData: CrudData): CreateVtuberRequest => {
+export const getCreateVtuberReq = (crudData: CreateContentData): CreateVtuberRequest => {
   return {
     VtuberName: crudData.VtuberName,
     VtuberKana: crudData.VtuberKana,
@@ -11,7 +11,7 @@ export const getCreateVtuberReq = (crudData: CrudData): CreateVtuberRequest => {
   }
 }
 
-export const getCreateKaraokeVideo = (crudData: CrudData, vtuberId: number): CreateKaraokeVideoRequest => {
+export const getCreateKaraokeVideo = (crudData: CreateContentData, vtuberId: number): CreateKaraokeVideoRequest => {
   return {
     VtuberId: vtuberId,
     MovieTitle: crudData.MovieTitle,
@@ -19,20 +19,7 @@ export const getCreateKaraokeVideo = (crudData: CrudData, vtuberId: number): Cre
   }
 }
 
-export const getCreateKaraokesReq = (crudData: CrudData): CreateKaraokeSongsRequest => {
-  if (!IsMultipleSongCrudData(crudData)) {
-    // 単一登録のUIを完全撤廃したら削除予定。
-    return {
-      MovieUrl: crudData.MovieUrl,
-      Songs: [
-        {
-          SingStart: crudData.SingStart,
-          SongName: crudData.SongName,
-        },
-      ],
-    }
-  }
-
+export const getCreateKaraokesReq = (crudData: CreateContentData): CreateKaraokeSongsRequest => {
   return {
     MovieUrl: crudData.MovieUrl,
     Songs: crudData.Songs.map((s) => {
