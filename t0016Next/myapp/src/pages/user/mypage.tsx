@@ -67,7 +67,7 @@ const MainItem = ({ data }: Mypage) => {
         </div>
       )}
 
-      {vtubers.length + movies.length + karaokes.length === 0 ? (
+      {vtubers.length + movies.length + karaokes?.length === 0 ? (
         <div
           id="feature"
           className={`bg-[#657261] rounded top-0 p-1
@@ -129,7 +129,7 @@ const MainItem = ({ data }: Mypage) => {
 
                 <div className="flex">
                   <Image src="/content/note.svg" width={20} height={20} alt="Note Icon" className="h-5 mr-1" />
-                  <h2>歌: 登録数{karaokes.length}</h2>
+                  <h2>歌: 登録数{karaokes?.length}</h2>
                 </div>
 
                 <KaraokePaginationTable karaokes={karaokes} setSelectedPost={setSelectedPost} />

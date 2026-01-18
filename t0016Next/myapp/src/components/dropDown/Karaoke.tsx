@@ -9,14 +9,13 @@ type Options = {
 }
 
 type DropDownKaraokeProps = {
-  posts: BasicDataProps
+  karaokeSongs: ReceivedKaraoke[]
   selectedMovie: string
-  onKaraokeSelect: (karoakeId: number) => void
+  onKaraokeSelect: (karaokeSongId: number) => void
 }
 
 // karaoke_list用
-export const DropDownKaraoke = ({ posts, selectedMovie, onKaraokeSelect }: DropDownKaraokeProps) => {
-  const karaokes = useMemo(() => posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke], [posts])
+export const DropDownKaraoke = ({ karaokeSongs, selectedMovie, onKaraokeSelect }: DropDownKaraokeProps) => {
   const [karaokeOptions, setKaraokeOptions] = useState<Options[]>([])
   const [selectedKaraoke, setSelectedKaraoke] = useState<number>(0)
   useEffect(() => {
@@ -27,14 +26,13 @@ export const DropDownKaraoke = ({ posts, selectedMovie, onKaraokeSelect }: DropD
 
     const fetchKaraokes = async () => {
       try {
-        const choiceKaraoke = karaokes.filter((karaokes: ReceivedKaraoke) => karaokes.MovieUrl === selectedMovie)
-        console.log("choiceKa:", choiceKaraoke)
-        let havingkaraoke = choiceKaraoke.map((karaoke: ReceivedKaraoke) => ({
+        const choiceKaraoke = karaokeSongs.filter((karaokes: ReceivedKaraoke) => karaokes.MovieUrl === selectedMovie)
+        let havingKaraoke = choiceKaraoke.map((karaoke: ReceivedKaraoke) => ({
           value: karaoke.KaraokeId,
           label: karaoke.SongName || "",
         }))
-        if (havingkaraoke) {
-          setKaraokeOptions(havingkaraoke)
+        if (havingKaraoke) {
+          setKaraokeOptions(havingKaraoke)
         }
       } catch (error) {
         console.error("Error fetching Karaokes:", error)
@@ -42,7 +40,8 @@ export const DropDownKaraoke = ({ posts, selectedMovie, onKaraokeSelect }: DropD
       setSelectedKaraoke(0)
     }
     fetchKaraokes()
-  }, [selectedMovie, karaokes])
+  }, [selectedMovie, karaokeSongs])
+
   return (
     <div>
       <Select
@@ -54,7 +53,6 @@ export const DropDownKaraoke = ({ posts, selectedMovie, onKaraokeSelect }: DropD
         isClearable={true}
         isSearchable={true}
         options={karaokeOptions}
-        // isMulti={true}  backspaceRemovesValue={false}
         blurInputOnSelect={true}
         styles={DropStyle}
         onChange={(option) => {
