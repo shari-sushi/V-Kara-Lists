@@ -16,6 +16,7 @@ export type CreateContentData = {
   MovieTitle: string
   Songs: {
     Index: string
+    // TODO: 作成のリクエスト時はid不要なので消す
     KaraokeId: number
     SingStart: string
     SongName: string

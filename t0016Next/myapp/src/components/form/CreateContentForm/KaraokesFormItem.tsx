@@ -9,9 +9,9 @@ import { findVtuber } from "@/components/form/util/getYoutubeVideo"
 import { BasicDataProps, CreateContentData, ReceivedVtuber } from "@/types/vtuber_content"
 import { FormLabel } from "./FormLabel"
 import { ErrorMessage } from "./ErrorMessage"
-import { Control, FieldErrors, useFieldArray, UseFieldArrayAppend, UseFormGetValues, UseFormHandleSubmit, UseFormRegister } from "react-hook-form"
+import { Control, FieldErrors, useFieldArray, UseFormGetValues, UseFormHandleSubmit, UseFormRegister } from "react-hook-form"
 import { RemoveRowButton } from "./RemoveRowButton"
-import { v4 as uuidv4 } from "uuid"
+import { KaraokeFormDummyRow } from "./KaraokeFormDummyRow"
 
 type KaraokesFormItemProps = {
   posts: BasicDataProps
@@ -93,7 +93,6 @@ const KaraokesFormItem = ({
             動画(歌枠)
             <NeedBox />
           </div>
-          {/* これやばそう */}
           <DropDownMovie videos={videos} selectedVtuber={selectedVtuberId} setSelectedMovie={setSelectedMovieUrl} clearMovieHandler={clearMovieHandler} />
           {selectedMovieUrl == "" && <div className="text-[#ff3f3f] text-sm">動画を選択してください</div>}
         </div>
@@ -143,13 +142,14 @@ const KaraokesFormItem = ({
                     },
                     register,
                   }}
-                  append={append}
                   song={song}
-                  getValues={getValues}
                 />
               )
             })}
           </tbody>
+          <tfoot>
+            <KaraokeFormDummyRow append={append} />
+          </tfoot>
         </table>
       </div>
     </>
@@ -169,8 +169,6 @@ type RowProps = {
     }
   }
   move: (indexA: number, indexB: number) => void
-  getValues: UseFormGetValues<CreateContentData>
-  append: UseFieldArrayAppend<CreateContentData, "Songs">
   song: CreateContentData["Songs"][number]
 }
 
@@ -182,26 +180,9 @@ const Row = ({
     formState: { fieldErrors: errors },
     register,
   },
-  getValues,
   move,
-  append,
 }: RowProps) => {
   const singleErrors = errors as FieldErrors<CreateContentData>
-
-  const onBlurInput = () => {
-    const song = getValues("Songs")?.[index]
-    if (index !== songsCount - 1) return
-
-    const isInitialValue = song.SongName === "" && song.SingStart === "00:00:00"
-    if (isInitialValue) return
-
-    append({
-      Index: uuidv4(),
-      KaraokeId: 0,
-      SingStart: "00:00:00",
-      SongName: "",
-    })
-  }
 
   return (
     <tr className="border-2">
@@ -224,13 +205,7 @@ const Row = ({
         </button>
       </td>
       <td className="">
-        <input
-          className={`${ToClickTW.multipleInputRow} h-full border-zinc-400`}
-          {...register(`Songs.${index}.SongName`, ValidateCreateRules.SongName)}
-          placeholder={"曲名"}
-          onBlur={onBlurInput}
-          autoFocus={false}
-        />
+        <input className={`${ToClickTW.multipleInputRow} h-full border-zinc-400`} {...register(`Songs.${index}.SongName`, ValidateCreateRules.SongName)} placeholder={"曲名"} autoFocus={false} />
       </td>
       <td className="">
         <input
@@ -238,7 +213,6 @@ const Row = ({
           type="time"
           step="1"
           {...register(`Songs.${index}.SingStart`, ValidateCreateRules.SingStart)}
-          onBlur={onBlurInput}
           autoFocus={false}
         />
       </td>
