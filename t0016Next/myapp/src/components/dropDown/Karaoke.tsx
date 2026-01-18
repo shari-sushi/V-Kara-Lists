@@ -8,19 +8,18 @@ type Options = {
   label: string
 }
 
-type DropDownKaraokeProps = {
+type DropDownKaraokeSongsProps = {
   karaokeSongs: ReceivedKaraoke[]
   selectedMovie: string
   onKaraokeSelect: (karaokeSongId: number) => void
 }
 
-// karaoke_list用
-export const DropDownKaraoke = ({ karaokeSongs, selectedMovie, onKaraokeSelect }: DropDownKaraokeProps) => {
-  const [karaokeOptions, setKaraokeOptions] = useState<Options[]>([])
+export const DropDownKaraokeSongs = ({ karaokeSongs, selectedMovie, onKaraokeSelect }: DropDownKaraokeSongsProps) => {
+  const [karaokeOptions, setKaraokeOptions] = useState<Options[] | undefined>([])
   const [selectedKaraoke, setSelectedKaraoke] = useState<number>(0)
   useEffect(() => {
     if (!selectedMovie) {
-      setKaraokeOptions([])
+      setKaraokeOptions(undefined)
       return
     }
 
@@ -55,9 +54,9 @@ export const DropDownKaraoke = ({ karaokeSongs, selectedMovie, onKaraokeSelect }
         options={karaokeOptions}
         blurInputOnSelect={true}
         styles={DropStyle}
-        onChange={(option) => {
-          if (option) {
-            onKaraokeSelect(option.value)
+        onChange={(newValue) => {
+          if (newValue) {
+            onKaraokeSelect(newValue.value)
           }
         }}
       />

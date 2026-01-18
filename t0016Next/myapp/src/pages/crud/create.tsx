@@ -36,43 +36,48 @@ const MainItem = ({ posts, isSignin }: CreatePageProps) => {
   const karaokes = useMemo(() => posts?.vtubers_movies_karaokes || ([] as ReceivedKaraoke[]), [posts])
 
   const [selectedVtuberId, setSelectedVtuberId] = useState<number>(0)
-  const [selectedMovieUrl, setSelectedMovieUrl] = useState<string>("")
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string>("")
   const [selectedKaraokeId, setSelectedKaraokeId] = useState<number>(0)
   const [currentVideoId, setCurrentVideoId] = useState<string>("9ehwhQJ50gs")
   const [currentStart, setCurrentStart] = useState<number>(0)
 
   const { videoState, changePosition } = useVideo()
-  // TODO: ちゃんとした制御機構を用意する
-  useEffect(() => {
-    if (videoState.position !== "in-content") {
-      changePosition("in-content")
-    }
-  }, [videoState.position, changePosition])
 
-  useEffect(() => {
-    const foundMovie = movies.find((movies) => movies.MovieUrl === selectedMovieUrl)
+  const handleSelectVtuber = (vtuberId: number) => {
+    setSelectedVtuberId(vtuberId)
+  }
+
+  const handleSelectMovie = (videoUrl: string) => {
+    const foundMovie = movies.find((movies) => movies.MovieUrl === videoUrl)
     if (foundMovie) {
+      setSelectedVideoUrl(videoUrl)
       const foundYoutubeId = extractVideoId(foundMovie.MovieUrl)
       setCurrentVideoId(foundYoutubeId)
       setCurrentStart(1)
     }
-  }, [movies, selectedMovieUrl])
+  }
+
+  const handleSelectKaraokeSong = (songId: number) => {
+    const startTimeStr = karaokes.find((k) => {
+      k.KaraokeId
+    })?.SingStart
+    if (startTimeStr == null) return
+
+    const foundSingStart = timeStringToSecondNum(startTimeStr)
+    setCurrentStart(foundSingStart)
+  }
 
   const clearMovieHandler = () => {
     // 中身空でもKaraokeのoptionsを空にしてくれるんだが…
     // でもこの関数をまるっと消すとダメ
   }
 
+  // TODO: ちゃんとした制御機構を用意する
   useEffect(() => {
-    if (selectedVtuberId && selectedMovieUrl && selectedKaraokeId) {
-      const foundMovies = karaokes.filter((karaoke) => karaoke.MovieUrl === selectedMovieUrl)
-      const foundKaraoke = foundMovies.find((foundMovie) => foundMovie.KaraokeId === selectedKaraokeId)
-      if (foundKaraoke) {
-        const foundSingStart = timeStringToSecondNum(foundKaraoke.SingStart)
-        setCurrentStart(foundSingStart)
-      }
+    if (videoState.position !== "in-content") {
+      changePosition("in-content")
     }
-  }, [selectedMovieUrl, selectedKaraokeId, selectedVtuberId, karaokes])
+  }, [videoState.position, changePosition])
 
   if (!isSignin) {
     return (
@@ -96,11 +101,11 @@ const MainItem = ({ posts, isSignin }: CreatePageProps) => {
             <CreateForm
               posts={posts}
               selectedVtuberId={selectedVtuberId}
-              selectedMovieUrl={selectedMovieUrl}
+              selectedMovieUrl={selectedVideoUrl}
               selectedKaraokeId={selectedKaraokeId}
-              setSelectedVtuberId={setSelectedVtuberId}
-              setSelectedMovieUrl={setSelectedMovieUrl}
-              setSelectedKaraokeId={setSelectedKaraokeId}
+              selectVtuber={handleSelectVtuber}
+              selectVideo={handleSelectMovie}
+              selectKaraokeSong={handleSelectKaraokeSong}
               clearMovieHandler={clearMovieHandler}
               setCurrentVideoId={setCurrentVideoId}
             />

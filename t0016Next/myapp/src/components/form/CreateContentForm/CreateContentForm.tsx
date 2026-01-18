@@ -26,32 +26,24 @@ type CreateDataProps = {
   selectedVtuberId: number
   selectedMovieUrl: string
   selectedKaraokeId: number
-  setSelectedVtuberId: (vtuberId: number) => void
-  setSelectedMovieUrl: (url: string) => void
-  setSelectedKaraokeId: (KaraokeId: number) => void
+  selectVtuber: (vtuberId: number) => void
+  selectVideo: (url: string) => void
+  selectKaraokeSong: (KaraokeId: number) => void
   clearMovieHandler: () => void
   setCurrentVideoId: (videoId: string) => void
 }
 
-export function CreateForm({
-  posts,
-  selectedVtuberId,
-  selectedMovieUrl,
-  selectedKaraokeId,
-  setSelectedVtuberId,
-  setSelectedMovieUrl,
-  setSelectedKaraokeId,
-  clearMovieHandler,
-  setCurrentVideoId,
-}: CreateDataProps) {
+export function CreateForm({ posts, selectedVtuberId, selectedMovieUrl, selectedKaraokeId, selectVtuber, selectVideo, selectKaraokeSong, clearMovieHandler, setCurrentVideoId }: CreateDataProps) {
+  const { vtubers, vtubers_movies: videos } = posts
+
   const [crudContentType, setCrudContentType] = useState<CrudContentType>("movie")
-  const { vtubers, vtubers_movies: videos, vtubers_movies_karaokes: karaokes } = posts
   const [isOkVideoTitle, setIsOkVideoTitle] = useState(false)
   const [isAbleVideoTitleInput, setIsAbleVideoTitleInput] = useState(false)
   const [isDisplayHint, setIsDisplayHint] = useState(false)
 
   const foundVtuber = vtubers?.find((vtuber) => vtuber.VtuberId === selectedVtuberId)
-  const foundMovie = videos?.find((movie) => movie.MovieUrl === selectedMovieUrl)
+  const foundMovie = videos?.find((video) => video.MovieUrl === selectedMovieUrl)
+  const selectedVtuberVideos = videos?.filter((video) => video.VtuberId === selectedVtuberId)
 
   const [isDisplaySuccessModal, setIsDisplaySuccessModal] = useState(false)
   const [isDisplayErrorModal, setIsDisplayErrorModal] = useState(false)
@@ -77,7 +69,7 @@ export function CreateForm({
   const [gotMovieErrorMessage, setGotMovieErrorMessage] = useState<string>("")
 
   const handleSetSelectedMovieUrl = (url: string) => {
-    setSelectedMovieUrl(url)
+    selectVideo(url)
     setValue("MovieUrl", url)
   }
 
@@ -203,7 +195,7 @@ export function CreateForm({
                       VTuber
                       <NeedBox />
                     </div>
-                    <DropDownVtuber vtubers={vtubers} onSelectVtuber={setSelectedVtuberId} defaultMenuIsOpen={false} selectedVtuber={findVtuber(vtubers, selectedVtuberId)} />
+                    <DropDownVtuber vtubers={vtubers} onSelectVtuber={selectVtuber} defaultMenuIsOpen={false} />
                     {selectedVtuberId == 0 && <div className="text-[#ff3f3f] text-sm">チャンネルを選択してください</div>}
                   </div>
 
@@ -268,12 +260,13 @@ export function CreateForm({
             {crudContentType === "karaoke" && (
               <KaraokesFormItem
                 posts={posts}
+                selectedVtuberVideos={selectedVtuberVideos}
                 selectedVtuberId={selectedVtuberId}
-                selectedMovieUrl={selectedMovieUrl}
-                setSelectedVtuberId={setSelectedVtuberId}
-                setSelectedMovieUrl={handleSetSelectedMovieUrl}
+                selectedVideoUrl={selectedMovieUrl}
+                setSelectedVtuberId={selectVtuber}
+                setSelectedVideoUrl={handleSetSelectedMovieUrl}
                 clearMovieHandler={clearMovieHandler}
-                setSelectedKaraokeId={setSelectedKaraokeId}
+                setSelectedKaraokeId={selectKaraokeSong}
                 vtubers={vtubers}
                 useFormReturn={{ register, control, handleSubmit, formState: { fieldErrors: formErrors }, getValues }}
               />

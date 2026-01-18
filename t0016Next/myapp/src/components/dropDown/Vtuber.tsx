@@ -10,45 +10,23 @@ type vtuberListsProps = {
 
 type DropDownVtuberProps = {
   vtubers: ReceivedVtuber[]
-  selectedVtuber: ReceivedVtuber | undefined
   onSelectVtuber: (vtuberId: number) => void
   defaultMenuIsOpen: boolean
 }
 
-export const DropDownVtuber = ({ vtubers, selectedVtuber, onSelectVtuber, defaultMenuIsOpen }: DropDownVtuberProps) => {
+export const DropDownVtuber = ({ vtubers, onSelectVtuber, defaultMenuIsOpen }: DropDownVtuberProps) => {
   const vtuberOptions = makeVtuberOptions(vtubers)
 
   const onChange = (option: vtuberListsProps | null) => {
-    if (option) {
-      onSelectVtuber(option.value)
-    } else {
+    if (option == null) {
       onSelectVtuber(0)
+    } else {
+      onSelectVtuber(option.value)
     }
-  }
-
-  if (selectedVtuber == null) {
-    return (
-      <Select
-        id="selectbox"
-        instanceId="selectbox"
-        placeholder="VTuberを検索/選択"
-        className="basic-single"
-        classNamePrefix="select"
-        isClearable
-        isSearchable
-        name="VTuber"
-        options={vtuberOptions}
-        defaultMenuIsOpen={defaultMenuIsOpen}
-        blurInputOnSelect
-        styles={DropStyle}
-        onChange={onChange}
-      />
-    )
   }
 
   return (
     <Select
-      defaultValue={makeVtuberOption(selectedVtuber)}
       id="selectbox"
       instanceId="selectbox"
       placeholder="VTuberを検索/選択"
