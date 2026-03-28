@@ -2,8 +2,7 @@
 
 ## V-Kara-Lists とは
 
-VTuber（バーチャルYouTuber）のカラオケ配信を管理・共有するWebアプリケーション。
-ユーザーはVTuber情報・配信動画・歌った曲（カラオケ）を登録・閲覧できる。
+VTuber（バーチャルYouTuber）のカラオケ配信を管理・共有するWebアプリケーション。ユーザーはVTuber情報・配信動画・歌った曲（カラオケ）を登録・閲覧できる。
 
 サービスURL: https://v-karaoke.com
 

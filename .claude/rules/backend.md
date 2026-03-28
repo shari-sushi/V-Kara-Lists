@@ -13,39 +13,42 @@
 
 ```txt
 t0016Go/
-├── cmd/main.go           # エントリポイント。Ginルーター初期化・CORS設定
-├── domain/               # エンティティ・インターフェース定義（外部依存なし）
+├── cmd/main.go       # エントリポイント。Ginルーター初期化・CORS設定
+├── domain/           # エンティティ・インターフェース定義（外部依存なし）
 │   ├── user.go
 │   ├── vtuber_content.go
 │   ├── favorite.go
-│   └── api/types.go      # APIリクエスト/レスポンス型
+│   └── api/types.go  # APIリクエスト/レスポンス型
+├── common/           # 共通ユーティリティ（認証・暗号化・バリデーション等）
 ├── infra/
-│   ├── db.go             # DB接続・GORMオートマイグレーション
-│   └── routing.go        # v1/v2 ルート定義(v2は未実装)
-├── interfaces/
-│   ├── v1/controllers/   # HTTPハンドラ（Gin の Context を受け取る）
-│   └── database/         # DBクエリ実装
-└── useCase/              # ビジネスロジック
+│   ├── db.go         # DB接続・GORMオートマイグレーション
+│   └── routing.go    # DI組み立て + v1/v2 ルート定義(v2は未実装)
+├── repository/       # DBクエリ実装 + インターフェース定義
+├── service/          # ビジネスロジック
+└── handler/          # HTTPハンドラ（Gin の Context を受け取る）
 ```
 
-## 3層アーキテクチャ + 依存性分離 (レイヤードアーキテクチャもどき)
+## 3層アーキテクチャ + 依存性分離
 
 ```txt
-domain/ → useCase/ → interfaces/ → infra/
+domain/ → repository/ → service/ → handler/ → infra/
 ```
 
 - `domain/` に Gin・GORM を import しない
-- `useCase/` は DB を直接触らず、`interfaces/database/` のインターフェース経由で使う
+- `service/` は DB を直接触らず、`repository/` のインターフェース経由で使う
+- `handler/` は service のメソッドを呼び出すのみ（ビジネスロジックを持たない）
+- `infra/routing.go` でDIを組み立てる（repository → service → handler の順）
 - 新しい機能は既存の層構造に合わせて追加する
 
 ## 新しいエンドポイントを追加する手順
 
-1. `domain/` に必要な型・インターフェースを追加する
+1. `domain/` に必要な型を追加する
 2. `domain/api/types.go` にリクエスト/レスポンス型を追加する
-3. `interfaces/database/` にDBクエリを実装する
-4. `useCase/` にビジネスロジックを実装する
-5. `interfaces/v1/controllers/` にHTTPハンドラを実装する
-6. `infra/routing.go` にルートを追加する
+3. `repository/interface.go` にリポジトリインターフェースを追加する
+4. `repository/*_repository.go` にDBクエリを実装する
+5. `service/*_service.go` にビジネスロジックを実装する
+6. `handler/*_handler.go` にHTTPハンドラを実装する
+7. `infra/routing.go` にルートを追加する
 
 ## ルーティング規則
 
@@ -67,20 +70,19 @@ v1 := r.Group("/v1")
 ## HTTPハンドラの書き方
 
 ```go
-func (h *VtuberContentController) CreateKaraoke(c *gin.Context) {
-    var req domain.CreateKaraokeRequest
-    if err := c.ShouldBindJSON(&req); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+func (h *ContentHandler) CreateKaraokes(c *gin.Context) {
+    var req api.CreateKaraokeSongsRequest
+    if err := c.ShouldBind(&req); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid request body"})
         return
     }
 
-    result, err := h.useCase.CreateKaraoke(req)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+    if err := h.ContentService.CreateKaraokes(api.CreateKaraokeSongsRequestToKaraokes(req, listenerId)); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"message": "Failed to create karaokes"})
         return
     }
 
-    c.JSON(http.StatusOK, result)
+    c.JSON(http.StatusOK, gin.H{"message": "Successfully Registered"})
 }
 ```
 
