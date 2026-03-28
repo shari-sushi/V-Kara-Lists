@@ -18,6 +18,11 @@ aws-fe-build&push :
 	&& docker tag $${AWS_APP_SERVICE_NAME}:latest $${AWS_FE_SERVICE_URI}:latest \
 	&& docker push $${AWS_APP_SERVICE_URI}:latest
 
+####### ドキュメント
+.PHONY: fmt-md
+fmt-md:
+	cd t0016Next/myapp && npx prettier --write "../../**/*.md"
+
 ####### 普段の開発向け
 .PHONY: run
 run:
