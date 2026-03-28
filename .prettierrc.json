@@ -1,0 +1,12 @@
+{
+  "overrides": [
+    {
+      "files": ["*.md", "*.mdx"],
+      "options": {
+        "parser": "markdown",
+        "proseWrap": "never",
+        "endOfLine": "lf"
+      }
+    }
+  ]
+}
