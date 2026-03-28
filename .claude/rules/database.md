@@ -2,10 +2,10 @@
 
 ## 環境
 
-| 環境 | 種別 | 接続先 |
-|---|---|---|
-| ローカル開発 | Docker (mysql:8.0.32) | localhost:3306 |
-| 本番 (EC2) | AWS RDS (MySQL 8.0.32) | RDS エンドポイント |
+| 環境         | 種別                   | 接続先             |
+| ------------ | ---------------------- | ------------------ |
+| ローカル開発 | Docker (mysql:8.0.32)  | localhost:3306     |
+| 本番 (EC2)   | AWS RDS (MySQL 8.0.32) | RDS エンドポイント |
 
 - 文字コード: utf8mb4（絵文字対応）
 - 照合順序: utf8mb4_unicode_ci
@@ -15,11 +15,13 @@
 スキーマは **GORM のオートマイグレーション** で管理する。
 
 型定義（テーブル定義の正とする）:
+
 - [t0016Go/domain/user.go](t0016Go/domain/user.go)
 - [t0016Go/domain/vtuber_content.go](t0016Go/domain/vtuber_content.go)
 - [t0016Go/domain/favorite.go](t0016Go/domain/favorite.go)
 
 マイグレーション設定:
+
 - [t0016Go/infra/db.go](t0016Go/infra/db.go)
 
 ### AutoMigrate の挙動

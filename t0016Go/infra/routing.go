@@ -2,7 +2,9 @@ package infra
 
 import (
 	"github.com/gin-gonic/gin"
-	controllers1 "github.com/sharin-sushi/0016go_next_relation/interfaces/v1/controllers"
+	"github.com/sharin-sushi/0016go_next_relation/handler"
+	"github.com/sharin-sushi/0016go_next_relation/repository"
+	"github.com/sharin-sushi/0016go_next_relation/service"
 )
 
 // 命名規則
@@ -16,57 +18,75 @@ func Routing(r *gin.Engine) {
 
 // フロントで移行でき次第、１つずつも呼び出してるメソッドと共に削除していく。
 func routingV1(r *gin.Engine) {
-	c := controllers1.NewController(dbInit())
+	db := NewSqlHandler()
+
+	// Repository層
+	contentRepo := repository.NewContentRepository(db)
+	userRepo := repository.NewUserRepository(db)
+	favoriteRepo := repository.NewFavoriteRepository(db)
+	otherRepo := repository.NewOtherRepository(db)
+
+	// Service層
+	contentSvc := service.ContentService{ContentRepository: contentRepo}
+	userSvc := service.UserService{UserRepository: userRepo}
+	activitySvc := service.ActivityService{FavoriteRepository: favoriteRepo, ContentRepository: contentRepo}
+	otherSvc := service.OtherService{OtherRepository: otherRepo}
+
+	// Handler層
+	contentH := handler.NewContentHandler(contentSvc, activitySvc)
+	userH := handler.NewUserHandler(userSvc, activitySvc)
+	favoriteH := handler.NewFavoriteHandler(activitySvc)
+	_ = handler.NewOtherHandler(otherSvc)
 
 	ver := r.Group("/v1")
 	{
 		users := ver.Group("/users")
 		{
-			users.POST("/signup", c.CreateUser)
-			users.PUT("/login", c.LogIn)
-			users.PUT("/logout", controllers1.Logout) // dbアクセスしないから sqlHandlerのメソッドにしてないぽいそんな設計で良いのか
-			users.DELETE("/withdraw", c.LogicalDeleteUser)
-			users.GET("/gestlogin", controllers1.GuestLogIn) // dbアクセスしないから gin.sqlHandlerのメソッドにしてないぽいそんな設計で良いのか
-			users.GET("/profile", c.GetListenerProfile)
-			users.GET("/mypage", c.ListenerPage)
+			users.POST("/signup", userH.CreateUser)
+			users.PUT("/login", userH.LogIn)
+			users.PUT("/logout", handler.Logout) // dbアクセスしないから sqlHandlerのメソッドにしてないぽいそんな設計で良いのか
+			users.DELETE("/withdraw", userH.LogicalDeleteUser)
+			users.GET("/gestlogin", handler.GuestLogIn) // dbアクセスしないから gin.sqlHandlerのメソッドにしてないぽいそんな設計で良いのか
+			users.GET("/profile", userH.GetListenerProfile)
+			users.GET("/mypage", userH.ListenerPage)
 		}
 		vcontents := ver.Group("/vcontents")
 		{
-			vcontents.GET("/", c.ReturnTopPageData)
-			vcontents.GET("/vtuber/:kana", c.ReturnVtuberPageData)
-			vcontents.GET("/sings", c.GetJoinVtubersMoviesKaraokes)
-			vcontents.GET("/original-song", c.ReturnOriginalSongPage)
+			vcontents.GET("/", contentH.ReturnTopPageData)
+			vcontents.GET("/vtuber/:kana", contentH.ReturnVtuberPageData)
+			vcontents.GET("/sings", contentH.GetJoinVtubersMoviesKaraokes)
+			vcontents.GET("/original-song", contentH.ReturnOriginalSongPage)
 
 			// /vtuber, /movie, /karaokeの文字列はフロント側で比較演算に使われてる
 			// データ新規登録
 			// TODO: 複数形のpathを用意して、複数登録対応にする(既存のpathも残す)
-			vcontents.POST("/create/vtubers", c.CreateVtuber)
-			vcontents.POST("/create/videos", c.CreateMovie)
-			vcontents.POST("/create/karaokes", c.CreateKaraokes)
+			vcontents.POST("/create/vtubers", contentH.CreateVtuber)
+			vcontents.POST("/create/videos", contentH.CreateMovie)
+			vcontents.POST("/create/karaokes", contentH.CreateKaraokes)
 
 			//データ編集
-			vcontents.POST("/edit/vtuber", c.EditVtuber)
-			vcontents.POST("/edit/movie", c.EditMovie)
-			vcontents.POST("/edit/karaoke", c.EditKaraoke)
+			vcontents.POST("/edit/vtuber", contentH.EditVtuber)
+			vcontents.POST("/edit/movie", contentH.EditMovie)
+			vcontents.POST("/edit/karaoke", contentH.EditKaraoke)
 
 			// // データ削除(物理)
-			vcontents.GET("/delete/deletePage", c.DeleteOfPage)
-			vcontents.DELETE("/delete/vtuber", c.DeleteVtuber)
-			vcontents.DELETE("/delete/movie", c.DeleteMovie)
-			vcontents.DELETE("/delete/karaoke", c.DeleteKaraoke)
+			vcontents.GET("/delete/deletePage", contentH.DeleteOfPage)
+			vcontents.DELETE("/delete/vtuber", contentH.DeleteVtuber)
+			vcontents.DELETE("/delete/movie", contentH.DeleteMovie)
+			vcontents.DELETE("/delete/karaoke", contentH.DeleteKaraoke)
 
 			//ドロップダウン用
-			vcontents.GET("/getalldata", c.GetVtuberMovieKaraoke)
+			vcontents.GET("/getalldata", contentH.GetVtuberMovieKaraoke)
 
 			// テスト用
-			vcontents.GET("/dummy-top-page", c.ReturnDummyTopPage)
+			vcontents.GET("/dummy-top-page", contentH.ReturnDummyTopPage)
 		}
 		fav := ver.Group("/fav")
 		{
-			fav.POST("/favorite/movie", c.SaveMovieFavorite)
-			fav.DELETE("/unfavorite/movie", c.DeleteMovieFavorite)
-			fav.POST("/favorite/karaoke", c.SaveKaraokeFavorite)
-			fav.DELETE("/unfavorite/karaoke", c.DeleteKaraokeFavorite)
+			fav.POST("/favorite/movie", favoriteH.SaveMovieFavorite)
+			fav.DELETE("/unfavorite/movie", favoriteH.DeleteMovieFavorite)
+			fav.POST("/favorite/karaoke", favoriteH.SaveKaraokeFavorite)
+			fav.DELETE("/unfavorite/karaoke", favoriteH.DeleteKaraokeFavorite)
 		}
 	}
 }

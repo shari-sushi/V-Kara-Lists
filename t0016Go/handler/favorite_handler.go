@@ -1,16 +1,27 @@
-package controllers
+package handler
 
 import (
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sharin-sushi/0016go_next_relation/common"
 	"github.com/sharin-sushi/0016go_next_relation/domain"
-	"github.com/sharin-sushi/0016go_next_relation/interfaces/v1/controllers/common"
+	"github.com/sharin-sushi/0016go_next_relation/service"
 	"gorm.io/gorm"
 )
 
-func (controller *Controller) SaveMovieFavorite(c *gin.Context) {
+type FavoriteHandler struct {
+	ActivityService service.ActivityService
+}
+
+func NewFavoriteHandler(activitySvc service.ActivityService) *FavoriteHandler {
+	return &FavoriteHandler{
+		ActivityService: activitySvc,
+	}
+}
+
+func (h *FavoriteHandler) SaveMovieFavorite(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -38,10 +49,10 @@ func (controller *Controller) SaveMovieFavorite(c *gin.Context) {
 	}
 
 	fav.ListenerId = applicantListenerId
-	foundFav := controller.FavoriteInteractor.FindFavoriteUnscopedByFavOrUnfavRegistry(fav)
+	foundFav := h.ActivityService.FindFavoriteUnscopedByFavOrUnfavRegistry(fav)
 	zeroValue := gorm.DeletedAt{}
 	if foundFav.ID == 0 {
-		err := controller.FavoriteInteractor.CreateMovieFavorite(foundFav)
+		err := h.ActivityService.CreateMovieFavorite(foundFav)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"message": "Invailed Favorite it",
@@ -49,7 +60,7 @@ func (controller *Controller) SaveMovieFavorite(c *gin.Context) {
 			return
 		}
 	} else if foundFav.DeletedAt != zeroValue {
-		err := controller.FavoriteInteractor.UpdateMovieFavorite(foundFav)
+		err := h.ActivityService.UpdateMovieFavorite(foundFav)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"message": "Invailed Favorite it",
@@ -67,7 +78,8 @@ func (controller *Controller) SaveMovieFavorite(c *gin.Context) {
 		"message": "Successfully Favorite it",
 	})
 }
-func (controller *Controller) DeleteMovieFavorite(c *gin.Context) {
+
+func (h *FavoriteHandler) DeleteMovieFavorite(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -93,7 +105,7 @@ func (controller *Controller) DeleteMovieFavorite(c *gin.Context) {
 	}
 	fav.ListenerId = applicantListenerId
 
-	if err := controller.FavoriteInteractor.DeleteMovieFavorite(fav); err != nil {
+	if err := h.ActivityService.DeleteMovieFavorite(fav); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invailed UnFavorite it",
 		})
@@ -102,10 +114,9 @@ func (controller *Controller) DeleteMovieFavorite(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully UnFavorite it",
 	})
-
 }
 
-func (controller *Controller) SaveKaraokeFavorite(c *gin.Context) {
+func (h *FavoriteHandler) SaveKaraokeFavorite(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -126,12 +137,12 @@ func (controller *Controller) SaveKaraokeFavorite(c *gin.Context) {
 		return
 	}
 	fav.ListenerId = applicantListenerId
-	foundFav := controller.FavoriteInteractor.FindFavoriteUnscopedByFavOrUnfavRegistry(fav)
+	foundFav := h.ActivityService.FindFavoriteUnscopedByFavOrUnfavRegistry(fav)
 	zeroValue := gorm.DeletedAt{}
 	fmt.Println("fav", foundFav)
 	fmt.Printf("foundFav:%v", foundFav)
 	if foundFav.ID == 0 {
-		err := controller.FavoriteInteractor.CreateKaraokeFavorite(foundFav)
+		err := h.ActivityService.CreateKaraokeFavorite(foundFav)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"message": "Invailed Favorite it",
@@ -139,7 +150,7 @@ func (controller *Controller) SaveKaraokeFavorite(c *gin.Context) {
 			return
 		}
 	} else if foundFav.DeletedAt != zeroValue {
-		err := controller.FavoriteInteractor.UpdateKaraokeFavorite(foundFav)
+		err := h.ActivityService.UpdateKaraokeFavorite(foundFav)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"message": "Invailed Favorite it",
@@ -158,7 +169,7 @@ func (controller *Controller) SaveKaraokeFavorite(c *gin.Context) {
 	})
 }
 
-func (controller *Controller) DeleteKaraokeFavorite(c *gin.Context) {
+func (h *FavoriteHandler) DeleteKaraokeFavorite(c *gin.Context) {
 	applicantListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -179,7 +190,7 @@ func (controller *Controller) DeleteKaraokeFavorite(c *gin.Context) {
 		return
 	}
 	fav.ListenerId = applicantListenerId
-	if err := controller.FavoriteInteractor.DeleteKaraokeFavorite(fav); err != nil {
+	if err := h.ActivityService.DeleteKaraokeFavorite(fav); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invailed UnFavorite it",
 		})

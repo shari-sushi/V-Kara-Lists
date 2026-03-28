@@ -1,17 +1,30 @@
-package controllers
+package handler
 
 import (
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sharin-sushi/0016go_next_relation/common"
 	"github.com/sharin-sushi/0016go_next_relation/domain"
-	"github.com/sharin-sushi/0016go_next_relation/interfaces/v1/controllers/common"
+	"github.com/sharin-sushi/0016go_next_relation/service"
 )
 
 var guestID = common.GetGuestListenerID()
 
-func (controller *Controller) CreateUser(c *gin.Context) {
+type UserHandler struct {
+	UserService     service.UserService
+	ActivityService service.ActivityService
+}
+
+func NewUserHandler(userSvc service.UserService, activitySvc service.ActivityService) *UserHandler {
+	return &UserHandler{
+		UserService:     userSvc,
+		ActivityService: activitySvc,
+	}
+}
+
+func (h *UserHandler) CreateUser(c *gin.Context) {
 	var user domain.Listener
 	if err := c.ShouldBind(&user); err != nil {
 		fmt.Println("err.Error:", err.Error())
@@ -40,7 +53,7 @@ func (controller *Controller) CreateUser(c *gin.Context) {
 		return
 	}
 
-	if _, err := controller.UserInteractor.FindUserByEmail(emailAES); err == nil {
+	if _, err := h.UserService.FindUserByEmail(emailAES); err == nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "E-mail address already exist",
 		})
@@ -58,7 +71,7 @@ func (controller *Controller) CreateUser(c *gin.Context) {
 
 	user.Password = hashPW
 	user.Email = emailAES
-	newUser, err := controller.UserInteractor.CreateUser(user)
+	newUser, err := h.UserService.CreateUser(user)
 	if err != nil {
 		fmt.Println("err.Error:", err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -79,10 +92,9 @@ func (controller *Controller) CreateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Successfully created user, and logined",
 	})
-
 }
 
-func (controller *Controller) LogicalDeleteUser(c *gin.Context) {
+func (h *UserHandler) LogicalDeleteUser(c *gin.Context) {
 	tokenLId, err := common.TakeListenerIdFromJWT(c)
 	fmt.Printf("tokenLId = %v \n", tokenLId)
 
@@ -101,7 +113,7 @@ func (controller *Controller) LogicalDeleteUser(c *gin.Context) {
 	}
 	var dummyLi domain.Listener
 	dummyLi.ListenerId = tokenLId
-	if err := controller.UserInteractor.LogicalDeleteUser(dummyLi); err != nil {
+	if err := h.UserService.LogicalDeleteUser(dummyLi); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invalid Withdrawn",
 			"err":     err,
@@ -115,7 +127,7 @@ func (controller *Controller) LogicalDeleteUser(c *gin.Context) {
 	})
 }
 
-func (controller *Controller) LogIn(c *gin.Context) {
+func (h *UserHandler) LogIn(c *gin.Context) {
 	var user domain.Listener
 	if err := c.ShouldBind(&user); err != nil {
 		fmt.Printf("err: LogIn ShouldBind, %v\n", err.Error())
@@ -137,7 +149,7 @@ func (controller *Controller) LogIn(c *gin.Context) {
 	}
 	fmt.Printf("emailAES:%v\n", emailAES)
 
-	foundListener, err := controller.UserInteractor.FindUserByEmail(emailAES)
+	foundListener, err := h.UserService.FindUserByEmail(emailAES)
 	fmt.Printf("Listener Logged in:%v\n", foundListener)
 	if err != nil {
 		fmt.Printf("err:LogIn FindUserByEmail, %v\n", err.Error())
@@ -187,14 +199,14 @@ func GuestLogIn(c *gin.Context) {
 	})
 }
 
-func (controller *Controller) GetListenerProfile(c *gin.Context) {
+func (h *UserHandler) GetListenerProfile(c *gin.Context) {
 	ListenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Need Login"})
 		return
 	}
 
-	ListenerInfo, err := controller.UserInteractor.FindUserByListenerId(ListenerId)
+	ListenerInfo, err := h.UserService.FindUserByListenerId(ListenerId)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching listener info"})
 		return
@@ -213,8 +225,7 @@ func (controller *Controller) GetListenerProfile(c *gin.Context) {
 	})
 }
 
-func (controller *Controller) ListenerPage(c *gin.Context) {
-	// listenerId取得
+func (h *UserHandler) ListenerPage(c *gin.Context) {
 	listenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		fmt.Println("err.Error:", err.Error())
@@ -222,8 +233,8 @@ func (controller *Controller) ListenerPage(c *gin.Context) {
 		return
 	}
 	var errs []error
-	createdVts, createdVtsMos, createdVtsMosKas, errs := controller.FavoriteInteractor.FindEachRecordsCreatedByListenerId(listenerId)
-	myFav, err := controller.FavoriteInteractor.FindFavoritesCreatedByListenerId(listenerId)
+	createdVts, createdVtsMos, createdVtsMosKas, errs := h.ActivityService.FindEachRecordsCreatedByListenerId(listenerId)
+	myFav, err := h.ActivityService.FindFavoritesCreatedByListenerId(listenerId)
 	if err != nil {
 		errs = append(errs, err)
 	}

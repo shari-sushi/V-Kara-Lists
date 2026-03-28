@@ -40,12 +40,12 @@ import { Layout } from "../../components/layout/Layout";
 
 ### 命名規則
 
-| 対象                 | 規則                                             | 例                                 |
-| -------------------- | ------------------------------------------------ | ---------------------------------- |
-| ファイル             | PascalCase (コンポーネント) / camelCase (その他) | `VtuberTable.tsx` / `useVtuber.ts` |
-| 型・インターフェース | PascalCase                                       | `ReceivedVtuber`                   |
-| 関数・変数           | camelCase                                        | `fetchVtuberList`                  |
-| 定数                 | UPPER_SNAKE_CASE                                 | `API_BASE_URL`                     |
+| 対象 | 規則 | 例 |
+| --- | --- | --- |
+| ファイル | PascalCase (コンポーネント) / camelCase (その他) | `VtuberTable.tsx` / `useVtuber.ts` |
+| 型・インターフェース | PascalCase | `ReceivedVtuber` |
+| 関数・変数 | camelCase | `fetchVtuberList` |
+| 定数 | UPPER_SNAKE_CASE | `API_BASE_URL` |
 
 ### エラーハンドリング
 
@@ -64,13 +64,13 @@ import { Layout } from "../../components/layout/Layout";
 
 ### 命名規則
 
-| 対象           | 規則                                   | 例                          |
-| -------------- | -------------------------------------- | --------------------------- |
-| ファイル       | snake_case                             | `vtuber_content.go`         |
-| 型・構造体     | PascalCase                             | `VtuberContent`             |
+| 対象 | 規則 | 例 |
+| --- | --- | --- |
+| ファイル | snake_case | `vtuber_content.go` |
+| 型・構造体 | PascalCase | `VtuberContent` |
 | 関数・メソッド | PascalCase (公開) / camelCase (非公開) | `GetVtubers` / `buildQuery` |
-| 変数           | camelCase                              | `vtuberId`                  |
-| 定数           | PascalCase or UPPER_SNAKE_CASE         | `MaxRetries`                |
+| 変数 | camelCase | `vtuberId` |
+| 定数 | PascalCase or UPPER_SNAKE_CASE | `MaxRetries` |
 
 ### ~~クリーンアーキテクチャの層を意識する~~ 3層アーキテクチャかつ要所での依存性分離、逆転を意識する
 
