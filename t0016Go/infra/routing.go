@@ -2,7 +2,10 @@ package infra
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/sharin-sushi/0016go_next_relation/handler"
+	contenthandler  "github.com/sharin-sushi/0016go_next_relation/handler/content"
+	favoritehandler "github.com/sharin-sushi/0016go_next_relation/handler/favorite"
+	otherhandler    "github.com/sharin-sushi/0016go_next_relation/handler/other"
+	userhandler     "github.com/sharin-sushi/0016go_next_relation/handler/user"
 	"github.com/sharin-sushi/0016go_next_relation/repository"
 	"github.com/sharin-sushi/0016go_next_relation/service"
 )
@@ -33,10 +36,10 @@ func routingV1(r *gin.Engine) {
 	otherSvc := service.OtherService{OtherRepository: otherRepo}
 
 	// Handler層
-	contentH := handler.NewContentHandler(contentSvc, activitySvc)
-	userH := handler.NewUserHandler(userSvc, activitySvc)
-	favoriteH := handler.NewFavoriteHandler(activitySvc)
-	_ = handler.NewOtherHandler(otherSvc)
+	contentH := contenthandler.NewContentHandler(contentSvc, activitySvc)
+	userH := userhandler.NewUserHandler(userSvc, activitySvc)
+	favoriteH := favoritehandler.NewFavoriteHandler(activitySvc)
+	_ = otherhandler.NewOtherHandler(otherSvc)
 
 	ver := r.Group("/v1")
 	{
@@ -44,9 +47,9 @@ func routingV1(r *gin.Engine) {
 		{
 			users.POST("/signup", userH.CreateUser)
 			users.PUT("/login", userH.LogIn)
-			users.PUT("/logout", handler.Logout) // dbアクセスしないから sqlHandlerのメソッドにしてないぽいそんな設計で良いのか
+			users.PUT("/logout", userhandler.Logout) // dbアクセスしないから sqlHandlerのメソッドにしてないぽいそんな設計で良いのか
 			users.DELETE("/withdraw", userH.LogicalDeleteUser)
-			users.GET("/gestlogin", handler.GuestLogIn) // dbアクセスしないから gin.sqlHandlerのメソッドにしてないぽいそんな設計で良いのか
+			users.GET("/gestlogin", userhandler.GuestLogIn) // dbアクセスしないから gin.sqlHandlerのメソッドにしてないぽいそんな設計で良いのか
 			users.GET("/profile", userH.GetListenerProfile)
 			users.GET("/mypage", userH.ListenerPage)
 		}
