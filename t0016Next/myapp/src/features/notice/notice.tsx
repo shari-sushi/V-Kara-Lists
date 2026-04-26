@@ -10,16 +10,11 @@ export const TopPageNotice = () => {
   return (
     <div className="flex flex-col items-center max-w-[1000px] m-auto mb-2">
       <div className={`flex flex-col p-1 rounded-md ${isHoverButton ? "bg-[#66a962]/40" : ""}`}>
-        <div className="flex items-start cursor-pointer" onClick={() => setIsDisplay(true)} onMouseEnter={() => setIsHoverButton(true)} onMouseLeave={() => setIsHoverButton(false)}>
+        <div className="flex items-center gap-x-1 cursor-pointer" onClick={() => setIsDisplay(true)} onMouseEnter={() => setIsHoverButton(true)} onMouseLeave={() => setIsHoverButton(false)}>
           <div>〇お知らせ</div>
-          <div className="flex text-xs justify-center rounded-md h-[15px] w-[15px] m-0.5 bg-[#776D5C]">？</div>
+          <div className="text-xs text-[#776D5C] font-semibold">＞ もっとみる</div>
         </div>
-        <ul
-          className="list-disc ml-[18.5px] flex flex-col justify-start cursor-pointer"
-          onClick={() => setIsDisplay(true)}
-          onMouseEnter={() => setIsHoverButton(true)}
-          onMouseLeave={() => setIsHoverButton(false)}
-        >
+        <ul className="list-disc ml-[18.5px] cursor-pointer" onClick={() => setIsDisplay(true)} onMouseEnter={() => setIsHoverButton(true)} onMouseLeave={() => setIsHoverButton(false)}>
           <li>{NoticeItems[0].title}</li>
           <li>{NoticeItems[1].title}</li>
         </ul>
