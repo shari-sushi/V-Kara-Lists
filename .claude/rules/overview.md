@@ -66,3 +66,7 @@ V-Kara-Lists/
 
 - `develop`: メインブランチ（PRのマージ先）
 - feature ブランチ: `develop` から切って作業、PR で `develop` へマージ
+
+## PR ルール
+
+- PR 本文の先頭に `- close #xx` を記載する（マージ時にIssueが自動クローズされる）
