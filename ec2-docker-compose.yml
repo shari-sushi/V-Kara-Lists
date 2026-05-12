@@ -28,7 +28,7 @@ services:
   app:
     image: ${ECR_REGISTRY}/${ECR_APP_REPO}:latest
     container_name: v-kara-app
-    env_file: .env
+    env_file: app.env
     environment:
       - DEPLOY_ENV=EC2_DOCKER_COMPOSE
       - IS_DOCKER_COMPOSE=true
