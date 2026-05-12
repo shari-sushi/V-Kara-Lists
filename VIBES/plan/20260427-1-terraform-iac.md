@@ -86,7 +86,7 @@ infra/terraform/*.tfstate.backup
 - [x] `terraform plan` で差分がゼロ（または意図した差分のみ）
 - [x] シークレットが `.tf` に含まれない
 - [x] `import.sh` に全リソースの import コマンドが記載されている
-- [ ] `.gitignore` が更新されている
+- [x] `.gitignore` が更新されている
 
 ## 残存差分（許容済み）
 
