@@ -39,7 +39,8 @@ resource "aws_db_instance" "main" {
   max_allocated_storage = 1000
   copy_tags_to_snapshot = true
 
-  skip_final_snapshot = true
+  skip_final_snapshot       = false
+  final_snapshot_identifier = "v-kara-db-final-snapshot"
 
   lifecycle {
     ignore_changes = [password]
