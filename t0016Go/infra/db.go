@@ -10,8 +10,8 @@ import (
 	"gorm.io/gorm"
 
 	domain "github.com/sharin-sushi/0016go_next_relation/domain"
-	"github.com/sharin-sushi/0016go_next_relation/interfaces/database"
-	"github.com/sharin-sushi/0016go_next_relation/interfaces/v1/controllers/common"
+	"github.com/sharin-sushi/0016go_next_relation/repository"
+	"github.com/sharin-sushi/0016go_next_relation/common"
 )
 
 type SqlHandler struct {
@@ -45,7 +45,12 @@ func GetEnvVar() {
 	fmt.Println("----環境変数取得：終了----")
 }
 
-func dbInit() database.SqlHandler {
+// NewSqlHandler creates and returns a new SQL handler
+func NewSqlHandler() repository.SqlHandler {
+	return dbInit()
+}
+
+func dbInit() repository.SqlHandler {
 	user := os.Getenv("MYSQL_USER")
 	pw := os.Getenv("MYSQL_PASSWORD")
 	dbName := ""
