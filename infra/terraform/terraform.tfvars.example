@@ -1,5 +1,4 @@
-aws_region     = "ap-northeast-1"
-aws_account_id = "123456789012"
+aws_region = "ap-northeast-1"
 
 # SSH アクセスを許可する自宅 IP（/32 で指定）
 allowed_ssh_cidr_ec2 = "x.x.x.x/32"

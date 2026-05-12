@@ -4,11 +4,6 @@ variable "aws_region" {
   default     = "ap-northeast-1"
 }
 
-variable "aws_account_id" {
-  description = "AWS account ID"
-  type        = string
-}
-
 # SSH アクセスを許可する CIDR（自宅 IP 等）
 # terraform.tfvars で設定する（gitignore 済み）
 variable "allowed_ssh_cidr_ec2" {
