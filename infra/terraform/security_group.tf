@@ -1,7 +1,7 @@
 # -------------------------------------------------------------------
-# ALB Security Group (sg-01ec8fe8a9d0d7e1e)
+# ALB Security Group
 # name: v-kara-app-security-group02
-# ingress: 80, 443, 3000 from 0.0.0.0/0
+# ingress: 80, 443 from 0.0.0.0/0
 # -------------------------------------------------------------------
 resource "aws_security_group" "alb" {
   name        = "v-kara-app-security-group02"
@@ -22,13 +22,6 @@ resource "aws_security_group" "alb" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-    from_port   = 3000
-    to_port     = 3000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   egress {
     from_port   = 0
     to_port     = 0
@@ -42,10 +35,10 @@ resource "aws_security_group" "alb" {
 }
 
 # -------------------------------------------------------------------
-# EC2 Security Group (sg-0f1e03844c853a15d)
+# EC2 Security Group
 # name: v-kara-ec2-instance
-# ingress: all from 0.0.0.0/0, 22 from var.allowed_ssh_cidr_ec2, 443 from 0.0.0.0/0
-# egress: all to 0.0.0.0/0, 3306 to RDS SG
+# ingress: 22 from var.allowed_ssh_cidr_ec2, 80/8080/443 from ALB SG
+# egress: all to 0.0.0.0/0
 # -------------------------------------------------------------------
 resource "aws_security_group" "ec2" {
   name        = "v-kara-ec2-instance"
@@ -53,25 +46,27 @@ resource "aws_security_group" "ec2" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    description     = "HTTP from ALB"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id]
   }
 
   ingress {
-    description = "2025 alone live with lenovo"
+    description     = "API from ALB"
+    from_port       = 8080
+    to_port         = 8080
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb.id]
+  }
+
+  ingress {
+    description = "SSH from home"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = [var.allowed_ssh_cidr_ec2]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {
@@ -87,10 +82,10 @@ resource "aws_security_group" "ec2" {
 }
 
 # -------------------------------------------------------------------
-# RDS Security Group (sg-01387505ed9b33a35)
+# RDS Security Group
 # name: v-kara-rds-sg
-# ingress: 22 from var.allowed_ssh_cidr_rds, 3306 from subnet CIDRs (2 rules)
-# egress: all to 0.0.0.0/0, all to sg-0429fb016ec21fcbd, all to sg-0e1b0dc5a5f38561b
+# ingress: 3306 from EC2 SG, 22 from var.allowed_ssh_cidr_rds
+# egress: all to 0.0.0.0/0
 # -------------------------------------------------------------------
 resource "aws_security_group" "rds" {
   name        = "v-kara-rds-sg"
@@ -98,6 +93,7 @@ resource "aws_security_group" "rds" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
+    description = "SSH from home"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
@@ -105,19 +101,11 @@ resource "aws_security_group" "rds" {
   }
 
   ingress {
-    description = "ecs_subnert_cidr"
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
-    cidr_blocks = ["10.1.0.0/26", "10.1.0.64/26"]
-  }
-
-  ingress {
-    description = "ec2_private_ip4"
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
-    cidr_blocks = ["10.1.0.49/32"]
+    description     = "MySQL from EC2"
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [aws_security_group.ec2.id]
   }
 
   egress {
