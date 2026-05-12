@@ -8,7 +8,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/sharin-sushi/0016go_next_relation/infra"
-	"github.com/sharin-sushi/0016go_next_relation/interfaces/v1/controllers/common"
+	"github.com/sharin-sushi/0016go_next_relation/common"
 )
 
 func init() {
