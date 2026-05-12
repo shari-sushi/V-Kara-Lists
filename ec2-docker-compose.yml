@@ -14,19 +14,19 @@ services:
   #     - "3306:3306"
   #   command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
-api:
-  image: v-kara-api:latest
-  container_name: v-kara-api
-  environment:
-    - DEPLOY_ENV=EC2_DOCKER_COMPOSE
-    - DEPLOY_DB_ENV=RDS
-    - IS_DOCKER_COMPOSE=true
-  env_file: api.env # これが無いと、上述のenvironment変数が無視される。なぜかは不明。
-  ports:
-    - "8080:8080"
+  api:
+    image: ${ECR_REGISTRY}/${ECR_API_REPO}:latest
+    container_name: v-kara-api
+    environment:
+      - DEPLOY_ENV=EC2_DOCKER_COMPOSE
+      - DEPLOY_DB_ENV=RDS
+      - IS_DOCKER_COMPOSE=true
+    env_file: api.env # これが無いと、上述のenvironment変数が無視される。なぜかは不明。
+    ports:
+      - "8080:8080"
 
   app:
-    image: v-kara-app:latest
+    image: ${ECR_REGISTRY}/${ECR_APP_REPO}:latest
     container_name: v-kara-app
     env_file: .env
     environment:
