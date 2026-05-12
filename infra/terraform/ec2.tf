@@ -43,6 +43,11 @@ resource "aws_iam_role_policy_attachment" "ec2_s3" {
   policy_arn = aws_iam_policy.policy_get_s3.arn
 }
 
+resource "aws_iam_role_policy_attachment" "ec2_ecr" {
+  role       = aws_iam_role.ec2.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
 resource "aws_iam_instance_profile" "ec2" {
   name = "role_ec2_get_s3"
   role = aws_iam_role.ec2.name

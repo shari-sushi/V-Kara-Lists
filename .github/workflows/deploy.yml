@@ -56,22 +56,25 @@ jobs:
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ec2-user
+          username: ubuntu
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           source: ec2-docker-compose.yml
-          target: /home/ec2-user/
+          target: /home/ubuntu/v-kara/
 
       - name: Pull and restart containers on EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ec2-user
+          username: ubuntu
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
+            cd /home/ubuntu/v-kara
+            aws s3 cp s3://${{ secrets.S3_APP_ENV_BUCKET }}/.env ./app.env
+            aws s3 cp s3://${{ secrets.S3_API_ENV_BUCKET }}/.env ./api.env
+            chmod 600 *.env
             aws ecr get-login-password --region ap-northeast-1 \
               | docker login --username AWS \
                 --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com
-            cd /home/ec2-user
             ECR_REGISTRY=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com \
             ECR_API_REPO=${{ secrets.ECR_API_REPO }} \
             ECR_APP_REPO=${{ secrets.ECR_APP_REPO }} \
@@ -80,12 +83,13 @@ jobs:
             ECR_API_REPO=${{ secrets.ECR_API_REPO }} \
             ECR_APP_REPO=${{ secrets.ECR_APP_REPO }} \
             docker compose -f ec2-docker-compose.yml up -d
+            rm -f api.env app.env
 
       - name: Health check
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ec2-user
+          username: ubuntu
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
             sleep 10
