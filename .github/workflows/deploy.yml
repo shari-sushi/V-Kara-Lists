@@ -28,13 +28,21 @@ jobs:
 
       - name: Build and push API image
         run: |
-          docker build -t $ECR_REGISTRY/${{ secrets.ECR_API_REPO }}:latest ./t0016Go
+          docker build \
+            -t $ECR_REGISTRY/${{ secrets.ECR_API_REPO }}:latest \
+            -t $ECR_REGISTRY/${{ secrets.ECR_API_REPO }}:${{ github.sha }} \
+            ./t0016Go
           docker push $ECR_REGISTRY/${{ secrets.ECR_API_REPO }}:latest
+          docker push $ECR_REGISTRY/${{ secrets.ECR_API_REPO }}:${{ github.sha }}
 
       - name: Build and push App image
         run: |
-          docker build -t $ECR_REGISTRY/${{ secrets.ECR_APP_REPO }}:latest ./t0016Next
+          docker build \
+            -t $ECR_REGISTRY/${{ secrets.ECR_APP_REPO }}:latest \
+            -t $ECR_REGISTRY/${{ secrets.ECR_APP_REPO }}:${{ github.sha }} \
+            ./t0016Next
           docker push $ECR_REGISTRY/${{ secrets.ECR_APP_REPO }}:latest
+          docker push $ECR_REGISTRY/${{ secrets.ECR_APP_REPO }}:${{ github.sha }}
 
   deploy:
     name: Deploy to EC2
@@ -72,3 +80,14 @@ jobs:
             ECR_API_REPO=${{ secrets.ECR_API_REPO }} \
             ECR_APP_REPO=${{ secrets.ECR_APP_REPO }} \
             docker compose -f ec2-docker-compose.yml up -d
+
+      - name: Health check
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            sleep 10
+            curl -f http://localhost:8080/health || exit 1
+            curl -f http://localhost/user/signin || exit 1
