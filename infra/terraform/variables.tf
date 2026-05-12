@@ -21,3 +21,10 @@ variable "rds_kms_key_id" {
   description = "KMS key ARN for RDS storage encryption"
   type        = string
 }
+
+# RDS マスターユーザー名（terraform.tfvars で設定する）
+variable "db_username" {
+  description = "RDS master username"
+  type        = string
+  sensitive   = true
+}

@@ -2,7 +2,7 @@
 # DB Subnet Group（VPC のデフォルトサブネットグループ）
 # -------------------------------------------------------------------
 resource "aws_db_subnet_group" "main" {
-  name        = "default-vpc-0005126ae8d07b034"
+  name        = "default-${aws_vpc.main.id}"
   description = "Created from the RDS Management Console"
 
   subnet_ids = [
@@ -23,7 +23,7 @@ resource "aws_db_instance" "main" {
   engine_version    = "8.4.7"
   allocated_storage = 20
 
-  username = "sharin"
+  username = var.db_username
   password = "dummy" # import 後は ignore_changes で管理外にする
 
   db_subnet_group_name   = aws_db_subnet_group.main.name
