@@ -28,3 +28,12 @@ variable "db_username" {
   type        = string
   sensitive   = true
 }
+
+# RDS マスターパスワード（terraform.tfvars で設定する）
+# 既存 RDS を import した場合は ignore_changes により Terraform の管理外となるため、
+# 実際のパスワード変更は AWS コンソールまたは CLI で行うこと
+variable "db_password" {
+  description = "RDS master password (used only on initial creation; ignored after import via lifecycle.ignore_changes)"
+  type        = string
+  sensitive   = true
+}
