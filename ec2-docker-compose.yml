@@ -21,7 +21,7 @@ services:
       - DEPLOY_ENV=EC2_DOCKER_COMPOSE
       - DEPLOY_DB_ENV=RDS
       - IS_DOCKER_COMPOSE=true
-    env_file: api.env # これが無いと、上述のenvironment変数が無視される。なぜかは不明。
+    env_file: api.env # DB接続情報等の実行時設定を含む。上記 environment と同名キーは environment が優先される
     ports:
       - "8080:8080"
 
