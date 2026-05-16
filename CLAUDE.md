@@ -10,6 +10,8 @@
 - `.claude/rules/deployment.md` - デプロイ手順
 - `.claude/rules/troubleshooting.md` - よくある問題と解決策
 
+Public Repositoryなのでセキュリティリスクとなる機密情報のハードコード等はコミットしないこと
+
 ## コンテキスト別ルール
 
 作業内容に応じて以下のルールを追加で参照すること:
