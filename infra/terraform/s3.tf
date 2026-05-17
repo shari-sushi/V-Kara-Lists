@@ -1,0 +1,31 @@
+# -------------------------------------------------------------------
+# S3: API env ファイル
+# -------------------------------------------------------------------
+resource "aws_s3_bucket" "api_env" {
+  bucket = "***REMOVED***"
+}
+
+resource "aws_s3_bucket_public_access_block" "api_env" {
+  bucket = aws_s3_bucket.api_env.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+# -------------------------------------------------------------------
+# S3: App env ファイル
+# -------------------------------------------------------------------
+resource "aws_s3_bucket" "app_env" {
+  bucket = "***REMOVED***"
+}
+
+resource "aws_s3_bucket_public_access_block" "app_env" {
+  bucket = aws_s3_bucket.app_env.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
