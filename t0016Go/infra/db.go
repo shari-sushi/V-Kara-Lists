@@ -24,8 +24,8 @@ func GetEnvVar() {
 	if common.IsOnCloud {
 		//クラウド環境
 		fmt.Println("クラウド環境で起動")
-		if common.DEPLOY_ENV == "EC2_DOCKER_COMPOSE" && common.DEPLOY_DB_ENV == "RDS" {
-			fmt.Println("EC2のdocker composeで起動")
+		if common.DEPLOY_ENV == "EC2_DOCKER_COMPOSE" {
+			fmt.Printf("EC2のdocker composeで起動。DB=%v\n", common.DEPLOY_DB_ENV)
 		}
 	} else if common.IsOnLocalWithDockerCompose {
 		// ローカルのdocker上(compose使用)
@@ -59,19 +59,15 @@ func dbInit() repository.SqlHandler {
 
 	if common.IsOnCloud {
 		fmt.Println("common.IsOnCloud : true")
-		//クラウド環境
-		dbUrl = os.Getenv("RDS_END_PIONT")
-		dbName = os.Getenv("AWS_DATABASE")
-		fmt.Printf("環境変数より取得: dbUrl=%v, dbName=%v, \n", dbUrl, dbName)
-
-		// クラウド環境で、環境変数使ってなくて、
-		// MySQLとGoがlocal接続するよ(１つのインスタンス内で両方立ててるとか)みたいな状況用
-		if dbName == "" && dbUrl == "" {
-			dbName = "v_kara_db"
-			dbUrl = "localhost"
-			// mysqlでユーザー作って、// 権限も付与すること
-			user = "shari"
-			pw = "shari_sushi"
+		if common.DEPLOY_DB_ENV == "RDS" {
+			dbUrl = os.Getenv("RDS_END_PIONT")
+			dbName = os.Getenv("AWS_DATABASE")
+			fmt.Printf("環境変数より取得: dbUrl=%v, dbName=%v, \n", dbUrl, dbName)
+		} else {
+			// EC2のdocker-compose内のdbサービスに接続
+			dbUrl = "db"
+			dbName = os.Getenv("MYSQL_DATABASE")
+			fmt.Printf("EC2ローカルMySQLに接続: dbUrl=%v, dbName=%v\n", dbUrl, dbName)
 		}
 	} else if common.IsOnLocalWithDockerCompose {
 		fmt.Println("common.IsOnLoclaWithDockerCompose : true")
