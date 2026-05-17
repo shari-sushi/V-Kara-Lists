@@ -70,9 +70,9 @@ const TopPage = ({ posts, isSignin }: TopPage) => {
         <div className="w-full h-max p-8 bg-black">
           〇環境変数取得テスト２ <br />
           <hr />
-          process.env.EXSAMPLE_TEST={process.env.EXSAMPLE_TEST}
+          process.env.EXAMPLE_TEST={process.env.EXSAMPLE_TEST}
           <br />
-          ※取得できないとき、`process.env.EXSAMPLE_TEST=`と空となる ※3/25時点ではEXSAMPLE_TESTを設定してない
+          ※取得できないとき、`process.env.EXAMPLE_TEST=`と空となる ※3/25時点ではEXAMPLE_TESTを設定してない
           <br />
         </div>
       </div>
