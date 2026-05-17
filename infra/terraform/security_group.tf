@@ -86,6 +86,10 @@ resource "aws_security_group" "ec2" {
 # name: v-kara-rds-sg
 # ingress: 3306 from EC2 SG, 22 from var.allowed_ssh_cidr_rds
 # egress: all to 0.0.0.0/0
+#
+# TODO: このSGは現在 RDS と踏み台EC2 (ec2-for-rds) の両方にアタッチされており、
+#       SSH(22) と 3306 が同一SG内に混在している。
+#       bastion用SGを分割して責務を明確にする。 → # 337
 # -------------------------------------------------------------------
 resource "aws_security_group" "rds" {
   name        = "v-kara-rds-sg"
