@@ -92,6 +92,5 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
-            sleep 10
-            curl -f http://localhost:8080/health || exit 1
-            curl -f http://localhost/user/signin || exit 1
+            for i in $(seq 1 12); do curl -sf http://localhost:8080/health && break || { [ "$i" -eq 12 ] && exit 1 || sleep 5; }; done
+            for i in $(seq 1 12); do curl -sf http://localhost/user/signin && break || { [ "$i" -eq 12 ] && exit 1 || sleep 5; }; done
