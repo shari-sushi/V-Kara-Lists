@@ -14,7 +14,7 @@ var isDockerCompose = os.Getenv("IS_DOCKER_COMPOSE") // docker-compose.ymlにの
 var DEPLOY_ENV = os.Getenv("DEPLOY_ENV")             // EC2用 docker-compose.ymlにのみ =EC2_DOCKER_COMPOSE と記載
 var DEPLOY_DB_ENV = os.Getenv("DEPLOY_DB_ENV")       // EC2用 docker-compose.ymlにのみ =RDS と記載
 
-var IsOnCloud = (goEnv == "" && isDockerCompose == "") || (DEPLOY_ENV == "EC2_DOCKER_COMPOSE" && DEPLOY_DB_ENV == "RDS")
+var IsOnCloud = (goEnv == "" && isDockerCompose == "") || DEPLOY_ENV == "EC2_DOCKER_COMPOSE"
 var IsOnLocalWithDockerCompose = (goEnv == "" && isDockerCompose == "true")
 var IsOnLocalWithOutDockerCompose = (goEnv == "development" && isDockerCompose == "")
 var IsOnLocal = !IsOnCloud && IsOnLocalWithDockerCompose || IsOnLocalWithOutDockerCompose

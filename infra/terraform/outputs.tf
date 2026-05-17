@@ -8,8 +8,8 @@ output "ec2_public_ip" {
   value       = aws_instance.app.public_ip
 }
 
-output "rds_endpoint" {
-  description = "RDS エンドポイント"
-  value       = aws_db_instance.main.endpoint
-  sensitive   = true
-}
+# output "rds_endpoint" {
+#   description = "RDS エンドポイント"
+#   value       = aws_db_instance.main.endpoint
+#   sensitive   = true
+# }
