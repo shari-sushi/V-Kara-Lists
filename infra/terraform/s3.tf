@@ -29,3 +29,19 @@ resource "aws_s3_bucket_public_access_block" "app_env" {
   ignore_public_acls      = true
   restrict_public_buckets = true
 }
+
+# -------------------------------------------------------------------
+# S3: DB バックアップ
+# -------------------------------------------------------------------
+resource "aws_s3_bucket" "db_backup" {
+  bucket = "v-kara-db-backup"
+}
+
+resource "aws_s3_bucket_public_access_block" "db_backup" {
+  bucket = aws_s3_bucket.db_backup.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
