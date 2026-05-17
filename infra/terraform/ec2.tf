@@ -14,6 +14,11 @@ resource "aws_iam_policy" "policy_get_s3" {
           "${aws_s3_bucket.api_env.arn}/.env",
           "${aws_s3_bucket.app_env.arn}/.env",
         ]
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["s3:PutObject"]
+        Resource = "${aws_s3_bucket.db_backup.arn}/*"
       }
     ]
   })
