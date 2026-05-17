@@ -3,7 +3,7 @@ import { useMemo } from "react"
 import https from "https"
 import axios, { AxiosRequestConfig } from "axios"
 
-import { domain } from "@/../../env"
+import { domain } from "@/../env"
 import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from "@/types/vtuber_content"
 import { Layout } from "@/components/layout/Layout"
 import { ContextType } from "@/types/server"
