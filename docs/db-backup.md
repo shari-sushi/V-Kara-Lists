@@ -17,8 +17,10 @@ EC2上のDockerMySQLには自動バックアップがない。差分があった
 | ファイル | 変更内容 |
 | --- | --- |
 | `scripts/db-backup.sh` | バックアップスクリプト（新規） |
-| `ec2-docker-compose.yml` | `backup` サービス追加 |
+| ~~`ec2-docker-compose.yml`~~ | ~~`backup` サービス追加~~ |
 | `infra/terraform/s3.tf` | S3ライフサイクルルール追加 |
+
+EC2 cron + `docker exec` で実行するため docker-compose の変更は不要。
 
 ## 差分検出の仕組み
 
@@ -32,9 +34,9 @@ EC2上のDockerMySQLには自動バックアップがない。差分があった
 ## 実装ステップ
 
 1. `scripts/db-backup.sh` を作成
-2. `ec2-docker-compose.yml` に `backup` サービスを追加
+2. ~~`ec2-docker-compose.yml` に `backup` サービスを追加~~ → EC2 の crontab にスクリプトを登録
 3. `infra/terraform/s3.tf` にライフサイクルルールを追加
-4. ローカルで動作確認（dockerネットワーク経由でdumpできるか）
+4. ~~ローカルで動作確認（dockerネットワーク経由でdumpできるか）~~ → EC2上で動作確認（`docker exec` 経由でdumpできるか）
 
 ## 完了条件
 
@@ -46,6 +48,6 @@ EC2上のDockerMySQLには自動バックアップがない。差分があった
 
 ## 注意事項
 
-- バックアップコンテナにはAWS認証情報（EC2 IAMロール経由）が必要。`api.env` にクレデンシャルを追加しない
-- `db` コンテナのMySQLユーザー・パスワードは `db.env` から渡す（スクリプトにハードコードしない）
+- ~~バックアップコンテナにはAWS認証情報（EC2 IAMロール経由）が必要。`api.env` にクレデンシャルを追加しない~~ → EC2上で直接実行するためIAMロールが自動的に使用される。認証情報の追加設定は不要
+- `db` コンテナへのdumpは `docker exec v_kara_db mysqldump` で実行する。接続情報は `db.env` から環境変数として渡す
 - cronの実行間隔は6時間おきを想定（変更可）
