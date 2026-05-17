@@ -1,29 +1,29 @@
 services:
-  # db:
-  #   image: mysql:8.0.32
-  #   platform: linux/amd64 # mac環境で必須なことがあるらしい
-  #   env_file: ./db/.env
-  #   container_name: v_kara_db
-  #   build:
-  #     context: ./db
-  #   healthcheck:
-  #     test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-  #     timeout: 5s
-  #     retries: 10
-  #   ports:
-  #     - "3306:3306"
-  #   command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+  db:
+    image: mysql:8.0.32
+    container_name: v_kara_db
+    env_file: db.env
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
   api:
     image: ${ECR_REGISTRY}/${ECR_API_REPO}:latest
     container_name: v-kara-api
     environment:
       - DEPLOY_ENV=EC2_DOCKER_COMPOSE
-      - DEPLOY_DB_ENV=RDS
+      - DEPLOY_DB_ENV=EC2
       - IS_DOCKER_COMPOSE=true
     env_file: api.env # DB接続情報等の実行時設定を含む。上記 environment と同名キーは environment が優先される
     ports:
       - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
 
   app:
     image: ${ECR_REGISTRY}/${ECR_APP_REPO}:latest
@@ -34,3 +34,6 @@ services:
       - IS_DOCKER_COMPOSE=true
     ports:
       - "80:80"
+
+volumes:
+  mysql_data:

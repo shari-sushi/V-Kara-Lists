@@ -27,12 +27,17 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main cmd/main.go
 #### 実行ステージ ####
 FROM alpine:latest
 
-RUN apk --no-cache add ca-certificates
+RUN apk --no-cache add ca-certificates && \
+    adduser -D -s /sbin/nologin appuser
 
-WORKDIR /root/
+WORKDIR /app
 
 # 重要：ビルドされたmainのみをコピー
 COPY --from=builder /build/main .
+
+RUN chown appuser:appuser /app/main
+
+USER appuser
 
 EXPOSE 8080
 

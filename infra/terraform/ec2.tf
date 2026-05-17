@@ -69,5 +69,17 @@ resource "aws_instance" "app" {
   key_name               = "key-for-vkara-instance"
   iam_instance_profile   = aws_iam_instance_profile.ec2.name
 
+  # セキュリティパッチの自動適用（Amazon Linux 2023）
+  user_data = <<-EOF
+    #!/bin/bash
+    dnf install -y dnf-automatic
+    sed -i 's/apply_updates = no/apply_updates = yes/' /etc/dnf/automatic.conf
+    systemctl enable --now dnf-automatic.timer
+  EOF
+
+  lifecycle {
+    ignore_changes = [user_data]
+  }
+
   tags = { Name = "v-kara-public" }
 }
