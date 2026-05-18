@@ -92,6 +92,7 @@ resource "aws_instance" "app" {
     dpkg-reconfigure -f noninteractive unattended-upgrades
 
     # Swap 1.5GB（t3a.micro RAM 1GB のメモリ不足対策）
+    set -e
     if ! swapon --show | grep -q /swapfile; then
       dd if=/dev/zero of=/swapfile bs=1M count=1536
       chmod 600 /swapfile

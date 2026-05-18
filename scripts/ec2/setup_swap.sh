@@ -1,5 +1,5 @@
 #!/bin/bash
-# t3a.micro (RAM 1GB) のメモリ不足対策として 2GB の swap を作成する
+# t3a.micro (RAM 1GB) のメモリ不足対策として 1.5GB の swap を作成する
 # 既存インスタンスへの適用用スクリプト（新規インスタンスは user_data で自動適用される）
 set -e
 
