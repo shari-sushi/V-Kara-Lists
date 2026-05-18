@@ -1,0 +1,14 @@
+[Unit]
+Description=V-Kara application
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=ubuntu
+ExecStart=/home/ubuntu/v-kara/scripts/ec2/start.sh
+ExecStop=/usr/local/bin/docker-compose -f /home/ubuntu/v-kara/ec2-docker-compose.yml down
+
+[Install]
+WantedBy=multi-user.target
