@@ -53,6 +53,11 @@ resource "aws_iam_role_policy_attachment" "ec2_ecr" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
+resource "aws_iam_role_policy_attachment" "ec2_ssm" {
+  role       = aws_iam_role.ec2.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 resource "aws_iam_instance_profile" "ec2" {
   name = "role_ec2_get_s3"
   role = aws_iam_role.ec2.name
@@ -62,12 +67,13 @@ resource "aws_iam_instance_profile" "ec2" {
 # EC2 Instance
 # -------------------------------------------------------------------
 resource "aws_instance" "app" {
-  ami                    = "ami-054400ced365b82a0"
-  instance_type          = "t3a.micro"
-  subnet_id              = aws_subnet.public_a.id
-  vpc_security_group_ids = [aws_security_group.ec2.id]
-  key_name               = "key-for-vkara-instance"
-  iam_instance_profile   = aws_iam_instance_profile.ec2.name
+  ami                         = "ami-054400ced365b82a0"
+  instance_type               = "t3a.micro"
+  subnet_id                   = aws_subnet.public_a.id
+  vpc_security_group_ids      = [aws_security_group.ec2.id]
+  key_name                    = "key-for-vkara-instance"
+  iam_instance_profile        = aws_iam_instance_profile.ec2.name
+  associate_public_ip_address = true
 
   # セキュリティパッチの自動適用（Amazon Linux 2023）
   user_data = <<-EOF
