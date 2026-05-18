@@ -80,7 +80,8 @@ resource "aws_instance" "app" {
   iam_instance_profile        = aws_iam_instance_profile.ec2.name
   associate_public_ip_address = true
 
-  # セキュリティパッチの自動適用（Amazon Linux 2023）
+  # TODO: Ubuntu 24.04 向けのセキュリティパッチ自動適用に書き直す
+  # 現在の dnf コマントは Amazon Linux 用のため Ubuntu では動作しない（無視される）
   user_data = <<-EOF
     #!/bin/bash
     dnf install -y dnf-automatic
