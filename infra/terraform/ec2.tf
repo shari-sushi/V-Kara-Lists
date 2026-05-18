@@ -90,6 +90,15 @@ resource "aws_instance" "app" {
     # セキュリティパッチ自動適用（Ubuntu 向け）
     apt-get update -y && apt-get install -y unattended-upgrades
     dpkg-reconfigure -f noninteractive unattended-upgrades
+
+    # Swap 1.5GB（t3a.micro RAM 1GB のメモリ不足対策）
+    if ! swapon --show | grep -q /swapfile; then
+      dd if=/dev/zero of=/swapfile bs=1M count=1536
+      chmod 600 /swapfile
+      mkswap /swapfile
+      swapon /swapfile
+      echo '/swapfile none swap sw 0 0' >> /etc/fstab
+    fi
   EOF
 
   lifecycle {
