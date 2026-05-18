@@ -23,6 +23,6 @@ docker logout "$ECR_REGISTRY"
 
 # コンテナ起動（イメージはpull済みのため--no-pullで起動）
 cd "$VKARA_DIR"
-docker-compose -f ec2-docker-compose.yml up -d --no-pull
+docker-compose -f ec2-docker-compose.yml up -d
 
 echo "v-kara started."
