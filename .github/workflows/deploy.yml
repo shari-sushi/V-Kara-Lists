@@ -60,7 +60,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Pull and restart containers on EC2
+      - name: Get EC2 Instance ID
+        id: get_instance
         run: |
           INSTANCE_ID=$(aws ec2 describe-instances \
             --filters "Name=tag:Name,Values=v-kara-public" \
@@ -68,6 +69,11 @@ jobs:
             --query "Reservations[0].Instances[0].InstanceId" \
             --output text)
           echo "Instance ID: $INSTANCE_ID"
+          echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
+
+      - name: Pull and restart containers on EC2
+        run: |
+          INSTANCE_ID="${{ steps.get_instance.outputs.instance_id }}"
 
           cat > /tmp/ssm-deploy.json << 'ENDJSON'
           {
@@ -113,14 +119,11 @@ jobs:
             fi
             sleep 10
           done
+          [ "$STATUS" = "Success" ] || { echo "SSM command timed out after 10 minutes"; exit 1; }
 
       - name: Health check
         run: |
-          INSTANCE_ID=$(aws ec2 describe-instances \
-            --filters "Name=tag:Name,Values=v-kara-public" \
-                      "Name=instance-state-name,Values=running" \
-            --query "Reservations[0].Instances[0].InstanceId" \
-            --output text)
+          INSTANCE_ID="${{ steps.get_instance.outputs.instance_id }}"
 
           cat > /tmp/ssm-healthcheck.json << 'ENDJSON'
           {
