@@ -2,7 +2,6 @@ aws_region = "ap-northeast-1"
 
 # SSH アクセスを許可する自宅 IP（/32 で指定）
 allowed_ssh_cidr_ec2 = "x.x.x.x/32"
-allowed_ssh_cidr_rds = "x.x.x.x/32"
 
 # RDS 暗号化に使用する KMS キー ARN
 rds_kms_key_id = "arn:aws:kms:ap-northeast-1:123456789012:key/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"

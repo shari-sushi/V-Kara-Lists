@@ -17,8 +17,13 @@ resource "aws_iam_policy" "policy_get_s3" {
       },
       {
         Effect   = "Allow"
-        Action   = ["s3:PutObject"]
+        Action   = ["s3:PutObject", "s3:GetObject"]
         Resource = "${aws_s3_bucket.db_backup.arn}/*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["s3:ListBucket"]
+        Resource = "${aws_s3_bucket.db_backup.arn}"
       }
     ]
   })
@@ -53,6 +58,11 @@ resource "aws_iam_role_policy_attachment" "ec2_ecr" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
+resource "aws_iam_role_policy_attachment" "ec2_ssm" {
+  role       = aws_iam_role.ec2.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 resource "aws_iam_instance_profile" "ec2" {
   name = "role_ec2_get_s3"
   role = aws_iam_role.ec2.name
@@ -62,14 +72,16 @@ resource "aws_iam_instance_profile" "ec2" {
 # EC2 Instance
 # -------------------------------------------------------------------
 resource "aws_instance" "app" {
-  ami                    = "ami-054400ced365b82a0"
-  instance_type          = "t3a.micro"
-  subnet_id              = aws_subnet.public_a.id
-  vpc_security_group_ids = [aws_security_group.ec2.id]
-  key_name               = "key-for-vkara-instance"
-  iam_instance_profile   = aws_iam_instance_profile.ec2.name
+  ami                         = "ami-054400ced365b82a0"
+  instance_type               = "t3a.micro"
+  subnet_id                   = aws_subnet.public_a.id
+  vpc_security_group_ids      = [aws_security_group.ec2.id]
+  key_name                    = "key-for-vkara-instance"
+  iam_instance_profile        = aws_iam_instance_profile.ec2.name
+  associate_public_ip_address = true
 
-  # セキュリティパッチの自動適用（Amazon Linux 2023）
+  # TODO: Ubuntu 24.04 向けのセキュリティパッチ自動適用に書き直す
+  # 現在の dnf コマントは Amazon Linux 用のため Ubuntu では動作しない（無視される）
   user_data = <<-EOF
     #!/bin/bash
     dnf install -y dnf-automatic
