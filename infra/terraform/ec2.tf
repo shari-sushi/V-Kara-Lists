@@ -83,12 +83,12 @@ resource "aws_instance" "app" {
   user_data = <<-EOF
     #!/bin/bash
     # SSM Agent（デプロイに SSH 不要・Port 22 を閉じるために必要）
-    snap install amazon-ssm-agent --classic
+    snap list amazon-ssm-agent 2>/dev/null || snap install amazon-ssm-agent --classic
     systemctl enable snap.amazon-ssm-agent.amazon-ssm-agent.service
     systemctl start snap.amazon-ssm-agent.amazon-ssm-agent.service
 
     # セキュリティパッチ自動適用（Ubuntu 向け）
-    apt-get install -y unattended-upgrades
+    apt-get update -y && apt-get install -y unattended-upgrades
     dpkg-reconfigure -f noninteractive unattended-upgrades
   EOF
 
