@@ -15,13 +15,15 @@ bash "$SCRIPT_DIR/get_env_files_from_s3.bash"
 
 # ECRログイン・イメージをpull・ログアウト
 # （ECR認証情報をDocker Hub通信に混入させないためにpull後にlogoutする）
+# set -e でコケた場合もlogoutを保証する
+trap 'docker logout "$ECR_REGISTRY" 2>/dev/null || true' EXIT
 aws ecr get-login-password --region ap-northeast-1 \
   | docker login --username AWS --password-stdin "$ECR_REGISTRY"
 docker pull "$ECR_REGISTRY/$ECR_API_REPO:latest"
 docker pull "$ECR_REGISTRY/$ECR_APP_REPO:latest"
 docker logout "$ECR_REGISTRY"
 
-# コンテナ起動（イメージはpull済みのため--no-pullで起動）
+# コンテナ起動
 cd "$VKARA_DIR"
 docker-compose -f ec2-docker-compose.yml up -d
 
