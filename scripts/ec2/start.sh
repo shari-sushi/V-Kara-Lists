@@ -8,6 +8,8 @@ VKARA_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 if [ -f "$HOME/.env.ec2.pre" ]; then
   # shellcheck source=/dev/null
   source "$HOME/.env.ec2.pre"
+else
+  echo "Warning: ~/.env.ec2.pre not found. ECR_REGISTRY, ECR_API_REPO, ECR_APP_REPO must be set in environment."
 fi
 
 # envファイルをS3から取得
