@@ -137,6 +137,32 @@ curl http://localhost:8080/v1/vcontents/
 docker-compose -f ec2-docker-compose.yml logs -f
 ```
 
+## DBデータの復元
+
+新規EC2セットアップ後、MySQLコンテナは空の状態のため、S3バックアップからデータを復元する。
+
+```bash
+# S3からバックアップをダウンロード（S3_DB_BACKUP_BUCKET は ~/.env.ec2.pre で設定）
+cd ~
+aws s3 ls "s3://$S3_DB_BACKUP_BUCKET/" --recursive  # ファイル名を確認
+aws s3 cp "s3://$S3_DB_BACKUP_BUCKET/<ファイル名>.sql.gz" .
+
+# rootユーザーでインポート（-p とパスワードの間にスペースを入れない）
+gunzip -c <ファイル名>.sql.gz | docker exec -i v_kara_db mysql -u root -p<MYSQL_ROOT_PASSWORD> <DB_NAME>
+```
+
+パスワードは `~/v-kara/db.env` の `MYSQL_ROOT_PASSWORD` を参照。
+
+### 注意: <MYSQL_USER> ユーザーではインポートできない
+
+`<MYSQL_USER>` ユーザーでインポートすると以下のエラーが出る:
+
+```
+ERROR 1227 (42000): Access denied; you need (at least one of) the SUPER, SYSTEM_VARIABLES_ADMIN or SESSION_VARIABLES_ADMIN privilege(s)
+```
+
+`root` ユーザーで実行すること。
+
 ## トラブルシューティング
 
 ### MySQL に接続できない（Access denied）
@@ -148,7 +174,7 @@ docker-compose -f ec2-docker-compose.yml down -v
 docker-compose -f ec2-docker-compose.yml up -d
 ```
 
-ログに `[Entrypoint]: Creating database oimo_oshi` が出ていれば正常に初期化されている。
+ログに `[Entrypoint]: Creating database <DB_NAME>` が出ていれば正常に初期化されている。
 
 ### `dnf` コマンドが見つからない
 
@@ -194,6 +220,9 @@ ECR変数はパブリックリポジトリにコミットできないため、�
 export ECR_REGISTRY=<AWSアカウントID>.dkr.ecr.ap-northeast-1.amazonaws.com
 export ECR_API_REPO=<APIリポジトリ名>
 export ECR_APP_REPO=<Appリポジトリ名>
+export S3_API_ENVFILE_BUCKET=<api.env を格納するS3バケット名>
+export S3_APP_ENVFILE_BUCKET=<app.env を格納するS3バケット名>
+export S3_DB_BACKUP_BUCKET=<DBバックアップS3バケット名>
 ```
 
 EC2を作り直すたびにscpで転送する:

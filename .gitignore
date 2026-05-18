@@ -8,6 +8,7 @@ next-env.d.ts
 
 #db
 my.cfn
+*.gz
 
 #https key
 /key
