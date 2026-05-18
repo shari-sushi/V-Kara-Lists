@@ -80,13 +80,16 @@ resource "aws_instance" "app" {
   iam_instance_profile        = aws_iam_instance_profile.ec2.name
   associate_public_ip_address = true
 
-  # TODO: Ubuntu 24.04 向けのセキュリティパッチ自動適用に書き直す
-  # 現在の dnf コマントは Amazon Linux 用のため Ubuntu では動作しない（無視される）
   user_data = <<-EOF
     #!/bin/bash
-    dnf install -y dnf-automatic
-    sed -i 's/apply_updates = no/apply_updates = yes/' /etc/dnf/automatic.conf
-    systemctl enable --now dnf-automatic.timer
+    # SSM Agent（デプロイに SSH 不要・Port 22 を閉じるために必要）
+    snap install amazon-ssm-agent --classic
+    systemctl enable snap.amazon-ssm-agent.amazon-ssm-agent.service
+    systemctl start snap.amazon-ssm-agent.amazon-ssm-agent.service
+
+    # セキュリティパッチ自動適用（Ubuntu 向け）
+    apt-get install -y unattended-upgrades
+    dpkg-reconfigure -f noninteractive unattended-upgrades
   EOF
 
   lifecycle {
