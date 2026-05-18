@@ -14,6 +14,7 @@ services:
   api:
     image: ${ECR_REGISTRY}/${ECR_API_REPO}:latest
     container_name: v-kara-api
+    restart: unless-stopped # always だと手動 docker stop 後も再起動してしまうため
     environment:
       - DEPLOY_ENV=EC2_DOCKER_COMPOSE
       - DEPLOY_DB_ENV=EC2
@@ -28,6 +29,7 @@ services:
   app:
     image: ${ECR_REGISTRY}/${ECR_APP_REPO}:latest
     container_name: v-kara-app
+    restart: unless-stopped # always だと手動 docker stop 後も再起動してしまうため
     env_file: app.env
     environment:
       - DEPLOY_ENV=EC2_DOCKER_COMPOSE
