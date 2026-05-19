@@ -190,7 +190,8 @@ const Header = () => {
 }
 
 const Footer = () => {
-  // videoPlayer用のスペース。videoStateで管理して動的にしたい
+  const { videoState } = useVideo()
+  if (videoState.position !== "footer") return null
   return <div style={{ height: 200 }} />
 }
 
