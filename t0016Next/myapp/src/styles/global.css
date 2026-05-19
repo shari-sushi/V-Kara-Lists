@@ -59,6 +59,11 @@ body {
   overflow-x: hidden;
 }
 
+html {
+  scrollbar-gutter: stable;
+  background: #252525;
+}
+
 body {
   color: rgb(var(--foreground-rgb));
   background: 

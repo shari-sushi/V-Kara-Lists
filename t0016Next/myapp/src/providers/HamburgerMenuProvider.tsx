@@ -9,8 +9,13 @@ type HamburgerMenuContextType = {
 const HamburgerMenuContext = createContext<HamburgerMenuContextType | undefined>(undefined)
 
 export const HamburgerMenuProvider = ({ children }: { children: ReactNode }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const toggleOpen = () => setIsOpen((prev) => !prev)
+  const [isOpen, setIsOpenState] = useState(false)
+
+  const setIsOpen = (val: boolean) => {
+    document.documentElement.style.overflow = val ? "hidden" : ""
+    setIsOpenState(val)
+  }
+  const toggleOpen = () => setIsOpen(!isOpen)
 
   return (
     <HamburgerMenuContext.Provider value={{ isOpen, setIsOpen, toggleOpen }}>
