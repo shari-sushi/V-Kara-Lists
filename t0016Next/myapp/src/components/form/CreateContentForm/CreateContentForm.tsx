@@ -118,6 +118,10 @@ export function CreateForm({ posts, selectedVtuberId, selectedMovieUrl, selected
         return
 
       case "movie":
+        if (selectedVtuberId === 0) {
+          setIsDisplayErrorModal(true)
+          return
+        }
         api.CreateKaraokeVideo(getCreateKaraokeVideo(createData, selectedVtuberId), openSuccessModal)
         return
 
