@@ -7,7 +7,7 @@ export const TopPageNotice = () => {
 
   const [isHoverButton, setIsHoverButton] = useState(false)
 
-  return (
+return (
     <div className="flex flex-col items-center max-w-[1000px] m-auto mb-2">
       <div className={`flex flex-col p-1 rounded-md ${isHoverButton ? "bg-[#66a962]/40" : ""}`}>
         <div className="flex items-start cursor-pointer" onClick={() => setIsDisplay(true)} onMouseEnter={() => setIsHoverButton(true)} onMouseLeave={() => setIsHoverButton(false)}>
@@ -71,6 +71,30 @@ type NoticeItem = {
 }
 
 const NoticeItems: NoticeItem[] = [
+  ...(new Date() >= new Date("2027-05-30")
+    ? [
+        {
+          data: "2027-05-30",
+          title: "5/30「妹望おいも」5歳の誕生日",
+          content: (
+            <>
+              <NoticeLink href="https://x.com/i_mo_5">「妹望おいも」</NoticeLink>
+              5歳の誕生日
+            </>
+          ),
+        } as NoticeItem,
+      ]
+    : []),
+  {
+    data: "2026-05-30",
+    title: "5/30「妹望おいも」4歳の誕生日",
+    content: (
+      <>
+        <NoticeLink href="https://x.com/i_mo_5">「妹望おいも」</NoticeLink>
+        4歳の誕生日
+      </>
+    ),
+  },
   {
     data: "2026-01-18",
     title: "曲の複数登録が可能に",
@@ -86,8 +110,8 @@ const NoticeItems: NoticeItem[] = [
     content: (
       <div className="">
         YouTubeプレイヤーを画面下に固定できるようになりました。固定状態ではページを移動しても動画の再生が維持されます。
-        <span className="font-bold">ヘッダーの「再生場所」ボタン</span>
-        で切り替えられます。
+        <s>ヘッダーの「再生場所」ボタン で切り替えられます。</s>
+        <span className="text-sm text-gray-400 ml-1">(2026/05/19修正)</span>
         <div className="flex items-center m-1 w-fit">
           「<ToggleVideoPositionButton />」
         </div>
@@ -96,11 +120,11 @@ const NoticeItems: NoticeItem[] = [
   },
   {
     data: "2025-05-30",
-    title: "5/30「妹望おいも」誕生日",
+    title: "5/30「妹望おいも」3歳の誕生日",
     content: (
       <>
         <NoticeLink href="https://x.com/i_mo_5">「妹望おいも」</NoticeLink>
-        誕生日
+        3歳の誕生日
       </>
     ),
   },
@@ -181,11 +205,13 @@ const NoticeItems: NoticeItem[] = [
   },
   {
     data: "2024-05-30",
+    title: "5/30「妹望おいも」2歳の誕生日",
     content: (
       <>
         <NoticeLink href="https://x.com/i_mo_5">「妹望おいも」</NoticeLink>
-        誕生日
+        2歳の誕生日
       </>
     ),
   },
 ]
+
