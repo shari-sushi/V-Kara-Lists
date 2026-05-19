@@ -53,17 +53,16 @@ func (db *favoriteRepository) GetVtubersMoviesWithFavCnts() ([]domain.TransmitMo
 	var TmMos []domain.TransmitMovie
 	var err error
 
-	var vt domain.Vtuber
+	var mo domain.Movie
 	selectQu1 := "vtubers.vtuber_id, vtubers.vtuber_name, vtubers.vtuber_kana, vtubers.intro_movie_url, vtubers.vtuber_inputter_id"
-	selectQu2 := "m.movie_url, m.movie_title, m.movie_inputter_id"
+	selectQu2 := "movies.movie_url, movies.movie_title, movies.movie_inputter_id"
 	selectQu3 := "COUNT(f.movie_url) AS count "
-	joinQu1 := "LEFT JOIN movies as m USING(vtuber_id)"
-	joinQu2 := "LEFT JOIN favorites as f ON m.movie_url = f.movie_url AND f.karaoke_id = 0  AND f.deleted_at IS NULL"
+	joinQu1 := "LEFT JOIN vtubers USING(vtuber_id) "
+	joinQu2 := "LEFT JOIN favorites as f ON movies.movie_url = f.movie_url AND f.karaoke_id = 0 AND f.deleted_at IS NULL"
 	joinQu := fmt.Sprint(joinQu1, joinQu2)
-	whereQu := "m.movie_url IS NOT NULL "
-	groupQu := "m.movie_url, vtubers.vtuber_id"
-	err = db.Model(vt).Select(selectQu1, selectQu2, selectQu3).
-		Joins(joinQu).Where(whereQu).Group(groupQu).
+	groupQu := "movies.movie_url, vtubers.vtuber_id"
+	err = db.Model(mo).Select(selectQu1, selectQu2, selectQu3).
+		Joins(joinQu).Group(groupQu).
 		Scan(&TmMos).Error
 
 	if err != nil {
