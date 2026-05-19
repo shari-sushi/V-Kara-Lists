@@ -27,6 +27,13 @@ func (h *ContentHandler) CreateMovie(c *gin.Context) {
 		return
 	}
 
+	if movie.VtuberId == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "VtuberId is required",
+		})
+		return
+	}
+
 	movie.MovieInputterId = listenerId
 	if err := h.ContentService.CreateMovie(movie); err != nil {
 		log.Println("err: create movie,", err)
