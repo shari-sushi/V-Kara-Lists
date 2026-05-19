@@ -8,7 +8,7 @@ export const TopPageNotice = () => {
 
   const [isHoverButton, setIsHoverButton] = useState(false)
 
-return (
+  return (
     <div className="flex flex-col items-center max-w-[1000px] m-auto mb-2">
       <div className={`flex flex-col p-1 rounded-md ${isHoverButton ? "bg-[#66a962]/40" : ""}`}>
         <div className="flex items-start cursor-pointer" onClick={() => setIsDisplay(true)} onMouseEnter={() => setIsHoverButton(true)} onMouseLeave={() => setIsHoverButton(false)}>
@@ -103,7 +103,12 @@ const NoticeItems: NoticeItem[] = [
   {
     data: "2026-05-19",
     title: "ヘッダー・メニューのUI改善",
-    content: "ヘッダーのレイアウトを全画面幅で統一・ハンバーガーメニュー/お知らせ表示中は背後のページがスクロールされないように",
+    content: (
+      <>
+        <div>ハンバーガーメニューボタンが常に表示されるようになりました。</div>
+        <div>ハンバーガーメニュー、お知らせメニュー表示中は背後がスクロールされないようになりました。</div>
+      </>
+    ),
   },
   {
     data: "2026-01-18",
@@ -224,4 +229,3 @@ const NoticeItems: NoticeItem[] = [
     ),
   },
 ]
-
