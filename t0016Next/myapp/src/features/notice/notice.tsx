@@ -1,9 +1,10 @@
 import { ToggleVideoPositionButton } from "@/components/button/ToggleVideoPositionButton"
 import Link from "next/link"
 import { useState } from "react"
+import { useNotice } from "@/providers/NoticeProvider"
 
 export const TopPageNotice = () => {
-  const [isDisplay, setIsDisplay] = useState(false)
+  const { isDisplay, setIsDisplay } = useNotice()
 
   const [isHoverButton, setIsHoverButton] = useState(false)
 
@@ -71,6 +72,44 @@ type NoticeItem = {
 }
 
 const NoticeItems: NoticeItem[] = [
+  ...(new Date() >= new Date("2027-05-30")
+    ? [
+        {
+          data: "2027-05-30",
+          title: "5/30「妹望おいも」5歳の誕生日",
+          content: (
+            <>
+              <NoticeLink href="https://x.com/i_mo_5">「妹望おいも」</NoticeLink>
+              5歳の誕生日
+            </>
+          ),
+        } as NoticeItem,
+      ]
+    : []),
+  ...(new Date() >= new Date("2026-05-30")
+    ? [
+        {
+          data: "2026-05-30",
+          title: "5/30「妹望おいも」4歳の誕生日",
+          content: (
+            <>
+              <NoticeLink href="https://x.com/i_mo_5">「妹望おいも」</NoticeLink>
+              4歳の誕生日
+            </>
+          ),
+        } as NoticeItem,
+      ]
+    : []),
+  {
+    data: "2026-05-19",
+    title: "ヘッダー・メニューのUI改善",
+    content: (
+      <>
+        <div>ハンバーガーメニューボタンが常に表示されるようになりました。</div>
+        <div>ハンバーガーメニュー、お知らせメニュー表示中は背後がスクロールされないようになりました。</div>
+      </>
+    ),
+  },
   {
     data: "2026-01-18",
     title: "曲の複数登録が可能に",
@@ -86,8 +125,8 @@ const NoticeItems: NoticeItem[] = [
     content: (
       <div className="">
         YouTubeプレイヤーを画面下に固定できるようになりました。固定状態ではページを移動しても動画の再生が維持されます。
-        <span className="font-bold">ヘッダーの「再生場所」ボタン</span>
-        で切り替えられます。
+        <s>ヘッダーの「再生場所」ボタン で切り替えられます。</s>
+        <span className="text-sm text-gray-400 ml-1">(2026/05/19修正)</span>
         <div className="flex items-center m-1 w-fit">
           「<ToggleVideoPositionButton />」
         </div>
@@ -96,11 +135,11 @@ const NoticeItems: NoticeItem[] = [
   },
   {
     data: "2025-05-30",
-    title: "5/30「妹望おいも」誕生日",
+    title: "5/30「妹望おいも」3歳の誕生日",
     content: (
       <>
         <NoticeLink href="https://x.com/i_mo_5">「妹望おいも」</NoticeLink>
-        誕生日
+        3歳の誕生日
       </>
     ),
   },
@@ -181,10 +220,11 @@ const NoticeItems: NoticeItem[] = [
   },
   {
     data: "2024-05-30",
+    title: "5/30「妹望おいも」2歳の誕生日",
     content: (
       <>
         <NoticeLink href="https://x.com/i_mo_5">「妹望おいも」</NoticeLink>
-        誕生日
+        2歳の誕生日
       </>
     ),
   },
