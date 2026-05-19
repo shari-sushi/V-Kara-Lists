@@ -1,8 +1,9 @@
 import Head from "next/head"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import React, { useState } from "react"
+import React from "react"
 import { useAuth } from "@/providers/AuthProvider"
+import { useHamburgerMenu } from "@/providers/HamburgerMenuProvider"
 import { GestLogin, GestLoginForHamburger } from "../button/User"
 import { HeaderCss } from "@/styles/tailwiind"
 import { ToClickTW } from "@/styles/tailwiind"
@@ -41,7 +42,7 @@ export function Layout({ pageName, children, isSignin }: LayoutProps) {
 const Header = () => {
   const pathName = usePathname()
   const { isSignin } = useAuth()
-  const [isOpen, setIsOpen] = useState<Boolean>(false)
+  const { isOpen, setIsOpen } = useHamburgerMenu()
   const { togglePosition } = useVideo()
 
   const navLinkCls = (href: string) => `${pathName === href ? "bg-[#575044] text-gray-400" : "bg-[#776D5C] text-white"} hover:bg-[#575044] hover:cursor-pointer font-semibold rounded-md p-1 mr-1`

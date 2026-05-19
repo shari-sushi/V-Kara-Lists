@@ -1,9 +1,10 @@
 import { ToggleVideoPositionButton } from "@/components/button/ToggleVideoPositionButton"
 import Link from "next/link"
 import { useState } from "react"
+import { useNotice } from "@/providers/NoticeProvider"
 
 export const TopPageNotice = () => {
-  const [isDisplay, setIsDisplay] = useState(false)
+  const { isDisplay, setIsDisplay } = useNotice()
 
   const [isHoverButton, setIsHoverButton] = useState(false)
 
