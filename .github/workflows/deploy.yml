@@ -10,10 +10,51 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
-  build-and-push:
-    name: Build & Push to ECR
+  detect-changes:
+    name: Detect Changed Services
     runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.changes.outputs.api }}
+      app: ${{ steps.changes.outputs.app }}
+      compose: ${{ steps.changes.outputs.compose }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
+      - name: Detect changed files
+        id: changes
+        run: |
+          BEFORE="${{ github.event.before }}"
+          AFTER="${{ github.sha }}"
+
+          if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            CHANGED=$(git show --name-only --format="" HEAD)
+          else
+            CHANGED=$(git diff --name-only "$BEFORE" "$AFTER" 2>/dev/null || git diff --name-only HEAD~1 HEAD)
+          fi
+
+          API_CHANGED=false
+          APP_CHANGED=false
+          COMPOSE_CHANGED=false
+
+          echo "$CHANGED" | grep -q "^t0016Go/" && API_CHANGED=true || true
+          echo "$CHANGED" | grep -q "^t0016Next/" && APP_CHANGED=true || true
+          echo "$CHANGED" | grep -q "^ec2-docker-compose\.yml$" && COMPOSE_CHANGED=true || true
+
+          echo "Changed files:"
+          echo "$CHANGED"
+          echo "api=$API_CHANGED, app=$APP_CHANGED, compose=$COMPOSE_CHANGED"
+
+          echo "api=$API_CHANGED" >> $GITHUB_OUTPUT
+          echo "app=$APP_CHANGED" >> $GITHUB_OUTPUT
+          echo "compose=$COMPOSE_CHANGED" >> $GITHUB_OUTPUT
+
+  build-api:
+    name: Build & Push API to ECR
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.api == 'true'
     steps:
       - uses: actions/checkout@v4
 
@@ -36,6 +77,24 @@ jobs:
           docker push $ECR_REGISTRY/${{ secrets.ECR_API_REPO }}:latest
           docker push $ECR_REGISTRY/${{ secrets.ECR_API_REPO }}:${{ github.sha }}
 
+  build-app:
+    name: Build & Push App to ECR
+    runs-on: ubuntu-latest
+    needs: detect-changes
+    if: needs.detect-changes.outputs.app == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
       - name: Build and push App image
         run: |
           docker build \
@@ -48,7 +107,13 @@ jobs:
   deploy:
     name: Deploy to EC2
     runs-on: ubuntu-latest
-    needs: build-and-push
+    needs: [detect-changes, build-api, build-app]
+    if: |
+      always() &&
+      needs.detect-changes.result == 'success' &&
+      (needs.build-api.result == 'success' || needs.build-api.result == 'skipped') &&
+      (needs.build-app.result == 'success' || needs.build-app.result == 'skipped') &&
+      (needs.detect-changes.outputs.api == 'true' || needs.detect-changes.outputs.app == 'true' || needs.detect-changes.outputs.compose == 'true')
 
     steps:
       - uses: actions/checkout@v4
@@ -74,10 +139,29 @@ jobs:
       - name: Pull and restart containers on EC2
         run: |
           INSTANCE_ID="${{ steps.get_instance.outputs.instance_id }}"
+          API_CHANGED="${{ needs.detect-changes.outputs.api }}"
+          APP_CHANGED="${{ needs.detect-changes.outputs.app }}"
+          COMPOSE_CHANGED="${{ needs.detect-changes.outputs.compose }}"
 
-          cat > /tmp/ssm-deploy.json << 'ENDJSON'
+          if [ "$COMPOSE_CHANGED" = "true" ]; then
+            PULL_SERVICES="api app"
+            RESTART_SERVICES="db api app"
+          else
+            PULL_SERVICES=""
+            [ "$API_CHANGED" = "true" ] && PULL_SERVICES="$PULL_SERVICES api"
+            [ "$APP_CHANGED" = "true" ] && PULL_SERVICES="$PULL_SERVICES app"
+            PULL_SERVICES=$(echo $PULL_SERVICES | xargs)
+            RESTART_SERVICES="$PULL_SERVICES"
+          fi
+
+          echo "Services to pull: $PULL_SERVICES"
+          echo "Services to restart: $RESTART_SERVICES"
+
+          ECR_ENV="ECR_REGISTRY=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com ECR_API_REPO=${{ secrets.ECR_API_REPO }} ECR_APP_REPO=${{ secrets.ECR_APP_REPO }}"
+
+          cat > /tmp/ssm-deploy.json << ENDJSON
           {
-            "InstanceIds": ["INSTANCE_ID_PLACEHOLDER"],
+            "InstanceIds": ["$INSTANCE_ID"],
             "DocumentName": "AWS-RunShellScript",
             "TimeoutSeconds": 600,
             "Parameters": {
@@ -88,14 +172,13 @@ jobs:
                 "aws s3 cp s3://${{ secrets.S3_API_ENV_BUCKET }}/.env ./api.env",
                 "chmod 600 *.env",
                 "aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com",
-                "ECR_REGISTRY=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com ECR_API_REPO=${{ secrets.ECR_API_REPO }} ECR_APP_REPO=${{ secrets.ECR_APP_REPO }} docker compose -f ec2-docker-compose.yml pull",
-                "ECR_REGISTRY=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com ECR_API_REPO=${{ secrets.ECR_API_REPO }} ECR_APP_REPO=${{ secrets.ECR_APP_REPO }} docker compose -f ec2-docker-compose.yml up -d --force-recreate",
+                "$ECR_ENV docker compose -f ec2-docker-compose.yml pull $PULL_SERVICES",
+                "$ECR_ENV docker compose -f ec2-docker-compose.yml up -d --force-recreate $RESTART_SERVICES",
                 "rm -f /home/ubuntu/v-kara/api.env /home/ubuntu/v-kara/app.env"
               ]
             }
           }
           ENDJSON
-          sed -i "s/INSTANCE_ID_PLACEHOLDER/$INSTANCE_ID/" /tmp/ssm-deploy.json
 
           COMMAND_ID=$(aws ssm send-command \
             --cli-input-json file:///tmp/ssm-deploy.json \
