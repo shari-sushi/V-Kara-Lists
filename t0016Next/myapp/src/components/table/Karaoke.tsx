@@ -307,10 +307,10 @@ export const KaraokeThinTable = ({ posts }: KaraokeTableProps) => {
     <div className="w-full ">
       <table {...getTableProps()} className={`${TableTW.regular} `}>
         <thead className={`${TableTW.regularThead}`}>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
-              {headerGroup.headers.map((column, i) => (
-                <th {...column.getHeaderProps(column.getSortByToggleProps())} className="px-2" key={`karoake_thin_table_header_${i}`}>
+          {headerGroups.map((headerGroup, i) => (
+            <tr {...headerGroup.getHeaderGroupProps()} key={i}>
+              {headerGroup.headers.map((column, j) => (
+                <th {...column.getHeaderProps(column.getSortByToggleProps())} className="px-2" key={`karoake_thin_table_header_${j}`}>
                   {column.render("Header")}
                   {column.isSorted ? column.isSortedDesc ? "🔽" : "🔼" : <Image src="/content/sort.svg" width={24} height={20} alt="Sortable mark" className="inline-block w-6 h-5" />}
                 </th>
