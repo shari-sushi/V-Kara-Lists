@@ -53,12 +53,14 @@ sudo usermod -aG docker ubuntu
 
 ### 2. Docker Compose インストール
 
-`docker-compose-plugin` は apt では入らないため、直接ダウンロードする。
+Docker 公式リポジトリ（step 1 で追加済み）から V2 プラグインを apt でインストールする。
+`docker-compose`（V1形式）コマンドでも使えるようにシンボリックリンクも作成する。
 
 ```bash
-sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-docker-compose --version
+sudo apt install -y docker-compose-plugin
+sudo ln -s /usr/libexec/docker/cli-plugins/docker-compose /usr/local/bin/docker-compose
+docker compose version
+docker-compose version
 ```
 
 ### 3. AWS CLI v2 インストール
@@ -120,21 +122,21 @@ aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS
 ```bash
 cd ~/v-kara
 # 初回 or ボリュームをリセットしたい場合
-docker-compose -f ec2-docker-compose.yml down -v
-docker-compose -f ec2-docker-compose.yml up -d
+docker compose -f ec2-docker-compose.yml down -v
+docker compose -f ec2-docker-compose.yml up -d
 ```
 
 ### 9. 動作確認
 
 ```bash
 # コンテナ状態確認
-docker-compose -f ec2-docker-compose.yml ps
+docker compose -f ec2-docker-compose.yml ps
 
 # API 疎通確認
 curl http://localhost:8080/v1/vcontents/
 
 # ログ確認
-docker-compose -f ec2-docker-compose.yml logs -f
+docker compose -f ec2-docker-compose.yml logs -f
 ```
 
 ## DBデータの復元
@@ -170,8 +172,8 @@ ERROR 1227 (42000): Access denied; you need (at least one of) the SUPER, SYSTEM_
 ボリュームが中途半端な状態で残っているため初期化スクリプトが動いていない。
 
 ```bash
-docker-compose -f ec2-docker-compose.yml down -v
-docker-compose -f ec2-docker-compose.yml up -d
+docker compose -f ec2-docker-compose.yml down -v
+docker compose -f ec2-docker-compose.yml up -d
 ```
 
 ログに `[Entrypoint]: Creating database <DB_NAME>` が出ていれば正常に初期化されている。
@@ -189,7 +191,7 @@ Ubuntu 24.04 の apt リポジトリに `awscli` パッケージが存在しな�
 ### docker-compose が見つからない
 
 `docker-compose-plugin` は `docker.io` パッケージに含まれない。
-上記手順の通り、GitHub Releases から直接ダウンロードする。
+上記手順の通り、Docker 公式リポジトリから apt でインストールしてシンボリックリンクを作成する。
 
 ## 起動時間の目安
 
