@@ -89,7 +89,7 @@ jobs:
                 "chmod 600 *.env",
                 "aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com",
                 "ECR_REGISTRY=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com ECR_API_REPO=${{ secrets.ECR_API_REPO }} ECR_APP_REPO=${{ secrets.ECR_APP_REPO }} docker compose -f ec2-docker-compose.yml pull",
-                "ECR_REGISTRY=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com ECR_API_REPO=${{ secrets.ECR_API_REPO }} ECR_APP_REPO=${{ secrets.ECR_APP_REPO }} docker compose -f ec2-docker-compose.yml up -d",
+                "ECR_REGISTRY=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com ECR_API_REPO=${{ secrets.ECR_API_REPO }} ECR_APP_REPO=${{ secrets.ECR_APP_REPO }} docker compose -f ec2-docker-compose.yml up -d --force-recreate",
                 "rm -f /home/ubuntu/v-kara/api.env /home/ubuntu/v-kara/app.env"
               ]
             }
