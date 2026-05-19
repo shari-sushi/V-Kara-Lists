@@ -86,16 +86,20 @@ const NoticeItems: NoticeItem[] = [
         } as NoticeItem,
       ]
     : []),
-  {
-    data: "2026-05-30",
-    title: "5/30「妹望おいも」4歳の誕生日",
-    content: (
-      <>
-        <NoticeLink href="https://x.com/i_mo_5">「妹望おいも」</NoticeLink>
-        4歳の誕生日
-      </>
-    ),
-  },
+  ...(new Date() >= new Date("2026-05-30")
+    ? [
+        {
+          data: "2026-05-30",
+          title: "5/30「妹望おいも」4歳の誕生日",
+          content: (
+            <>
+              <NoticeLink href="https://x.com/i_mo_5">「妹望おいも」</NoticeLink>
+              4歳の誕生日
+            </>
+          ),
+        } as NoticeItem,
+      ]
+    : []),
   {
     data: "2026-05-19",
     title: "ヘッダー・メニューのUI改善",
