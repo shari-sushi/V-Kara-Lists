@@ -8,7 +8,12 @@ type NoticeContextType = {
 const NoticeContext = createContext<NoticeContextType | undefined>(undefined)
 
 export const NoticeProvider = ({ children }: { children: ReactNode }) => {
-  const [isDisplay, setIsDisplay] = useState(false)
+  const [isDisplay, setIsDisplayState] = useState(false)
+
+  const setIsDisplay = (val: boolean) => {
+    document.documentElement.style.overflow = val ? "hidden" : ""
+    setIsDisplayState(val)
+  }
 
   return (
     <NoticeContext.Provider value={{ isDisplay, setIsDisplay }}>
