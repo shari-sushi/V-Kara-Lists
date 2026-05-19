@@ -166,14 +166,15 @@ jobs:
             "TimeoutSeconds": 600,
             "Parameters": {
               "commands": [
-                "mkdir -p /home/ubuntu/v-kara && cd /home/ubuntu/v-kara",
+                "set -e",
+                "mkdir -p /home/ubuntu/v-kara",
                 "curl -fsSL https://raw.githubusercontent.com/shari-sushi/V-Kara-Lists/${{ github.sha }}/ec2-docker-compose.yml -o /home/ubuntu/v-kara/ec2-docker-compose.yml",
-                "aws s3 cp s3://${{ secrets.S3_APP_ENV_BUCKET }}/.env ./app.env",
-                "aws s3 cp s3://${{ secrets.S3_API_ENV_BUCKET }}/.env ./api.env",
-                "chmod 600 *.env",
+                "aws s3 cp s3://${{ secrets.S3_APP_ENV_BUCKET }}/.env /home/ubuntu/v-kara/app.env",
+                "aws s3 cp s3://${{ secrets.S3_API_ENV_BUCKET }}/.env /home/ubuntu/v-kara/api.env",
+                "chmod 600 /home/ubuntu/v-kara/*.env",
                 "aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com",
-                "$ECR_ENV docker compose -f ec2-docker-compose.yml pull $PULL_SERVICES",
-                "$ECR_ENV docker compose -f ec2-docker-compose.yml up -d --force-recreate $RESTART_SERVICES",
+                "$ECR_ENV docker compose -f /home/ubuntu/v-kara/ec2-docker-compose.yml pull $PULL_SERVICES",
+                "$ECR_ENV docker compose -f /home/ubuntu/v-kara/ec2-docker-compose.yml up -d --force-recreate $RESTART_SERVICES",
                 "rm -f /home/ubuntu/v-kara/api.env /home/ubuntu/v-kara/app.env"
               ]
             }
