@@ -61,6 +61,7 @@ body {
 
 html {
   scrollbar-gutter: stable;
+  scrollbar-color: auto #252525;
   background: #252525;
 }
 
