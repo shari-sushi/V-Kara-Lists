@@ -24,7 +24,7 @@ export function Layout({ pageName, children, isSignin }: LayoutProps) {
         <link rel="icon" href="/shari.ico" />
         <title>{`V-kara/${pageName}`}</title>
       </Head>
-      <Header pageName={pageName} />
+      <Header />
       <main className="flex flex-col min-h-screen p-4 pt-8 ">
         <div className="md:absolute md:right-1 ">
           <span className="flex-1 "> {pageName}</span>
@@ -38,40 +38,39 @@ export function Layout({ pageName, children, isSignin }: LayoutProps) {
   )
 }
 
-type HeaderProps = {
-  pageName: string
-}
-const Header = ({ pageName }: HeaderProps) => {
+const Header = () => {
   const pathName = usePathname()
   const { isSignin } = useAuth()
   const [isOpen, setIsOpen] = useState<Boolean>(false)
   const { togglePosition } = useVideo()
 
+  const navLinkCls = (href: string) => `${pathName === href ? "bg-[#575044] text-gray-400" : "bg-[#776D5C] text-white"} hover:bg-[#575044] hover:cursor-pointer font-semibold rounded-md p-1 mr-1`
+
   return (
-    <header className={`${HeaderCss.regular} flex justify-between w-full z-40`}>
+    <header className={`${HeaderCss.regular} relative flex justify-between w-full z-40`}>
       {/* 左側: タイトル */}
       <div>
         <a href="#pageTop" />
         <TitleLink />
       </div>
 
+      {/* 中央: TOP / カラオケ / オリ曲（md以上） */}
+      <div className="hidden md:flex items-center absolute left-1/2 -translate-x-1/2 h-full px-1">
+        <Link href="/" className={navLinkCls("/")}>
+          TOP
+        </Link>
+        <Link href="/sings/karaoke" className={navLinkCls("/sings/karaoke")}>
+          カラオケ
+        </Link>
+        <Link href="/sings/original-song" className={navLinkCls("/sings/original-song")}>
+          オリ曲
+        </Link>
+      </div>
+
       {/* 右側 */}
       <div className="flex items-center">
-        {/* デスクトップのみ: インライン nav（md以上） */}
+        {/* デスクトップのみ: 認証系リンク（md以上） */}
         <div className="hidden md:flex items-center">
-          <div className="px-1">
-            <Link href="/" className={`${ToClickTW.regular} mr-1`}>
-              TOP
-            </Link>
-            <Link href="/sings/karaoke" className={`${ToClickTW.regular} mr-1`}>
-              カラオケ
-            </Link>
-            <Link href="/sings/original-song" className={`${ToClickTW.regular} mr-1`}>
-              オリ曲
-            </Link>
-            /
-          </div>
-
           {isSignin && (
             <div className="px-1">
               <span className="pr-1">データの</span>
@@ -92,10 +91,6 @@ const Header = ({ pageName }: HeaderProps) => {
 
           {!isSignin && (
             <div className="pr-1">
-              <Link href="/user/signup" className={`${ToClickTW.regular} mr-1`}>
-                会員登録
-              </Link>
-              <span className="pr-1">:</span>
               <Link href="/user/signin" className={`${ToClickTW.regular} mr-1`}>
                 ログイン
               </Link>
@@ -128,64 +123,67 @@ const Header = ({ pageName }: HeaderProps) => {
       </div>
 
       {/* サイドバー（デスクトップ・モバイル共通） */}
-      {isOpen && (
-        <div>
-          <button onClick={() => setIsOpen(false)} className="absolute w-screen h-screen opacity-85 inset-0 bg-[#1f2724] z-10" />
-          <div className={`absolute right-0 flex float-right flex-col h-screen w-[40%] min-w-44 bg-[#657261] z-40 scroll-smooth`}>
-            <button onClick={() => setIsOpen(!isOpen)} className="absolute right-0 top-0 h-7 hover:bg-[#1f2724] rounded-lg">
-              <Image src="/user/cross_bold.svg" className="h-7" width={24} height={20} alt={""} />
-            </button>
+      <>
+        <button
+          onClick={() => setIsOpen(false)}
+          className={`absolute w-screen h-screen inset-0 bg-[#1f2724] z-10 transition-opacity duration-300 ${isOpen ? "opacity-85 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+        />
+        <div
+          className={`absolute right-0 flex float-right flex-col h-screen w-[40%] min-w-44 bg-[#657261] z-40 scroll-smooth transition-transform duration-300 ${isOpen ? "translate-x-0" : "translate-x-full"}`}
+        >
+          <button onClick={() => setIsOpen(!isOpen)} className="absolute right-0 top-0 h-7 hover:bg-[#1f2724] rounded-lg">
+            <Image src="/user/cross_bold.svg" className="h-7" width={24} height={20} alt={""} />
+          </button>
 
-            <div id="area" className="flex flex-col h-full">
-              <hr id="hr1" className="flex w-[50%] my-4" />
-              <hr className=" w-[40%] my-4" />
-              <hr className=" w-[10%] my-4" />
-              <div id="menu" className="absolute flex flex-col right-0 w-36 sm:w-48 mt-[20%] rounded">
-                <div className="w-fit text-xl -ml-2 bg-[#657261]">目次</div>
+          <div id="area" className="flex flex-col h-full">
+            <hr id="hr1" className="flex w-[50%] my-4" />
+            <hr className=" w-[40%] my-4" />
+            <hr className=" w-[10%] my-4" />
+            <div id="menu" className="absolute flex flex-col right-0 w-36 sm:w-48 mt-[20%] rounded">
+              <div className="w-fit text-xl -ml-2 bg-[#657261]">目次</div>
 
+              <div className="flex flex-col">
+                <TopLink />
+                <KaraokeLink />
+                <OriginalSongLink />
+              </div>
+              <hr className="w-[60%] top-10 right-0 my-3" />
+
+              {!isSignin && (
                 <div className="flex flex-col">
-                  <TopLink />
-                  <KaraokeLink />
-                  <OriginalSongLink />
+                  <SignUpLink />
+                  <LoginLink />
+                  <GestLoginForHamburger />
+                  <hr className="w-[60%] top-10 right-0 my-3" />
                 </div>
-                <hr className="w-[60%] top-10 right-0 my-3" />
+              )}
 
-                {!isSignin && (
+              {isSignin && (
+                <div>
+                  <div className="flex flex-col h-32">
+                    <CreateLink />
+                    <EditLink />
+                    <DeleteLink />
+                  </div>
+
+                  <hr className="flex w-[50%] mb-3" />
+
                   <div className="flex flex-col">
-                    <SignUpLink />
-                    <LoginLink />
-                    <GestLoginForHamburger />
-                    <hr className="w-[60%] top-10 right-0 my-3" />
+                    <MyPageLink />
+                    <ProfileLink />
                   </div>
-                )}
-
-                {isSignin && (
-                  <div>
-                    <div className="flex flex-col h-32">
-                      <CreateLink />
-                      <EditLink />
-                      <DeleteLink />
-                    </div>
-
-                    <hr className="flex w-[50%] mb-3" />
-
-                    <div className="flex flex-col">
-                      <MyPageLink />
-                      <ProfileLink />
-                    </div>
-                    <hr className="flex w-[50%] my-3 ml-28" />
-                  </div>
-                )}
-                <div className="mt-10" />
-                <div className="w-fit text-xl -ml-2">設定</div>
-                <div className={`${ToClickTW.hamburger} h-8 pl-2`} onClick={() => togglePosition()}>
-                  <ToggleVideoPositionButton textSize="text-base" />
+                  <hr className="flex w-[50%] my-3 ml-28" />
                 </div>
+              )}
+              <div className="mt-10" />
+              <div className="w-fit text-xl -ml-2">設定</div>
+              <div className={`${ToClickTW.hamburger} h-8 pl-2`} onClick={() => togglePosition()}>
+                <ToggleVideoPositionButton textSize="text-base" />
               </div>
             </div>
           </div>
         </div>
-      )}
+      </>
     </header>
   )
 }
