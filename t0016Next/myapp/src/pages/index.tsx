@@ -110,7 +110,9 @@ const MainItem = ({ posts }: TopPageProps) => {
               <Image src="/content/movie.svg" className="h-5 mr-1" width={24} height={24} alt="movie icon" />
               歌枠(動画)
             </h2>
-            <MovieTable posts={posts?.vtubers_movies} />
+            <div className="max-h-96 overflow-y-auto">
+              <MovieTable posts={posts?.vtubers_movies} />
+            </div>
           </div>
           <div>
             <h2 className="flex">
