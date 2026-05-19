@@ -9,7 +9,7 @@ import (
 
 // 手動でmerge, buildしてる限りは、apiをbuildし直す日時をメモする（たまに忘れる）
 // 曲名１文字対応、等
-const LastUpdateData = "2024/01/14 3時 fix:歌複数登録要のapiを追加"
+const LastUpdateData = "2026/05/20 panicでgoサーバーが落ちないように / 「動画を固定」OFF時のフッタースペースを削除"
 
 func (h *ContentHandler) ReturnDummyTopPage(c *gin.Context) {
 	h.returnTestPage(c)
