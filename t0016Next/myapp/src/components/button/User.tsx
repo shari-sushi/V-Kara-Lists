@@ -86,11 +86,11 @@ export const Withdraw = () => {
   )
 }
 
-export const GestLoginWithStyle = (decoration: { decoration: string }) => {
+export const GuestLoginWithStyle = (decoration: { decoration: string }) => {
   const router = useRouter()
   const fetchWithdraw = async () => {
     try {
-      const response = await fetch(`${domain.backendHost}/users/gestlogin`, {
+      const response = await fetch(`${domain.backendHost}/users/guestlogin`, {
         method: "get",
         credentials: "include",
         headers: {
@@ -113,11 +113,11 @@ export const GestLoginWithStyle = (decoration: { decoration: string }) => {
   )
 }
 
-export const GestLogin = () => {
+export const GuestLogin = () => {
   const router = useRouter()
   const fetchWithdraw = async () => {
     try {
-      const response = await fetch(`${domain.backendHost}/users/gestlogin`, {
+      const response = await fetch(`${domain.backendHost}/users/guestlogin`, {
         method: "get",
         credentials: "include",
         headers: {
@@ -140,11 +140,11 @@ export const GestLogin = () => {
   )
 }
 
-export const GestLoginForHamburger = () => {
+export const GuestLoginForHamburger = () => {
   const router = useRouter()
   const fetchWithdraw = async () => {
     try {
-      const response = await fetch(`${domain.backendHost}/users/gestlogin`, {
+      const response = await fetch(`${domain.backendHost}/users/guestlogin`, {
         method: "get",
         credentials: "include",
         headers: {

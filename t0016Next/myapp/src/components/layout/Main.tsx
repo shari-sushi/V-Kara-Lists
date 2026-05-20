@@ -1,7 +1,7 @@
 import Link from "next/link"
 import React from "react"
 
-import { GestLogin } from "../button/User"
+import { GuestLogin } from "../button/User"
 import { ToClickTW } from "@/styles/tailwiind"
 
 export function NotLoggedIn() {
@@ -19,7 +19,7 @@ export function NotLoggedIn() {
         </div>
         <span className="pl-2 pb-8">データ登録とそのデータの編集、削除ができます。</span>
         <div className="w-28">
-          <GestLogin />
+          <GuestLogin />
         </div>
         <span className="pl-2">データ登録できますが、そのデータは誰にでも編集・削除できます。</span>
       </div>

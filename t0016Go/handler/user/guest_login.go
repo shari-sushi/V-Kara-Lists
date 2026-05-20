@@ -10,7 +10,7 @@ import (
 
 func GuestLogIn(c *gin.Context) {
 	common.SetListenerIdIntoCookie(c, guestID)
-	fmt.Println("gestLogined", guestID)
+	fmt.Println("guestLogined", guestID)
 	c.JSON(http.StatusOK, gin.H{
 		"message":      "Successfully Guest Logged In",
 		"listenerName": "guest",
