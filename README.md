@@ -18,8 +18,8 @@ V-karaはVTuberの歌枠の歌情報を登録し、いつでも見返せるweb�
 ### 基本機能
 
 - 登録されたデータの一覧、検索<br/>
-- １クリックで動画や歌を視聴<br/> <img width="700" height="1107" alt="image" src="https://github.com/user-attachments/assets/7943acdd-f7fb-4238-bdf6-f5fad3c6cc88" /><br/>
-- Vtuber、歌枠(動画)、その中で歌っている歌の登録<br/> <img width="700" height="891" alt="image" src="https://github.com/user-attachments/assets/e1637531-477f-4c40-9a88-f7aa3469de39" /><br/>
+- １クリックで動画や歌を視聴<br/> <img width="700" alt="v-karaのtopページ" src="https://github.com/user-attachments/assets/7943acdd-f7fb-4238-bdf6-f5fad3c6cc88" /><br/>
+- Vtuber、歌枠(動画)、その中で歌っている歌の登録<br/> <img width="700" alt="v-karaのコンテンツ登録ページ" src="https://github.com/user-attachments/assets/e1637531-477f-4c40-9a88-f7aa3469de39" /><br/>
 
 ### 補助機能
 
