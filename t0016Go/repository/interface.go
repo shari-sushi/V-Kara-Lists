@@ -19,9 +19,9 @@ type ContentRepository interface {
 	GetVtubersMovies() ([]domain.VtuberMovie, error)
 	GetMoviesUrlTitleByVtuber(domain.VtuberId) ([]domain.Movie, error)
 	GetVtubersMoviesKaraokes() ([]domain.TransmitKaraoke, error)
-	CreateVtuber(domain.Vtuber) error
-	CreateMovie(domain.Movie) error
-	CreateKaraokes([]domain.Karaoke) error
+	CreateVtuber(domain.Vtuber) (domain.Vtuber, error)
+	CreateMovie(domain.Movie) (domain.Movie, error)
+	CreateKaraokes([]domain.Karaoke) ([]domain.Karaoke, error)
 	UpdateVtuber(domain.Vtuber) error
 	UpdateMovie(domain.Movie) error
 	UpdateKaraoke(domain.Karaoke) error

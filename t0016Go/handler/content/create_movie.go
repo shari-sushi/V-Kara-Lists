@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sharin-sushi/0016go_next_relation/common"
 	"github.com/sharin-sushi/0016go_next_relation/domain"
+	"github.com/sharin-sushi/0016go_next_relation/domain/api"
 )
 
 func (h *ContentHandler) CreateMovie(c *gin.Context) {
@@ -35,7 +36,8 @@ func (h *ContentHandler) CreateMovie(c *gin.Context) {
 	}
 
 	movie.MovieInputterId = listenerId
-	if err := h.ContentService.CreateMovie(movie); err != nil {
+	created, err := h.ContentService.CreateMovie(movie)
+	if err != nil {
 		log.Println("err: create movie,", err)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invailed Registered the New Movie",
@@ -43,7 +45,5 @@ func (h *ContentHandler) CreateMovie(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Successfully Registered the New Movie",
-	})
+	c.JSON(http.StatusOK, api.CreateMovieResponse{Movie: created})
 }
