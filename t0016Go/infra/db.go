@@ -3,6 +3,7 @@ package infra
 import (
 	"fmt"
 	"os"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
@@ -102,18 +103,26 @@ func dbInit() repository.SqlHandler {
 
 	fmt.Printf("path=%v \n", path)
 	var err error
-	var sqlHandler *SqlHandler
-	gormDB, err := gorm.Open(mysql.Open(path), &gorm.Config{})
+	var gormDB *gorm.DB
+	waitSec := 1
+	for i := 0; i < 7; i++ {
+		gormDB, err = gorm.Open(mysql.Open(path), &gorm.Config{})
+		if err == nil {
+			break
+		}
+		if i == 6 {
+			panic("failed to connect database after retries")
+		}
+		fmt.Printf("DB接続失敗。%d秒後にリトライ (%d/6)\n", waitSec, i+1)
+		time.Sleep(time.Duration(waitSec) * time.Second)
+		waitSec *= 2
+	}
 	if !common.IsOnCloud {
 		gormDB = gormDB.Debug()
 	}
-	if err == nil {
-		sqlHandler = new(SqlHandler)
-		sqlHandler.Conn = gormDB
-		sqlHandler.migration()
-	} else {
-		panic("failed to connect database")
-	}
+	sqlHandler := new(SqlHandler)
+	sqlHandler.Conn = gormDB
+	sqlHandler.migration()
 
 	return sqlHandler
 }
