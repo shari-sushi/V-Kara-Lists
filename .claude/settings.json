@@ -13,7 +13,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 -c \"import sys,json,re\ndata=json.load(sys.stdin)\ncmd=data.get('tool_input',{}).get('command','')\nfor p in [r'rm\\s+-rf',r'DROP\\s+(TABLE|DATABASE)',r'cat\\s+\\.env',r'export\\s+\\w*(PASSWORD|SECRET|KEY|TOKEN)\\w*=']:\n  if re.search(p,cmd,re.IGNORECASE):\n    print('Blocked: '+p,file=sys.stderr)\n    sys.exit(2)\""
+            "command": "python3 .claude/hooks/check-dangerous-command.py"
           }
         ]
       }
