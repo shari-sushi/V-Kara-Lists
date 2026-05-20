@@ -44,6 +44,21 @@ const config: StorybookConfig = {
       ".ts",
       ".tsx",
     ]
+
+    // Tailwind CSS 対応: 既存のCSSルールにpostcss-loaderを追加
+    for (const rule of config.module.rules) {
+      if (!rule || typeof rule !== "object") continue
+      const r = rule as any
+      if (r.test instanceof RegExp && r.test.test("test.css") && Array.isArray(r.use)) {
+        const alreadyHasPostcss = r.use.some((u: any) =>
+          typeof u === "string" ? u.includes("postcss") : u?.loader?.includes?.("postcss"),
+        )
+        if (!alreadyHasPostcss) {
+          r.use.push({ loader: require.resolve("postcss-loader") })
+        }
+      }
+    }
+
     return config
   },
 }
