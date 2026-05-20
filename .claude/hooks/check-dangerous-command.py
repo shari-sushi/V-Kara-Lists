@@ -21,8 +21,8 @@ parts = re.split(r"[;&|\n]", cmd)
 
 DANGEROUS = [
     (r"^\s*rm\s+-rf\s+[/\*\.]", "破壊的な削除 (rm -rf)"),
-    (r"^\s*cat\s+\.env", ".env ファイルの内容表示"),
-    (r"^\s*DROP\s+(TABLE|DATABASE)", "DB破壊操作 (DROP TABLE/DATABASE)"),
+    (r"^\s*cat\s+.*\.env", ".env ファイルの内容表示"),
+    (r"DROP\s+(TABLE|DATABASE)", "DB破壊操作 (DROP TABLE/DATABASE)"),
     (r"^\s*export\s+\w*(PASSWORD|SECRET|KEY|TOKEN)\w*=", "機密情報の export"),
 ]
 
