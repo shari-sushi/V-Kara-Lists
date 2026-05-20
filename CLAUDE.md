@@ -29,8 +29,9 @@ Public Repositoryなのでセキュリティリスクとなる機密情報のハ
    対応issueに計画を記載  
    `VIBES/plan/` に計画ファイルを作成
 2. ユーザーと仕様を合意してから実装を開始する
-3. 実装後は lint / build が通ることを確認する
-4. コミット前に型エラーがないことを確認する
-5. 1で計画ファイルを作成していたら`./done`に移す  
+3. 基本的に最新のdevelopから専用ブランチを切る
+4. 実装後は lint / build が通ることを確認する
+5. コミット前に型エラーがないことを確認する
+6. 1で計画ファイルを作成していたら`./done`に移す  
    githubへのpr, コメントは文末に `🤖 Generated with [Claude Code](https://claude.com/claude-code)`を記載  
    prの1行目は - close #{対応issue番号}
