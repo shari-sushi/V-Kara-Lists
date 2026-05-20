@@ -49,7 +49,7 @@ func routingV1(r *gin.Engine) {
 			users.PUT("/login", userH.LogIn)
 			users.PUT("/logout", userhandler.Logout) // dbアクセスしないから sqlHandlerのメソッドにしてないぽいそんな設計で良いのか
 			users.DELETE("/withdraw", userH.LogicalDeleteUser)
-			users.GET("/gestlogin", userhandler.GuestLogIn) // dbアクセスしないから gin.sqlHandlerのメソッドにしてないぽいそんな設計で良いのか
+			users.GET("/guestlogin", userhandler.GuestLogIn) // dbアクセスしないから gin.sqlHandlerのメソッドにしてないぽいそんな設計で良いのか
 			users.GET("/profile", userH.GetListenerProfile)
 			users.GET("/mypage", userH.ListenerPage)
 		}

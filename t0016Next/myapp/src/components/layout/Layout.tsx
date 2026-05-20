@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation"
 import React from "react"
 import { useAuth } from "@/providers/AuthProvider"
 import { useHamburgerMenu } from "@/providers/HamburgerMenuProvider"
-import { GestLogin, GestLoginForHamburger } from "../button/User"
+import { GuestLogin, GuestLoginForHamburger } from "../button/User"
 import { HeaderCss } from "@/styles/tailwiind"
 import { ToClickTW } from "@/styles/tailwiind"
 import { CreateLink, DeleteLink, EditLink, KaraokeLink, OriginalSongLink, LoginLink, MyPageLink, ProfileLink, SignUpLink, TitleLink, TopLink } from "../button/link/Humbarger"
@@ -96,7 +96,7 @@ const Header = () => {
                 ログイン
               </Link>
               <span className="pr-1">:</span>
-              <GestLogin />
+              <GuestLogin />
             </div>
           )}
 
@@ -154,7 +154,7 @@ const Header = () => {
                 <div className="flex flex-col">
                   <SignUpLink />
                   <LoginLink />
-                  <GestLoginForHamburger />
+                  <GuestLoginForHamburger />
                   <hr className="w-[60%] top-10 right-0 my-3" />
                 </div>
               )}
