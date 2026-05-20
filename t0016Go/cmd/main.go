@@ -7,8 +7,8 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/sharin-sushi/0016go_next_relation/infra"
 	"github.com/sharin-sushi/0016go_next_relation/common"
+	"github.com/sharin-sushi/0016go_next_relation/infra"
 )
 
 func init() {
@@ -17,7 +17,8 @@ func init() {
 }
 
 func main() {
-	r := gin.Default()
+	r := gin.New()
+	r.Use(gin.Recovery())
 
 	AllowOrigins := []string{}
 	if common.IsOnLocal {
@@ -45,6 +46,8 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{})
 	})
 
+	// /healthより後に呼び出すことで意図的にhealthチェックログ残さない
+	// awsのhealthチェックが頻繁でそれだけでログが埋まるのを防止するため
 	r.Use(requestLogger())
 
 	infra.Routing(r)
