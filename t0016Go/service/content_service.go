@@ -44,47 +44,40 @@ func (interactor *ContentService) GetVtubersMoviesKaraokes() ([]domain.TransmitK
 	return allVtsMosKas, err
 }
 
-func (interactor *ContentService) CreateVtuber(v domain.Vtuber) error {
+func (interactor *ContentService) CreateVtuber(v domain.Vtuber) (domain.Vtuber, error) {
 	v = common.NormalizeVtuber(v)
 
 	if err := common.ValidateVtuber(v); err != nil {
-		return err
+		return domain.Vtuber{}, err
 	}
 
-	if err := interactor.ContentRepository.CreateVtuber(v); err != nil {
-		return err
-	}
-	return nil
+	created, err := interactor.ContentRepository.CreateVtuber(v)
+	return created, err
 }
 
-func (interactor *ContentService) CreateMovie(m domain.Movie) error {
+func (interactor *ContentService) CreateMovie(m domain.Movie) (domain.Movie, error) {
 	m = common.NormalizeMovie(m)
 
 	if err := common.ValidateMovie(m); err != nil {
-		return err
+		return domain.Movie{}, err
 	}
 
-	if err := interactor.ContentRepository.CreateMovie(m); err != nil {
-		return err
-	}
-	return nil
+	created, err := interactor.ContentRepository.CreateMovie(m)
+	return created, err
 }
 
 // NOTE: 未経験時代の関数と異なり、MVCを意識しているため責務が単一
-func (interactor *ContentService) CreateKaraokes(ks []domain.Karaoke) error {
+func (interactor *ContentService) CreateKaraokes(ks []domain.Karaoke) ([]domain.Karaoke, error) {
 	for i, k := range ks {
 		ks[i] = common.NormalizeKaraoke(k)
 
 		if err := common.ValidateKaraoke(k); err != nil {
-			return err
+			return nil, err
 		}
 	}
 
-	if err := interactor.ContentRepository.CreateKaraokes(ks); err != nil {
-		return err
-	}
-
-	return nil
+	created, err := interactor.ContentRepository.CreateKaraokes(ks)
+	return created, err
 }
 
 func (interactor *ContentService) UpdateVtuber(v domain.Vtuber) error {

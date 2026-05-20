@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sharin-sushi/0016go_next_relation/common"
 	"github.com/sharin-sushi/0016go_next_relation/domain"
+	"github.com/sharin-sushi/0016go_next_relation/domain/api"
 )
 
 func (h *ContentHandler) CreateVtuber(c *gin.Context) {
@@ -28,7 +29,8 @@ func (h *ContentHandler) CreateVtuber(c *gin.Context) {
 	}
 	vtuber.VtuberInputterId = listenerId
 
-	if err := h.ContentService.CreateVtuber(vtuber); err != nil {
+	created, err := h.ContentService.CreateVtuber(vtuber)
+	if err != nil {
 		log.Println("err:", err)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invailed Registered the New Vtuber",
@@ -36,7 +38,5 @@ func (h *ContentHandler) CreateVtuber(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Successfully Registered the New Vtuber",
-	})
+	c.JSON(http.StatusOK, api.CreateVtuberResponse{Vtuber: created})
 }

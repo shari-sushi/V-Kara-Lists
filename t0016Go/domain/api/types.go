@@ -24,6 +24,18 @@ type KaraokeSong struct {
 	SongName  string // `json:"song_name"`
 }
 
+type CreateVtuberResponse struct {
+	Vtuber domain.Vtuber `json:"vtuber"`
+}
+
+type CreateMovieResponse struct {
+	Movie domain.Movie `json:"movie"`
+}
+
+type CreateKaraokesResponse struct {
+	Karaokes []domain.Karaoke `json:"karaokes"`
+}
+
 func CreateKaraokeSongsRequestToKaraokes(req CreateKaraokeSongsRequest, requestListenerID domain.ListenerId) []domain.Karaoke {
 	var resp []domain.Karaoke
 	for _, karaoke := range req.Songs {

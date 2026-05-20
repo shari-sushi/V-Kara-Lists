@@ -35,7 +35,8 @@ func (h *ContentHandler) CreateKaraokes(c *gin.Context) {
 		return
 	}
 
-	if err := h.ContentService.CreateKaraokes(api.CreateKaraokeSongsRequestToKaraokes(req, listenerId)); err != nil {
+	created, err := h.ContentService.CreateKaraokes(api.CreateKaraokeSongsRequestToKaraokes(req, listenerId))
+	if err != nil {
 		log.Println("err: create karaokes,", err)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Invailed Registered the New Karaokes",
@@ -44,7 +45,5 @@ func (h *ContentHandler) CreateKaraokes(c *gin.Context) {
 	}
 
 	log.Println("created karaokes by listenerId: ", listenerId)
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Successfully Registered the New Karaokes",
-	})
+	c.JSON(http.StatusOK, api.CreateKaraokesResponse{Karaokes: created})
 }

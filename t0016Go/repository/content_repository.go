@@ -80,31 +80,31 @@ func (db *contentRepository) GetVtubersMoviesKaraokes() ([]domain.TransmitKaraok
 	return vtsMosKas, nil
 }
 
-func (db *contentRepository) CreateVtuber(V domain.Vtuber) error {
+func (db *contentRepository) CreateVtuber(V domain.Vtuber) (domain.Vtuber, error) {
 	result := db.Omit("vtuber_id").Create(&V) //vtuber_idのみAUTO INCREMENT
-	return result.Error
+	return V, result.Error
 }
 
-func (db *contentRepository) CreateMovie(M domain.Movie) error {
+func (db *contentRepository) CreateMovie(M domain.Movie) (domain.Movie, error) {
 	var v domain.Vtuber
 	v.VtuberId = M.VtuberId
 	if result := db.First(&v); result.Error != nil {
 		fmt.Printf("V:%v", v)
-		return result.Error
+		return domain.Movie{}, result.Error
 	}
 	result := db.Create(&M)
-	return result.Error
+	return M, result.Error
 }
 
-func (db *contentRepository) CreateKaraokes(ks []domain.Karaoke) error {
+func (db *contentRepository) CreateKaraokes(ks []domain.Karaoke) ([]domain.Karaoke, error) {
 	var Mo domain.Movie
 	Mo.MovieUrl = ks[0].MovieUrl
 	if result := db.First(&Mo); result.Error != nil {
-		return result.Error
+		return nil, result.Error
 	}
 
 	result := db.Create(&ks)
-	return result.Error
+	return ks, result.Error
 }
 
 func (db *contentRepository) UpdateVtuber(V domain.Vtuber) error {
