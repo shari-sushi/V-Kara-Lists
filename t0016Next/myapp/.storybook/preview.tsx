@@ -29,11 +29,6 @@ const preview: Preview = {
     },
   },
   decorators: [withProviders],
-  parameters: {
-    nextjs: {
-      appDirectory: false,
-    },
-  },
 }
 
 export default preview
