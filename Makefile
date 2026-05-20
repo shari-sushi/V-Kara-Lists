@@ -45,6 +45,10 @@ fe-build:
 fe-start:
 	cd t0016Next/myapp && npm run start
 
+.PHONY: storybook
+storybook:
+	cd t0016Next/myapp && npm run storybook
+
 .PHONY: mysql
 mysql:
 	mysql -uroot -ppassword --host 127.0.0.1
