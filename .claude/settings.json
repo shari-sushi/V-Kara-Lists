@@ -13,7 +13,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 .claude/hooks/check-dangerous-command.py"
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.claude/hooks/check-dangerous-command.py\""
           }
         ]
       }
