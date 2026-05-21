@@ -20,7 +20,7 @@ if "<<" in cmd:
 parts = re.split(r"\s*(?:;|&&|\|\||\|)\s*|\n", cmd)
 
 DANGEROUS = [
-    (r"^\s*rm\s+(-\w*r\w*f|-\w*f\w*r)\b", "破壊的な削除 (rm -rf / rm -fr)"),
+    (r"^\s*(sudo\s+)?rm\s+(-\w*r\w*f|-\w*f\w*r)\b", "破壊的な削除 (rm -rf / rm -fr)"),
     (r"^\s*(cat|less|more|bat|tail|head)\s+.*\.env(\s|$)", ".env ファイルの内容表示"),
     (r"DROP\s+(TABLE|DATABASE)", "DB破壊操作 (DROP TABLE/DATABASE)"),
     (r"^\s*export\s+\w*(PASSWORD|SECRET|KEY|TOKEN)\w*=", "機密情報の export"),
