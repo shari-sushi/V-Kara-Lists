@@ -16,12 +16,12 @@ cmd = data.get("tool_input", {}).get("command", "")
 if "<<" in cmd:
     cmd = cmd[:cmd.index("<<")]
 
-# ; && || 改行 でコマンドを分割し、各コマンドを個別に検査
-parts = re.split(r";|&&|\|\||\n", cmd)
+# ; && || | 改行 でコマンドを分割し、各コマンドを個別に検査
+parts = re.split(r"\s*(?:;|&&|\|\||\|)\s*|\n", cmd)
 
 DANGEROUS = [
-    (r"^\s*rm\s+-rf\s+[/\*\.]", "破壊的な削除 (rm -rf)"),
-    (r"^\s*cat\s+.*\.env", ".env ファイルの内容表示"),
+    (r"^\s*rm\s+(-\w*r\w*f|-\w*f\w*r)\b", "破壊的な削除 (rm -rf / rm -fr)"),
+    (r"^\s*(cat|less|more|bat|tail|head)\s+.*\.env(\s|$)", ".env ファイルの内容表示"),
     (r"DROP\s+(TABLE|DATABASE)", "DB破壊操作 (DROP TABLE/DATABASE)"),
     (r"^\s*export\s+\w*(PASSWORD|SECRET|KEY|TOKEN)\w*=", "機密情報の export"),
 ]
