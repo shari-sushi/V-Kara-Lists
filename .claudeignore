@@ -1,13 +1,8 @@
 # 環境変数・機密情報
+# *.env / .env.* はサブディレクトリにも再帰的にマッチする
 .env
 .env.*
 *.env
-t0016Go/.env
-t0016Next/myapp/.env
-t0016Next/myapp/.env.*
-t0016Next/myapp/.env.local
-t0016Next/myapp/.env.development
-t0016Next/myapp/.env.production
 
 # 秘密鍵・証明書
 *.pem
