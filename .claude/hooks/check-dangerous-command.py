@@ -17,7 +17,7 @@ if "<<" in cmd:
     cmd = cmd[:cmd.index("<<")]
 
 # ; && || 改行 でコマンドを分割し、各コマンドを個別に検査
-parts = re.split(r"[;&|\n]", cmd)
+parts = re.split(r";|&&|\|\||\n", cmd)
 
 DANGEROUS = [
     (r"^\s*rm\s+-rf\s+[/\*\.]", "破壊的な削除 (rm -rf)"),
