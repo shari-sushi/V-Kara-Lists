@@ -47,3 +47,6 @@ infra/terraform/import.sh
 
 # AWS リソース詳細（アカウント ID・リソース ID 等を含む内部ドキュメント）
 docs/aws.md
+
+# Claude Code ユーザー固有設定
+.claude/settings.local.json
