@@ -17,8 +17,10 @@ const DeletePagePreview = ({ isSignin, hasError }: DeletePagePreviewProps) => {
       {hasError && <FailedMessage />}
       <div className="inline-block text-sm mb-4 mt-2 mx-auto">
         <h1>会員の方へ</h1>
-        <li>現在、データの編集・削除はデータ登録者とサイト管理者しかできないようにロックしています。</li>
-        <li>ご自身の登録データはmypageでも確認できます。</li>
+        <ul>
+          <li>現在、データの編集・削除はデータ登録者とサイト管理者しかできないようにロックしています。</li>
+          <li>ご自身の登録データはmypageでも確認できます。</li>
+        </ul>
       </div>
       <div className="text-center text-gray-400 py-8">
         ※ 削除ページはAPIデータに依存するため、テーブル部分はStorybook上では表示されません。
