@@ -13,6 +13,7 @@ resource "aws_iam_policy" "policy_get_s3" {
         Resource = [
           "${aws_s3_bucket.api_env.arn}/.env",
           "${aws_s3_bucket.app_env.arn}/.env",
+          "${aws_s3_bucket.caddy_env.arn}/.env",
         ]
       },
       {

@@ -1,44 +1,9 @@
 # -------------------------------------------------------------------
-# ALB Security Group
-# name: v-kara-app-security-group02
-# ingress: 80, 443 from 0.0.0.0/0
-# -------------------------------------------------------------------
-resource "aws_security_group" "alb" {
-  name        = "v-kara-app-security-group02"
-  description = "public"
-  vpc_id      = aws_vpc.main.id
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  lifecycle {
-    ignore_changes = [ingress, egress]
-  }
-}
-
-# -------------------------------------------------------------------
 # EC2 Security Group
 # name: v-kara-ec2-instance
-# ingress: 22 from var.allowed_ssh_cidr_ec2, 80/8080/443 from ALB SG
+# ingress: 22 from var.allowed_ssh_cidr_ec2, 80/443 from internet (Cloudflare proxy)
 # egress: all to 0.0.0.0/0
+# Note: 8080 は外部非公開。Caddy が内部でルーティングする
 # -------------------------------------------------------------------
 resource "aws_security_group" "ec2" {
   name        = "v-kara-ec2-instance"
@@ -46,19 +11,19 @@ resource "aws_security_group" "ec2" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description     = "HTTP from ALB"
-    from_port       = 80
-    to_port         = 80
-    protocol        = "tcp"
-    security_groups = [aws_security_group.alb.id]
+    description = "HTTP from internet (Cloudflare proxy)"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    description     = "API from ALB"
-    from_port       = 8080
-    to_port         = 8080
-    protocol        = "tcp"
-    security_groups = [aws_security_group.alb.id]
+    description = "HTTPS from internet (Caddy TLS)"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {

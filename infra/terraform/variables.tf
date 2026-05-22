@@ -11,6 +11,22 @@ variable "allowed_ssh_cidr_ec2" {
   type        = string
 }
 
+# S3 バケット名（terraform.tfvars で設定する）
+variable "s3_api_env_bucket" {
+  description = "S3 bucket name for api.env"
+  type        = string
+}
+
+variable "s3_app_env_bucket" {
+  description = "S3 bucket name for app.env"
+  type        = string
+}
+
+variable "s3_caddy_env_bucket" {
+  description = "S3 bucket name for caddy.env (CF_API_TOKEN)"
+  type        = string
+}
+
 # variable "allowed_ssh_cidr_rds" {
 #   description = "CIDR allowed to SSH into RDS bastion"
 #   type        = string

@@ -1,0 +1,11 @@
+{
+	acme_dns cloudflare {env.CF_API_TOKEN}
+}
+
+v-karaoke.com {
+	reverse_proxy app:80
+}
+
+backend.v-karaoke.com {
+	reverse_proxy api:8080
+}

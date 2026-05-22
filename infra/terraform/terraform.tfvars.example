@@ -3,11 +3,16 @@ aws_region = "ap-northeast-1"
 # SSH アクセスを許可する自宅 IP（/32 で指定）
 allowed_ssh_cidr_ec2 = "x.x.x.x/32"
 
-# RDS 暗号化に使用する KMS キー ARN
-rds_kms_key_id = "arn:aws:kms:ap-northeast-1:123456789012:key/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+# S3 バケット名（env ファイル格納用）
+s3_api_env_bucket   = "your-api-env-bucket-name"
+s3_app_env_bucket   = "your-app-env-bucket-name"
+s3_caddy_env_bucket = "your-caddy-env-bucket-name"
 
-# RDS マスターユーザー名
-db_username = "your_db_username"
-
-# RDS マスターパスワード（初回 apply 時のみ使用。import 済み環境では ignore_changes で管理外）
-db_password = "your_db_password"
+# # RDS 暗号化に使用する KMS キー ARN
+# rds_kms_key_id = "arn:aws:kms:ap-northeast-1:123456789012:key/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+# 
+# # RDS マスターユーザー名
+# db_username = "your_db_username"
+#
+# # RDS マスターパスワード（初回 apply 時のみ使用。import 済み環境では ignore_changes で管理外）
+# db_password = "your_db_password"
