@@ -21,7 +21,7 @@ services:
       - IS_DOCKER_COMPOSE=true
     env_file: api.env # DB接続情報等の実行時設定を含む。上記 environment と同名キーは environment が優先される
     ports:
-      - "8080:8080"
+      - "8080:8080" # ホスト側に公開（ヘルスチェック用）。EC2セキュリティグループで外部アクセスはブロック
     depends_on:
       db:
         condition: service_healthy
@@ -34,8 +34,22 @@ services:
     environment:
       - DEPLOY_ENV=EC2_DOCKER_COMPOSE
       - IS_DOCKER_COMPOSE=true
+
+  caddy:
+    image: ${ECR_REGISTRY}/${ECR_CADDY_REPO}:latest
+    container_name: v-kara-caddy
+    restart: unless-stopped
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    env_file: caddy.env # CF_API_TOKEN を含む
+    depends_on:
+      - api
+      - app
 
 volumes:
   mysql_data:
+  caddy_data:
