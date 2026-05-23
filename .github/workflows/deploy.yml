@@ -81,6 +81,28 @@ jobs:
           docker push $ECR_REGISTRY/${{ secrets.ECR_API_REPO }}:latest
           docker push $ECR_REGISTRY/${{ secrets.ECR_API_REPO }}:${{ github.sha }}
 
+      - name: Cleanup old API ECR images (keep latest 2)
+        run: |
+          REPO="${{ secrets.ECR_API_REPO }}"
+          # imagePushedAt 昇順でダイジェスト一覧取得（古い順）
+          ALL=$(aws ecr describe-images \
+            --repository-name "$REPO" \
+            --query "sort_by(imageDetails, &imagePushedAt)[*].imageDigest" \
+            --output text)
+          TOTAL=$(echo "$ALL" | wc -w)
+          if [ "$TOTAL" -le 2 ]; then
+            echo "Only $TOTAL image(s) in $REPO, nothing to delete"
+            exit 0
+          fi
+          # 古い順から (TOTAL - 2) 件を削除対象にする
+          DELETE=$(echo "$ALL" | tr ' ' '\n' | head -n $((TOTAL - 2)))
+          for DIGEST in $DELETE; do
+            echo "Deleting $DIGEST from $REPO"
+            aws ecr batch-delete-image \
+              --repository-name "$REPO" \
+              --image-ids imageDigest="$DIGEST"
+          done
+
   build-app:
     name: Build & Push App to ECR
     runs-on: ubuntu-latest
@@ -107,6 +129,28 @@ jobs:
             ./t0016Next
           docker push $ECR_REGISTRY/${{ secrets.ECR_APP_REPO }}:latest
           docker push $ECR_REGISTRY/${{ secrets.ECR_APP_REPO }}:${{ github.sha }}
+
+      - name: Cleanup old App ECR images (keep latest 2)
+        run: |
+          REPO="${{ secrets.ECR_APP_REPO }}"
+          # imagePushedAt 昇順でダイジェスト一覧取得（古い順）
+          ALL=$(aws ecr describe-images \
+            --repository-name "$REPO" \
+            --query "sort_by(imageDetails, &imagePushedAt)[*].imageDigest" \
+            --output text)
+          TOTAL=$(echo "$ALL" | wc -w)
+          if [ "$TOTAL" -le 2 ]; then
+            echo "Only $TOTAL image(s) in $REPO, nothing to delete"
+            exit 0
+          fi
+          # 古い順から (TOTAL - 2) 件を削除対象にする
+          DELETE=$(echo "$ALL" | tr ' ' '\n' | head -n $((TOTAL - 2)))
+          for DIGEST in $DELETE; do
+            echo "Deleting $DIGEST from $REPO"
+            aws ecr batch-delete-image \
+              --repository-name "$REPO" \
+              --image-ids imageDigest="$DIGEST"
+          done
 
   build-caddy:
     name: Build & Push Caddy to ECR
