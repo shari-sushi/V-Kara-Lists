@@ -3,7 +3,23 @@
     "allow": [
       "mcp__github__pull_request_read",
       "mcp__github__issue_read",
-      "mcp__github__get_me"
+      "mcp__github__get_me",
+      "Read(./t0016Go/.env.sample)",
+      "Read(./t0016Next/myapp/.env.sample)",
+      "Bash(go build ./...)",
+      "Bash(go vet ./...)",
+      "Bash(go test ./...:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run build:*)",
+      "Bash(head -*)",
+      "Bash(git branch --show-current)",
+      "Bash(git fetch *)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr list:*)",
+      "Bash(git --no-pager diff:*)",
+      "Bash(git --no-pager status:*)",
+      "Bash(git branch --show-current)"
     ]
   },
   "hooks": {

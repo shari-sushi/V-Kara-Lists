@@ -25,8 +25,18 @@
 - `.claude/rules/setup.md` - 開発環境セットアップ
 - `.claude/rules/deployment.md` - デプロイ手順
 - `.claude/rules/troubleshooting.md` - よくある問題と解決策
+- `.claude/rules/feedback.md` - フィードバックシステムの運用ルール
+- `.claude/feedback/lessons.md` - 過去のミスから蒸留した教訓
 
 Public Repositoryなのでセキュリティリスクとなる機密情報のハードコード等はコミットしないこと
+
+## フィードバック（学習ループ）
+
+レビュー指摘やミスは `.claude/feedback/log.md` に記録し、蓄積したパターンを `.claude/feedback/lessons.md` に蒸留する。詳細は `.claude/rules/feedback.md` を参照。
+
+- `/self-review` : 差分を3段階でセルフレビューし、先回りPRまで仕上げるコマンド
+- `/review-retro` : 受けたレビュー指摘の原因を掘り、log/lessons に反映するコマンド
+- `/wait-new-pr` : 指定 issue の PR 出現を待ってレビューを開始するコマンド
 
 ## コンテキスト別ルール
 
