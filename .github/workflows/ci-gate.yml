@@ -1,0 +1,97 @@
+name: CI Gate
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.filter.outputs.api }}
+      app: ${{ steps.filter.outputs.app }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            api:
+              - 't0016Go/**'
+              - 'docker-compose*.yml'
+              - 'ec2-docker-compose.yml'
+              - '.github/workflows/**'
+            app:
+              - 't0016Next/**'
+              - 'docker-compose*.yml'
+              - 'ec2-docker-compose.yml'
+              - '.github/workflows/**'
+
+  build-api:
+    needs: changes
+    if: needs.changes.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.18'
+
+      - name: Build
+        run: go build -v ./...
+        working-directory: t0016Go/.
+
+      - name: Test
+        run: go test -v ./...
+        working-directory: t0016Go/.
+
+  build-app:
+    needs: changes
+    if: needs.changes.outputs.app == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: t0016Next/myapp/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: t0016Next/myapp
+
+      - name: Build
+        run: npm run build
+        working-directory: t0016Next/myapp
+
+      - name: Lint
+        run: npm run lint
+        working-directory: t0016Next/myapp
+
+  ci-gate:
+    needs: [build-api, build-app]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check required jobs
+        run: |
+          api_result="${{ needs.build-api.result }}"
+          app_result="${{ needs.build-app.result }}"
+          echo "build-api: $api_result"
+          echo "build-app: $app_result"
+
+          if [ "$api_result" != "success" ] && [ "$api_result" != "skipped" ]; then
+            echo "build-api failed"
+            exit 1
+          fi
+          if [ "$app_result" != "success" ] && [ "$app_result" != "skipped" ]; then
+            echo "build-app failed"
+            exit 1
+          fi
