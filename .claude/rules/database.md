@@ -70,3 +70,9 @@ DESCRIBE karaokes;
 docker-compose down -v  # ボリュームごと削除
 docker-compose up -d db # 再起動（db/initdb.d/create.sql が再実行される）
 ```
+
+## 設計変更前の確認
+
+スキーマ変更・設計変更を検討する際は、`V-Kara-Lists.wiki/設計判断ログ.md` を確認する。
+過去に検討して採用しなかった案とその理由が記録されている（同じ議論の繰り返しを防ぐため）。
+新たに却下した案が出た場合はこのページに追記する。
