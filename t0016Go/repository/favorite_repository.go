@@ -31,8 +31,7 @@ func (db *favoriteRepository) CountKaraokeFavorites() ([]domain.TransmitKaraoke,
 }
 
 func (db *favoriteRepository) DeleteMovieFavorite(fav domain.Favorite) error {
-	whereQu := fmt.Sprintf("listener_id = %v AND movie_url = '%v' AND karaoke_id = 0", fav.ListenerId, fav.MovieUrl)
-	err := db.Where(whereQu).Delete(&fav).Error
+	err := db.Where("listener_id = ? AND movie_url = ? AND karaoke_id = 0", fav.ListenerId, fav.MovieUrl).Delete(&fav).Error
 	if err != nil {
 		return err
 	}
@@ -41,8 +40,7 @@ func (db *favoriteRepository) DeleteMovieFavorite(fav domain.Favorite) error {
 }
 
 func (db *favoriteRepository) DeleteKaraokeFavorite(fav domain.Favorite) error {
-	whereQu := fmt.Sprintf("listener_id = %v AND movie_url = '%v' AND karaoke_id = %v", fav.ListenerId, fav.MovieUrl, fav.KaraokeId)
-	err := db.Where(whereQu).Delete(&fav).Error
+	err := db.Where("listener_id = ? AND movie_url = ? AND karaoke_id = ?", fav.ListenerId, fav.MovieUrl, fav.KaraokeId).Delete(&fav).Error
 	if err != nil {
 		return err
 	}
@@ -111,10 +109,10 @@ func (db *favoriteRepository) GetVtubersMoviesKaraokesByVtuberKanaWithFavCnts(ka
 	joinQu2 := "LEFT JOIN karaokes as k ON m.movie_url = k.movie_url "
 	joinQu3 := "LEFT JOIN favorites as f ON k.karaoke_id = f.karaoke_id AND f.karaoke_id != 0  AND f.deleted_at IS NULL"
 	joinQu := fmt.Sprint(joinQu1, joinQu2, joinQu3)
-	whereQu := fmt.Sprintf("vtubers.vtuber_kana = \"%v\" AND m.movie_url IS NOT NULL AND k.karaoke_id != 0 ", kana)
+	whereQu := "vtubers.vtuber_kana = ? AND m.movie_url IS NOT NULL AND k.karaoke_id != 0 "
 	groupQu := "k.karaoke_id"
 	err = db.Model(vt).Select(selectQu1, selectQu2, selectQu3, selectQu4).
-		Joins(joinQu).Where(whereQu).Group(groupQu).
+		Joins(joinQu).Where(whereQu, kana).Group(groupQu).
 		Scan(&TmKas).Error
 
 	if err != nil {
@@ -138,13 +136,13 @@ func (db *favoriteRepository) GetLatest50VtubersMoviesKaraokesWithFavCnts(guestI
 	joinQuC := "LEFT JOIN favorites as f ON k.karaoke_id = f.karaoke_id AND f.karaoke_id != 0  AND f.deleted_at IS NULL"
 	joinQu1 := fmt.Sprint(joinQuA, joinQuB)
 	joinQu2 := fmt.Sprint(joinQuC)
-	whereQu1 := fmt.Sprint("k.karaoke_inputter_id != ", guestId)
+	whereQu1 := "k.karaoke_inputter_id != ?"
 	whereQu2 := "m.movie_url IS NOT NULL AND k.karaoke_id != 0 "
 	groupQu := "k.karaoke_id"
 	orderQu := "`k`.`karaoke_id` DESC"
 	limitQu := 50
 	err = db.Model(vt).Select(selectQu1, selectQu2, selectQu3, selectQu4).
-		Joins(joinQu1).Where(whereQu1).Joins(joinQu2).Where(whereQu2).Group(groupQu).Order(orderQu).Limit(limitQu).
+		Joins(joinQu1).Where(whereQu1, guestId).Joins(joinQu2).Where(whereQu2).Group(groupQu).Order(orderQu).Limit(limitQu).
 		Scan(&TmKas).Error
 
 	if err != nil {
@@ -163,8 +161,7 @@ func (db *favoriteRepository) FindFavoritesCreatedByListenerId(lId domain.Listen
 }
 
 func (db *favoriteRepository) FindFavoriteUnscopedByFavOrUnfavRegistry(fav domain.Favorite) domain.Favorite {
-	whereQu := fmt.Sprintf("listener_id = '%v' AND movie_url = '%v' AND karaoke_id = '%v'", fav.ListenerId, fav.MovieUrl, fav.KaraokeId)
-	err := db.Unscoped().Where(whereQu).First(&fav).Error
+	err := db.Unscoped().Where("listener_id = ? AND movie_url = ? AND karaoke_id = ?", fav.ListenerId, fav.MovieUrl, fav.KaraokeId).First(&fav).Error
 	if err != nil {
 		fmt.Printf("FindFavoriteUnscopedByFavOrUnfavRegistry got err=%v\n", err)
 	}
@@ -197,8 +194,7 @@ func (db *favoriteRepository) UpdateMovieFavorite(fav domain.Favorite) error {
 }
 
 func (db *favoriteRepository) UpdateKaraokeFavorite(fav domain.Favorite) error {
-	whereQu := fmt.Sprintf("listener_id = '%v' AND movie_url = '%v' AND karaoke_id = %v", fav.ListenerId, fav.MovieUrl, fav.KaraokeId)
-	err := db.Unscoped().Model(fav).Where(whereQu).Update("deleted_at", nil).Error
+	err := db.Unscoped().Model(fav).Where("listener_id = ? AND movie_url = ? AND karaoke_id = ?", fav.ListenerId, fav.MovieUrl, fav.KaraokeId).Update("deleted_at", nil).Error
 	if err != nil {
 		return err
 	}
@@ -226,10 +222,10 @@ func (db *favoriteRepository) FindMoviesCreatedByListenerId(lId domain.ListenerI
 	joinQu1 := "LEFT JOIN movies as m USING(vtuber_id)"
 	joinQu2 := "LEFT JOIN favorites as f ON m.movie_url = f.movie_url AND f.karaoke_id = 0  AND f.deleted_at IS NULL"
 	joinQu := fmt.Sprint(joinQu1, joinQu2)
-	whereQu := fmt.Sprintf("m.movie_url IS NOT NULL AND m.movie_inputter_id = %v", lId)
+	whereQu := "m.movie_url IS NOT NULL AND m.movie_inputter_id = ?"
 	groupQu := "m.movie_url, vtubers.vtuber_id"
 	err = db.Model(vt).Select(selectQu1, selectQu2, selectQu3).
-		Joins(joinQu).Where(whereQu).Group(groupQu).
+		Joins(joinQu).Where(whereQu, lId).Group(groupQu).
 		Scan(&TmMos).Error
 
 	if err != nil {
@@ -252,10 +248,10 @@ func (db *favoriteRepository) FindKaraokesCreatedByListenerId(lId domain.Listene
 	joinQu2 := "LEFT JOIN karaokes as k ON m.movie_url = k.movie_url "
 	joinQu3 := "LEFT JOIN favorites as f ON k.karaoke_id = f.karaoke_id AND f.karaoke_id != 0  AND f.deleted_at IS NULL"
 	joinQu := fmt.Sprint(joinQu1, joinQu2, joinQu3)
-	whereQu := fmt.Sprintf("m.movie_url IS NOT NULL AND k.karaoke_id != 0 AND k.karaoke_inputter_id = %v", lId)
+	whereQu := "m.movie_url IS NOT NULL AND k.karaoke_id != 0 AND k.karaoke_inputter_id = ?"
 	groupQu := "k.karaoke_id"
 	err = db.Model(vt).Select(selectQu1, selectQu2, selectQu3, selectQu4).
-		Joins(joinQu).Where(whereQu).Group(groupQu).
+		Joins(joinQu).Where(whereQu, lId).Group(groupQu).
 		Scan(&TmKas).Error
 	if err != nil {
 		return TmKas, err
@@ -268,8 +264,8 @@ func (db *favoriteRepository) FindMoviesFavoritedByListenerId(lId domain.Listene
 	var tmMos []domain.TransmitMovie
 	var err error
 	joinsQOfVtsMos := "LEFT JOIN vtubers USING(vtuber_id)"
-	whereOfVtsMos := fmt.Sprintf("where movies.inputter_listener_id = %v", lId)
-	err = db.Model(Mos).Where(whereOfVtsMos).Joins(joinsQOfVtsMos).Scan(&tmMos).Error
+	whereOfVtsMos := "where movies.inputter_listener_id = ?"
+	err = db.Model(Mos).Where(whereOfVtsMos, lId).Joins(joinsQOfVtsMos).Scan(&tmMos).Error
 	if err != nil {
 		return tmMos, err
 	}
@@ -282,8 +278,8 @@ func (db *favoriteRepository) FindKaraokesFavoritedByListenerId(lId domain.Liste
 	var Kas []domain.Karaoke
 	var VtsMosKas []domain.VtuberMovieKaraoke
 	joinsQOfVtsMosKas := "LEFT JOIN movies USING(movie_url) LEFT JOIN vtubers USING(vtuber_id)"
-	whereOfVtsMosKas := fmt.Sprintf("where karaoke_lists.inputter_listener_id = %v", lId)
-	err = db.Model(Kas).Where(whereOfVtsMosKas).Joins(joinsQOfVtsMosKas).Scan(&VtsMosKas).Error
+	whereOfVtsMosKas := "where karaoke_lists.inputter_listener_id = ?"
+	err = db.Model(Kas).Where(whereOfVtsMosKas, lId).Joins(joinsQOfVtsMosKas).Scan(&VtsMosKas).Error
 	if err != nil {
 		return tmKas, err
 	}
