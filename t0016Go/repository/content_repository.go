@@ -19,65 +19,49 @@ func (db *contentRepository) GetVtubers() ([]domain.Vtuber, error) {
 	return vts, nil
 }
 
-func (db *contentRepository) GetMovieByUrl(url domain.MovieUrl) (domain.Movie, error) {
-	var mo domain.Movie
-	err := db.Where("movie_url = ?", url).Find(&mo).Error
+func (db *contentRepository) GetVideoById(id domain.VideoId) (domain.Video, error) {
+	var v domain.Video
+	err := db.Where("id = ?", id).Find(&v).Error
 	if err != nil {
-		return domain.Movie{}, err
+		return domain.Video{}, err
 	}
-	return mo, nil
+	return v, nil
 }
 
-func (db *contentRepository) GetMovies() ([]domain.Movie, error) {
-	var mos []domain.Movie
-	err := db.Find(&mos).Error
+func (db *contentRepository) GetVideoByUrl(url domain.MovieUrl) (domain.Video, error) {
+	var v domain.Video
+	err := db.Where("movie_url = ?", url).Find(&v).Error
+	if err != nil {
+		return domain.Video{}, err
+	}
+	return v, nil
+}
+
+func (db *contentRepository) GetVideos() ([]domain.Video, error) {
+	var vs []domain.Video
+	err := db.Find(&vs).Error
 	if err != nil {
 		return nil, err
 	}
-	return mos, nil
+	return vs, nil
 }
 
-func (db *contentRepository) GetKaraokes() ([]domain.Karaoke, error) {
-	var Kas []domain.Karaoke
-	err := db.Find(&Kas).Error
+func (db *contentRepository) GetVideoSongs() ([]domain.VideoSong, error) {
+	var vss []domain.VideoSong
+	err := db.Find(&vss).Error
 	if err != nil {
 		return nil, err
 	}
-	return Kas, nil
+	return vss, nil
 }
 
-func (db *contentRepository) GetMoviesUrlTitleByVtuber(id domain.VtuberId) ([]domain.Movie, error) {
-	var mos []domain.Movie
-	selectQ := "movie_url, movie_title"
-	whereQ := fmt.Sprint("vtuber_id = ", id)
-	err := db.Select(selectQ).Where(whereQ).Find(&mos).Error
+func (db *contentRepository) GetVideosByVtuber(id domain.VtuberId) ([]domain.Video, error) {
+	var vs []domain.Video
+	err := db.Where("vtuber_id = ?", id).Find(&vs).Error
 	if err != nil {
 		return nil, err
 	}
-	return mos, nil
-}
-
-func (db *contentRepository) GetVtubersMovies() ([]domain.VtuberMovie, error) {
-	var mos []domain.Movie
-	var VtsMos []domain.VtuberMovie
-	selectQ := "vtuber_id, vtuber_name,  movie_url, movie_title"
-	joinsQ := "LEFT JOIN vtubers USING(vtuber_id)"
-	err := db.Model(mos).Select(selectQ).Joins(joinsQ).Scan(&VtsMos).Error
-	if err != nil {
-		return nil, err
-	}
-	return VtsMos, nil
-}
-
-func (db *contentRepository) GetVtubersMoviesKaraokes() ([]domain.TransmitKaraoke, error) {
-	var kas []domain.Karaoke
-	var vtsMosKas []domain.TransmitKaraoke
-	joinsQ := "LEFT JOIN movies USING(movie_url) LEFT JOIN vtubers USING(vtuber_id)"
-	err := db.Model(kas).Joins(joinsQ).Scan(&vtsMosKas).Error
-	if err != nil {
-		return nil, err
-	}
-	return vtsMosKas, nil
+	return vs, nil
 }
 
 func (db *contentRepository) CreateVtuber(V domain.Vtuber) (domain.Vtuber, error) {
@@ -85,26 +69,27 @@ func (db *contentRepository) CreateVtuber(V domain.Vtuber) (domain.Vtuber, error
 	return V, result.Error
 }
 
-func (db *contentRepository) CreateMovie(M domain.Movie) (domain.Movie, error) {
+func (db *contentRepository) CreateVideo(V domain.Video) (domain.Video, error) {
 	var v domain.Vtuber
-	v.VtuberId = M.VtuberId
+	v.VtuberId = V.VtuberId
 	if result := db.First(&v); result.Error != nil {
-		fmt.Printf("V:%v", v)
-		return domain.Movie{}, result.Error
+		return domain.Video{}, result.Error
 	}
-	result := db.Create(&M)
-	return M, result.Error
+	result := db.Omit("id").Create(&V)
+	return V, result.Error
 }
 
-func (db *contentRepository) CreateKaraokes(ks []domain.Karaoke) ([]domain.Karaoke, error) {
-	var Mo domain.Movie
-	Mo.MovieUrl = ks[0].MovieUrl
-	if result := db.First(&Mo); result.Error != nil {
+func (db *contentRepository) CreateVideoSongs(vss []domain.VideoSong) ([]domain.VideoSong, error) {
+	if len(vss) == 0 {
+		return nil, fmt.Errorf("video songs are empty")
+	}
+	var v domain.Video
+	if result := db.Where("id = ?", vss[0].VideoId).First(&v); result.Error != nil {
 		return nil, result.Error
 	}
 
-	result := db.Create(&ks)
-	return ks, result.Error
+	result := db.Omit("id").Create(&vss)
+	return vss, result.Error
 }
 
 func (db *contentRepository) UpdateVtuber(V domain.Vtuber) error {
@@ -112,57 +97,54 @@ func (db *contentRepository) UpdateVtuber(V domain.Vtuber) error {
 	return result.Error
 }
 
-func (db *contentRepository) UpdateMovie(M domain.Movie) error {
-	var Mo domain.Vtuber
-	result := db.Model(&Mo).Where("Movie_url = ?", M.MovieUrl).Updates(&M)
-
+func (db *contentRepository) UpdateVideo(V domain.Video) error {
+	var v domain.Video
+	result := db.Model(&v).Where("id = ?", V.VideoId).Updates(&V)
 	return result.Error
 }
 
-func (db *contentRepository) UpdateKaraoke(K domain.Karaoke) error {
-	var Ka domain.Karaoke
-	result := db.Model(&Ka).Where("karaoke_id = ?", K.KaraokeId).Updates(&K)
-
+func (db *contentRepository) UpdateVideoSong(VS domain.VideoSong) error {
+	var vs domain.VideoSong
+	result := db.Model(&vs).Where("id = ?", VS.VideoSongId).Updates(&VS)
 	return result.Error
 }
 
 func (db *contentRepository) DeleteVtuber(V domain.Vtuber) error {
-	var Mo domain.Movie
-	db.Where("vtuber_id = ? ", V.VtuberId).First(&Mo)
-	if Mo.MovieUrl != "" {
-		return fmt.Errorf("delete Vtuber after its Movie ")
+	var v domain.Video
+	db.Where("vtuber_id = ?", V.VtuberId).First(&v)
+	if v.MovieUrl != "" {
+		return fmt.Errorf("delete Vtuber after its Video")
 	}
 	result := db.Where("vtuber_name = ?", V.VtuberName).Delete(V) //フロント側の表示バグ対策でPK+αで絞込み
 	return result.Error
 }
 
-func (db *contentRepository) DeleteMovie(M domain.Movie) error {
-	var Ka domain.Karaoke
-	Ka.MovieUrl = M.MovieUrl
-	db.First(&Ka)
-	if Ka.KaraokeId != 0 {
-		return fmt.Errorf("delete Vtuber after its Movie ")
+func (db *contentRepository) DeleteVideo(V domain.Video) error {
+	var vs domain.VideoSong
+	db.Where("video_id = ?", V.VideoId).First(&vs)
+	if vs.VideoSongId != 0 {
+		return fmt.Errorf("delete Video after its VideoSong")
 	}
-	result := db.Where("movie_title = ?", M.MovieTitle).Delete(M) //フロント側の表示バグ対策でPK+αで絞込み
+	result := db.Where("title = ?", V.Title).Delete(V) //フロント側の表示バグ対策でPK+αで絞込み
 	return result.Error
 }
 
-func (db *contentRepository) DeleteKaraoke(K domain.Karaoke) error {
-	result := db.Where("song_name = ?", K.SongName).Delete(K) //フロント側の表示バグ対策でPK+αで絞込み
+func (db *contentRepository) DeleteVideoSong(VS domain.VideoSong) error {
+	result := db.Where("song_name = ?", VS.SongName).Delete(VS) //フロント側の表示バグ対策でPK+αで絞込み
 	return result.Error
 }
 
 func (db *contentRepository) VerifyUserModifyVtuber(id domain.ListenerId, V domain.Vtuber) (bool, error) {
-	result := db.Where("vtuber_Inputter_id=?", id).First(&V)
+	result := db.Where("vtuber_inputter_id = ?", id).First(&V)
 	return V.VtuberInputterId == id, result.Error
 }
 
-func (db *contentRepository) VerifyUserModifyMovie(id domain.ListenerId, M domain.Movie) (bool, error) {
-	result := db.Where("movie_Inputter_id=?", id).First(&M, M.MovieUrl)
-	return M.MovieInputterId == id, result.Error
+func (db *contentRepository) VerifyUserModifyVideo(id domain.ListenerId, V domain.Video) (bool, error) {
+	result := db.Where("inputter_id = ?", id).First(&V, V.VideoId)
+	return V.InputterId == id, result.Error
 }
 
-func (db *contentRepository) VerifyUserModifyKaraoke(id domain.ListenerId, K domain.Karaoke) (bool, error) {
-	result := db.Where("karaoke_Inputter_id=?", id).First(&K)
-	return K.KaraokeInputterId == id, result.Error
+func (db *contentRepository) VerifyUserModifyVideoSong(id domain.ListenerId, VS domain.VideoSong) (bool, error) {
+	result := db.Where("inputter_id = ?", id).First(&VS)
+	return VS.InputterId == id, result.Error
 }

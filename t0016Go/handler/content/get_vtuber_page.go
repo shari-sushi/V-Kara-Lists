@@ -13,13 +13,22 @@ func (h *ContentHandler) ReturnVtuberPageData(cont *gin.Context) {
 	log.Println("kana", kana)
 	var errs []error
 
-	VtsMosKasWithFavofVtu, err := h.ActivityService.GetVtubersMoviesKaraokesByVtuberKanaWithFavCnts(kana)
+	VtsVsVssWithFavOfVtu, err := h.ActivityService.GetVtubersVideosVideoSongsByVtuberKanaWithFavCnts(kana)
 	if err != nil {
 		log.Print("err:", err)
 		errs = append(errs, err)
 	}
-	vtuberId := VtsMosKasWithFavofVtu[0].VtuberId
-	MosOfVtu, err := h.ContentService.GetMoviesUrlTitleByVtuber(vtuberId)
+	if len(VtsVsVssWithFavOfVtu) == 0 {
+		cont.JSON(http.StatusOK, gin.H{
+			"vtubers_videos":      []int{},
+			"vtubers_video_songs": []int{},
+			"error":               errs,
+			"message":             "no data found for this vtuber",
+		})
+		return
+	}
+	vtuberId := VtsVsVssWithFavOfVtu[0].VtuberId
+	VsOfVtu, err := h.ContentService.GetVideosByVtuber(vtuberId)
 	if err != nil {
 		log.Print("err:", err)
 		errs = append(errs, err)
@@ -29,23 +38,23 @@ func (h *ContentHandler) ReturnVtuberPageData(cont *gin.Context) {
 	if err != nil || listenerId == 0 {
 		errs = append(errs, err)
 		cont.JSON(http.StatusOK, gin.H{
-			"vtubers_movies":          MosOfVtu,
-			"vtubers_movies_karaokes": VtsMosKasWithFavofVtu,
-			"error":                   errs,
-			"message":                 "dont you Loged in ?",
+			"vtubers_videos":      VsOfVtu,
+			"vtubers_video_songs": VtsVsVssWithFavOfVtu,
+			"error":               errs,
+			"message":             "dont you Loged in ?",
 		})
 		return
 	}
-	myFav, err := h.ActivityService.FindFavoritesCreatedByListenerId(listenerId)
+	myFav, err := h.ActivityService.FindFavoriteVideoSongsCreatedByListenerId(listenerId)
 	if err != nil {
-		log.Print("err in FindFavoritesCreatedByListenerId	:", err)
+		log.Print("err in FindFavoriteVideoSongsCreatedByListenerId	:", err)
 	}
 
-	TransmitKaraokes := common.AddIsFavToKaraokeWithFav(VtsMosKasWithFavofVtu, myFav)
+	TransmitVideoSongs := common.AddIsFavToVideoSongWithFav(VtsVsVssWithFavOfVtu, myFav)
 
 	cont.JSON(http.StatusOK, gin.H{
-		"vtubers_movies":          MosOfVtu,
-		"vtubers_movies_karaokes": TransmitKaraokes,
-		"error":                   errs,
+		"vtubers_videos":      VsOfVtu,
+		"vtubers_video_songs": TransmitVideoSongs,
+		"error":               errs,
 	})
 }

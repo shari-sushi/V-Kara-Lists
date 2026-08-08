@@ -69,40 +69,45 @@ func connectTestDB(t *testing.T) *favoriteRepository {
 		t.Fatalf("failed to connect test db: %v", err)
 	}
 
-	if err := conn.AutoMigrate(&domain.Favorite{}); err != nil {
-		t.Fatalf("failed to migrate favorites table: %v", err)
+	if err := conn.AutoMigrate(&domain.Vtuber{}, &domain.Video{}, &domain.VideoSong{}, &domain.FavoriteVideo{}, &domain.FavoriteVideoSong{}); err != nil {
+		t.Fatalf("failed to migrate tables: %v", err)
 	}
 
-	t.Cleanup(func() {
-		conn.Unscoped().Where("1 = 1").Delete(&domain.Favorite{})
-	})
+	cleanup := func() {
+		conn.Unscoped().Where("1 = 1").Delete(&domain.FavoriteVideoSong{})
+		conn.Unscoped().Where("1 = 1").Delete(&domain.FavoriteVideo{})
+		conn.Unscoped().Where("1 = 1").Delete(&domain.VideoSong{})
+		conn.Unscoped().Where("1 = 1").Delete(&domain.Video{})
+		conn.Unscoped().Where("1 = 1").Delete(&domain.Vtuber{})
+	}
+	t.Cleanup(cleanup)
 
 	// 各テストをクリーンな状態で始める
-	conn.Unscoped().Where("1 = 1").Delete(&domain.Favorite{})
+	cleanup()
 
 	return &favoriteRepository{SqlHandler: &testSqlHandler{Conn: conn}}
 }
 
-func countFavorites(t *testing.T, repo *favoriteRepository) int64 {
+func countFavoriteVideos(t *testing.T, repo *favoriteRepository) int64 {
 	t.Helper()
 	var count int64
-	if err := repo.SqlHandler.Model(&domain.Favorite{}).Count(&count).Error; err != nil {
-		t.Fatalf("failed to count favorites: %v", err)
+	if err := repo.SqlHandler.Model(&domain.FavoriteVideo{}).Count(&count).Error; err != nil {
+		t.Fatalf("failed to count favorite_videos: %v", err)
 	}
 	return count
 }
 
 // TestConnectTestDB_CanCreateAndCountFavorite は実DB接続基盤そのものの疎通確認。
-// AutoMigrateしたfavoritesテーブルにレコードを作成し、カウントできることを確認する。
+// AutoMigrateしたfavorite_videosテーブルにレコードを作成し、カウントできることを確認する。
 func TestConnectTestDB_CanCreateAndCountFavorite(t *testing.T) {
 	repo := connectTestDB(t)
 
-	fav := domain.Favorite{ListenerId: 1, MovieUrl: "smoke-test-movie-url", KaraokeId: 0}
+	fav := domain.FavoriteVideo{ListenerId: 1, VideoId: 1}
 	if err := repo.SqlHandler.Create(&fav).Error; err != nil {
 		t.Fatalf("failed to create favorite: %v", err)
 	}
 
-	if got := countFavorites(t, repo); got != 1 {
+	if got := countFavoriteVideos(t, repo); got != 1 {
 		t.Fatalf("got %d favorites, want 1", got)
 	}
 }

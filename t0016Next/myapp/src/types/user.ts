@@ -1,5 +1,3 @@
-import { VtuberId, KaraokeId, SongId } from "./vtuber_content"
-
 export type ListenerId = number
 
 export type User = {

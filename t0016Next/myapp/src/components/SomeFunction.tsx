@@ -1,5 +1,3 @@
-import type { ReceivedKaraoke } from "../types/vtuber_content" //type{}で型情報のみインポート
-
 export const Checkbox = ({ children, ...props }: JSX.IntrinsicElements["input"]) => (
   <label style={{ marginRight: "1em" }}>
     <input type="checkbox" {...props} />

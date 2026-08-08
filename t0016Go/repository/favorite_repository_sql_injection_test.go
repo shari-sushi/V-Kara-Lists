@@ -6,63 +6,70 @@ import (
 	"github.com/sharin-sushi/0016go_next_relation/domain"
 )
 
-// このファイルは #402 で発見されたSQLインジェクション脆弱性が、プレースホルダー化
-// (favorite_repository.go)によりブロックされていることを実DBに対して証明するテスト。
+// このファイルは #402 で発見されたSQLインジェクション脆弱性(旧favoritesテーブルのfmt.Sprintfによる
+// WHERE句組み立て)がプレースホルダー化により再発しないことを実DBに対して検証するテスト。
 //
-// 修正前は DeleteMovieFavorite / FindFavoriteUnscopedByFavOrUnfavRegistry が
-// fmt.Sprintf でWHERE句を組み立てており、存在しない listener_id と
-// movie_url = "nonexistent' OR '1'='1" を渡すと、
-//
-//	whereQu := fmt.Sprintf("listener_id = %v AND movie_url = '%v' AND karaoke_id = 0", fav.ListenerId, fav.MovieUrl)
-//	// => listener_id = 999999 AND movie_url = 'nonexistent' OR '1'='1' AND karaoke_id = 0
-//
-// AND が OR より優先されるSQLの評価順により
-// "(listener_id = 999999 AND movie_url = 'nonexistent') OR ('1'='1' AND karaoke_id = 0)"
-// と解釈され、他ユーザーのレコードが操作できてしまっていた(実際に確認済み)。
-//
-// このテストは修正前のコードに対しては一旦FAILすることを確認したうえで、
-// 現在のプレースホルダー実装で注入がブロックされることを検証する内容に書き換えている。
-func TestDeleteMovieFavorite_BlocksSQLInjection(t *testing.T) {
+// DB再設計(#398)で旧Favorite(MovieUrl文字列を持つ)はFavoriteVideo/FavoriteVideoSong(いずれもint型の
+// ListenerId/VideoId/VideoSongIdのみ)に置き換わり、int列だけを持つテーブルはSQLドライバの型付きバイン
+// ドにより文字列注入自体が成立しない。一方で GetVtubersVideosVideoSongsByVtuberKanaWithFavCnts の
+// kana引数は依然としてユーザー入力の文字列がWHERE句に渡る経路であるため、ここでプレースホルダーが
+// 機能していることを実DBで確認する。
+func TestGetVtubersVideosVideoSongsByVtuberKanaWithFavCnts_BlocksSQLInjection(t *testing.T) {
 	repo := connectTestDB(t)
 
-	victim := domain.Favorite{ListenerId: 1, MovieUrl: "victim-movie-url", KaraokeId: 0}
-	if err := repo.SqlHandler.Create(&victim).Error; err != nil {
-		t.Fatalf("failed to seed victim favorite: %v", err)
+	victimVtuber := domain.Vtuber{VtuberName: "victim-vtuber", VtuberKana: "victim-kana", VtuberInputterId: 1}
+	if err := repo.SqlHandler.Create(&victimVtuber).Error; err != nil {
+		t.Fatalf("failed to seed victim vtuber: %v", err)
+	}
+	victimVideo := domain.Video{
+		Category:   domain.KARAOKE_CATEGORY,
+		MovieUrl:   "victim-movie-url",
+		Title:      "victim-title",
+		VtuberId:   victimVtuber.VtuberId,
+		InputterId: 1,
+	}
+	if err := repo.SqlHandler.Create(&victimVideo).Error; err != nil {
+		t.Fatalf("failed to seed victim video: %v", err)
+	}
+	victimVideoSong := domain.VideoSong{
+		VideoId:    victimVideo.VideoId,
+		SingStart:  "00:01:00",
+		SongName:   "victim-song",
+		InputterId: 1,
+	}
+	if err := repo.SqlHandler.Create(&victimVideoSong).Error; err != nil {
+		t.Fatalf("failed to seed victim video song: %v", err)
 	}
 
-	attacker := domain.Favorite{
-		ListenerId: 999999, // 存在しないlistener_id
-		MovieUrl:   "nonexistent' OR '1'='1",
-		KaraokeId:  0,
+	attackerKana := "nonexistent' OR '1'='1"
+
+	got, err := repo.GetVtubersVideosVideoSongsByVtuberKanaWithFavCnts(attackerKana)
+	if err != nil {
+		t.Fatalf("GetVtubersVideosVideoSongsByVtuberKanaWithFavCnts returned unexpected error: %v", err)
 	}
 
-	if err := repo.DeleteMovieFavorite(attacker); err != nil {
-		t.Fatalf("DeleteMovieFavorite returned unexpected error: %v", err)
-	}
-
-	got := countFavorites(t, repo)
-	if got != 1 {
-		t.Fatalf("SQLインジェクションにより他ユーザーのお気に入りが削除された可能性がある: got %d favorites remaining, want 1", got)
+	if len(got) != 0 {
+		t.Fatalf("SQLインジェクションにより他のvtuberのデータが取得できてしまった: got %d rows, want 0", len(got))
 	}
 }
 
-func TestFindFavoriteUnscopedByFavOrUnfavRegistry_BlocksSQLInjection(t *testing.T) {
+// DeleteVideoFavoriteがプレースホルダー経由でlistener_id/video_idの両方に絞り込み、
+// 他ユーザーのお気に入りを誤って削除しないことを確認する。
+func TestDeleteVideoFavorite_ScopesToListenerAndVideo(t *testing.T) {
 	repo := connectTestDB(t)
 
-	victim := domain.Favorite{ListenerId: 1, MovieUrl: "victim-movie-url", KaraokeId: 0}
+	victim := domain.FavoriteVideo{ListenerId: 1, VideoId: 100}
 	if err := repo.SqlHandler.Create(&victim).Error; err != nil {
 		t.Fatalf("failed to seed victim favorite: %v", err)
 	}
 
-	attacker := domain.Favorite{
-		ListenerId: 999999, // 存在しないlistener_id
-		MovieUrl:   "nonexistent' OR '1'='1",
-		KaraokeId:  0,
+	attacker := domain.FavoriteVideo{ListenerId: 999999, VideoId: 100} // 別listenerからの削除リクエスト
+	if err := repo.DeleteVideoFavorite(attacker); err != nil {
+		t.Fatalf("DeleteVideoFavorite returned unexpected error: %v", err)
 	}
 
-	got := repo.FindFavoriteUnscopedByFavOrUnfavRegistry(attacker)
-
-	if got.MovieUrl == victim.MovieUrl {
-		t.Fatalf("SQLインジェクションにより他ユーザーのお気に入りが取得できてしまった: got movie_url=%q", got.MovieUrl)
+	got := countFavoriteVideos(t, repo)
+	if got != 1 {
+		t.Fatalf("他ユーザーのお気に入りが削除された可能性がある: got %d favorites remaining, want 1", got)
 	}
 }

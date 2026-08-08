@@ -1,6 +1,8 @@
 package api
 
 import (
+	"time"
+
 	"github.com/sharin-sushi/0016go_next_relation/domain"
 )
 
@@ -8,41 +10,60 @@ import (
 
 type MovieUrl string
 
-// create karaoke, create karaokes 用
-type CreateKaraokeSongRequest struct {
-	MovieUrl MovieUrl // `json:"movie_url"`
-	KaraokeSong
+// create video 用
+type CreateVideoRequest struct {
+	VtuberId    domain.VtuberId      // `json:"vtuber_id"`
+	Category    domain.VideoCategory // `json:"category"`
+	MovieUrl    MovieUrl             // `json:"movie_url"`
+	Title       string               // `json:"title"`
+	PublishedAt *time.Time           // `json:"published_at"`
 }
 
-type CreateKaraokeSongsRequest struct {
-	MovieUrl MovieUrl      // `json:"movie_url"`
-	Songs    []KaraokeSong // `json:"songs"`
-}
-
-type KaraokeSong struct {
+// create video song, create video songs 用
+type VideoSongInput struct {
 	SingStart string // `json:"sing_start"`
 	SongName  string // `json:"song_name"`
+}
+
+type CreateVideoSongsRequest struct {
+	VideoId domain.VideoId   // `json:"video_id"`
+	Songs   []VideoSongInput // `json:"songs"`
 }
 
 type CreateVtuberResponse struct {
 	Vtuber domain.Vtuber `json:"vtuber"`
 }
 
-type CreateMovieResponse struct {
-	Movie domain.Movie `json:"movie"`
+type CreateVideoResponse struct {
+	Video domain.Video `json:"video"`
 }
 
-type CreateKaraokesResponse struct {
-	Karaokes []domain.Karaoke `json:"karaokes"`
+type CreateVideoSongsResponse struct {
+	VideoSongs []domain.VideoSong `json:"video_songs"`
 }
 
-func CreateKaraokeSongsRequestToKaraokes(req CreateKaraokeSongsRequest, requestListenerID domain.ListenerId) []domain.Karaoke {
-	var resp []domain.Karaoke
-	for _, karaoke := range req.Songs {
-		resp = append(resp, domain.Karaoke{
-			MovieUrl:  domain.MovieUrl(req.MovieUrl),
-			SingStart: karaoke.SingStart,
-			SongName:  karaoke.SongName,
+func CreateVideoRequestToVideo(req CreateVideoRequest, requestListenerID domain.ListenerId) domain.Video {
+	return domain.Video{
+		Category:    req.Category,
+		MovieUrl:    domain.MovieUrl(req.MovieUrl),
+		Title:       req.Title,
+		VtuberId:    req.VtuberId,
+		PublishedAt: req.PublishedAt,
+		InputterId:  requestListenerID,
+	}
+}
+
+// CreateVideoSongsRequestToVideoSongs はリクエストからVideoSongを組み立てる。
+// 単曲カテゴリでの SingStart センチネル値の適用は、Video.Category を参照する必要があるため
+// service層(ContentService.CreateVideoSongs)で行う。
+func CreateVideoSongsRequestToVideoSongs(req CreateVideoSongsRequest, requestListenerID domain.ListenerId) []domain.VideoSong {
+	var resp []domain.VideoSong
+	for _, song := range req.Songs {
+		resp = append(resp, domain.VideoSong{
+			VideoId:    req.VideoId,
+			SingStart:  song.SingStart,
+			SongName:   song.SongName,
+			InputterId: requestListenerID,
 		})
 	}
 	return resp

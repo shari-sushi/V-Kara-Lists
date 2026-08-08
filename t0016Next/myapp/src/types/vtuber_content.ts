@@ -1,33 +1,30 @@
 import { ListenerId } from "./user"
 
+// DB再設計(#398)により、Movie/Karaokeは「動画(Video)」と「動画内の歌唱(VideoSong)」の
+// 2つに統一された。4種のコンテンツ(歌枠・ライブ・オリ曲・歌ってみた)の違いは
+// VideoCategory の値だけで表現する。
+
 export type BasicDataProps = {
   vtubers: ReceivedVtuber[]
-  vtubers_movies: ReceivedMovie[]
-  vtubers_movies_karaokes: ReceivedKaraoke[]
+  vtubers_videos: ReceivedVideo[]
+  vtubers_video_songs: ReceivedVideoSong[]
 }
-export type CrudContentType = "none" | "vtuber" | "movie" | "karaoke"
 
-export type CreateContentData = {
-  VtuberId: number
-  VtuberName: string
-  VtuberKana: string
-  IntroMovieUrl: string | null
-  MovieUrl: string
-  MovieTitle: string
-  Songs: {
-    Index: string
-    // TODO: 作成のリクエスト時はid不要なので消す
-    KaraokeId: number
-    SingStart: string
-    SongName: string
-  }[]
-}
+// 11:オリ曲 12:歌ってみた 31:歌枠 32:ライブ
+export type VideoCategory = 11 | 12 | 31 | 32
+
+export const VIDEO_CATEGORY = {
+  ORIGINAL_SONG: 11,
+  COVERED_SONG: 12,
+  KARAOKE: 31,
+  LIVE: 32,
+} as const satisfies Record<string, VideoCategory>
 
 //以下、基礎の型３つ
 
 export type VtuberId = number
-export type KaraokeId = number
-export type SongId = number
+export type VideoId = number
+export type VideoSongId = number
 
 export type PrimitiveVtuber = {
   VtuberId: VtuberId
@@ -37,28 +34,22 @@ export type PrimitiveVtuber = {
   VtuberInputterId: string
 }
 
-export type PrimitiveMovie = {
+export type PrimitiveVideo = {
+  VideoId: VideoId
+  Category: VideoCategory
   MovieUrl: string
-  MovieTitle: string | null
-  VtuberId: number
-  MovieInputterId: number | null
+  Title: string
+  VtuberId: VtuberId
+  PublishedAt: string | null
+  InputterId: number
 }
 
-export type PrimitiveKaraoke = {
-  KaraokeId: number
-  MovieUrl: string | null
+export type PrimitiveVideoSong = {
+  VideoSongId: VideoSongId
+  VideoId: VideoId
   SingStart: string
-  SongName: string | null
-  KaraokeInputterId: number | null
-}
-
-export type PrimitiveOriginalSong = {
-  SongID: SongId
-  ArtistId: number
   SongName: string
-  MovieUrl: string
-  ReleseData: string
-  SongInputterId: ListenerId
+  InputterId: number
 }
 
 //　画面表示に使う型
@@ -74,46 +65,49 @@ export type ReceivedVtuber = {
   IsFav: boolean
 }
 
-export type ReceivedMovie = {
+export type ReceivedVideo = {
   VtuberId: VtuberId
   VtuberName: string
   VtuberKana: string
   IntroMovieUrl: string | null
   VtuberInputterId: ListenerId
 
+  VideoId: VideoId
+  Category: VideoCategory
   MovieUrl: string
-  MovieTitle: string
-  MovieInputterId: number
+  Title: string
+  VideoInputterId: number
 
   Count: number
   IsFav: boolean
 }
 
-export type ReceivedKaraoke = {
+export type ReceivedVideoSong = {
   VtuberId: VtuberId
   VtuberName: string
   VtuberKana: string
   IntroMovieUrl: string | null
   VtuberInputterId: ListenerId
 
+  VideoId: VideoId
+  Category: VideoCategory
   MovieUrl: string
-  MovieTitle: string
-  MovieInputterId: number
+  Title: string
+  VideoInputterId: number
 
-  KaraokeId: number
+  VideoSongId: VideoSongId
   SingStart: string
   SongName: string
-  KaraokeInputterId: number
+  VideoSongInputterId: number
 
   Count: number
   IsFav: boolean
 }
 
-export type FavoriteKaraoke = {
-  MovieUrl: string
-  KaraokeId: number
+export type FavoriteVideo = {
+  VideoId: VideoId
 }
 
-export type FavoriteMovie = {
-  MovieUrl: string
+export type FavoriteVideoSong = {
+  VideoSongId: VideoSongId
 }

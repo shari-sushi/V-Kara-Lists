@@ -7,7 +7,7 @@ import { useHamburgerMenu } from "@/providers/HamburgerMenuProvider"
 import { GuestLogin, GuestLoginForHamburger } from "../button/User"
 import { HeaderCss } from "@/styles/tailwiind"
 import { ToClickTW } from "@/styles/tailwiind"
-import { CreateLink, DeleteLink, EditLink, KaraokeLink, OriginalSongLink, LoginLink, MyPageLink, ProfileLink, SignUpLink, TitleLink, TopLink } from "../button/link/Humbarger"
+import { CoveredSongLink, KaraokeLink, LiveLink, OriginalSongLink, LoginLink, MyPageLink, ProfileLink, SignUpLink, TitleLink, TopLink } from "../button/link/Humbarger"
 import Image from "next/image"
 import { ToggleVideoPositionButton } from "../button/ToggleVideoPositionButton"
 import { useVideo } from "@/providers/VideoProvider"
@@ -60,11 +60,17 @@ const Header = () => {
         <Link href="/" className={navLinkCls("/")}>
           TOP
         </Link>
-        <Link href="/sings/karaoke" className={navLinkCls("/sings/karaoke")}>
-          カラオケ
+        <Link href="/videos/karaoke" className={navLinkCls("/videos/karaoke")}>
+          歌枠
         </Link>
-        <Link href="/sings/original-song" className={navLinkCls("/sings/original-song")}>
+        <Link href="/videos/live" className={navLinkCls("/videos/live")}>
+          ライブ
+        </Link>
+        <Link href="/videos/original-song" className={navLinkCls("/videos/original-song")}>
           オリ曲
+        </Link>
+        <Link href="/videos/covered-song" className={navLinkCls("/videos/covered-song")}>
+          歌ってみた
         </Link>
       </div>
 
@@ -72,24 +78,6 @@ const Header = () => {
       <div className="flex items-center">
         {/* デスクトップのみ: 認証系リンク（md以上） */}
         <div className="hidden md:flex items-center">
-          {isSignin && (
-            <div className="px-1">
-              <span className="pr-1">データの</span>
-              <Link href="/crud/create" className={`${ToClickTW.regular} pr-1`}>
-                登録
-              </Link>
-              <span className="pr-1">:</span>
-              <Link href="/crud/edit" className={`${ToClickTW.regular} pr-1`}>
-                編集
-              </Link>
-              <span className="pr-1">:</span>
-              <Link href="/crud/delete" className={`${ToClickTW.regular} pr-1`}>
-                削除
-              </Link>
-              /
-            </div>
-          )}
-
           {!isSignin && (
             <div className="pr-1">
               <Link href="/user/signin" className={`${ToClickTW.regular} mr-1`}>
@@ -146,7 +134,9 @@ const Header = () => {
               <div className="flex flex-col">
                 <TopLink />
                 <KaraokeLink />
+                <LiveLink />
                 <OriginalSongLink />
+                <CoveredSongLink />
               </div>
               <hr className="w-[60%] top-10 right-0 my-3" />
 
@@ -161,14 +151,6 @@ const Header = () => {
 
               {isSignin && (
                 <div>
-                  <div className="flex flex-col h-32">
-                    <CreateLink />
-                    <EditLink />
-                    <DeleteLink />
-                  </div>
-
-                  <hr className="flex w-[50%] mb-3" />
-
                   <div className="flex flex-col">
                     <MyPageLink />
                     <ProfileLink />

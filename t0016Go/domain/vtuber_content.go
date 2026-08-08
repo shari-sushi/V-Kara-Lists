@@ -14,64 +14,61 @@ type Vtuber struct {
 	// YoutubeChannelId string     `gorm:"type:varchar(50)"`                 //`json:"youtube_channel_id"`
 }
 
-// "karoake"とoriginal_song"意外はkareaokeIdのMovieUrlを作るのは弾く
 type MovieUrl string
-type Movie struct {
-	MovieUrl MovieUrl `gorm:"primaryKey;type:varchar(100)"`
-	// ContentType     MovieContentType `gorm:"type:varchar(64);not null;"`
-	MovieTitle      string     `gorm:"type:varchar(200);not null"`
-	VtuberId        VtuberId   `gorm:"type:int(11);not null"`
-	MovieInputterId ListenerId `gorm:"type:int(11);not null"`
-}
 
-type MovieContentType int
+// VideoCategory は動画の種別を表す。10/30は将来の大分類拡張用に予約している。
+type VideoCategory int
 
 const (
-	_ MovieContentType = iota
-	// 一般的に、1動画複数曲とされるもの
-	KARAOKE = 10
-	LIVE    = 11
+	_ VideoCategory = iota
 
-	// 一般的に、1動画1曲とされるもの
-	ORIGINAL_SONG = 51
-	COVERED_SONG  = 52
+	// 1動画1曲(単曲)とされるもの
+	ORIGINAL_SONG_CATEGORY VideoCategory = 11
+	COVERED_SONG_CATEGORY  VideoCategory = 12
 
-	// 上述に分類できないものが出来た時の仮分類として使用する
-	OTHER = 99
+	// 1動画複数曲とされるもの
+	KARAOKE_CATEGORY VideoCategory = 31
+	LIVE_CATEGORY    VideoCategory = 32
 )
 
-type KaraokeId int
-type Karaoke struct {
-	KaraokeId         KaraokeId  `gorm:"primaryKey;type:int(11)"`                           //`json:"id"`
-	MovieUrl          MovieUrl   `gorm:"type:varchar(100);uniqueIndex:karaoke_uq;not null"` //`json:"movie_url"`
-	SingStart         string     `gorm:"type:time(0);uniqueIndex:karaoke_uq"`               //`json:"sing_start"`
-	SongName          string     `gorm:"type:varchar(100)"`                                 //`json:"song_name"`
-	KaraokeInputterId ListenerId `gorm:"type:int(11)"`                                      //`json:"inputter_id"`
+// SingleSongCategories は動画1本につき歌唱行を必ず1件しか持たないカテゴリ。
+// これらのカテゴリでは VideoSong.SingStart にセンチネル値(SingleSongSentinelSingStart)を入れる。
+var SingleSongCategories = map[VideoCategory]bool{
+	ORIGINAL_SONG_CATEGORY: true,
+	COVERED_SONG_CATEGORY:  true,
 }
 
-type Karaokes struct {
-	Karaoke []Karaoke
+// SingleSongSentinelSingStart は単曲カテゴリでの sing_start の固定値。
+// UNIQUE(video_id, sing_start) 制約はNULL同士を別物と扱うため、NULLではなく固定値を入れることで
+// 単曲の重複作成を防ぐ。設計判断の詳細は V-Kara-Lists.wiki/設計判断ログ.md を参照。
+const SingleSongSentinelSingStart = "00:00:00"
+
+func (c VideoCategory) IsSingleSong() bool {
+	return SingleSongCategories[c]
 }
 
-type SongId int
-type OriginalSong struct {
-	ID         SongId     `gorm:"type:int(11);primaryKey"`
-	Url        MovieUrl   `gorm:"type:varchar(100);unique"`
-	Name       string     `gorm:"type:varchar(100)"`
-	ArtistId   int        `gorm:"type:int(11)"`
-	RelesedAt  time.Time  `gorm:"type:datetime;default null"`
-	InputterId ListenerId `gorm:"type:int(11);not null"`
-	CreatedAt  time.Time  `gorm:"type:datetime;not null"`
-	UpdatedAt  time.Time  `gorm:"type:datetime;not null"`
-	DeleteAt   time.Time  `gorm:"type:datetime;default null"`
+// Video は「動画」を表す。歌枠・ライブ・オリ曲・歌ってみたの4カテゴリを Category で区別する。
+type VideoId int
+type Video struct {
+	VideoId     VideoId       `gorm:"primaryKey;type:int(11);column:id"`
+	Category    VideoCategory `gorm:"type:tinyint;not null"`
+	MovieUrl    MovieUrl      `gorm:"type:varchar(100);not null;unique"`
+	Title       string        `gorm:"type:varchar(200);not null"`
+	VtuberId    VtuberId      `gorm:"type:int(11);not null"`
+	PublishedAt *time.Time    `gorm:"type:datetime;default:null"`
+	InputterId  ListenerId    `gorm:"type:int(11);not null"`
+	CreatedAt   time.Time     `gorm:"type:datetime;not null"`
+	UpdatedAt   time.Time     `gorm:"type:datetime;not null"`
 }
 
-type VtuberMovie struct {
-	Vtuber
-	Movie
-}
-
-type VtuberMovieKaraoke struct {
-	Movie
-	Karaoke
+// VideoSong は動画内で歌われた各曲(旧karaokesの正規化版)。単曲カテゴリでも必ず1行作る。
+type VideoSongId int
+type VideoSong struct {
+	VideoSongId VideoSongId `gorm:"primaryKey;type:int(11);column:id"`
+	VideoId     VideoId     `gorm:"type:int(11);not null;uniqueIndex:video_song_uq"`
+	SingStart   string      `gorm:"type:time(0);not null;uniqueIndex:video_song_uq"`
+	SongName    string      `gorm:"type:varchar(100);not null"`
+	InputterId  ListenerId  `gorm:"type:int(11);not null"`
+	CreatedAt   time.Time   `gorm:"type:datetime;not null"`
+	UpdatedAt   time.Time   `gorm:"type:datetime;not null"`
 }

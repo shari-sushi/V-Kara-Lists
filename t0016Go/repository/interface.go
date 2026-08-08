@@ -13,53 +13,45 @@ type UserRepository interface {
 type ContentRepository interface {
 	// 基本的なCRUd
 	GetVtubers() ([]domain.Vtuber, error)
-	GetMovieByUrl(url domain.MovieUrl) (domain.Movie, error)
-	GetMovies() ([]domain.Movie, error)
-	GetKaraokes() ([]domain.Karaoke, error)
-	GetVtubersMovies() ([]domain.VtuberMovie, error)
-	GetMoviesUrlTitleByVtuber(domain.VtuberId) ([]domain.Movie, error)
-	GetVtubersMoviesKaraokes() ([]domain.TransmitKaraoke, error)
+	GetVideoById(domain.VideoId) (domain.Video, error)
+	GetVideoByUrl(url domain.MovieUrl) (domain.Video, error)
+	GetVideos() ([]domain.Video, error)
+	GetVideoSongs() ([]domain.VideoSong, error)
+	GetVideosByVtuber(domain.VtuberId) ([]domain.Video, error)
 	CreateVtuber(domain.Vtuber) (domain.Vtuber, error)
-	CreateMovie(domain.Movie) (domain.Movie, error)
-	CreateKaraokes([]domain.Karaoke) ([]domain.Karaoke, error)
+	CreateVideo(domain.Video) (domain.Video, error)
+	CreateVideoSongs([]domain.VideoSong) ([]domain.VideoSong, error)
 	UpdateVtuber(domain.Vtuber) error
-	UpdateMovie(domain.Movie) error
-	UpdateKaraoke(domain.Karaoke) error
+	UpdateVideo(domain.Video) error
+	UpdateVideoSong(domain.VideoSong) error
 	DeleteVtuber(domain.Vtuber) error
-	DeleteMovie(m domain.Movie) error
-	DeleteKaraoke(domain.Karaoke) error
+	DeleteVideo(domain.Video) error
+	DeleteVideoSong(domain.VideoSong) error
 
-	// データ登録者の確認lId
-	VerifyUserModifyVtuber(domain.ListenerId, domain.Vtuber) (bool, error)   //
-	VerifyUserModifyMovie(domain.ListenerId, domain.Movie) (bool, error)     //
-	VerifyUserModifyKaraoke(domain.ListenerId, domain.Karaoke) (bool, error) //
-
+	// データ登録者の確認
+	VerifyUserModifyVtuber(domain.ListenerId, domain.Vtuber) (bool, error)
+	VerifyUserModifyVideo(domain.ListenerId, domain.Video) (bool, error)
+	VerifyUserModifyVideoSong(domain.ListenerId, domain.VideoSong) (bool, error)
 }
 
 type FavoriteRepository interface {
-	CountKaraokeFavorites() ([]domain.TransmitKaraoke, error)
-	CountMovieFavorites() ([]domain.TransmitMovie, error)
-
-	CreateMovieFavorite(domain.Favorite) error
-	CreateKaraokeFavorite(domain.Favorite) error
-	UpdateMovieFavorite(domain.Favorite) error
-	UpdateKaraokeFavorite(domain.Favorite) error
-	DeleteMovieFavorite(domain.Favorite) error
-	DeleteKaraokeFavorite(domain.Favorite) error
+	CreateVideoFavorite(domain.FavoriteVideo) error
+	CreateVideoSongFavorite(domain.FavoriteVideoSong) error
+	DeleteVideoFavorite(domain.FavoriteVideo) error
+	DeleteVideoSongFavorite(domain.FavoriteVideoSong) error
 
 	FindVtubersCreatedByListenerId(domain.ListenerId) ([]domain.Vtuber, error)
-	FindMoviesCreatedByListenerId(domain.ListenerId) ([]domain.TransmitMovie, error)
-	FindKaraokesCreatedByListenerId(domain.ListenerId) ([]domain.TransmitKaraoke, error)
-	FindFavoriteUnscopedByFavOrUnfavRegistry(domain.Favorite) domain.Favorite
-	FindFavoritesCreatedByListenerId(domain.ListenerId) ([]domain.ReceivedFavorite, error)
+	FindVideosCreatedByListenerId(domain.ListenerId) ([]domain.TransmitVideo, error)
+	FindVideoSongsCreatedByListenerId(domain.ListenerId) ([]domain.TransmitVideoSong, error)
+	FindFavoriteVideoByListenerAndVideo(domain.ListenerId, domain.VideoId) (domain.FavoriteVideo, error)
+	FindFavoriteVideoSongByListenerAndVideoSong(domain.ListenerId, domain.VideoSongId) (domain.FavoriteVideoSong, error)
+	FindFavoriteVideosCreatedByListenerId(domain.ListenerId) ([]domain.ReceivedFavoriteVideo, error)
+	FindFavoriteVideoSongsCreatedByListenerId(domain.ListenerId) ([]domain.ReceivedFavoriteVideoSong, error)
 
-	GetVtubersMoviesWithFavCnts() ([]domain.TransmitMovie, error)
-	GetVtubersMoviesKaraokesWithFavCnts() ([]domain.TransmitKaraoke, error)
-	GetVtubersMoviesKaraokesByVtuberKanaWithFavCnts(string) ([]domain.TransmitKaraoke, error)
-	GetLatest50VtubersMoviesKaraokesWithFavCnts(domain.ListenerId) ([]domain.TransmitKaraoke, error)
-	// 以下、使ってない？開発中？
-	FindMoviesFavoritedByListenerId(domain.ListenerId) ([]domain.TransmitMovie, error)
-	FindKaraokesFavoritedByListenerId(domain.ListenerId) ([]domain.TransmitKaraoke, error)
+	GetVtubersVideosWithFavCnts() ([]domain.TransmitVideo, error)
+	GetVtubersVideosVideoSongsWithFavCnts() ([]domain.TransmitVideoSong, error)
+	GetVtubersVideosVideoSongsByVtuberKanaWithFavCnts(string) ([]domain.TransmitVideoSong, error)
+	GetLatest50VtubersVideosVideoSongsWithFavCnts(domain.ListenerId) ([]domain.TransmitVideoSong, error)
 }
 
 type OtherRepository interface {
