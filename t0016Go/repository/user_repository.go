@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"fmt"
+
 	"github.com/sharin-sushi/0016go_next_relation/domain"
 )
 
@@ -46,7 +48,8 @@ func (db *userRepository) LogicalDeleteUser(user domain.Listener) error {
 
 func (db *userRepository) FindUserByListenerId(ListenerId domain.ListenerId) (domain.Listener, error) {
 	var user domain.Listener
-	err := db.Where("listener_id = ?", ListenerId).First(&user).Error
+	query := fmt.Sprintf("listener_id = %v", ListenerId)
+	err := db.Where(query).First(&user).Error
 	if err != nil {
 		return user, err
 	}
