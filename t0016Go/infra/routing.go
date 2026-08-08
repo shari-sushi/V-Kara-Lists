@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	contenthandler  "github.com/sharin-sushi/0016go_next_relation/handler/content"
 	favoritehandler "github.com/sharin-sushi/0016go_next_relation/handler/favorite"
-	otherhandler    "github.com/sharin-sushi/0016go_next_relation/handler/other"
 	userhandler     "github.com/sharin-sushi/0016go_next_relation/handler/user"
 	"github.com/sharin-sushi/0016go_next_relation/repository"
 	"github.com/sharin-sushi/0016go_next_relation/service"
@@ -27,19 +26,16 @@ func routingV1(r *gin.Engine) {
 	contentRepo := repository.NewContentRepository(db)
 	userRepo := repository.NewUserRepository(db)
 	favoriteRepo := repository.NewFavoriteRepository(db)
-	otherRepo := repository.NewOtherRepository(db)
 
 	// Service層
 	contentSvc := service.ContentService{ContentRepository: contentRepo}
 	userSvc := service.UserService{UserRepository: userRepo}
 	activitySvc := service.ActivityService{FavoriteRepository: favoriteRepo, ContentRepository: contentRepo}
-	otherSvc := service.OtherService{OtherRepository: otherRepo}
 
 	// Handler層
 	contentH := contenthandler.NewContentHandler(contentSvc, activitySvc)
 	userH := userhandler.NewUserHandler(userSvc, activitySvc)
 	favoriteH := favoritehandler.NewFavoriteHandler(activitySvc)
-	_ = otherhandler.NewOtherHandler(otherSvc)
 
 	ver := r.Group("/v1")
 	{
