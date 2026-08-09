@@ -66,6 +66,50 @@ func createTestVideo(t *testing.T, repo *contentRepository, vtuberId domain.Vtub
 	return v
 }
 
+// UpdateVtuber は指定したフィールド(kana)を実際にDBへ反映すること。
+func TestUpdateVtuber_ActuallyPersistsChange(t *testing.T) {
+	repo := connectContentTestDB(t)
+	vtuber := createTestVtuber(t, repo, "テストVTuber")
+
+	updated := vtuber
+	updated.VtuberKana = "カワッタカナ"
+
+	if err := repo.UpdateVtuber(updated); err != nil {
+		t.Fatalf("UpdateVtuber returned error: %v", err)
+	}
+
+	var got domain.Vtuber
+	if err := repo.SqlHandler.Model(&domain.Vtuber{}).Where("vtuber_id = ?", vtuber.VtuberId).First(&got).Error; err != nil {
+		t.Fatalf("failed to fetch vtuber: %v", err)
+	}
+	if got.VtuberKana != "カワッタカナ" {
+		t.Fatalf("expected VtuberKana to be updated to カワッタカナ, got %q", got.VtuberKana)
+	}
+}
+
+// UpdateVtuber はVtuberIdが対象行にマッチしない場合(未設定・不正な値など)、
+// 0件更新のまま成功を返さずエラーにすること(#197: 成功表示なのに実際は未反映だった不具合の回帰確認)。
+func TestUpdateVtuber_ReturnsErrorWhenNoRowMatched(t *testing.T) {
+	repo := connectContentTestDB(t)
+	vtuber := createTestVtuber(t, repo, "テストVTuber2")
+
+	updated := vtuber
+	updated.VtuberId = 0 // フロントがIDを送っていないケースを再現
+	updated.VtuberKana = "カワッタカナ2"
+
+	if err := repo.UpdateVtuber(updated); err == nil {
+		t.Fatal("expected UpdateVtuber to return an error when no row matches, got nil")
+	}
+
+	var got domain.Vtuber
+	if err := repo.SqlHandler.Model(&domain.Vtuber{}).Where("vtuber_id = ?", vtuber.VtuberId).First(&got).Error; err != nil {
+		t.Fatalf("failed to fetch vtuber: %v", err)
+	}
+	if got.VtuberKana != "テストVTuber2" {
+		t.Fatalf("expected VtuberKana to remain unchanged, got %q", got.VtuberKana)
+	}
+}
+
 // DeleteVideo は同名タイトルの他の動画を巻き込まず、対象の VideoId のみを削除すること。
 func TestDeleteVideo_ScopesByPrimaryKey_NotByNonUniqueTitle(t *testing.T) {
 	repo := connectContentTestDB(t)
