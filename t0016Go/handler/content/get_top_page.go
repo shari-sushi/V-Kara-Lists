@@ -71,7 +71,7 @@ func (h *ContentHandler) ReturnTopPageData(c *gin.Context) {
 		"vtubers_videos":      common.EnsureSlice(TransmitVideos),
 		"vtubers_video_songs": common.EnsureSlice(TransmitVideoSongs),
 		"latest_video_songs":  common.EnsureSlice(TransmitLatestVideoSongs),
-		"is_developing":       true,
+		"is_developing":       isDeveloping,
 		"error":               errs,
 	})
 }
