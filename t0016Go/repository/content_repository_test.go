@@ -74,7 +74,7 @@ func TestDeleteVideo_ScopesByPrimaryKey_NotByNonUniqueTitle(t *testing.T) {
 	target := createTestVideo(t, repo, vtuber.VtuberId, "https://youtu.be/target", "同じタイトル")
 	other := createTestVideo(t, repo, vtuber.VtuberId, "https://youtu.be/other", "同じタイトル")
 
-	if err := repo.DeleteVideo(target); err != nil {
+	if _, err := repo.DeleteVideo(target); err != nil {
 		t.Fatalf("DeleteVideo returned error: %v", err)
 	}
 
@@ -112,7 +112,7 @@ func TestDeleteVideo_RejectsWhenVideoSongExists(t *testing.T) {
 		t.Fatalf("failed to create video song: %v", err)
 	}
 
-	if err := repo.DeleteVideo(video); err == nil {
+	if _, err := repo.DeleteVideo(video); err == nil {
 		t.Fatal("expected DeleteVideo to fail because a VideoSong still references it, got nil error")
 	}
 

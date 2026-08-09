@@ -22,12 +22,12 @@ type ContentRepository interface {
 	CreateVtuber(domain.Vtuber) (domain.Vtuber, error)
 	CreateVideo(domain.Video) (domain.Video, error)
 	CreateVideoSongs([]domain.VideoSong) ([]domain.VideoSong, error)
-	UpdateVtuber(domain.Vtuber) error
-	UpdateVideo(domain.Video) error
-	UpdateVideoSong(domain.VideoSong) error
-	DeleteVtuber(domain.Vtuber) error
-	DeleteVideo(domain.Video) error
-	DeleteVideoSong(domain.VideoSong) error
+	UpdateVtuber(domain.Vtuber) (domain.Vtuber, error)
+	UpdateVideo(domain.Video) (domain.Video, error)
+	UpdateVideoSong(domain.VideoSong) (domain.VideoSong, error)
+	DeleteVtuber(domain.Vtuber) (domain.Vtuber, error)
+	DeleteVideo(domain.Video) (domain.Video, error)
+	DeleteVideoSong(domain.VideoSong) (domain.VideoSong, error)
 
 	// データ登録者の確認
 	VerifyUserModifyVtuber(domain.ListenerId, domain.Vtuber) (bool, error)

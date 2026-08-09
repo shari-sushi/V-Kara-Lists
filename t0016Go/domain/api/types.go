@@ -42,6 +42,31 @@ type CreateVideoSongsResponse struct {
 	VideoSongs []domain.VideoSong `json:"video_songs"`
 }
 
+// edit, delete 用のレスポンス。CreateXResponseと同様に、成功時は実際のデータを返す(#326, #257)。
+type EditVtuberResponse struct {
+	Vtuber domain.Vtuber `json:"vtuber"`
+}
+
+type EditVideoResponse struct {
+	Video domain.Video `json:"video"`
+}
+
+type EditVideoSongResponse struct {
+	VideoSong domain.VideoSong `json:"video_song"`
+}
+
+type DeleteVtuberResponse struct {
+	Vtuber domain.Vtuber `json:"vtuber"`
+}
+
+type DeleteVideoResponse struct {
+	Video domain.Video `json:"video"`
+}
+
+type DeleteVideoSongResponse struct {
+	VideoSong domain.VideoSong `json:"video_song"`
+}
+
 // PublicVideo は不特定多数の閲覧者に返して良い動画情報。
 // domain.Video の InputterId/CreatedAt/UpdatedAt は登録者本人以外に見せる必要が無いため含めない。
 // どのフィールドをappへ返すかはこの変換関数(domain/api層)の責務とし、
