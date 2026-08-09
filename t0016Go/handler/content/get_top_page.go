@@ -10,6 +10,10 @@ import (
 
 var guestID = common.GetGuestListenerID()
 
+// isDeveloping はtopページの4カテゴリ一覧UIがまだ「開発中」表示のみであることを示すフラグ。
+// 一覧UIの作り込みが完了するまでtrue固定。
+const isDeveloping = true
+
 // ReturnTopPageData はtopページ用データを返す。
 // DB再設計(#398)により歌枠・ライブ・オリ曲・歌ってみたの4カテゴリを videos/video_songs に統一したが、
 // 対応するUIはまだ「開発中」表示のみで、一覧UIの作り込みは別issueで行う。
@@ -42,7 +46,7 @@ func (h *ContentHandler) ReturnTopPageData(c *gin.Context) {
 			"vtubers_videos":      common.EnsureSlice(VtsVsWithFav),
 			"vtubers_video_songs": common.EnsureSlice(VtsVsVssWithFav),
 			"latest_video_songs":  common.EnsureSlice(LatestVtsVsVssWithFav),
-			"is_developing":       true,
+			"is_developing":       isDeveloping,
 			"error":               errs,
 			"message":             "dont you Loged in ?",
 		})
@@ -67,7 +71,7 @@ func (h *ContentHandler) ReturnTopPageData(c *gin.Context) {
 		"vtubers_videos":      common.EnsureSlice(TransmitVideos),
 		"vtubers_video_songs": common.EnsureSlice(TransmitVideoSongs),
 		"latest_video_songs":  common.EnsureSlice(TransmitLatestVideoSongs),
-		"is_developing":       true,
+		"is_developing":       isDeveloping,
 		"error":               errs,
 	})
 }
