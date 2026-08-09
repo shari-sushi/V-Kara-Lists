@@ -3,6 +3,7 @@ import React, { useState } from "react"
 import Link from "next/link"
 import { domain } from "@/../env"
 import { ToClickTW } from "@/styles/tailwiind"
+import { useGuestLogin } from "@/hooks/useGuestLogin"
 
 export const GetLogout = () => {
   const router = useRouter()
@@ -87,84 +88,30 @@ export const Withdraw = () => {
 }
 
 export const GuestLoginWithStyle = (decoration: { decoration: string }) => {
-  const router = useRouter()
-  const fetchWithdraw = async () => {
-    try {
-      const response = await fetch(`${domain.backendHost}/users/guestlogin`, {
-        method: "get",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      if (response.status != 200) {
-        throw new Error(response.statusText)
-      }
-      router.replace(router.asPath)
-    } catch (error) {
-      console.error(error)
-      alert("ゲストログインに失敗しました")
-    }
-  }
+  const { guestLogin } = useGuestLogin()
 
   return (
-    <button className={decoration.decoration} onClick={fetchWithdraw}>
+    <button className={decoration.decoration} onClick={guestLogin}>
       ゲストログイン
     </button>
   )
 }
 
 export const GuestLogin = () => {
-  const router = useRouter()
-  const fetchWithdraw = async () => {
-    try {
-      const response = await fetch(`${domain.backendHost}/users/guestlogin`, {
-        method: "get",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      if (response.status != 200) {
-        throw new Error(response.statusText)
-      }
-      router.replace(router.asPath)
-    } catch (error) {
-      console.error(error)
-      alert("ゲストログインに失敗しました")
-    }
-  }
+  const { guestLogin } = useGuestLogin()
 
   return (
-    <button className={`${ToClickTW.regular} `} onClick={fetchWithdraw}>
+    <button className={`${ToClickTW.regular} `} onClick={guestLogin}>
       ゲストログイン
     </button>
   )
 }
 
 export const GuestLoginForHamburger = () => {
-  const router = useRouter()
-  const fetchWithdraw = async () => {
-    try {
-      const response = await fetch(`${domain.backendHost}/users/guestlogin`, {
-        method: "get",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      if (response.status != 200) {
-        throw new Error(response.statusText)
-      }
-      router.replace(router.asPath)
-    } catch (error) {
-      console.error(error)
-      alert("ゲストログインに失敗しました")
-    }
-  }
+  const { guestLogin } = useGuestLogin()
 
   return (
-    <button className={`${ToClickTW.hamburger} my-1 `} onClick={fetchWithdraw}>
+    <button className={`${ToClickTW.hamburger} my-1 `} onClick={guestLogin}>
       <div className={`flex ml-5 sm:my-2 my-[4px] `}>ゲストログイン</div>
     </button>
   )
