@@ -100,10 +100,11 @@ export const GuestLoginWithStyle = (decoration: { decoration: string }) => {
       if (response.status != 200) {
         throw new Error(response.statusText)
       }
+      router.replace(router.asPath)
     } catch (error) {
       console.error(error)
+      alert("ゲストログインに失敗しました")
     }
-    router.push(`/`)
   }
 
   return (
@@ -127,10 +128,11 @@ export const GuestLogin = () => {
       if (response.status != 200) {
         throw new Error(response.statusText)
       }
+      router.replace(router.asPath)
     } catch (error) {
       console.error(error)
+      alert("ゲストログインに失敗しました")
     }
-    router.push(`/`)
   }
 
   return (
@@ -154,10 +156,11 @@ export const GuestLoginForHamburger = () => {
       if (response.status != 200) {
         throw new Error(response.statusText)
       }
+      router.replace(router.asPath)
     } catch (error) {
       console.error(error)
+      alert("ゲストログインに失敗しました")
     }
-    router.push(`/`)
   }
 
   return (
