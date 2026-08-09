@@ -53,6 +53,56 @@ func TestGetVtubersVideosVideoSongsByVtuberKanaWithFavCnts_BlocksSQLInjection(t 
 	}
 }
 
+// TransmitVideoSong は #419 でvtuber+video系フィールドを TransmitVtuberVideoBase に
+// 埋め込みへ切り出した。JOIN結果を anonymous embed した構造体へ Scan した際に、
+// 埋め込みフィールドまで正しく値が入ることを実DBに対して確認する。
+func TestGetVtubersVideosVideoSongsByVtuberKanaWithFavCnts_ScansEmbeddedFields(t *testing.T) {
+	repo := connectTestDB(t)
+
+	vtuber := domain.Vtuber{VtuberName: "埋め込みテストVtuber", VtuberKana: "umekomi-test", VtuberInputterId: 1}
+	if err := repo.SqlHandler.Create(&vtuber).Error; err != nil {
+		t.Fatalf("failed to seed vtuber: %v", err)
+	}
+	video := domain.Video{
+		Category:   domain.KARAOKE_CATEGORY,
+		MovieUrl:   "https://youtu.be/embedded-test",
+		Title:      "埋め込みテスト動画",
+		VtuberId:   vtuber.VtuberId,
+		InputterId: 1,
+	}
+	if err := repo.SqlHandler.Create(&video).Error; err != nil {
+		t.Fatalf("failed to seed video: %v", err)
+	}
+	videoSong := domain.VideoSong{
+		VideoId:    video.VideoId,
+		SingStart:  "00:02:00",
+		SongName:   "埋め込みテスト曲",
+		InputterId: 1,
+	}
+	if err := repo.SqlHandler.Create(&videoSong).Error; err != nil {
+		t.Fatalf("failed to seed video song: %v", err)
+	}
+
+	got, err := repo.GetVtubersVideosVideoSongsByVtuberKanaWithFavCnts("umekomi-test")
+	if err != nil {
+		t.Fatalf("GetVtubersVideosVideoSongsByVtuberKanaWithFavCnts returned unexpected error: %v", err)
+	}
+	if len(got) != 1 {
+		t.Fatalf("got %d rows, want 1", len(got))
+	}
+
+	row := got[0]
+	if row.VtuberId != vtuber.VtuberId || row.VtuberName != vtuber.VtuberName || row.VtuberKana != vtuber.VtuberKana {
+		t.Errorf("embedded vtuber fields not scanned correctly: got %+v", row.TransmitVtuberVideoBase)
+	}
+	if row.VideoId != video.VideoId || row.Title != video.Title || row.MovieUrl != video.MovieUrl {
+		t.Errorf("embedded video fields not scanned correctly: got %+v", row.TransmitVtuberVideoBase)
+	}
+	if row.VideoSongId != videoSong.VideoSongId || row.SongName != videoSong.SongName {
+		t.Errorf("video song fields not scanned correctly: got %+v", row)
+	}
+}
+
 // DeleteVideoFavoriteがプレースホルダー経由でlistener_id/video_idの両方に絞り込み、
 // 他ユーザーのお気に入りを誤って削除しないことを確認する。
 func TestDeleteVideoFavorite_ScopesToListenerAndVideo(t *testing.T) {
