@@ -5,17 +5,12 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sharin-sushi/0016go_next_relation/common"
 	"github.com/sharin-sushi/0016go_next_relation/domain"
 )
 
 func (h *ContentHandler) DeleteVideoSong(c *gin.Context) {
-	listenerId, err := common.TakeListenerIdFromJWT(c)
-	if err != nil {
-		log.Println("err:", err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Error fetching listener info",
-		})
+	listenerId, ok := requireListenerId(c)
+	if !ok {
 		return
 	}
 
@@ -28,15 +23,8 @@ func (h *ContentHandler) DeleteVideoSong(c *gin.Context) {
 		return
 	}
 
-	if isAuth, err := h.ContentService.VerifyUserModifyVideoSong(listenerId, videoSong); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Auth Check is failed.(we could not Verify)",
-		})
-		return
-	} else if !isAuth {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "Only The Inputter can modify each data",
-		})
+	isAuth, err := h.ContentService.VerifyUserModifyVideoSong(listenerId, videoSong)
+	if !requireAuthorizedInputter(c, isAuth, err) {
 		return
 	}
 
