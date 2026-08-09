@@ -1,11 +1,9 @@
 package repository
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/sharin-sushi/0016go_next_relation/domain"
-	"gorm.io/gorm"
 )
 
 type contentRepository struct {
@@ -131,13 +129,11 @@ func (db *contentRepository) DeleteVtuber(V domain.Vtuber) error {
 }
 
 func (db *contentRepository) DeleteVideo(V domain.Video) error {
-	var vs domain.VideoSong
-	err := db.Where("video_id = ?", V.VideoId).First(&vs).Error
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+	// 単曲カテゴリでもVideoSongが必ず1行作られる仕様(#398)のため、
+	// 「VideoSongが存在したら拒否」では常に削除不能になってしまう。
+	// 動画に紐づくVideoSongは道連れで削除する。
+	if err := db.Where("video_id = ?", V.VideoId).Delete(&domain.VideoSong{}).Error; err != nil {
 		return err
-	}
-	if vs.VideoSongId != 0 {
-		return fmt.Errorf("delete Video after its VideoSong")
 	}
 	result := db.Delete(&V, V.VideoId)
 	return result.Error

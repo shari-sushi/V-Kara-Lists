@@ -94,8 +94,10 @@ func TestDeleteVideo_ScopesByPrimaryKey_NotByNonUniqueTitle(t *testing.T) {
 	}
 }
 
-// DeleteVideo は VideoSong が存在する場合は削除を拒否すること(既存の子存在チェックの回帰確認)。
-func TestDeleteVideo_RejectsWhenVideoSongExists(t *testing.T) {
+// DeleteVideo は紐づく VideoSong が存在しても道連れで削除できること。
+// 単曲カテゴリでもVideoSongが必ず1行作られる仕様(#398)のため、
+// 「VideoSongが存在したら拒否」という以前の実装だと動画を一切削除できなくなる不具合(#238)があった。
+func TestDeleteVideo_CascadesVideoSong(t *testing.T) {
 	repo := connectContentTestDB(t)
 	vtuber := createTestVtuber(t, repo, "テストVTuber2")
 	video := createTestVideo(t, repo, vtuber.VtuberId, "https://youtu.be/withsong", "曲付き動画")
@@ -112,15 +114,23 @@ func TestDeleteVideo_RejectsWhenVideoSongExists(t *testing.T) {
 		t.Fatalf("failed to create video song: %v", err)
 	}
 
-	if err := repo.DeleteVideo(video); err == nil {
-		t.Fatal("expected DeleteVideo to fail because a VideoSong still references it, got nil error")
+	if err := repo.DeleteVideo(video); err != nil {
+		t.Fatalf("DeleteVideo returned error: %v", err)
 	}
 
-	var count int64
-	if err := repo.SqlHandler.Model(&domain.Video{}).Where("id = ?", video.VideoId).Count(&count).Error; err != nil {
+	var videoCount int64
+	if err := repo.SqlHandler.Model(&domain.Video{}).Where("id = ?", video.VideoId).Count(&videoCount).Error; err != nil {
 		t.Fatalf("failed to count video: %v", err)
 	}
-	if count != 1 {
-		t.Fatalf("video should not have been deleted, count = %d", count)
+	if videoCount != 0 {
+		t.Fatalf("video was not deleted, count = %d", videoCount)
+	}
+
+	var songCount int64
+	if err := repo.SqlHandler.Model(&domain.VideoSong{}).Where("video_id = ?", video.VideoId).Count(&songCount).Error; err != nil {
+		t.Fatalf("failed to count video song: %v", err)
+	}
+	if songCount != 0 {
+		t.Fatalf("video song was not deleted along with its video, count = %d", songCount)
 	}
 }
