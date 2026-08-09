@@ -8,7 +8,7 @@ export const VideoLayout = () => {
   return (
     <div>
       {/* TODO: playerの位置をaltBoxに重ねられるようになったらisAbsoluteの時にabsoluteにする */}
-      <div id="vkaraoke-player" className={`${isAbsolute ? "none" : "fixed"} z-30`} style={{ ...FOOTER_POSITION }}>
+      <div id="vkaraoke-player" className={`${isAbsolute ? "hidden" : "fixed"} z-30`} style={{ ...FOOTER_POSITION }}>
         <VKaraVideoPlayer />
       </div>
       {/* TODO: 動画のコントローラーをここに配置 */}
