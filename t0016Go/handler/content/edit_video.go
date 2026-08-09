@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sharin-sushi/0016go_next_relation/domain"
+	"github.com/sharin-sushi/0016go_next_relation/domain/api"
 )
 
 func (h *ContentHandler) EditVideo(c *gin.Context) {
@@ -28,7 +29,8 @@ func (h *ContentHandler) EditVideo(c *gin.Context) {
 		return
 	}
 
-	if err := h.ContentService.UpdateVideo(video); err != nil {
+	updated, err := h.ContentService.UpdateVideo(video)
+	if err != nil {
 		log.Println("err:", err)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Inputter can modify each data",
@@ -36,7 +38,5 @@ func (h *ContentHandler) EditVideo(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Successfully Update",
-	})
+	c.JSON(http.StatusOK, api.EditVideoResponse{Video: updated})
 }

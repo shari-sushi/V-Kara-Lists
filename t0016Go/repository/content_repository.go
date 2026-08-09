@@ -103,49 +103,49 @@ func (db *contentRepository) CreateVideoSongs(vss []domain.VideoSong) ([]domain.
 	return vss, result.Error
 }
 
-func (db *contentRepository) UpdateVtuber(V domain.Vtuber) error {
+func (db *contentRepository) UpdateVtuber(V domain.Vtuber) (domain.Vtuber, error) {
 	result := db.Model(&V).Where("vtuber_id = ?", V.VtuberId).Updates(&V)
-	return result.Error
+	return V, result.Error
 }
 
-func (db *contentRepository) UpdateVideo(V domain.Video) error {
+func (db *contentRepository) UpdateVideo(V domain.Video) (domain.Video, error) {
 	var v domain.Video
 	result := db.Model(&v).Where("id = ?", V.VideoId).Updates(&V)
-	return result.Error
+	return V, result.Error
 }
 
-func (db *contentRepository) UpdateVideoSong(VS domain.VideoSong) error {
+func (db *contentRepository) UpdateVideoSong(VS domain.VideoSong) (domain.VideoSong, error) {
 	var vs domain.VideoSong
 	result := db.Model(&vs).Where("id = ?", VS.VideoSongId).Updates(&VS)
-	return result.Error
+	return VS, result.Error
 }
 
-func (db *contentRepository) DeleteVtuber(V domain.Vtuber) error {
+func (db *contentRepository) DeleteVtuber(V domain.Vtuber) (domain.Vtuber, error) {
 	var v domain.Video
 	db.Where("vtuber_id = ?", V.VtuberId).First(&v)
 	if v.MovieUrl != "" {
-		return fmt.Errorf("delete Vtuber after its Video")
+		return domain.Vtuber{}, fmt.Errorf("delete Vtuber after its Video")
 	}
 	result := db.Where("vtuber_name = ?", V.VtuberName).Delete(V) //フロント側の表示バグ対策でPK+αで絞込み
-	return result.Error
+	return V, result.Error
 }
 
-func (db *contentRepository) DeleteVideo(V domain.Video) error {
+func (db *contentRepository) DeleteVideo(V domain.Video) (domain.Video, error) {
 	var vs domain.VideoSong
 	err := db.Where("video_id = ?", V.VideoId).First(&vs).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return err
+		return domain.Video{}, err
 	}
 	if vs.VideoSongId != 0 {
-		return fmt.Errorf("delete Video after its VideoSong")
+		return domain.Video{}, fmt.Errorf("delete Video after its VideoSong")
 	}
 	result := db.Delete(&V, V.VideoId)
-	return result.Error
+	return V, result.Error
 }
 
-func (db *contentRepository) DeleteVideoSong(VS domain.VideoSong) error {
+func (db *contentRepository) DeleteVideoSong(VS domain.VideoSong) (domain.VideoSong, error) {
 	result := db.Delete(&VS, VS.VideoSongId)
-	return result.Error
+	return VS, result.Error
 }
 
 func (db *contentRepository) VerifyUserModifyVtuber(id domain.ListenerId, V domain.Vtuber) (bool, error) {

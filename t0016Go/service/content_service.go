@@ -98,29 +98,25 @@ func (interactor *ContentService) CreateVideoSongs(vss []domain.VideoSong) ([]do
 	return created, err
 }
 
-func (interactor *ContentService) UpdateVtuber(v domain.Vtuber) error {
+func (interactor *ContentService) UpdateVtuber(v domain.Vtuber) (domain.Vtuber, error) {
 	v = common.NormalizeVtuber(v)
 
 	if err := common.ValidateVtuber(v); err != nil {
-		return err
+		return domain.Vtuber{}, err
 	}
 
-	if err := interactor.ContentRepository.UpdateVtuber(v); err != nil {
-		return err
-	}
-	return nil
+	updated, err := interactor.ContentRepository.UpdateVtuber(v)
+	return updated, err
 }
 
-func (interactor *ContentService) UpdateVideo(v domain.Video) error {
+func (interactor *ContentService) UpdateVideo(v domain.Video) (domain.Video, error) {
 	v = common.NormalizeVideo(v)
 
 	if err := common.ValidateVideo(v); err != nil {
-		return err
+		return domain.Video{}, err
 	}
-	if err := interactor.ContentRepository.UpdateVideo(v); err != nil {
-		return err
-	}
-	return nil
+	updated, err := interactor.ContentRepository.UpdateVideo(v)
+	return updated, err
 }
 
 // UpdateVideoSong は歌唱行を更新する。CreateVideoSongsと同様、対象動画が単曲カテゴリ
@@ -128,10 +124,10 @@ func (interactor *ContentService) UpdateVideo(v domain.Video) error {
 // 編集経由でSingStartが任意値に変わってしまい「単曲は必ず1行」という不変条件が
 // CreateVideoSongsの新規追加時にUNIQUE制約をすり抜けて崩れる
 // (詳細はV-Kara-Lists.wiki/設計判断ログ.mdを参照)。
-func (interactor *ContentService) UpdateVideoSong(vs domain.VideoSong) error {
+func (interactor *ContentService) UpdateVideoSong(vs domain.VideoSong) (domain.VideoSong, error) {
 	video, err := interactor.ContentRepository.GetVideoById(vs.VideoId)
 	if err != nil {
-		return err
+		return domain.VideoSong{}, err
 	}
 
 	if video.Category.IsSingleSong() {
@@ -140,27 +136,25 @@ func (interactor *ContentService) UpdateVideoSong(vs domain.VideoSong) error {
 	vs = common.NormalizeVideoSong(vs)
 
 	if err := common.ValidateVideoSong(vs); err != nil {
-		return err
+		return domain.VideoSong{}, err
 	}
-	if err := interactor.ContentRepository.UpdateVideoSong(vs); err != nil {
-		return err
-	}
-	return nil
+	updated, err := interactor.ContentRepository.UpdateVideoSong(vs)
+	return updated, err
 }
 
-func (interactor *ContentService) DeleteVtuber(v domain.Vtuber) error {
-	err := interactor.ContentRepository.DeleteVtuber(v)
-	return err
+func (interactor *ContentService) DeleteVtuber(v domain.Vtuber) (domain.Vtuber, error) {
+	deleted, err := interactor.ContentRepository.DeleteVtuber(v)
+	return deleted, err
 }
 
-func (interactor *ContentService) DeleteVideo(v domain.Video) error {
-	err := interactor.ContentRepository.DeleteVideo(v)
-	return err
+func (interactor *ContentService) DeleteVideo(v domain.Video) (domain.Video, error) {
+	deleted, err := interactor.ContentRepository.DeleteVideo(v)
+	return deleted, err
 }
 
-func (interactor *ContentService) DeleteVideoSong(vs domain.VideoSong) error {
-	err := interactor.ContentRepository.DeleteVideoSong(vs)
-	return err
+func (interactor *ContentService) DeleteVideoSong(vs domain.VideoSong) (domain.VideoSong, error) {
+	deleted, err := interactor.ContentRepository.DeleteVideoSong(vs)
+	return deleted, err
 }
 
 func (interactor *ContentService) VerifyUserModifyVtuber(id domain.ListenerId, v domain.Vtuber) (bool, error) {
