@@ -76,17 +76,23 @@ jobs:
         working-directory: t0016Next/myapp
 
   ci-gate:
-    needs: [build-api, build-app]
+    needs: [changes, build-api, build-app]
     if: always()
     runs-on: ubuntu-latest
     steps:
       - name: Check required jobs
         run: |
+          changes_result="${{ needs.changes.result }}"
           api_result="${{ needs.build-api.result }}"
           app_result="${{ needs.build-app.result }}"
+          echo "changes: $changes_result"
           echo "build-api: $api_result"
           echo "build-app: $app_result"
 
+          if [ "$changes_result" != "success" ]; then
+            echo "changes job failed"
+            exit 1
+          fi
           if [ "$api_result" != "success" ] && [ "$api_result" != "skipped" ]; then
             echo "build-api failed"
             exit 1

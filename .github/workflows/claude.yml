@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       (github.event_name == 'issues' && github.event.label.name == 'ready') ||
-      (github.event_name == 'issue_comment')
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude'))
     steps:
       - uses: actions/checkout@v4
 
