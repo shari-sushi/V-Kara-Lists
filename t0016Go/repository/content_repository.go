@@ -1,9 +1,11 @@
 package repository
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/sharin-sushi/0016go_next_relation/domain"
+	"gorm.io/gorm"
 )
 
 type contentRepository struct {
@@ -130,16 +132,19 @@ func (db *contentRepository) DeleteVtuber(V domain.Vtuber) error {
 
 func (db *contentRepository) DeleteVideo(V domain.Video) error {
 	var vs domain.VideoSong
-	db.Where("video_id = ?", V.VideoId).First(&vs)
+	err := db.Where("video_id = ?", V.VideoId).First(&vs).Error
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return err
+	}
 	if vs.VideoSongId != 0 {
 		return fmt.Errorf("delete Video after its VideoSong")
 	}
-	result := db.Where("title = ?", V.Title).Delete(V) //フロント側の表示バグ対策でPK+αで絞込み
+	result := db.Delete(&V, V.VideoId)
 	return result.Error
 }
 
 func (db *contentRepository) DeleteVideoSong(VS domain.VideoSong) error {
-	result := db.Where("song_name = ?", VS.SongName).Delete(VS) //フロント側の表示バグ対策でPK+αで絞込み
+	result := db.Delete(&VS, VS.VideoSongId)
 	return result.Error
 }
 
