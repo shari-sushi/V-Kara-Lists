@@ -105,7 +105,17 @@ func (db *contentRepository) CreateVideoSongs(vss []domain.VideoSong) ([]domain.
 
 func (db *contentRepository) UpdateVtuber(V domain.Vtuber) error {
 	result := db.Model(&V).Where("vtuber_id = ?", V.VtuberId).Updates(&V)
-	return result.Error
+	if result.Error != nil {
+		return result.Error
+	}
+	// vtuber_idが不正/未設定などでWHERE句が対象行にマッチしない場合、
+	// GORMはエラーを返さず0件更新のまま成功扱いになる。
+	// それを検知せず呼び出し元に成功を返すと、実際は変更されていないのに
+	// 成功表示だけが出てしまう(#197)。RowsAffectedを見て明示的にエラー化する。
+	if result.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
 }
 
 func (db *contentRepository) UpdateVideo(V domain.Video) error {
