@@ -54,7 +54,3 @@ type FavoriteRepository interface {
 	GetVtubersVideosVideoSongsByVtuberKanaWithFavCnts(string) ([]domain.TransmitVideoSong, error)
 	GetLatest50VtubersVideosVideoSongsWithFavCnts(domain.ListenerId) ([]domain.TransmitVideoSong, error)
 }
-
-type OtherRepository interface {
-	ExecRawQuery(string) error
-}

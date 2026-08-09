@@ -20,10 +20,3 @@ func NewFavoriteRepository(sqlHandler SqlHandler) FavoriteRepository {
 		SqlHandler: sqlHandler,
 	}
 }
-
-// NewOtherRepository creates a new OtherRepository implementation
-func NewOtherRepository(sqlHandler SqlHandler) OtherRepository {
-	return &otherRepository{
-		SqlHandler: sqlHandler,
-	}
-}

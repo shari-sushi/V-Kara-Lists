@@ -6,8 +6,7 @@ import (
 )
 
 type UserService struct {
-	UserRepository  repository.UserRepository
-	OtherRepository repository.OtherRepository
+	UserRepository repository.UserRepository
 }
 
 func (interactor *UserService) CreateUser(user domain.Listener) (newUser domain.Listener, err error) {
