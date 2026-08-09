@@ -29,4 +29,7 @@ docker logout "$ECR_REGISTRY"
 cd "$VKARA_DIR"
 docker-compose -f ec2-docker-compose.yml up -d
 
+# 使われなくなった旧イメージ・ビルドキャッシュを削除（ディスクフル対策、volumesは対象外なのでDBデータは保持される）
+docker system prune -af
+
 echo "v-kara started."
