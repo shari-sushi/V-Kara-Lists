@@ -175,7 +175,8 @@ jobs:
                 "aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com",
                 "$ECR_ENV docker-compose -f /home/ubuntu/v-kara/ec2-docker-compose.yml pull $PULL_SERVICES",
                 "$ECR_ENV docker-compose -f /home/ubuntu/v-kara/ec2-docker-compose.yml up -d --force-recreate $RESTART_SERVICES",
-                "rm -f /home/ubuntu/v-kara/api.env /home/ubuntu/v-kara/app.env"
+                "rm -f /home/ubuntu/v-kara/api.env /home/ubuntu/v-kara/app.env",
+                "docker system prune -af"
               ]
             }
           }
