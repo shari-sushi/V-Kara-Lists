@@ -42,7 +42,7 @@ const MainItem = ({ data }: Mypage) => {
   const { vtubers_u_created: vtubers, vtubers_videos_u_created: videos, vtubers_video_songs_u_created: videoSongs } = data
 
   return (
-    <div className="flex flex-col max-w-[1000px] justify-ite">
+    <div className="flex flex-col max-w-[1000px] mx-auto">
       <div
         id="feature"
         className={`bg-[#657261] rounded top-0 p-1

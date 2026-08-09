@@ -29,9 +29,9 @@ func (h *UserHandler) ListenerPage(c *gin.Context) {
 	TransmitVideos := common.AddIsFavToVideoWithFav(createdVtsVs, myVideoFavs)
 	TransmitVideoSongs := common.AddIsFavToVideoSongWithFav(createdVtsVsVss, myVideoSongFavs)
 	c.JSON(http.StatusOK, gin.H{
-		"vtubers_u_created":             createdVts,
-		"vtubers_videos_u_created":      TransmitVideos,
-		"vtubers_video_songs_u_created": TransmitVideoSongs,
+		"vtubers_u_created":             common.EnsureSlice(createdVts),
+		"vtubers_videos_u_created":      common.EnsureSlice(TransmitVideos),
+		"vtubers_video_songs_u_created": common.EnsureSlice(TransmitVideoSongs),
 		"error":                         errs,
 	})
 }
