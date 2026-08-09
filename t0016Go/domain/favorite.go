@@ -47,11 +47,12 @@ type TransmitVtuber struct {
 	IsFav bool
 }
 
-// appへ送信用(動画単位)
+// TransmitVtuberVideoBase は TransmitVideo/TransmitVideoSong で共通するvtuber+video部分。
 // videos/video_songs は共に inputter_id 等の同名カラムを持つため、JOIN結果を構造体に
-// anonymous embed すると同名フィールドが衝突する。フィールドをフラットに持たせ、
-// SQL側でも同名カラムを明示的にエイリアスして対応させる。
-type TransmitVideo struct {
+// domain.Video/domain.VideoSong を直接 anonymous embed すると同名フィールドが衝突する。
+// そのためフィールドをフラットに持たせ、SQL側でも同名カラムを明示的にエイリアスして対応させる
+// (この構造体自体はTransmitVideo/TransmitVideoSong間でのみ埋め込まれ、衝突は起きない)。
+type TransmitVtuberVideoBase struct {
 	VtuberId         VtuberId
 	VtuberName       string
 	VtuberKana       string
@@ -64,6 +65,11 @@ type TransmitVideo struct {
 	Title           string
 	PublishedAt     *time.Time
 	VideoInputterId ListenerId
+}
+
+// appへ送信用(動画単位)
+type TransmitVideo struct {
+	TransmitVtuberVideoBase
 
 	Count int
 	IsFav bool
@@ -71,18 +77,7 @@ type TransmitVideo struct {
 
 // appへ送信用(動画内の1曲単位)
 type TransmitVideoSong struct {
-	VtuberId         VtuberId
-	VtuberName       string
-	VtuberKana       string
-	IntroMovieUrl    string
-	VtuberInputterId ListenerId
-
-	VideoId         VideoId
-	Category        VideoCategory
-	MovieUrl        MovieUrl
-	Title           string
-	PublishedAt     *time.Time
-	VideoInputterId ListenerId
+	TransmitVtuberVideoBase
 
 	VideoSongId         VideoSongId
 	SingStart           string
