@@ -103,6 +103,7 @@ export const GuestLoginWithStyle = (decoration: { decoration: string }) => {
       router.replace(router.asPath)
     } catch (error) {
       console.error(error)
+      alert("ゲストログインに失敗しました")
     }
   }
 
@@ -130,6 +131,7 @@ export const GuestLogin = () => {
       router.replace(router.asPath)
     } catch (error) {
       console.error(error)
+      alert("ゲストログインに失敗しました")
     }
   }
 
@@ -157,6 +159,7 @@ export const GuestLoginForHamburger = () => {
       router.replace(router.asPath)
     } catch (error) {
       console.error(error)
+      alert("ゲストログインに失敗しました")
     }
   }
 
