@@ -10,22 +10,25 @@ import (
 
 var guestID = common.GetGuestListenerID()
 
+// ReturnTopPageData はtopページ用データを返す。
+// DB再設計(#398)により歌枠・ライブ・オリ曲・歌ってみたの4カテゴリを videos/video_songs に統一したが、
+// 対応するUIはまだ「開発中」表示のみで、一覧UIの作り込みは別issueで行う。
 func (h *ContentHandler) ReturnTopPageData(c *gin.Context) {
 	var errs []error
 	allVts, err := h.ContentService.GetVtubers()
 	if err != nil {
 		errs = append(errs, err)
 	}
-	VtsMosWithFav, err := h.ActivityService.GetVtubersMoviesWithFavCnts()
+	VtsVsWithFav, err := h.ActivityService.GetVtubersVideosWithFavCnts()
 	if err != nil {
 		errs = append(errs, err)
 	}
-	VtsMosKasWithFav, err := h.ActivityService.GetVtubersMoviesKaraokesWithFavCnts()
+	VtsVsVssWithFav, err := h.ActivityService.GetVtubersVideosVideoSongsWithFavCnts()
 	if err != nil {
 		errs = append(errs, err)
 	}
 
-	LatestVtsMosKasWithFav, err := h.ActivityService.GetLatest50VtubersMoviesKaraokesWithFavCnts(guestID)
+	LatestVtsVsVssWithFav, err := h.ActivityService.GetLatest50VtubersVideosVideoSongsWithFavCnts(guestID)
 	if err != nil {
 		errs = append(errs, err)
 	}
@@ -35,30 +38,36 @@ func (h *ContentHandler) ReturnTopPageData(c *gin.Context) {
 		errs = append(errs, err)
 
 		c.JSON(http.StatusOK, gin.H{
-			"vtubers":                 common.EnsureSlice(allVts),
-			"vtubers_movies":          common.EnsureSlice(VtsMosWithFav),
-			"vtubers_movies_karaokes": common.EnsureSlice(VtsMosKasWithFav),
-			"latest_karaokes":         common.EnsureSlice(LatestVtsMosKasWithFav),
-			"error":                   errs,
-			"message":                 "dont you Loged in ?",
+			"vtubers":             common.EnsureSlice(allVts),
+			"vtubers_videos":      common.EnsureSlice(VtsVsWithFav),
+			"vtubers_video_songs": common.EnsureSlice(VtsVsVssWithFav),
+			"latest_video_songs":  common.EnsureSlice(LatestVtsVsVssWithFav),
+			"is_developing":       true,
+			"error":               errs,
+			"message":             "dont you Loged in ?",
 		})
 		return
 	}
 
-	myFav, err := h.ActivityService.FindFavoritesCreatedByListenerId(listenerId)
+	myVideoFavs, err := h.ActivityService.FindFavoriteVideosCreatedByListenerId(listenerId)
+	if err != nil {
+		log.Println("err:", err)
+	}
+	myVideoSongFavs, err := h.ActivityService.FindFavoriteVideoSongsCreatedByListenerId(listenerId)
 	if err != nil {
 		log.Println("err:", err)
 	}
 
-	TransmitMovies := common.AddIsFavToMovieWithFav(VtsMosWithFav, myFav)
-	TransmitKaraokes := common.AddIsFavToKaraokeWithFav(VtsMosKasWithFav, myFav)
-	TransmitLatestKaraoes := common.AddIsFavToKaraokeWithFav(LatestVtsMosKasWithFav, myFav)
+	TransmitVideos := common.AddIsFavToVideoWithFav(VtsVsWithFav, myVideoFavs)
+	TransmitVideoSongs := common.AddIsFavToVideoSongWithFav(VtsVsVssWithFav, myVideoSongFavs)
+	TransmitLatestVideoSongs := common.AddIsFavToVideoSongWithFav(LatestVtsVsVssWithFav, myVideoSongFavs)
 
 	c.JSON(http.StatusOK, gin.H{
-		"vtubers":                 common.EnsureSlice(allVts),
-		"vtubers_movies":          common.EnsureSlice(TransmitMovies),
-		"vtubers_movies_karaokes": common.EnsureSlice(TransmitKaraokes),
-		"latest_karaokes":         common.EnsureSlice(TransmitLatestKaraoes),
-		"error":                   errs,
+		"vtubers":             common.EnsureSlice(allVts),
+		"vtubers_videos":      common.EnsureSlice(TransmitVideos),
+		"vtubers_video_songs": common.EnsureSlice(TransmitVideoSongs),
+		"latest_video_songs":  common.EnsureSlice(TransmitLatestVideoSongs),
+		"is_developing":       true,
+		"error":               errs,
 	})
 }

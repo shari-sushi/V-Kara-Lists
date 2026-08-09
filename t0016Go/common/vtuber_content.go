@@ -24,57 +24,43 @@ func ValidateVtuber(v domain.Vtuber) error {
 		))
 }
 
-func NormalizeMovie(m domain.Movie) domain.Movie {
-	// m.VtuberId = strings.TrimSpace(m.SingStart)
-	m.MovieTitle = strings.TrimSpace(m.MovieTitle)
-	m.MovieUrl = domain.MovieUrl(strings.TrimSpace(string(m.MovieUrl)))
-	// m.MovieInputterId = strings.TrimSpace(m.MovieInputterId)
-	return m
+func NormalizeVideo(v domain.Video) domain.Video {
+	v.Title = strings.TrimSpace(v.Title)
+	v.MovieUrl = domain.MovieUrl(strings.TrimSpace(string(v.MovieUrl)))
+	return v
 }
 
-func ValidateMovie(k domain.Movie) error {
-	return validation.ValidateStruct(&k)
-}
-
-func NormalizeKaraoke(k domain.Karaoke) domain.Karaoke {
-	// k.VtuberId = strings.TrimSpace(k.VtuberId)
-	k.MovieUrl = domain.MovieUrl(strings.TrimSpace(string(k.MovieUrl)))
-	k.SingStart = strings.TrimSpace(k.SingStart)
-	k.SongName = strings.TrimSpace(k.SongName)
-	// k.KaraokeInputterId = strings.TrimSpace(k.KaraokeInputterId)
-	return k
-}
-
-func ValidateKaraoke(k domain.Karaoke) error {
-	if k.KaraokeInputterId == GetGuestListenerID() {
-		return validation.ValidateStruct(&k,
-			validation.Field(&k.MovieUrl,
-				validation.Required.Error("movie url is required"),
-				validation.Length(4, 40).Error("Password needs 4 ~ 40 chars"),
-			),
-			validation.Field(&k.SingStart,
-				validation.Required.Error("sing start is required"),
-				validation.Length(4, 20).Error("sing start needs 8"),
-			),
-			validation.Field(&k.SongName,
-				validation.Required.Error("song name is required"),
-			),
-		)
-	}
-
-	return validation.ValidateStruct(&k,
-		// validation.Field(&k.KaraokeInputterId,
-		// 	validation.Required.Error("karaoke inputter id is required"),
-		// ),
-		validation.Field(&k.MovieUrl,
+func ValidateVideo(v domain.Video) error {
+	return validation.ValidateStruct(&v,
+		validation.Field(&v.Category,
+			validation.Required.Error("category is required"),
+		),
+		validation.Field(&v.MovieUrl,
 			validation.Required.Error("movie url is required"),
-			validation.Length(4, 40).Error("Password needs 4 ~ 40 chars"),
+			validation.Length(4, 100).Error("movie url needs 4 ~ 100 chars"),
 		),
-		validation.Field(&k.SingStart,
+		validation.Field(&v.Title,
+			validation.Required.Error("title is required"),
+		),
+	)
+}
+
+func NormalizeVideoSong(vs domain.VideoSong) domain.VideoSong {
+	vs.SingStart = strings.TrimSpace(vs.SingStart)
+	vs.SongName = strings.TrimSpace(vs.SongName)
+	return vs
+}
+
+func ValidateVideoSong(vs domain.VideoSong) error {
+	return validation.ValidateStruct(&vs,
+		validation.Field(&vs.VideoId,
+			validation.Required.Error("video id is required"),
+		),
+		validation.Field(&vs.SingStart,
 			validation.Required.Error("sing start is required"),
-			validation.Length(4, 20).Error("sing start needs 8"),
+			validation.Length(4, 20).Error("sing start needs 4 ~ 20 chars"),
 		),
-		validation.Field(&k.SongName,
+		validation.Field(&vs.SongName,
 			validation.Required.Error("song name is required"),
 		),
 	)

@@ -16,18 +16,22 @@ func (h *UserHandler) ListenerPage(c *gin.Context) {
 		return
 	}
 	var errs []error
-	createdVts, createdVtsMos, createdVtsMosKas, errs := h.ActivityService.FindEachRecordsCreatedByListenerId(listenerId)
-	myFav, err := h.ActivityService.FindFavoritesCreatedByListenerId(listenerId)
+	createdVts, createdVtsVs, createdVtsVsVss, errs := h.ActivityService.FindEachRecordsCreatedByListenerId(listenerId)
+	myVideoFavs, err := h.ActivityService.FindFavoriteVideosCreatedByListenerId(listenerId)
+	if err != nil {
+		errs = append(errs, err)
+	}
+	myVideoSongFavs, err := h.ActivityService.FindFavoriteVideoSongsCreatedByListenerId(listenerId)
 	if err != nil {
 		errs = append(errs, err)
 	}
 
-	TransmitMovies := common.AddIsFavToMovieWithFav(createdVtsMos, myFav)
-	TransmitKaraokes := common.AddIsFavToKaraokeWithFav(createdVtsMosKas, myFav)
+	TransmitVideos := common.AddIsFavToVideoWithFav(createdVtsVs, myVideoFavs)
+	TransmitVideoSongs := common.AddIsFavToVideoSongWithFav(createdVtsVsVss, myVideoSongFavs)
 	c.JSON(http.StatusOK, gin.H{
-		"vtubers_u_created":                 createdVts,
-		"vtubers_movies_u_created":          TransmitMovies,
-		"vtubers_movies_karaokes_u_created": TransmitKaraokes,
-		"error":                             errs,
+		"vtubers_u_created":             createdVts,
+		"vtubers_videos_u_created":      TransmitVideos,
+		"vtubers_video_songs_u_created": TransmitVideoSongs,
+		"error":                         errs,
 	})
 }

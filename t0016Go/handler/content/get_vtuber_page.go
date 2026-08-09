@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sharin-sushi/0016go_next_relation/common"
+	"github.com/sharin-sushi/0016go_next_relation/domain/api"
 )
 
 func (h *ContentHandler) ReturnVtuberPageData(cont *gin.Context) {
@@ -13,39 +14,56 @@ func (h *ContentHandler) ReturnVtuberPageData(cont *gin.Context) {
 	log.Println("kana", kana)
 	var errs []error
 
-	VtsMosKasWithFavofVtu, err := h.ActivityService.GetVtubersMoviesKaraokesByVtuberKanaWithFavCnts(kana)
+	// vtuberの存在・IDは歌唱JOINクエリ(video_songsが1件も無いと結果に出てこない)からではなく、
+	// vtuber自体を直接引いて決める。曲を1曲も登録していないvideoしか無いvtuberでも
+	// 「no data found」と誤判定されないようにするため(#414レビュー指摘)。
+	vtuber, err := h.ContentService.GetVtuberByKana(kana)
+	if err != nil {
+		log.Print("err:", err)
+		cont.JSON(http.StatusOK, gin.H{
+			"vtubers_videos":      []int{},
+			"vtubers_video_songs": []int{},
+			"error":               []error{err},
+			"message":             "no data found for this vtuber",
+		})
+		return
+	}
+
+	VsOfVtu, err := h.ContentService.GetVideosByVtuber(vtuber.VtuberId)
 	if err != nil {
 		log.Print("err:", err)
 		errs = append(errs, err)
 	}
-	vtuberId := VtsMosKasWithFavofVtu[0].VtuberId
-	MosOfVtu, err := h.ContentService.GetMoviesUrlTitleByVtuber(vtuberId)
+
+	VtsVsVssWithFavOfVtu, err := h.ActivityService.GetVtubersVideosVideoSongsByVtuberKanaWithFavCnts(kana)
 	if err != nil {
 		log.Print("err:", err)
 		errs = append(errs, err)
 	}
+
+	publicVsOfVtu := api.VideosToPublicVideos(VsOfVtu)
 
 	listenerId, err := common.TakeListenerIdFromJWT(cont) //非ログイン時でもデータは送付する
 	if err != nil || listenerId == 0 {
 		errs = append(errs, err)
 		cont.JSON(http.StatusOK, gin.H{
-			"vtubers_movies":          MosOfVtu,
-			"vtubers_movies_karaokes": VtsMosKasWithFavofVtu,
-			"error":                   errs,
-			"message":                 "dont you Loged in ?",
+			"vtubers_videos":      publicVsOfVtu,
+			"vtubers_video_songs": VtsVsVssWithFavOfVtu,
+			"error":               errs,
+			"message":             "dont you Loged in ?",
 		})
 		return
 	}
-	myFav, err := h.ActivityService.FindFavoritesCreatedByListenerId(listenerId)
+	myFav, err := h.ActivityService.FindFavoriteVideoSongsCreatedByListenerId(listenerId)
 	if err != nil {
-		log.Print("err in FindFavoritesCreatedByListenerId	:", err)
+		log.Print("err in FindFavoriteVideoSongsCreatedByListenerId	:", err)
 	}
 
-	TransmitKaraokes := common.AddIsFavToKaraokeWithFav(VtsMosKasWithFavofVtu, myFav)
+	TransmitVideoSongs := common.AddIsFavToVideoSongWithFav(VtsVsVssWithFavOfVtu, myFav)
 
 	cont.JSON(http.StatusOK, gin.H{
-		"vtubers_movies":          MosOfVtu,
-		"vtubers_movies_karaokes": TransmitKaraokes,
-		"error":                   errs,
+		"vtubers_videos":      publicVsOfVtu,
+		"vtubers_video_songs": TransmitVideoSongs,
+		"error":               errs,
 	})
 }

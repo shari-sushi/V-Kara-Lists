@@ -126,9 +126,9 @@ func TestSqlHandler_Delete2(t *testing.T) {
 	}
 	r := SqlHandler{Conn: db}
 
-	phycialBody := getPhycicalDeleteMovie()
+	phycialBody := getPhycicalDeleteVideo()
 
-	phycialQuery := "DELETE FROM `movies` WHERE movie_url = ?"
+	phycialQuery := "DELETE FROM `videos` WHERE movie_url = ?"
 	mock.ExpectExec(regexp.QuoteMeta(phycialQuery)).
 		WithArgs(phycialBody.MovieUrl).
 		WillReturnResult(sqlmock.NewResult(1, 1))
@@ -137,15 +137,15 @@ func TestSqlHandler_Delete2(t *testing.T) {
 		t.Log("mockdb is down")
 		t.Fail()
 	}
-	if err := r.Delete(&domain.Movie{}, "movie_url = ?", phycialBody.MovieUrl).Error; err != nil {
+	if err := r.Delete(&domain.Video{}, "movie_url = ?", phycialBody.MovieUrl).Error; err != nil {
 		t.Log(err)
 		t.Log("phygical delete is down")
 		t.Fail()
 	}
 }
 
-func getPhycicalDeleteMovie() *domain.Movie {
-	body := &domain.Movie{
+func getPhycicalDeleteVideo() *domain.Video {
+	body := &domain.Video{
 		MovieUrl: "url1",
 		VtuberId: 1,
 	}

@@ -2,9 +2,9 @@ package infra
 
 import (
 	"github.com/gin-gonic/gin"
-	contenthandler  "github.com/sharin-sushi/0016go_next_relation/handler/content"
+	contenthandler "github.com/sharin-sushi/0016go_next_relation/handler/content"
 	favoritehandler "github.com/sharin-sushi/0016go_next_relation/handler/favorite"
-	userhandler     "github.com/sharin-sushi/0016go_next_relation/handler/user"
+	userhandler "github.com/sharin-sushi/0016go_next_relation/handler/user"
 	"github.com/sharin-sushi/0016go_next_relation/repository"
 	"github.com/sharin-sushi/0016go_next_relation/service"
 )
@@ -53,39 +53,29 @@ func routingV1(r *gin.Engine) {
 		{
 			vcontents.GET("/", contentH.ReturnTopPageData)
 			vcontents.GET("/vtuber/:kana", contentH.ReturnVtuberPageData)
-			vcontents.GET("/sings", contentH.GetJoinVtubersMoviesKaraokes)
-			vcontents.GET("/original-song", contentH.ReturnOriginalSongPage)
 
-			// /vtuber, /movie, /karaokeの文字列はフロント側で比較演算に使われてる
+			// /vtuber, /video, /video-songの文字列はフロント側で比較演算に使われてる
 			// データ新規登録
-			// TODO: 複数形のpathを用意して、複数登録対応にする(既存のpathも残す)
 			vcontents.POST("/create/vtubers", contentH.CreateVtuber)
-			vcontents.POST("/create/videos", contentH.CreateMovie)
-			vcontents.POST("/create/karaokes", contentH.CreateKaraokes)
+			vcontents.POST("/create/videos", contentH.CreateVideo)
+			vcontents.POST("/create/video-songs", contentH.CreateVideoSongs)
 
 			//データ編集
 			vcontents.POST("/edit/vtuber", contentH.EditVtuber)
-			vcontents.POST("/edit/movie", contentH.EditMovie)
-			vcontents.POST("/edit/karaoke", contentH.EditKaraoke)
+			vcontents.POST("/edit/video", contentH.EditVideo)
+			vcontents.POST("/edit/video-song", contentH.EditVideoSong)
 
-			// // データ削除(物理)
-			vcontents.GET("/delete/deletePage", contentH.DeleteOfPage)
+			// データ削除(物理)
 			vcontents.DELETE("/delete/vtuber", contentH.DeleteVtuber)
-			vcontents.DELETE("/delete/movie", contentH.DeleteMovie)
-			vcontents.DELETE("/delete/karaoke", contentH.DeleteKaraoke)
-
-			//ドロップダウン用
-			vcontents.GET("/getalldata", contentH.GetVtuberMovieKaraoke)
-
-			// テスト用
-			vcontents.GET("/dummy-top-page", contentH.ReturnDummyTopPage)
+			vcontents.DELETE("/delete/video", contentH.DeleteVideo)
+			vcontents.DELETE("/delete/video-song", contentH.DeleteVideoSong)
 		}
 		fav := ver.Group("/fav")
 		{
-			fav.POST("/favorite/movie", favoriteH.SaveMovieFavorite)
-			fav.DELETE("/unfavorite/movie", favoriteH.DeleteMovieFavorite)
-			fav.POST("/favorite/karaoke", favoriteH.SaveKaraokeFavorite)
-			fav.DELETE("/unfavorite/karaoke", favoriteH.DeleteKaraokeFavorite)
+			fav.POST("/favorite/video", favoriteH.SaveVideoFavorite)
+			fav.DELETE("/unfavorite/video", favoriteH.DeleteVideoFavorite)
+			fav.POST("/favorite/video-song", favoriteH.SaveVideoSongFavorite)
+			fav.DELETE("/unfavorite/video-song", favoriteH.DeleteVideoSongFavorite)
 		}
 	}
 }

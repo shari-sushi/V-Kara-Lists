@@ -10,9 +10,9 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
+	"github.com/sharin-sushi/0016go_next_relation/common"
 	domain "github.com/sharin-sushi/0016go_next_relation/domain"
 	"github.com/sharin-sushi/0016go_next_relation/repository"
-	"github.com/sharin-sushi/0016go_next_relation/common"
 )
 
 type SqlHandler struct {
@@ -136,10 +136,12 @@ func (Db *SqlHandler) migration() {
 		Db.Conn.Set("gorm:table_options", "ENGINE=InnoDB").AutoMigrate(
 			// User
 			domain.Listener{},
-			// Like Relatoin
-			domain.Favorite{}, domain.Follow{},
-			// Vtuber Contents
-			domain.Karaoke{}, domain.Movie{}, domain.Vtuber{}, domain.OriginalSong{},
+			// Vtuber
+			domain.Vtuber{},
+			// Vtuber Contents (動画と歌唱の統一モデル。#398)
+			domain.Video{}, domain.VideoSong{},
+			// Like Relation
+			domain.FavoriteVideo{}, domain.FavoriteVideoSong{}, domain.Follow{},
 		)
 		isDidDBMigration = true
 	}

@@ -1,12 +1,12 @@
-import { createKaraokes } from "./karaokes"
+import { createVideoSongs } from "./video_songs"
 import { createVtuber } from "./vtubers"
-import { createKaraokeVideo } from "./videos"
+import { createVideo } from "./videos"
 
 export const api = {
   // Vtuber
   CreateVtuber: createVtuber,
   // video
-  CreateKaraokeVideo: createKaraokeVideo,
-  // Song
-  CreateKaraokes: createKaraokes,
+  CreateVideo: createVideo,
+  // video song
+  CreateVideoSongs: createVideoSongs,
 }

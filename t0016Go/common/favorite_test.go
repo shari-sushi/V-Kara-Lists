@@ -7,67 +7,67 @@ import (
 	"github.com/sharin-sushi/0016go_next_relation/domain"
 )
 
-func TestAddIsFavToMovieWithFav(t *testing.T) {
+func TestAddIsFavToVideoWithFav(t *testing.T) {
 	cases := map[string]struct {
-		mosWithFavCnts []domain.TransmitMovie
-		myFavs         []domain.ReceivedFavorite
-		want           []domain.TransmitMovie
+		vsWithFavCnts []domain.TransmitVideo
+		myFavs        []domain.ReceivedFavoriteVideo
+		want          []domain.TransmitVideo
 	}{
 		"成功IsFav:true, false": {
-			mosWithFavCnts: []domain.TransmitMovie{
-				{Vtuber: domain.Vtuber{VtuberName: "Vtuber1"}, MovieUrl: "url1", Count: 1},
-				{Vtuber: domain.Vtuber{VtuberName: "Vtuber2"}, MovieUrl: "url2", Count: 2},
-				{Vtuber: domain.Vtuber{VtuberName: "Vtuber3"}, MovieUrl: "url3", Count: 3},
+			vsWithFavCnts: []domain.TransmitVideo{
+				{VtuberName: "Vtuber1", VideoId: 1, Count: 1},
+				{VtuberName: "Vtuber2", VideoId: 2, Count: 2},
+				{VtuberName: "Vtuber3", VideoId: 3, Count: 3},
 			},
-			myFavs: []domain.ReceivedFavorite{
-				{MovieUrl: "url1"},
-				{MovieUrl: "url3"},
+			myFavs: []domain.ReceivedFavoriteVideo{
+				{VideoId: 1},
+				{VideoId: 3},
 			},
-			want: []domain.TransmitMovie{
-				{Vtuber: domain.Vtuber{VtuberName: "Vtuber1"}, MovieUrl: "url1", Count: 1, IsFav: true},
-				{Vtuber: domain.Vtuber{VtuberName: "Vtuber2"}, MovieUrl: "url2", Count: 2, IsFav: false},
-				{Vtuber: domain.Vtuber{VtuberName: "Vtuber3"}, MovieUrl: "url3", Count: 3, IsFav: true},
+			want: []domain.TransmitVideo{
+				{VtuberName: "Vtuber1", VideoId: 1, Count: 1, IsFav: true},
+				{VtuberName: "Vtuber2", VideoId: 2, Count: 2, IsFav: false},
+				{VtuberName: "Vtuber3", VideoId: 3, Count: 3, IsFav: true},
 			},
 		},
 	}
 	for name, tt := range cases {
 		t.Run(name, func(t *testing.T) {
-			if got := AddIsFavToMovieWithFav(tt.mosWithFavCnts, tt.myFavs); !reflect.DeepEqual(got, tt.want) {
+			if got := AddIsFavToVideoWithFav(tt.vsWithFavCnts, tt.myFavs); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("\ngot = %v,\nwant %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestAddIsFavToKaraokeWithFav(t *testing.T) {
+func TestAddIsFavToVideoSongWithFav(t *testing.T) {
 
 	cases := map[string]struct {
-		kasWithFavCnts []domain.TransmitKaraoke
-		myFavs         []domain.ReceivedFavorite
-		want           []domain.TransmitKaraoke
+		vssWithFavCnts []domain.TransmitVideoSong
+		myFavs         []domain.ReceivedFavoriteVideoSong
+		want           []domain.TransmitVideoSong
 	}{
 		"成功IsFav:true, false": {
-			kasWithFavCnts: []domain.TransmitKaraoke{
-				{Vtuber: domain.Vtuber{VtuberName: "Vtuber1"}, MovieUrl: "url1", KaraokeId: 10, Count: 1},
-				{Vtuber: domain.Vtuber{VtuberName: "Vtuber1"}, MovieUrl: "url1", KaraokeId: 11, Count: 11},
-				{Vtuber: domain.Vtuber{VtuberName: "Vtuber2"}, MovieUrl: "url2", KaraokeId: 20, Count: 2},
-				{Vtuber: domain.Vtuber{VtuberName: "Vtuber3"}, MovieUrl: "url3", KaraokeId: 30, Count: 3},
+			vssWithFavCnts: []domain.TransmitVideoSong{
+				{VtuberName: "Vtuber1", VideoId: 1, VideoSongId: 10, Count: 1},
+				{VtuberName: "Vtuber1", VideoId: 1, VideoSongId: 11, Count: 11},
+				{VtuberName: "Vtuber2", VideoId: 2, VideoSongId: 20, Count: 2},
+				{VtuberName: "Vtuber3", VideoId: 3, VideoSongId: 30, Count: 3},
 			},
-			myFavs: []domain.ReceivedFavorite{
-				{KaraokeId: 10},
-				{KaraokeId: 30},
+			myFavs: []domain.ReceivedFavoriteVideoSong{
+				{VideoSongId: 10},
+				{VideoSongId: 30},
 			},
-			want: []domain.TransmitKaraoke{
-				{Vtuber: domain.Vtuber{VtuberName: "Vtuber1"}, MovieUrl: "url1", KaraokeId: 10, Count: 1, IsFav: true},
-				{Vtuber: domain.Vtuber{VtuberName: "Vtuber1"}, MovieUrl: "url1", KaraokeId: 11, Count: 11, IsFav: false},
-				{Vtuber: domain.Vtuber{VtuberName: "Vtuber2"}, MovieUrl: "url2", KaraokeId: 20, Count: 2, IsFav: false},
-				{Vtuber: domain.Vtuber{VtuberName: "Vtuber3"}, MovieUrl: "url3", KaraokeId: 30, Count: 3, IsFav: true},
+			want: []domain.TransmitVideoSong{
+				{VtuberName: "Vtuber1", VideoId: 1, VideoSongId: 10, Count: 1, IsFav: true},
+				{VtuberName: "Vtuber1", VideoId: 1, VideoSongId: 11, Count: 11, IsFav: false},
+				{VtuberName: "Vtuber2", VideoId: 2, VideoSongId: 20, Count: 2, IsFav: false},
+				{VtuberName: "Vtuber3", VideoId: 3, VideoSongId: 30, Count: 3, IsFav: true},
 			},
 		},
 	}
 	for name, tt := range cases {
 		t.Run(name, func(t *testing.T) {
-			if got := AddIsFavToKaraokeWithFav(tt.kasWithFavCnts, tt.myFavs); !reflect.DeepEqual(got, tt.want) {
+			if got := AddIsFavToVideoSongWithFav(tt.vssWithFavCnts, tt.myFavs); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("\ngot = %v,\nwant %v", got, tt.want)
 			}
 		})

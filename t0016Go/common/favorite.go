@@ -4,54 +4,40 @@ import (
 	"github.com/sharin-sushi/0016go_next_relation/domain"
 )
 
-func AddIsFavToMovieWithFav(mosWithFavCnts []domain.TransmitMovie, myFavs []domain.ReceivedFavorite) []domain.TransmitMovie {
-	var transmitData []domain.TransmitMovie
-	for _, moWithFavCnt := range mosWithFavCnts {
-		isFav := returnIsFavEachMovieUrl(myFavs, moWithFavCnt.MovieUrl)
-		movieWithLikeCnt := domain.TransmitMovie{
-			VtuberId: moWithFavCnt.VtuberId,
-			Vtuber:   moWithFavCnt.Vtuber,
-			MovieUrl: moWithFavCnt.MovieUrl,
-			Movie:    moWithFavCnt.Movie,
-			Count:    moWithFavCnt.Count,
-			IsFav:    isFav,
-		}
-		transmitData = append(transmitData, movieWithLikeCnt)
+func AddIsFavToVideoWithFav(vsWithFavCnts []domain.TransmitVideo, myFavs []domain.ReceivedFavoriteVideo) []domain.TransmitVideo {
+	var transmitData []domain.TransmitVideo
+	for _, vWithFavCnt := range vsWithFavCnts {
+		isFav := returnIsFavEachVideoId(myFavs, vWithFavCnt.VideoId)
+		videoWithLikeCnt := vWithFavCnt
+		videoWithLikeCnt.IsFav = isFav
+		transmitData = append(transmitData, videoWithLikeCnt)
 	}
 	return transmitData
 }
 
-func returnIsFavEachMovieUrl(myFavs []domain.ReceivedFavorite, movieUrl string) bool {
+func returnIsFavEachVideoId(myFavs []domain.ReceivedFavoriteVideo, videoId domain.VideoId) bool {
 	for _, myFav := range myFavs {
-		if myFav.KaraokeId == 0 && myFav.MovieUrl == movieUrl {
+		if myFav.VideoId == videoId {
 			return true
 		}
 	}
 	return false
 }
 
-func AddIsFavToKaraokeWithFav(kasWithFavCnts []domain.TransmitKaraoke, myFavs []domain.ReceivedFavorite) []domain.TransmitKaraoke {
-	var transmitData []domain.TransmitKaraoke
-	for _, kaWithFavCnt := range kasWithFavCnts {
-		isFav := returnIsFavEachKaraokeIdByListenerId(myFavs, kaWithFavCnt.KaraokeId)
-		karaokeWithLikeCnt := domain.TransmitKaraoke{
-			VtuberId:  kaWithFavCnt.VtuberId,
-			MovieUrl:  kaWithFavCnt.MovieUrl,
-			KaraokeId: kaWithFavCnt.KaraokeId,
-			Vtuber:    kaWithFavCnt.Vtuber,
-			Movie:     kaWithFavCnt.Movie,
-			Karaoke:   kaWithFavCnt.Karaoke,
-			Count:     kaWithFavCnt.Count,
-			IsFav:     isFav,
-		}
-		transmitData = append(transmitData, karaokeWithLikeCnt)
+func AddIsFavToVideoSongWithFav(vssWithFavCnts []domain.TransmitVideoSong, myFavs []domain.ReceivedFavoriteVideoSong) []domain.TransmitVideoSong {
+	var transmitData []domain.TransmitVideoSong
+	for _, vsWithFavCnt := range vssWithFavCnts {
+		isFav := returnIsFavEachVideoSongId(myFavs, vsWithFavCnt.VideoSongId)
+		videoSongWithLikeCnt := vsWithFavCnt
+		videoSongWithLikeCnt.IsFav = isFav
+		transmitData = append(transmitData, videoSongWithLikeCnt)
 	}
 	return transmitData
 }
 
-func returnIsFavEachKaraokeIdByListenerId(myFavs []domain.ReceivedFavorite, KaraokeId domain.KaraokeId) bool {
+func returnIsFavEachVideoSongId(myFavs []domain.ReceivedFavoriteVideoSong, videoSongId domain.VideoSongId) bool {
 	for _, myFav := range myFavs {
-		if myFav.KaraokeId == KaraokeId {
+		if myFav.VideoSongId == videoSongId {
 			return true
 		}
 	}

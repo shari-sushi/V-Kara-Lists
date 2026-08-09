@@ -10,114 +10,89 @@ type ActivityService struct {
 	ContentRepository  repository.ContentRepository
 }
 
-func (interactor *ActivityService) CountMovieFavorites() ([]domain.TransmitMovie, error) {
-	cnt, err := interactor.FavoriteRepository.CountMovieFavorites()
-	return cnt, err
+// CreateVideoFavorite は既に登録済みなら何もしない(冪等)。
+func (interactor *ActivityService) CreateVideoFavorite(fav domain.FavoriteVideo) error {
+	existing, err := interactor.FavoriteRepository.FindFavoriteVideoByListenerAndVideo(fav.ListenerId, fav.VideoId)
+	if err == nil && existing.Id != 0 {
+		return nil
+	}
+	return interactor.FavoriteRepository.CreateVideoFavorite(fav)
 }
 
-func (interactor *ActivityService) CountKaraokeFavorites() ([]domain.TransmitKaraoke, error) {
-	cnt, err := interactor.FavoriteRepository.CountKaraokeFavorites()
-	return cnt, err
+func (interactor *ActivityService) CreateVideoSongFavorite(fav domain.FavoriteVideoSong) error {
+	existing, err := interactor.FavoriteRepository.FindFavoriteVideoSongByListenerAndVideoSong(fav.ListenerId, fav.VideoSongId)
+	if err == nil && existing.Id != 0 {
+		return nil
+	}
+	return interactor.FavoriteRepository.CreateVideoSongFavorite(fav)
 }
 
-func (interactor *ActivityService) CreateMovieFavorite(fav domain.Favorite) error {
-	fav.KaraokeId = 0 //保険
-	err := interactor.FavoriteRepository.CreateMovieFavorite(fav)
+func (interactor *ActivityService) DeleteVideoFavorite(fav domain.FavoriteVideo) error {
+	err := interactor.FavoriteRepository.DeleteVideoFavorite(fav)
 	return err
 }
 
-func (interactor *ActivityService) CreateKaraokeFavorite(fav domain.Favorite) error {
-	err := interactor.FavoriteRepository.CreateKaraokeFavorite(fav)
+func (interactor *ActivityService) DeleteVideoSongFavorite(fav domain.FavoriteVideoSong) error {
+	err := interactor.FavoriteRepository.DeleteVideoSongFavorite(fav)
 	return err
 }
 
-func (interactor *ActivityService) DeleteMovieFavorite(fav domain.Favorite) error {
-	fav.KaraokeId = 0 //保険
-	err := interactor.FavoriteRepository.DeleteMovieFavorite(fav)
-	return err
-}
-
-func (interactor *ActivityService) DeleteKaraokeFavorite(fav domain.Favorite) error {
-	err := interactor.FavoriteRepository.DeleteKaraokeFavorite(fav)
-	return err
-}
-
-func (interactor *ActivityService) FindFavoriteUnscopedByFavOrUnfavRegistry(fav domain.Favorite) domain.Favorite {
-	gotFav := interactor.FavoriteRepository.FindFavoriteUnscopedByFavOrUnfavRegistry(fav)
-	return gotFav
-}
-
-func (interactor *ActivityService) FindFavoritesCreatedByListenerId(lid domain.ListenerId) ([]domain.ReceivedFavorite, error) {
-	foundFavs, err := interactor.FavoriteRepository.FindFavoritesCreatedByListenerId(lid)
+func (interactor *ActivityService) FindFavoriteVideosCreatedByListenerId(lid domain.ListenerId) ([]domain.ReceivedFavoriteVideo, error) {
+	foundFavs, err := interactor.FavoriteRepository.FindFavoriteVideosCreatedByListenerId(lid)
 	return foundFavs, err
 }
 
-func (interactor *ActivityService) GetVtubersMoviesWithFavCnts() ([]domain.TransmitMovie, error) {
-	VtsMosWitFav, err := interactor.FavoriteRepository.GetVtubersMoviesWithFavCnts()
-	return VtsMosWitFav, err
+func (interactor *ActivityService) FindFavoriteVideoSongsCreatedByListenerId(lid domain.ListenerId) ([]domain.ReceivedFavoriteVideoSong, error) {
+	foundFavs, err := interactor.FavoriteRepository.FindFavoriteVideoSongsCreatedByListenerId(lid)
+	return foundFavs, err
 }
 
-func (interactor *ActivityService) GetVtubersMoviesKaraokesWithFavCnts() ([]domain.TransmitKaraoke, error) {
-	VtsMosKasWitFav, err := interactor.FavoriteRepository.GetVtubersMoviesKaraokesWithFavCnts()
-	return VtsMosKasWitFav, err
+func (interactor *ActivityService) GetVtubersVideosWithFavCnts() ([]domain.TransmitVideo, error) {
+	VtsVsWithFav, err := interactor.FavoriteRepository.GetVtubersVideosWithFavCnts()
+	return VtsVsWithFav, err
 }
 
-func (interactor *ActivityService) GetVtubersMoviesKaraokesByVtuberKanaWithFavCnts(kana string) ([]domain.TransmitKaraoke, error) {
-	VtsMosKasWitFav, err := interactor.FavoriteRepository.GetVtubersMoviesKaraokesByVtuberKanaWithFavCnts(kana)
-	return VtsMosKasWitFav, err
+func (interactor *ActivityService) GetVtubersVideosVideoSongsWithFavCnts() ([]domain.TransmitVideoSong, error) {
+	VtsVsVssWithFav, err := interactor.FavoriteRepository.GetVtubersVideosVideoSongsWithFavCnts()
+	return VtsVsVssWithFav, err
 }
 
-func (interactor *ActivityService) GetLatest50VtubersMoviesKaraokesWithFavCnts(guestId domain.ListenerId) ([]domain.TransmitKaraoke, error) {
-	VtsMosKasWitFav, err := interactor.FavoriteRepository.GetLatest50VtubersMoviesKaraokesWithFavCnts(guestId)
-	return VtsMosKasWitFav, err
+func (interactor *ActivityService) GetVtubersVideosVideoSongsByVtuberKanaWithFavCnts(kana string) ([]domain.TransmitVideoSong, error) {
+	VtsVsVssWithFav, err := interactor.FavoriteRepository.GetVtubersVideosVideoSongsByVtuberKanaWithFavCnts(kana)
+	return VtsVsVssWithFav, err
 }
 
-func (interactor *ActivityService) UpdateMovieFavorite(fav domain.Favorite) error {
-	fav.KaraokeId = 0 //保険
-	err := interactor.FavoriteRepository.UpdateMovieFavorite(fav)
-	return err
+func (interactor *ActivityService) GetLatest50VtubersVideosVideoSongsWithFavCnts(guestId domain.ListenerId) ([]domain.TransmitVideoSong, error) {
+	VtsVsVssWithFav, err := interactor.FavoriteRepository.GetLatest50VtubersVideosVideoSongsWithFavCnts(guestId)
+	return VtsVsVssWithFav, err
 }
 
-func (interactor *ActivityService) UpdateKaraokeFavorite(fav domain.Favorite) error {
-	err := interactor.FavoriteRepository.UpdateKaraokeFavorite(fav)
-	return err
-}
-
-// 使ってない？
 func (interactor *ActivityService) FindVtubersCreatedByListenerId(lid domain.ListenerId) ([]domain.Vtuber, error) {
 	x, err := interactor.FavoriteRepository.FindVtubersCreatedByListenerId(lid)
 	return x, err
 }
-func (interactor *ActivityService) FindMoviesCreatedByListenerId(lid domain.ListenerId) ([]domain.TransmitMovie, error) {
-	x, err := interactor.FavoriteRepository.FindMoviesCreatedByListenerId(lid)
+func (interactor *ActivityService) FindVideosCreatedByListenerId(lid domain.ListenerId) ([]domain.TransmitVideo, error) {
+	x, err := interactor.FavoriteRepository.FindVideosCreatedByListenerId(lid)
 	return x, err
 }
-func (interactor *ActivityService) FindKaraokesCreatedByListenerId(lid domain.ListenerId) ([]domain.TransmitKaraoke, error) {
-	x, err := interactor.FavoriteRepository.FindKaraokesCreatedByListenerId(lid)
-	return x, err
-}
-func (interactor *ActivityService) FindMoviesFavoritedByListenerId(lid domain.ListenerId) ([]domain.TransmitMovie, error) {
-	x, err := interactor.FavoriteRepository.FindMoviesFavoritedByListenerId(lid)
-	return x, err
-}
-func (interactor *ActivityService) FindKaraokesFavoritedByListenerId(lid domain.ListenerId) ([]domain.TransmitKaraoke, error) {
-	x, err := interactor.FavoriteRepository.FindKaraokesFavoritedByListenerId(lid)
+func (interactor *ActivityService) FindVideoSongsCreatedByListenerId(lid domain.ListenerId) ([]domain.TransmitVideoSong, error) {
+	x, err := interactor.FavoriteRepository.FindVideoSongsCreatedByListenerId(lid)
 	return x, err
 }
 
-func (interactor *ActivityService) FindEachRecordsCreatedByListenerId(lid domain.ListenerId) ([]domain.Vtuber, []domain.TransmitMovie, []domain.TransmitKaraoke, []error) {
+func (interactor *ActivityService) FindEachRecordsCreatedByListenerId(lid domain.ListenerId) ([]domain.Vtuber, []domain.TransmitVideo, []domain.TransmitVideoSong, []error) {
 	var errs []error
 	vts, err := interactor.FavoriteRepository.FindVtubersCreatedByListenerId(lid)
 	if err != nil {
 		errs = append(errs, err)
 	}
-	mos, err := interactor.FavoriteRepository.FindMoviesCreatedByListenerId(lid)
+	vs, err := interactor.FavoriteRepository.FindVideosCreatedByListenerId(lid)
 	if err != nil {
 		errs = append(errs, err)
 	}
-	kas, err := interactor.FavoriteRepository.FindKaraokesCreatedByListenerId(lid)
+	vss, err := interactor.FavoriteRepository.FindVideoSongsCreatedByListenerId(lid)
 	if err != nil {
 		errs = append(errs, err)
 	}
-	return vts, mos, kas, errs
+	return vts, vs, vss, errs
 }
