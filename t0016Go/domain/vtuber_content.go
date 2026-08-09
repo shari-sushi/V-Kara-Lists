@@ -47,6 +47,19 @@ func (c VideoCategory) IsSingleSong() bool {
 	return SingleSongCategories[c]
 }
 
+// ValidVideoCategories は Video.Category として許容される値の集合。
+var ValidVideoCategories = map[VideoCategory]bool{
+	ORIGINAL_SONG_CATEGORY: true,
+	COVERED_SONG_CATEGORY:  true,
+	KARAOKE_CATEGORY:       true,
+	LIVE_CATEGORY:          true,
+}
+
+// IsValid は許容される4値のいずれかであるかを返す。
+func (c VideoCategory) IsValid() bool {
+	return ValidVideoCategories[c]
+}
+
 // Video は「動画」を表す。歌枠・ライブ・オリ曲・歌ってみたの4カテゴリを Category で区別する。
 type VideoId int
 type Video struct {

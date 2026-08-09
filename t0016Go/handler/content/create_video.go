@@ -35,6 +35,13 @@ func (h *ContentHandler) CreateVideo(c *gin.Context) {
 		return
 	}
 
+	if !req.Category.IsValid() {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Category is invalid",
+		})
+		return
+	}
+
 	created, err := h.ContentService.CreateVideo(api.CreateVideoRequestToVideo(req, listenerId))
 	if err != nil {
 		log.Println("err: create video,", err)
