@@ -17,6 +17,11 @@ func (interactor *ContentService) GetVtubers() ([]domain.Vtuber, error) {
 	return allVts, err
 }
 
+func (interactor *ContentService) GetVtuberByKana(kana string) (domain.Vtuber, error) {
+	vt, err := interactor.ContentRepository.GetVtuberByKana(kana)
+	return vt, err
+}
+
 func (interactor *ContentService) GetVideosByVtuber(id domain.VtuberId) ([]domain.Video, error) {
 	vs, err := interactor.ContentRepository.GetVideosByVtuber(id)
 	return vs, err
@@ -118,7 +123,20 @@ func (interactor *ContentService) UpdateVideo(v domain.Video) error {
 	return nil
 }
 
+// UpdateVideoSong は歌唱行を更新する。CreateVideoSongsと同様、対象動画が単曲カテゴリ
+// (オリ曲/歌ってみた)の場合はSingStartにセンチネル値を強制する。ここで強制しないと、
+// 編集経由でSingStartが任意値に変わってしまい「単曲は必ず1行」という不変条件が
+// CreateVideoSongsの新規追加時にUNIQUE制約をすり抜けて崩れる
+// (詳細はV-Kara-Lists.wiki/設計判断ログ.mdを参照)。
 func (interactor *ContentService) UpdateVideoSong(vs domain.VideoSong) error {
+	video, err := interactor.ContentRepository.GetVideoById(vs.VideoId)
+	if err != nil {
+		return err
+	}
+
+	if video.Category.IsSingleSong() {
+		vs.SingStart = domain.SingleSongSentinelSingStart
+	}
 	vs = common.NormalizeVideoSong(vs)
 
 	if err := common.ValidateVideoSong(vs); err != nil {

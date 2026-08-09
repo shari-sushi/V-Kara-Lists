@@ -14,22 +14,28 @@ func (h *ContentHandler) ReturnVtuberPageData(cont *gin.Context) {
 	log.Println("kana", kana)
 	var errs []error
 
-	VtsVsVssWithFavOfVtu, err := h.ActivityService.GetVtubersVideosVideoSongsByVtuberKanaWithFavCnts(kana)
+	// vtuberの存在・IDは歌唱JOINクエリ(video_songsが1件も無いと結果に出てこない)からではなく、
+	// vtuber自体を直接引いて決める。曲を1曲も登録していないvideoしか無いvtuberでも
+	// 「no data found」と誤判定されないようにするため(#414レビュー指摘)。
+	vtuber, err := h.ContentService.GetVtuberByKana(kana)
 	if err != nil {
 		log.Print("err:", err)
-		errs = append(errs, err)
-	}
-	if len(VtsVsVssWithFavOfVtu) == 0 {
 		cont.JSON(http.StatusOK, gin.H{
 			"vtubers_videos":      []int{},
 			"vtubers_video_songs": []int{},
-			"error":               errs,
+			"error":               []error{err},
 			"message":             "no data found for this vtuber",
 		})
 		return
 	}
-	vtuberId := VtsVsVssWithFavOfVtu[0].VtuberId
-	VsOfVtu, err := h.ContentService.GetVideosByVtuber(vtuberId)
+
+	VsOfVtu, err := h.ContentService.GetVideosByVtuber(vtuber.VtuberId)
+	if err != nil {
+		log.Print("err:", err)
+		errs = append(errs, err)
+	}
+
+	VtsVsVssWithFavOfVtu, err := h.ActivityService.GetVtubersVideosVideoSongsByVtuberKanaWithFavCnts(kana)
 	if err != nil {
 		log.Print("err:", err)
 		errs = append(errs, err)

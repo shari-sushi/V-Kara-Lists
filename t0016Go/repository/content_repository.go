@@ -19,6 +19,15 @@ func (db *contentRepository) GetVtubers() ([]domain.Vtuber, error) {
 	return vts, nil
 }
 
+func (db *contentRepository) GetVtuberByKana(kana string) (domain.Vtuber, error) {
+	var vt domain.Vtuber
+	err := db.Where("vtuber_kana = ?", kana).First(&vt).Error
+	if err != nil {
+		return domain.Vtuber{}, err
+	}
+	return vt, nil
+}
+
 func (db *contentRepository) GetVideoById(id domain.VideoId) (domain.Video, error) {
 	var v domain.Video
 	err := db.Where("id = ?", id).First(&v).Error

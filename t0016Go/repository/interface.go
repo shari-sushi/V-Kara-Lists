@@ -13,6 +13,7 @@ type UserRepository interface {
 type ContentRepository interface {
 	// 基本的なCRUd
 	GetVtubers() ([]domain.Vtuber, error)
+	GetVtuberByKana(kana string) (domain.Vtuber, error)
 	GetVideoById(domain.VideoId) (domain.Video, error)
 	GetVideoByUrl(url domain.MovieUrl) (domain.Video, error)
 	GetVideos() ([]domain.Video, error)
