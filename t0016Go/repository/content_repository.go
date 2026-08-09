@@ -21,7 +21,7 @@ func (db *contentRepository) GetVtubers() ([]domain.Vtuber, error) {
 
 func (db *contentRepository) GetVideoById(id domain.VideoId) (domain.Video, error) {
 	var v domain.Video
-	err := db.Where("id = ?", id).Find(&v).Error
+	err := db.Where("id = ?", id).First(&v).Error
 	if err != nil {
 		return domain.Video{}, err
 	}

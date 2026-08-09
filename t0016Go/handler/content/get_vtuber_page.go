@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sharin-sushi/0016go_next_relation/common"
+	"github.com/sharin-sushi/0016go_next_relation/domain/api"
 )
 
 func (h *ContentHandler) ReturnVtuberPageData(cont *gin.Context) {
@@ -34,11 +35,13 @@ func (h *ContentHandler) ReturnVtuberPageData(cont *gin.Context) {
 		errs = append(errs, err)
 	}
 
+	publicVsOfVtu := api.VideosToPublicVideos(VsOfVtu)
+
 	listenerId, err := common.TakeListenerIdFromJWT(cont) //非ログイン時でもデータは送付する
 	if err != nil || listenerId == 0 {
 		errs = append(errs, err)
 		cont.JSON(http.StatusOK, gin.H{
-			"vtubers_videos":      VsOfVtu,
+			"vtubers_videos":      publicVsOfVtu,
 			"vtubers_video_songs": VtsVsVssWithFavOfVtu,
 			"error":               errs,
 			"message":             "dont you Loged in ?",
@@ -53,7 +56,7 @@ func (h *ContentHandler) ReturnVtuberPageData(cont *gin.Context) {
 	TransmitVideoSongs := common.AddIsFavToVideoSongWithFav(VtsVsVssWithFavOfVtu, myFav)
 
 	cont.JSON(http.StatusOK, gin.H{
-		"vtubers_videos":      VsOfVtu,
+		"vtubers_videos":      publicVsOfVtu,
 		"vtubers_video_songs": TransmitVideoSongs,
 		"error":               errs,
 	})

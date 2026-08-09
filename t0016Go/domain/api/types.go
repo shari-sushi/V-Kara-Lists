@@ -42,6 +42,34 @@ type CreateVideoSongsResponse struct {
 	VideoSongs []domain.VideoSong `json:"video_songs"`
 }
 
+// PublicVideo は不特定多数の閲覧者に返して良い動画情報。
+// domain.Video の InputterId/CreatedAt/UpdatedAt は登録者本人以外に見せる必要が無いため含めない。
+// どのフィールドをappへ返すかはこの変換関数(domain/api層)の責務とし、
+// リポジトリのクエリでSELECT列を絞る形では担保しない。
+type PublicVideo struct {
+	VideoId     domain.VideoId       `json:"video_id"`
+	Category    domain.VideoCategory `json:"category"`
+	MovieUrl    domain.MovieUrl      `json:"movie_url"`
+	Title       string               `json:"title"`
+	VtuberId    domain.VtuberId      `json:"vtuber_id"`
+	PublishedAt *time.Time           `json:"published_at"`
+}
+
+func VideosToPublicVideos(vs []domain.Video) []PublicVideo {
+	resp := make([]PublicVideo, 0, len(vs))
+	for _, v := range vs {
+		resp = append(resp, PublicVideo{
+			VideoId:     v.VideoId,
+			Category:    v.Category,
+			MovieUrl:    v.MovieUrl,
+			Title:       v.Title,
+			VtuberId:    v.VtuberId,
+			PublishedAt: v.PublishedAt,
+		})
+	}
+	return resp
+}
+
 func CreateVideoRequestToVideo(req CreateVideoRequest, requestListenerID domain.ListenerId) domain.Video {
 	return domain.Video{
 		Category:    req.Category,

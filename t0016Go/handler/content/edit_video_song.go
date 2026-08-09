@@ -27,6 +27,7 @@ func (h *ContentHandler) EditVideoSong(c *gin.Context) {
 		return
 	}
 
+	videoSong.InputterId = listenerId
 	if isAuth, err := h.ContentService.VerifyUserModifyVideoSong(listenerId, videoSong); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Auth Check is failed.(we could not Verify)",
