@@ -218,7 +218,7 @@ const NoticeItems: NoticeItem[] = [
     data: "2024-06-03",
     content: (
       <>
-        <NoticeLink href="/sings/karaoke">「カラオケ」</NoticeLink>
+        <NoticeLink href="/videos/karaoke">「カラオケ」</NoticeLink>
         ページの検索機能を強化
       </>
     ),
