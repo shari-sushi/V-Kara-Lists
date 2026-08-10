@@ -4,13 +4,14 @@ import ReactPlayer from "react-player"
 interface YoutubePlayerProps {
   videoId: string
   start: number
+  playing?: boolean
   style: {
     height: number
     width: number
   }
 }
 
-export const YoutubePlayer = ({ videoId, start, style }: YoutubePlayerProps) => {
+export const YoutubePlayer = ({ videoId, start, playing = true, style }: YoutubePlayerProps) => {
   const playerRef = useRef<HTMLMediaElement | null>(null)
 
   // だめだった。toSeekもだめだしなんなん？
@@ -33,7 +34,7 @@ export const YoutubePlayer = ({ videoId, start, style }: YoutubePlayerProps) => 
         onReady={() => {
           offSetStart(start)
         }}
-        playing
+        playing={playing}
         config={{
           youtube: {
             start: start,

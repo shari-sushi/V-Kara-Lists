@@ -11,5 +11,12 @@ export const VKaraVideoPlayer = () => {
 
   // NOTE: 開発時に使うダミー。頻繁にレンダリングするとyoutubeにbot扱いされてブロックされるため。
   // return <div style={{ height: 200, width: 356 }} className="bg-green-900" />;
-  return <YoutubePlayer videoId={videoState.youtubeId} start={videoState.startTime} style={{ ...FOOTER_POSITION }} />
+  return (
+    <YoutubePlayer
+      videoId={videoState.youtubeId}
+      start={videoState.startTime}
+      playing={videoState.isPlaying ?? true}
+      style={{ ...FOOTER_POSITION }}
+    />
+  )
 }
