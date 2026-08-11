@@ -1,0 +1,26 @@
+name: claude
+
+on:
+  issues:
+    types: [labeled]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  claude:
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'issues' && github.event.label.name == 'ready') ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude'))
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          label_trigger: "ready"
