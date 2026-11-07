@@ -151,6 +151,7 @@ jobs:
           if [ "$COMPOSE_CHANGED" = "true" ]; then
             PULL_SERVICES="api app caddy"
             RESTART_SERVICES="db api app caddy"
+            UP_OPTIONS=""
           else
             PULL_SERVICES=""
             [ "$API_CHANGED" = "true" ] && PULL_SERVICES="$PULL_SERVICES api"
@@ -159,6 +160,9 @@ jobs:
             RESTART_SERVICES="$PULL_SERVICES"
             [ "$CADDY_CHANGED" = "true" ] && RESTART_SERVICES="$RESTART_SERVICES caddy"
             RESTART_SERVICES=$(echo $RESTART_SERVICES | xargs)
+            # caddy のみの再作成で依存先（app/api）を巻き込まないようにする（docker-compose v1 対策）
+            UP_OPTIONS=""
+            [ "$RESTART_SERVICES" = "caddy" ] && UP_OPTIONS="--no-deps"
           fi
 
           echo "Services to pull: $PULL_SERVICES"
@@ -192,7 +196,7 @@ jobs:
                 "chmod 600 /home/ubuntu/v-kara/*.env /home/ubuntu/v-kara/infra/caddy/certs/*",
                 "aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com",
                 "$PULL_COMMAND",
-                "$ECR_ENV docker-compose -f /home/ubuntu/v-kara/ec2-docker-compose.yml up -d --force-recreate $RESTART_SERVICES",
+                "$ECR_ENV docker-compose -f /home/ubuntu/v-kara/ec2-docker-compose.yml up -d --force-recreate $UP_OPTIONS $RESTART_SERVICES",
                 "rm -f /home/ubuntu/v-kara/api.env /home/ubuntu/v-kara/app.env",
                 "docker system prune -af"
               ]
