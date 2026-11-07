@@ -47,6 +47,18 @@ run_sql --force < 398_inspect.sql
 - 新テーブルが無ければ「Table doesn't exist」が出るが、想定どおり（`--force` で続行する）
 - `migration blockers / skipped rows` の各件数を控える。0 でないものは移行対象外になる。扱いを決めてから進む
 
+#### 移行を中止する条件
+
+次のどれかに当てはまる場合は、本番作業に進まない。リハーサル用の旧スキーマ（`scripts/db/rehearsal/legacy_schema.sql`）を本番に合わせて直し、リハーサルからやり直す。
+
+- `show create table` の movies / karaokes / favorites の定義が `legacy_schema.sql` と違う。特に次の2点を確認する
+  - karaokes に `UNIQUE KEY karaoke_uq (movie_url, sing_start)` がある。video_songs の `UNIQUE(video_id, sing_start)` は、旧側にこの制約があることを前提にしている
+  - favorites の `movie_url` と `karaoke_id` が NULL 許容、`deleted_at` 列がある
+- `karaokes_duplicate_movie_url_sing_start` が 0 でない（このまま移行すると UNIQUE 違反で全件ロールバックされる）
+- 新テーブルがすでにあり、その定義が `398_create_new_tables.sql` と違う
+
+列の後ろに付く `CHARACTER SET utf8mb4` の有無は表示の違いだけなので、無視してよい。
+
 ### 2. ローカルリハーサル（本番作業の前日まで）
 
 ```bash

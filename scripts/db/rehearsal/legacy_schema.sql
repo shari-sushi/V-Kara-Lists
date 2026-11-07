@@ -1,5 +1,6 @@
 -- #398 リハーサル用: #414 より前の旧スキーマ（本番の現状に相当）
--- 旧 domain 構造体(66d7f2c^)を GORM AutoMigrate した結果の SHOW CREATE TABLE。データは含まない
+-- 旧 domain 構造体(66d7f2c^)をローカルで GORM AutoMigrate して得た SHOW CREATE TABLE（本番から取得したものではない）。データは含まない
+-- 本番作業の前に、398_inspect.sql の show create table の結果と突き合わせる（docs/db-migration-398.md の「移行を中止する条件」）
 
 CREATE TABLE `favorites` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,

@@ -9,6 +9,18 @@ FROM information_schema.tables
 WHERE table_schema = DATABASE()
 ORDER BY table_name;
 
+-- 本番の実際の定義。scripts/db/rehearsal/legacy_schema.sql（リハーサルで使った旧スキーマ）と突き合わせる。
+-- 特に karaokes の UNIQUE KEY karaoke_uq(movie_url, sing_start) と favorites の NULL 許容を確認する。
+-- 新テーブルが無ければこの部分はエラーになる（--force で続行する）。
+SELECT '== show create table ==' AS section;
+SHOW CREATE TABLE movies;
+SHOW CREATE TABLE karaokes;
+SHOW CREATE TABLE favorites;
+SHOW CREATE TABLE videos;
+SHOW CREATE TABLE video_songs;
+SHOW CREATE TABLE favorite_videos;
+SHOW CREATE TABLE favorite_video_songs;
+
 SELECT '== old tables ==' AS section;
 SELECT 'movies' AS t, COUNT(*) AS n FROM movies
 UNION ALL SELECT 'karaokes', COUNT(*) FROM karaokes
@@ -34,6 +46,13 @@ FROM movies m JOIN videos v ON v.movie_url = m.movie_url WHERE v.category <> 31
 -- 新テーブルに同じ movie_url が歌枠で登録済み（移行時は新側の動画に旧 karaokes をマージする）
 UNION ALL SELECT 'movie_url_already_in_videos_as_karaoke', COUNT(*)
 FROM movies m JOIN videos v ON v.movie_url = m.movie_url WHERE v.category = 31
+-- 同じ動画・同じ開始時刻の旧 karaokes。旧側の karaoke_uq があれば 0 になる。
+-- 0 でなければ video_songs の UNIQUE(video_id, sing_start) に違反し、移行全体がロールバックされる → 移行を中止して扱いを決める
+UNION ALL SELECT 'karaokes_duplicate_movie_url_sing_start', COUNT(*) FROM (
+  SELECT movie_url, sing_start FROM karaokes
+  WHERE sing_start IS NOT NULL
+  GROUP BY movie_url, sing_start HAVING COUNT(*) > 1
+) d
 -- 新テーブルの NOT NULL 制約に入らない旧 karaokes（移行対象外になる）
 UNION ALL SELECT 'karaokes_null_sing_start', COUNT(*) FROM karaokes WHERE sing_start IS NULL
 UNION ALL SELECT 'karaokes_null_song_name', COUNT(*) FROM karaokes WHERE song_name IS NULL
