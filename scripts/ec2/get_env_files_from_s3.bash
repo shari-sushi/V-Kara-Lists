@@ -13,4 +13,10 @@ fi
 aws s3 cp "s3://$S3_API_ENVFILE_BUCKET/.env" "$VKARA_DIR/api.env"
 aws s3 cp "s3://$S3_APP_ENVFILE_BUCKET/.env" "$VKARA_DIR/app.env"
 
+# Caddy 用の Cloudflare Origin Certificate（#372）
+mkdir -p "$VKARA_DIR/infra/caddy/certs"
+aws s3 cp "s3://$S3_API_ENVFILE_BUCKET/caddy/origin.pem" "$VKARA_DIR/infra/caddy/certs/origin.pem"
+aws s3 cp "s3://$S3_API_ENVFILE_BUCKET/caddy/origin.key" "$VKARA_DIR/infra/caddy/certs/origin.key"
+chmod 600 "$VKARA_DIR"/*.env "$VKARA_DIR"/infra/caddy/certs/*
+
 echo "env files fetched."

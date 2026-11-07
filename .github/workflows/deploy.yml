@@ -17,6 +17,7 @@ jobs:
       api: ${{ steps.changes.outputs.api }}
       app: ${{ steps.changes.outputs.app }}
       compose: ${{ steps.changes.outputs.compose }}
+      caddy: ${{ steps.changes.outputs.caddy }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -37,18 +38,21 @@ jobs:
           API_CHANGED=false
           APP_CHANGED=false
           COMPOSE_CHANGED=false
+          CADDY_CHANGED=false
 
           echo "$CHANGED" | grep -q "^t0016Go/" && API_CHANGED=true || true
           echo "$CHANGED" | grep -q "^t0016Next/" && APP_CHANGED=true || true
           echo "$CHANGED" | grep -q "^ec2-docker-compose\.yml$" && COMPOSE_CHANGED=true || true
+          echo "$CHANGED" | grep -q "^infra/caddy/" && CADDY_CHANGED=true || true
 
           echo "Changed files:"
           echo "$CHANGED"
-          echo "api=$API_CHANGED, app=$APP_CHANGED, compose=$COMPOSE_CHANGED"
+          echo "api=$API_CHANGED, app=$APP_CHANGED, compose=$COMPOSE_CHANGED, caddy=$CADDY_CHANGED"
 
           echo "api=$API_CHANGED" >> $GITHUB_OUTPUT
           echo "app=$APP_CHANGED" >> $GITHUB_OUTPUT
           echo "compose=$COMPOSE_CHANGED" >> $GITHUB_OUTPUT
+          echo "caddy=$CADDY_CHANGED" >> $GITHUB_OUTPUT
 
   build-api:
     name: Build & Push API to ECR
@@ -113,7 +117,7 @@ jobs:
       needs.detect-changes.result == 'success' &&
       (needs.build-api.result == 'success' || needs.build-api.result == 'skipped') &&
       (needs.build-app.result == 'success' || needs.build-app.result == 'skipped') &&
-      (needs.detect-changes.outputs.api == 'true' || needs.detect-changes.outputs.app == 'true' || needs.detect-changes.outputs.compose == 'true')
+      (needs.detect-changes.outputs.api == 'true' || needs.detect-changes.outputs.app == 'true' || needs.detect-changes.outputs.compose == 'true' || needs.detect-changes.outputs.caddy == 'true')
 
     steps:
       - uses: actions/checkout@v4
@@ -142,16 +146,19 @@ jobs:
           API_CHANGED="${{ needs.detect-changes.outputs.api }}"
           APP_CHANGED="${{ needs.detect-changes.outputs.app }}"
           COMPOSE_CHANGED="${{ needs.detect-changes.outputs.compose }}"
+          CADDY_CHANGED="${{ needs.detect-changes.outputs.caddy }}"
 
           if [ "$COMPOSE_CHANGED" = "true" ]; then
-            PULL_SERVICES="api app"
-            RESTART_SERVICES="db api app"
+            PULL_SERVICES="api app caddy"
+            RESTART_SERVICES="db api app caddy"
           else
             PULL_SERVICES=""
             [ "$API_CHANGED" = "true" ] && PULL_SERVICES="$PULL_SERVICES api"
             [ "$APP_CHANGED" = "true" ] && PULL_SERVICES="$PULL_SERVICES app"
             PULL_SERVICES=$(echo $PULL_SERVICES | xargs)
             RESTART_SERVICES="$PULL_SERVICES"
+            [ "$CADDY_CHANGED" = "true" ] && RESTART_SERVICES="$RESTART_SERVICES caddy"
+            RESTART_SERVICES=$(echo $RESTART_SERVICES | xargs)
           fi
 
           echo "Services to pull: $PULL_SERVICES"
@@ -169,9 +176,13 @@ jobs:
                 "set -e",
                 "mkdir -p /home/ubuntu/v-kara",
                 "curl -fsSL https://raw.githubusercontent.com/shari-sushi/V-Kara-Lists/${{ github.sha }}/ec2-docker-compose.yml -o /home/ubuntu/v-kara/ec2-docker-compose.yml",
+                "mkdir -p /home/ubuntu/v-kara/infra/caddy/certs",
+                "curl -fsSL https://raw.githubusercontent.com/shari-sushi/V-Kara-Lists/${{ github.sha }}/infra/caddy/Caddyfile -o /home/ubuntu/v-kara/infra/caddy/Caddyfile",
                 "aws s3 cp s3://${{ secrets.S3_APP_ENV_BUCKET }}/.env /home/ubuntu/v-kara/app.env",
                 "aws s3 cp s3://${{ secrets.S3_API_ENV_BUCKET }}/.env /home/ubuntu/v-kara/api.env",
-                "chmod 600 /home/ubuntu/v-kara/*.env",
+                "aws s3 cp s3://${{ secrets.S3_API_ENV_BUCKET }}/caddy/origin.pem /home/ubuntu/v-kara/infra/caddy/certs/origin.pem",
+                "aws s3 cp s3://${{ secrets.S3_API_ENV_BUCKET }}/caddy/origin.key /home/ubuntu/v-kara/infra/caddy/certs/origin.key",
+                "chmod 600 /home/ubuntu/v-kara/*.env /home/ubuntu/v-kara/infra/caddy/certs/*",
                 "aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-northeast-1.amazonaws.com",
                 "$ECR_ENV docker-compose -f /home/ubuntu/v-kara/ec2-docker-compose.yml pull $PULL_SERVICES",
                 "$ECR_ENV docker-compose -f /home/ubuntu/v-kara/ec2-docker-compose.yml up -d --force-recreate $RESTART_SERVICES",
@@ -218,7 +229,9 @@ jobs:
             "Parameters": {
               "commands": [
                 "for i in $(seq 1 12); do curl -sf http://localhost:8080/health && break || { [ \"$i\" -eq 12 ] && exit 1 || sleep 5; }; done",
-                "for i in $(seq 1 12); do curl -sf http://localhost/user/signin && break || { [ \"$i\" -eq 12 ] && exit 1 || sleep 5; }; done"
+                "for i in $(seq 1 12); do curl -sf http://localhost/user/signin && break || { [ \"$i\" -eq 12 ] && exit 1 || sleep 5; }; done",
+                "for i in $(seq 1 12); do curl -sfk --resolve v-karaoke.com:443:127.0.0.1 https://v-karaoke.com/user/signin && break || { [ \"$i\" -eq 12 ] && exit 1 || sleep 5; }; done",
+                "for i in $(seq 1 12); do curl -sfk --resolve backend.v-karaoke.com:443:127.0.0.1 https://backend.v-karaoke.com/health && break || { [ \"$i\" -eq 12 ] && exit 1 || sleep 5; }; done"
               ]
             }
           }
