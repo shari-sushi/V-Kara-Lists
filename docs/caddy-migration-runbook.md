@@ -7,6 +7,7 @@ ALB を廃止し、EC2 上の Caddy で TLS を終端する。証明書は Cloud
 - [ ] **#398（DB 再設計）の本番リリースが完了していること**。この PR は `ec2-docker-compose.yml` を変更するため、デプロイ時に api と app の `latest` が pull される。データ移行の前に新しい api が本番に出るのを防ぐため
 - [ ] 本番デプロイ（`.github/workflows/deploy.yml`）が成功する状態に戻っていること
 - [ ] EC2 の SG（`v-kara-ec2-instance`）の 80/8080 が **ALB SG からのみ** 許可されていること（0.0.0.0/0 になっていないこと）。移行期間中は api の 8080 がホストに公開されたままになるため
+- [ ] EC2 のディスクに、デプロイ前の時点で **300MB 以上** の空きがあること（`df -h /`）。ルートボリュームは 8GB で、余裕が少ない。Caddy のイメージ（alpine、約 50MB）の pull と証明書の配置に必要。足りないとデプロイが失敗する
 - [ ] AWS CLI は `--profile vkara` で実行する
 - [ ] 作業中は RDS / DB の変更を行わない（DB 移行とは直列で行う）
 
@@ -49,7 +50,8 @@ terraform output ec2_public_ip   # = <EIP>
 
 ### 3. PR をマージしてデプロイする
 
-- deploy で Caddyfile と証明書が配置され、`db api app caddy` が再作成される（compose の変更として扱われるため。DB も数十秒ほど再起動する）
+- deploy で Caddyfile と証明書が配置され、`db api app caddy` が再作成される（compose の変更として扱われるため）
+- **db コンテナも再作成されるため、数十秒間 API が止まる**（db が healthy になるまで api は起動しない）。アクセスの少ない時間帯に行う
 - 証明書の取得に失敗した場合、`set -e` によって compose の再作成前に中断する。そのため既存のコンテナはそのまま動き続ける
 - この時点では DNS はまだ ALB を向いている。経路は次のとおりで、サイトは止まらない
   - ALB :443 → EC2:80（Caddy の `:80` ブロック）→ app
@@ -58,7 +60,8 @@ terraform output ec2_public_ip   # = <EIP>
 確認（EC2 上で SSM か SSH から実行）:
 
 ```bash
-docker ps --format '{{.Names}}\t{{.Status}}'
+df -h /                                     # 空きが残っているか
+docker ps --format '{{.Names}}\t{{.Status}}'  # v_kara_db が (healthy)、v-kara-api / v-kara-app / v-kara-caddy が Up
 curl -s -o /dev/null -w '%{http_code}\n' -H 'Host: 10.0.0.1' http://localhost/user/signin       # ALB のヘルスチェック相当。200
 curl -sk -o /dev/null -w '%{http_code}\n' --resolve v-karaoke.com:443:127.0.0.1 https://v-karaoke.com/user/signin   # 200
 curl -sk -o /dev/null -w '%{http_code}\n' --resolve backend.v-karaoke.com:443:127.0.0.1 https://backend.v-karaoke.com/health  # 200
