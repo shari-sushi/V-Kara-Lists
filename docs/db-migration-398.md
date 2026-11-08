@@ -105,31 +105,30 @@ run_sql < 398_verify.sql
 
 ### 6. 新コードのデプロイ
 
-どちらかで行う。
+ディスクの空きが少なく（約 360MB）、新旧のイメージを同時に置けない。そのため、旧 api/app のコンテナとイメージを消してから新イメージを pull する。旧イメージを消した後のロールバックは、ECR から旧 sha のタグを pull し直す（ロールバック B）。
 
-#### 方法 1: SSM で手動（deploy.yml に依存しない）
-
-deploy.yml の「Pull and restart containers on EC2」と同じ内容を EC2 上で実行する。
+移行（手順5）は旧イメージを消す前に行う。移行で失敗しても、停止しただけの旧コンテナを start すれば戻せるようにするため。
 
 ```bash
 cd /home/ubuntu/v-kara
+source ~/.env.ec2.pre   # ECR_REGISTRY / ECR_API_REPO / ECR_APP_REPO
 curl -fsSL https://raw.githubusercontent.com/shari-sushi/V-Kara-Lists/<develop の sha>/ec2-docker-compose.yml -o ec2-docker-compose.yml
+docker rm v-kara-api v-kara-app          # 停止済みの旧コンテナを削除
+docker image prune -a -f                 # 使われていないイメージを削除。db は起動中なので mysql イメージは残る。volume は対象外
+df -h /                                  # 空きを確認
 aws s3 cp s3://<app env バケット>/.env app.env
 aws s3 cp s3://<api env バケット>/.env api.env
 chmod 600 *.env
-source ~/.env.ec2.pre   # ECR_REGISTRY / ECR_API_REPO / ECR_APP_REPO
 aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin "$ECR_REGISTRY"
 docker-compose -f ec2-docker-compose.yml pull api app
-docker-compose -f ec2-docker-compose.yml up -d --force-recreate api app
+docker-compose -f ec2-docker-compose.yml up -d --no-deps api app
 docker logout "$ECR_REGISTRY"
 rm -f api.env app.env
 ```
 
-`docker system prune -af` はロールバック用の旧イメージも消すので、確認が済むまで実行しない。
+`docker image prune` を実行する時点で db が止まっていると、mysql のイメージまで消えてしまう。実行前に `docker ps` で `v_kara_db` が起動中であることを確認する。
 
-#### 方法 2: manual-deploy.yml（GitHub Actions の workflow_dispatch）
-
-deploy.yml と同じ SSM ステップを使うため、デプロイ失敗の原因が直っていることが前提。
+GitHub Actions の manual-deploy.yml（workflow_dispatch）でも pull と起動はできる。ただし、deploy.yml と同じ SSM ステップを使うため、デプロイ失敗の原因が直っていることが前提。また、pull の前に上の `docker rm` と `docker image prune` を手で済ませておく。
 
 ### 7. 確認とメンテナンス終了
 
@@ -156,23 +155,36 @@ run_sql < 398_rename_old.sql
 
 | 状況 | 方法 | 失うもの |
 | --- | --- | --- |
-| A. 手順3〜5で失敗（新コード未デプロイ） | `docker start v-kara-api v-kara-app` で旧コードのまま再開する。新テーブルは残っても旧コードは使わない | なし |
-| B. 手順6以降で新コードに問題 | 旧イメージに戻す（下記）。旧テーブルは変更していないので、旧コードはそのまま動く | 新コードで登録されたデータは、旧コードからは見えない（新テーブルに残る） |
+| A. 手順3〜5で失敗（旧コンテナは停止しただけ） | `docker start v-kara-api v-kara-app` で旧コードのまま再開する。新テーブルは残っても旧コードは使わない | なし |
+| B. 手順6以降で新コードに問題 | ECR から旧イメージを pull して戻す（下記）。旧テーブルは変更していないので、旧コードはそのまま動く | 新コードで登録されたデータは、旧コードからは見えない（新テーブルに残る） |
 | C. DB の内容が壊れた | 手順4のバックアップから復元する（下記） | バックアップ以降のすべての書き込み |
 | D. 手順8のリネームを戻す | `run_sql < 398_rename_old_down.sql` | なし |
 
 ### B. 旧イメージに戻す
 
+旧イメージは手順6で消しているので、ECR から旧 sha のタグを pull し直す。ディスクに新旧両方を置けないので、先に新しいイメージを消す。
+
 ```bash
-# 手元: 旧コードのイメージのタグ（コミット sha）を確認する
+# 手元: 旧コードのイメージのタグ（コミット sha）を確認する（app も同様）
 aws ecr describe-images --repository-name <api リポジトリ> --profile vkara \
   --query 'sort_by(imageDetails,&imagePushedAt)[-5:].[imagePushedAt,imageTags]'
 
-# EC2: 旧タグを pull して latest に付け替えて起動する（app も同様）
-docker pull "$ECR_REGISTRY/$ECR_API_REPO:<旧 sha>"
-docker tag "$ECR_REGISTRY/$ECR_API_REPO:<旧 sha>" "$ECR_REGISTRY/$ECR_API_REPO:latest"
-docker-compose -f ec2-docker-compose.yml up -d --force-recreate api
+# EC2: 新しい api/app を止めて消し、使われていないイメージを削除（db は起動したまま）
+docker stop v-kara-api v-kara-app && docker rm v-kara-api v-kara-app
+docker image prune -a -f
+
+# 旧タグを pull して latest に付け替えて起動する
+aws ecr get-login-password --region ap-northeast-1 | docker login --username AWS --password-stdin "$ECR_REGISTRY"
+docker pull "$ECR_REGISTRY/$ECR_API_REPO:<旧 api の sha>"
+docker tag "$ECR_REGISTRY/$ECR_API_REPO:<旧 api の sha>" "$ECR_REGISTRY/$ECR_API_REPO:latest"
+docker pull "$ECR_REGISTRY/$ECR_APP_REPO:<旧 app の sha>"
+docker tag "$ECR_REGISTRY/$ECR_APP_REPO:<旧 app の sha>" "$ECR_REGISTRY/$ECR_APP_REPO:latest"
+docker logout "$ECR_REGISTRY"
+# api.env / app.env を手順6と同じく S3 から取得してから起動し、起動後に削除する
+docker-compose -f ec2-docker-compose.yml up -d --no-deps api app
 ```
+
+本番作業の前に、旧コードの sha タグが ECR に残っていることを `describe-images` で確認しておく。
 
 ECR の `latest` は新コードのままなので、次の自動デプロイで再び新コードが出る。直すまで develop への push を止める。
 
