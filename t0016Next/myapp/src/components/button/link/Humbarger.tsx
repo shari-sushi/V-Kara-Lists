@@ -19,8 +19,8 @@ export const TopLink = () => {
 
 export const KaraokeLink = () => {
   return (
-    <Link href="/videos/karaoke" className={`${ToClickTW.hamburger} mt-1`}>
-      <div className={` ml-5 sm:my-2 my-[4px]  `}>歌枠</div>
+    <Link href="/sings/karaoke" className={`${ToClickTW.hamburger} mt-1`}>
+      <div className={` ml-5 sm:my-2 my-[4px]  `}>カラオケ</div>
     </Link>
   )
 }
@@ -64,6 +64,30 @@ export const SignUpLink = () => {
     </Link>
   )
 }
+
+///////////////////
+export const CreateLink = () => {
+  return (
+    <Link href="/crud/create" className={`${ToClickTW.hamburger}  my-1`}>
+      <div className={` ml-5 sm:my-2 my-[4px] `}>データ登録</div>
+    </Link>
+  )
+}
+export const EditLink = () => {
+  return (
+    <Link href="/crud/edit" className={`${ToClickTW.hamburger}  `}>
+      <div className={` ml-5 sm:my-2 my-[4px] `}>データ編集</div>
+    </Link>
+  )
+}
+export const DeleteLink = () => {
+  return (
+    <Link href="/crud/delete" className={`${ToClickTW.hamburger} mt-1`}>
+      <div className={` ml-5 sm:my-2 my-[3px] `}>データ削除</div>
+    </Link>
+  )
+}
+////////////////
 
 export const MyPageLink = () => {
   return (

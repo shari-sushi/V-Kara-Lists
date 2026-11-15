@@ -66,6 +66,7 @@ func routingV1(r *gin.Engine) {
 			vcontents.POST("/edit/video-song", contentH.EditVideoSong)
 
 			// データ削除(物理)
+			vcontents.GET("/delete/deletePage", contentH.ReturnDeletePageData)
 			vcontents.DELETE("/delete/vtuber", contentH.DeleteVtuber)
 			vcontents.DELETE("/delete/video", contentH.DeleteVideo)
 			vcontents.DELETE("/delete/video-song", contentH.DeleteVideoSong)

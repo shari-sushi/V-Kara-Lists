@@ -6,9 +6,9 @@ type DevelopingContentPageProps = {
   isSignin: boolean
 }
 
-// 4コンテンツ(歌枠・ライブ・オリ曲・歌ってみた)共通の仮ページ。
-// DB再設計(#398)でVideo/VideoSongに統一されたが、一覧UIの作り込みは別issueで行うため
-// 開発中の案内のみを表示する。
+// ライブ・オリ曲・歌ってみた共通の仮ページ。
+// DB再設計(#398)でVideo/VideoSongに統一されたが、これらの一覧UIの作り込みは別issueで行うため
+// 開発中の案内のみを表示する(歌枠は #414 以前の画面を /sings/karaoke に復元済み #458)。
 export const DevelopingContentPage = ({ pageName, title, isSignin }: DevelopingContentPageProps) => {
   return (
     <Layout pageName={pageName} isSignin={isSignin}>
