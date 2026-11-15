@@ -50,3 +50,6 @@ docs/aws.md
 
 # Claude Code ユーザー固有設定
 .claude/settings.local.json
+
+# Caddy 用の Cloudflare Origin Certificate（S3 から取得する）
+/infra/caddy/certs

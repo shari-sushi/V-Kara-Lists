@@ -13,6 +13,9 @@ resource "aws_iam_policy" "policy_get_s3" {
         Resource = [
           "${aws_s3_bucket.api_env.arn}/.env",
           "${aws_s3_bucket.app_env.arn}/.env",
+          # Caddy 用の Cloudflare Origin Certificate（#372）
+          "${aws_s3_bucket.api_env.arn}/caddy/origin.pem",
+          "${aws_s3_bucket.api_env.arn}/caddy/origin.key",
         ]
       },
       {
@@ -107,4 +110,14 @@ resource "aws_instance" "app" {
   }
 
   tags = { Name = "v-kara-public" }
+}
+
+# -------------------------------------------------------------------
+# Elastic IP: Cloudflare DNS の A レコードの向き先（ALB 廃止後、#372）
+# -------------------------------------------------------------------
+resource "aws_eip" "app" {
+  domain   = "vpc"
+  instance = aws_instance.app.id
+
+  tags = { Name = "v-kara-public-eip" }
 }

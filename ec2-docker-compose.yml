@@ -20,6 +20,7 @@ services:
       - DEPLOY_DB_ENV=EC2
       - IS_DOCKER_COMPOSE=true
     env_file: api.env # DB接続情報等の実行時設定を含む。上記 environment と同名キーは environment が優先される
+    # 移行期間中は ALB の api TG（EC2:8080）が使うため残す。ALB 削除時に外す（#372）
     ports:
       - "8080:8080"
     depends_on:
@@ -34,8 +35,27 @@ services:
     environment:
       - DEPLOY_ENV=EC2_DOCKER_COMPOSE
       - IS_DOCKER_COMPOSE=true
+    # ホスト側の :80 は caddy が使う。app へは caddy から compose ネットワーク経由でつなぐ
+    expose:
+      - "80"
+
+  caddy:
+    image: caddy:2.11.9-alpine
+    container_name: v-kara-caddy
+    restart: unless-stopped # always だと手動 docker stop 後も再起動してしまうため
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - ./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./infra/caddy/certs:/certs:ro # Cloudflare Origin Certificate。S3 から取得し、git 管理外
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+      - api
 
 volumes:
   mysql_data:
+  caddy_data:
+  caddy_config:
