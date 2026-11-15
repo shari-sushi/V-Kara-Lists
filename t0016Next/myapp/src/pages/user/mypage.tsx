@@ -6,7 +6,7 @@ import Image from "next/image"
 
 import { domain } from "@/../env"
 import { Layout } from "@/components/layout/Layout"
-import type { ReceivedVideoSong, ReceivedVtuber, ReceivedVideo } from "../../types/vtuber_content" //type{}で型情報のみインポート
+import type { ReceivedVideoSong, ReceivedVtuber, ReceivedVideo } from "@/types/vtuber_content" //type{}で型情報のみインポート
 import { VtuberTable } from "@/components/table/Vtuber"
 import { MovieTable } from "@/components/table/Movie"
 import { KaraokePaginationTable } from "@/components/table/Karaoke"

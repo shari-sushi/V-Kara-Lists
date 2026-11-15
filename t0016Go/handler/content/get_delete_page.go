@@ -12,6 +12,8 @@ import (
 // 自分が登録したvtuber/video/video_songと、削除対象の選択に使う全vtuber・全videoを返す。
 // #414 で削除された旧DeleteOfPageを新データモデルで復元したもの(#458)。
 func (h *ContentHandler) ReturnDeletePageData(c *gin.Context) {
+	// 自分の登録データを返すためログイン必須。未ログインは意味の正しい401を返す
+	// (requireListenerIdは400を返すが、それは書き込み系の不正リクエスト扱いの流儀のため使わない)。
 	listenerId, err := common.TakeListenerIdFromJWT(c)
 	if err != nil {
 		log.Println("err:", err)

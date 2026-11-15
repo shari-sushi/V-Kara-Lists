@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import axios from "axios"
 import { domain } from "@/../env"
-import { VIDEO_CATEGORY, type BasicDataProps, type VideoCategory } from "@/types/vtuber_content"
+import type { BasicDataProps, VideoCategory } from "@/types/vtuber_content"
 import { DropDownVtuber } from "@/components/dropDown/Vtuber"
 import { DropDownMovie } from "@/components/dropDown/Movie"
 import { ValidateEditRules } from "@/util"
@@ -115,7 +115,7 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
         if (!foundMovie) throw new Error("編集対象の動画が見つかりません")
         const reqBody: EditMovie = {
           VideoId: foundMovie.VideoId, //既存値
-          Category: VIDEO_CATEGORY.KARAOKE,
+          Category: foundMovie.Category, //既存値
           VtuberId: selectedVtuber, //既存値
           MovieUrl: selectedMovie, //既存値
           Title: CrudData.Title || foundMovie?.Title,
@@ -132,10 +132,12 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
       }
     } else if (crudContentType === "karaoke") {
       try {
-        if (!foundMovie) throw new Error("編集対象の動画が見つかりません")
+        if (!foundKaraoke) throw new Error("編集対象の歌が見つかりません")
+        // VideoIdは選択中の動画ではなく歌自身から取る。歌を選んだ後に動画を選び直しても
+        // selectedKaraokeは残るため、選択中の動画から取ると歌が別の動画へ付け替わってしまう。
         const reqBody: EditKaraoke = {
-          VideoId: foundMovie.VideoId, //既存値
-          VideoSongId: selectedKaraoke, //既存値
+          VideoId: foundKaraoke.VideoId, //既存値
+          VideoSongId: foundKaraoke.VideoSongId, //既存値
           SongName: CrudData.SongName || foundKaraoke?.SongName,
           SingStart: CrudData.SingStart || foundKaraoke?.SingStart,
         }
