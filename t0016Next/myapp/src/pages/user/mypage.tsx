@@ -6,12 +6,12 @@ import Image from "next/image"
 
 import { domain } from "@/../env"
 import { Layout } from "@/components/layout/Layout"
-import type { ReceivedKaraoke, ReceivedVtuber, ReceivedMovie } from "../../types/vtuber_content" //type{}で型情報のみインポート
+import type { ReceivedVideoSong, ReceivedVtuber, ReceivedVideo } from "../../types/vtuber_content" //type{}で型情報のみインポート
 import { VtuberTable } from "@/components/table/Vtuber"
 import { MovieTable } from "@/components/table/Movie"
 import { KaraokePaginationTable } from "@/components/table/Karaoke"
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
-import { extractVideoId } from "@/util"
+import { extractVideoId, filterKaraokeCategory } from "@/util"
 import { ContextType } from "@/types/server"
 import { NotLoggedIn } from "@/components/layout/Main"
 import { ToClickTW } from "@/styles/tailwiind"
@@ -22,8 +22,8 @@ const pageName = "MyPage"
 
 type Mypage = {
   data: {
-    vtubers_movies_karaokes_u_created: ReceivedKaraoke[]
-    vtubers_movies_u_created: ReceivedMovie[]
+    vtubers_video_songs_u_created: ReceivedVideoSong[]
+    vtubers_videos_u_created: ReceivedVideo[]
     vtubers_u_created: ReceivedVtuber[]
   }
   isSignin: boolean
@@ -48,9 +48,9 @@ const MyPage = ({ data, isSignin }: Mypage) => {
 const MainItem = ({ data }: Mypage) => {
   //こむぎ ワールドイズマイン
   const { videoState, updateVideo } = useVideo({ youtubeId: "Bjsn-QpwmvU", startTime: 8091 })
-  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
+  const [selectedPost, setSelectedPost] = useState<ReceivedVideoSong>({} as ReceivedVideoSong)
 
-  const { vtubers_u_created: vtubers, vtubers_movies_u_created: movies, vtubers_movies_karaokes_u_created: karaokes } = data
+  const { vtubers_u_created: vtubers, vtubers_videos_u_created: movies, vtubers_video_songs_u_created: karaokes } = data
   const handleMovieClickYouTubeDemoMovie = () => {
     const demoUrl = "HunsO-8Eo7Q"
     const startTimeCreateOfDemo = 130
@@ -60,7 +60,7 @@ const MainItem = ({ data }: Mypage) => {
   const isVideoInContent = videoState.position === "in-content"
 
   return (
-    <div className="flex flex-col max-w-[1000px] justify-ite">
+    <div className="flex flex-col max-w-[1000px] mx-auto">
       {isVideoInContent && (
         <div className="flex mx-auto mt-6">
           <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
@@ -164,8 +164,8 @@ export async function getServerSideProps(context: ContextType) {
   }
 
   type PageResponse = {
-    vtubers_movies_karaokes_u_created: ReceivedKaraoke[]
-    vtubers_movies_u_created: ReceivedMovie[]
+    vtubers_video_songs_u_created: ReceivedVideoSong[]
+    vtubers_videos_u_created: ReceivedVideo[]
     vtubers_u_created: ReceivedVtuber[]
   }
   // apiをリソース毎に分けるまでの仮
@@ -174,13 +174,18 @@ export async function getServerSideProps(context: ContextType) {
 
   try {
     const res = await axios.get(`${domain.backendHost}/users/mypage`, options)
-    resData = res.data as PageResponse
+    const data = res.data as PageResponse
+    resData = {
+      ...data,
+      vtubers_videos_u_created: filterKaraokeCategory(data.vtubers_videos_u_created),
+      vtubers_video_songs_u_created: filterKaraokeCategory(data.vtubers_video_songs_u_created),
+    }
     hasError = false
   } catch (error) {
     console.log("erroe in axios.get:", error)
     resData = {
-      vtubers_movies_karaokes_u_created: [],
-      vtubers_movies_u_created: [],
+      vtubers_video_songs_u_created: [],
+      vtubers_videos_u_created: [],
       vtubers_u_created: [],
     }
   }

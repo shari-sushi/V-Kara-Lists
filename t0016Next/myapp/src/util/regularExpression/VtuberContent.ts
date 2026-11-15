@@ -50,7 +50,7 @@ export const ValidateCreateRules = {
       // message: "https://www.youtube.com/watch?v=OB8pMKU3uxo \n www.youtube.com/watch?v=OB8pMKU3uxo \n v=OB8pMKU3uxo \n のいずれかの形式で入力してください。",
     },
   },
-  MovieTitle: {
+  Title: {
     required: true,
     pattern: {
       value: new RegExp(`(${movieTitlePattern.source})`),
@@ -130,7 +130,7 @@ export const ValidateEditRules = {
       // message: "https://www.youtube.com/watch?v=OB8pMKU3uxo \n www.youtube.com/watch?v=OB8pMKU3uxo \n v=OB8pMKU3uxo \n のいずれかの形式で入力してください。",
     },
   },
-  MovieTitle: {
+  Title: {
     required: false,
     pattern: {
       value: new RegExp(`(${movieTitlePattern.source})`),

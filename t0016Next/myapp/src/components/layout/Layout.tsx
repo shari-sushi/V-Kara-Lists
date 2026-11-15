@@ -7,7 +7,21 @@ import { useHamburgerMenu } from "@/providers/HamburgerMenuProvider"
 import { GuestLogin, GuestLoginForHamburger } from "../button/User"
 import { HeaderCss } from "@/styles/tailwiind"
 import { ToClickTW } from "@/styles/tailwiind"
-import { CreateLink, DeleteLink, EditLink, KaraokeLink, OriginalSongLink, LoginLink, MyPageLink, ProfileLink, SignUpLink, TitleLink, TopLink } from "../button/link/Humbarger"
+import {
+  CoveredSongLink,
+  CreateLink,
+  DeleteLink,
+  EditLink,
+  KaraokeLink,
+  LiveLink,
+  OriginalSongLink,
+  LoginLink,
+  MyPageLink,
+  ProfileLink,
+  SignUpLink,
+  TitleLink,
+  TopLink,
+} from "../button/link/Humbarger"
 import Image from "next/image"
 import { ToggleVideoPositionButton } from "../button/ToggleVideoPositionButton"
 import { useVideo } from "@/providers/VideoProvider"
@@ -63,8 +77,14 @@ const Header = () => {
         <Link href="/sings/karaoke" className={navLinkCls("/sings/karaoke")}>
           カラオケ
         </Link>
-        <Link href="/sings/original-song" className={navLinkCls("/sings/original-song")}>
+        <Link href="/videos/live" className={navLinkCls("/videos/live")}>
+          ライブ
+        </Link>
+        <Link href="/videos/original-song" className={navLinkCls("/videos/original-song")}>
           オリ曲
+        </Link>
+        <Link href="/videos/covered-song" className={navLinkCls("/videos/covered-song")}>
+          歌ってみた
         </Link>
       </div>
 
@@ -146,7 +166,9 @@ const Header = () => {
               <div className="flex flex-col">
                 <TopLink />
                 <KaraokeLink />
+                <LiveLink />
                 <OriginalSongLink />
+                <CoveredSongLink />
               </div>
               <hr className="w-[60%] top-10 right-0 my-3" />
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"
 import Select from "react-select"
-import type { ReceivedMovie } from "@/types/vtuber_content"
+import type { ReceivedVideo } from "@/types/vtuber_content"
 import { DropStyle } from "./common"
 
 // DropDonwMo, Kaについは、on~~Seletがnillとか0なら処理を止めべき
@@ -10,7 +10,7 @@ type MovieOptions = {
 }
 
 type DropDownMovieProps = {
-  videos: ReceivedMovie[] | undefined
+  videos: ReceivedVideo[] | undefined
   disabled: boolean
   setSelectedMovie: (movieUrl: string) => void
   clearMovieHandler: () => void
@@ -24,9 +24,9 @@ export const DropDownMovie = ({ videos, disabled, setSelectedMovie, clearMovieHa
 
   const movieOptions = disabled
     ? undefined
-    : videos?.map((movie: ReceivedMovie) => ({
+    : videos?.map((movie: ReceivedVideo) => ({
         value: movie.MovieUrl,
-        label: movie.MovieTitle,
+        label: movie.Title,
       }))
 
   return (
@@ -66,7 +66,7 @@ export const DropDownMovie = ({ videos, disabled, setSelectedMovie, clearMovieHa
 }
 
 type DropDownAllMovieProps = {
-  preMovies: ReceivedMovie[]
+  preMovies: Pick<ReceivedVideo, "MovieUrl" | "Title">[]
   setSelectedMovie: (value: string) => void
   // ✩１
   // clearMovieHandler: () => void;
@@ -79,9 +79,9 @@ export const DropDownAllMovie = ({ preMovies, setSelectedMovie }: DropDownAllMov
   // clearMovieHandler();
   // };
 
-  const movieOptions = preMovies?.map((movie: ReceivedMovie) => ({
+  const movieOptions = preMovies?.map((movie) => ({
     value: movie.MovieUrl,
-    label: movie.MovieTitle,
+    label: movie.Title,
   }))
 
   return (

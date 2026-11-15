@@ -12,12 +12,12 @@ type selectedDate = {
 
 export default function DeleteButton({ posts, selectedVtuber: selectedVtuberId, selectedMovie: selectedMovieId, selectedKaraoke: selectedKaraokeId }: selectedDate) {
   const vtubers = posts?.vtubers
-  const movies = posts?.vtubers_movies
-  const karaokes = posts?.vtubers_movies_karaokes
+  const movies = posts?.vtubers_videos
+  const karaokes = posts?.vtubers_video_songs
 
   const foundVtuber = vtubers.find((v) => v.VtuberId === selectedVtuberId)
   const foundMovie = movies.find((m) => m.MovieUrl === selectedMovieId)
-  const foundKaraoke = karaokes.find((k) => k.KaraokeId === selectedKaraokeId)
+  const foundKaraoke = karaokes.find((k) => k.VideoSongId === selectedKaraokeId)
 
   const [crudContentType, setCrudContentType] = useState<"vtuber" | "movie" | "karaoke" | undefined>(undefined)
 
@@ -31,7 +31,7 @@ export default function DeleteButton({ posts, selectedVtuber: selectedVtuberId, 
   }
   type DeleteKaraoke = {
     MovieUrl: string
-    KaraokeId: number
+    VideoSongId: number
     SongName: string
   }
 
@@ -78,7 +78,7 @@ export default function DeleteButton({ posts, selectedVtuber: selectedVtuberId, 
       try {
         const reqBody: DeleteKaraoke = {
           MovieUrl: selectedMovieId, //deleteで必須
-          KaraokeId: selectedKaraokeId, //deleteで必須
+          VideoSongId: selectedKaraokeId, //deleteで必須
           SongName: foundKaraoke.SongName, //deleteで必須
         }
         const response = await axiosClient.delete("/delete/karaoke", {
@@ -122,7 +122,7 @@ export default function DeleteButton({ posts, selectedVtuber: selectedVtuberId, 
           VTuber：{foundVtuber?.VtuberName && foundVtuber?.VtuberName}
           <br />
           の<br />
-          歌枠動画：{foundMovie?.MovieTitle}
+          歌枠動画：{foundMovie?.Title}
           を削除しますか？
         </div>
       )}
@@ -130,7 +130,7 @@ export default function DeleteButton({ posts, selectedVtuber: selectedVtuberId, 
         <div>
           VTuber：{foundVtuber?.VtuberName && foundVtuber?.VtuberName}
           <br />
-          歌枠動画：{foundMovie?.MovieTitle}
+          歌枠動画：{foundMovie?.Title}
           <br />
           の<br />
           曲名：{foundKaraoke?.SongName}

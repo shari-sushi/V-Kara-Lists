@@ -6,7 +6,7 @@ import { timeStringToSecondNum, ValidateCreateRules } from "@/util"
 import { FormTW, ToClickTW } from "@/styles/tailwiind"
 import { NeedBox } from "@/components/box/Box"
 import { findVtuber } from "@/components/form/util/getYoutubeVideo"
-import { BasicDataProps, CreateContentData, ReceivedMovie, ReceivedVtuber } from "@/types/vtuber_content"
+import { BasicDataProps, CreateContentData, ReceivedVideo, ReceivedVtuber } from "@/types/vtuber_content"
 import { FormLabel } from "./FormLabel"
 import { ErrorMessage } from "./ErrorMessage"
 import { Control, FieldErrors, useFieldArray, UseFormGetValues, UseFormHandleSubmit, UseFormRegister } from "react-hook-form"
@@ -17,7 +17,7 @@ type KaraokesFormItemProps = {
   posts: BasicDataProps
   selectedVtuberId: number
   selectedVideoUrl: string
-  selectedVtuberVideos: ReceivedMovie[] | undefined
+  selectedVtuberVideos: ReceivedVideo[] | undefined
   setSelectedVtuberId: (vtuberId: number) => void
   setSelectedVideoUrl: (movieUrl: string) => void
   clearMovieHandler: () => void
@@ -35,7 +35,7 @@ type KaraokesFormItemProps = {
 }
 
 const KaraokesFormItem = ({
-  posts: { vtubers: vtubers, vtubers_movies_karaokes: karaokeSongs },
+  posts: { vtubers: vtubers, vtubers_video_songs: karaokeSongs },
   selectedVtuberVideos,
   selectedVtuberId,
   selectedVideoUrl,

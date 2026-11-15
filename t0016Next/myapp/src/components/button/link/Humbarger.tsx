@@ -25,10 +25,26 @@ export const KaraokeLink = () => {
   )
 }
 
+export const LiveLink = () => {
+  return (
+    <Link href="/videos/live" className={`${ToClickTW.hamburger} mt-1`}>
+      <div className={` ml-5 sm:my-2 my-[4px]  `}>ライブ</div>
+    </Link>
+  )
+}
+
 export const OriginalSongLink = () => {
   return (
-    <Link href="/sings/original-song" className={`${ToClickTW.hamburger} mt-1`}>
+    <Link href="/videos/original-song" className={`${ToClickTW.hamburger} mt-1`}>
       <div className={` ml-5 sm:my-2 my-[4px]  `}>オリ曲</div>
+    </Link>
+  )
+}
+
+export const CoveredSongLink = () => {
+  return (
+    <Link href="/videos/covered-song" className={`${ToClickTW.hamburger} mt-1`}>
+      <div className={` ml-5 sm:my-2 my-[4px]  `}>歌ってみた</div>
     </Link>
   )
 }

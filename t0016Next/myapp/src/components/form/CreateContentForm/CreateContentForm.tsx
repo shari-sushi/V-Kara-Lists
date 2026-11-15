@@ -11,7 +11,7 @@ import KaraokesFormItem from "./KaraokesFormItem"
 import { FormLabel } from "./FormLabel"
 import { ErrorMessage } from "./ErrorMessage"
 import { CrudContentSelector } from "../util/CrudContetntSelector"
-import { getCreateKaraokesReq, getCreateKaraokeVideo, getCreateVtuberReq } from "./getRequest"
+import { getCreateVideoSongsReq, getCreateKaraokeVideoReq, getCreateVtuberReq } from "./getRequest"
 import { api } from "@/api/index"
 import { InputMovieUrlHintBox } from "./InputMovieUrlHintBox"
 import { v4 as uuidv4 } from "uuid"
@@ -28,13 +28,13 @@ type CreateDataProps = {
   selectedKaraokeId: number
   selectVtuber: (vtuberId: number) => void
   selectVideo: (url: string) => void
-  selectKaraokeSong: (KaraokeId: number) => void
+  selectKaraokeSong: (VideoSongId: number) => void
   clearMovieHandler: () => void
   setCurrentVideoId: (videoId: string) => void
 }
 
 export function CreateForm({ posts, selectedVtuberId, selectedMovieUrl, selectedKaraokeId, selectVtuber, selectVideo, selectKaraokeSong, clearMovieHandler, setCurrentVideoId }: CreateDataProps) {
-  const { vtubers, vtubers_movies: videos } = posts
+  const { vtubers, vtubers_videos: videos } = posts
 
   const [crudContentType, setCrudContentType] = useState<CrudContentType>("movie")
   const [isOkVideoTitle, setIsOkVideoTitle] = useState(false)
@@ -65,7 +65,7 @@ export function CreateForm({ posts, selectedVtuberId, selectedMovieUrl, selected
     defaultValues: defaultCrudData(),
   })
   const movieUrl = watch("MovieUrl")
-  const movieTitle = watch("MovieTitle")
+  const movieTitle = watch("Title")
   const [gotMovieErrorMessage, setGotMovieErrorMessage] = useState<string>("")
 
   const handleSetSelectedMovieUrl = (url: string) => {
@@ -87,24 +87,24 @@ export function CreateForm({ posts, selectedVtuberId, selectedMovieUrl, selected
         if (res) {
           console.log(`res %o`, res.items[0].snippet)
           const title = res.items[0].snippet.title
-          setValue("MovieTitle", title)
+          setValue("Title", title)
           setIsOkVideoTitle(true)
         }
       } catch (err) {
-        setValue("MovieTitle", "")
+        setValue("Title", "")
         setIsOkVideoTitle(false)
         setGotMovieErrorMessage("動画タイトルの取得に失敗しました。一時的な不具合の可能性があります。お手数ですが手入力も検討してください。")
         console.error(err)
       }
     } else {
-      setValue("MovieTitle", "")
+      setValue("Title", "")
       setGotMovieErrorMessage("動画URLまたはIDを入力してください")
     }
   }
 
   const handleChangeInputMovieUrl = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsOkVideoTitle(false)
-    setValue("MovieTitle", "")
+    setValue("Title", "")
 
     const id = extractVideoId(e.target.value)
     if (id === "") return
@@ -122,12 +122,19 @@ export function CreateForm({ posts, selectedVtuberId, selectedMovieUrl, selected
           setIsDisplayErrorModal(true)
           return
         }
-        api.CreateKaraokeVideo(getCreateKaraokeVideo(createData, selectedVtuberId), openSuccessModal)
+        api.CreateVideo(getCreateKaraokeVideoReq(createData, selectedVtuberId), openSuccessModal)
         return
 
-      case "karaoke":
-        api.CreateKaraokes(getCreateKaraokesReq(createData), openSuccessModal)
+      case "karaoke": {
+        // 新APIは動画をVideoIdで指定するため、選択中の動画URLから引き当てる
+        const targetVideo = videos?.find((video) => video.MovieUrl === createData.MovieUrl)
+        if (!targetVideo) {
+          setIsDisplayErrorModal(true)
+          return
+        }
+        api.CreateVideoSongs(getCreateVideoSongsReq(createData, targetVideo.VideoId), openSuccessModal)
         return
+      }
 
       default:
         console.error("データの種類(vtuber, movie, karaoke)の選択エラーです。１度ページを更新してください。")
@@ -250,11 +257,11 @@ export function CreateForm({ posts, selectedVtuberId, selectedMovieUrl, selected
                         disabled={!isAbleVideoTitleInput}
                         className={`${ToClickTW.input}`}
                         value={movieTitle}
-                        {...register("MovieTitle", ValidateCreateRules.MovieTitle)}
-                        placeholder={foundMovie?.MovieTitle || "動画タイトル"}
-                        onChange={(e) => setValue("MovieTitle", e.target.value)}
+                        {...register("Title", ValidateCreateRules.Title)}
+                        placeholder={foundMovie?.Title || "動画タイトル"}
+                        onChange={(e) => setValue("Title", e.target.value)}
                       />
-                      <ErrorMessage errorField={formErrors.MovieTitle} />
+                      <ErrorMessage errorField={formErrors.Title} />
                     </div>
                   </div>
                 </div>
@@ -372,10 +379,10 @@ const defaultCrudData = (): CreateContentData => {
     VtuberKana: "",
     IntroMovieUrl: "",
     MovieUrl: "",
-    MovieTitle: "",
+    Title: "",
     Songs: Array.from({ length: 1 }, () => ({
       Index: uuidv4(),
-      KaraokeId: 0,
+      VideoSongId: 0,
       SingStart: "00:00:00",
       SongName: "",
     })),

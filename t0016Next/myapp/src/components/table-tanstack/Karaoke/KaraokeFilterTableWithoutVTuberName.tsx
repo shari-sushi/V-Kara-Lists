@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react"
 import { flexRender, getCoreRowModel, getPaginationRowModel, useReactTable, SortingState, getSortedRowModel, getFilteredRowModel } from "@tanstack/react-table"
-import { ReceivedKaraoke } from "@/types/vtuber_content"
+import { ReceivedVideoSong } from "@/types/vtuber_content"
 import { KaraokeBasicColumns, KaraokeTableAFilterInput, KaraokeTableFilterInput, KaraokeTablePagenationButtons, SeletctPostContext, YouTubePlayerContext } from "../Commons"
 import { TableCss } from "@/styles/tailwiind"
 import type { KaraokeTableReturnPostProps } from "../types"
@@ -8,7 +8,7 @@ import Image from "next/image"
 
 export default function KaraokeFilterTableWithoutVTuberName({ posts: karaokes, setSelectedPost }: KaraokeTableReturnPostProps) {
   const maxPageSize = 99999
-  const [data, setData] = useState<ReceivedKaraoke[]>(karaokes)
+  const [data, setData] = useState<ReceivedVideoSong[]>(karaokes)
 
   const [sorting, setSorting] = React.useState<SortingState>([])
 

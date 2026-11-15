@@ -4,7 +4,7 @@ import axios from "axios"
 import Image from "next/image"
 import Link from "next/link"
 import { domain } from "@/../env"
-import { ReceivedKaraoke, FavoriteKaraoke } from "@/types/vtuber_content"
+import { ReceivedVideoSong, FavoriteVideoSong } from "@/types/vtuber_content"
 import { LinkTW, TableCss as TableTW } from "@/styles/tailwiind"
 import { useAuth } from "@/providers/AuthProvider"
 import { extractVideoId, timeStringToSecondNum } from "@/util"
@@ -23,18 +23,17 @@ export const YouTubePlayerContext = createContext(
 
 export const SeletctPostContext = createContext(
   {} as {
-    setSelectedPost: (arg0: ReceivedKaraoke) => void
+    setSelectedPost: (arg0: ReceivedVideoSong) => void
   }
 )
 
 export type FavoriteColumnProps = {
   count: number
   isFav: boolean
-  movie: string
-  karaoke: number
+  videoSongId: number
 }
 
-export function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumnProps) {
+export function FavoriteColumn({ count, isFav, videoSongId }: FavoriteColumnProps) {
   const [isFavNow, setIsCheck] = useState(isFav)
   const [isDisplay, setIsDisplay] = useState<boolean>(false)
   const { isSignin } = useAuth()
@@ -54,17 +53,16 @@ export function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumnP
     })
 
     try {
-      const reqBody: FavoriteKaraoke = {
-        MovieUrl: movie,
-        KaraokeId: karaoke,
+      const reqBody: FavoriteVideoSong = {
+        VideoSongId: videoSongId,
       }
       if (isFavNow) {
-        const response = await axiosClient.delete(`${domain.backendHost}/fav/unfavorite/karaoke`, { data: reqBody })
+        const response = await axiosClient.delete(`${domain.backendHost}/fav/unfavorite/video-song`, { data: reqBody })
         if (!response.status) {
           throw new Error(response.statusText)
         }
       } else {
-        const response = await axiosClient.post(`${domain.backendHost}/fav/favorite/karaoke`, reqBody)
+        const response = await axiosClient.post(`${domain.backendHost}/fav/favorite/video-song`, reqBody)
         if (!response.status) {
           throw new Error(response.statusText)
         }
@@ -88,12 +86,12 @@ export function FavoriteColumn({ count, isFav, movie, karaoke }: FavoriteColumnP
   )
 }
 
-export const ColumnVtuberName: ColumnDef<ReceivedKaraoke>[] = [
+export const ColumnVtuberName: ColumnDef<ReceivedVideoSong>[] = [
   {
     header: "名前",
     accessorKey: "VtuberName",
     enableSorting: true,
-    cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
+    cell: ({ row }: { row: { original: ReceivedVideoSong } }) => {
       return (
         <div className="relative">
           <Link href={`/vtuber/${row.original.VtuberKana}`} className={`flex ${LinkTW.base}`}>
@@ -106,17 +104,17 @@ export const ColumnVtuberName: ColumnDef<ReceivedKaraoke>[] = [
   },
 ]
 
-export const KaraokeBasicColumns: ColumnDef<ReceivedKaraoke>[] = [
+export const KaraokeBasicColumns: ColumnDef<ReceivedVideoSong>[] = [
   {
     header: "曲名(Click it)",
     accessorKey: "SongName",
     enableSorting: true,
-    cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
+    cell: ({ row }: { row: { original: ReceivedVideoSong } }) => {
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const { updateVideo } = useVideo()
       // eslint-disable-next-line react-hooks/rules-of-hooks
       const { setSelectedPost } = useContext(SeletctPostContext)
-      const handleClickPlay = (post: ReceivedKaraoke) => {
+      const handleClickPlay = (post: ReceivedVideoSong) => {
         updateVideo(extractVideoId(row.original.MovieUrl), timeStringToSecondNum(row.original.SingStart))
         setSelectedPost(post)
       }
@@ -148,24 +146,24 @@ export const KaraokeBasicColumns: ColumnDef<ReceivedKaraoke>[] = [
     },
   },
   { header: "再生開始", accessorKey: "SingStart", enableSorting: true },
-  { header: "動画タイトル", accessorKey: "MovieTitle", enableSorting: true },
+  { header: "動画タイトル", accessorKey: "Title", enableSorting: true },
   {
     header: "いいね",
     accessorKey: "Count",
     enableSorting: true,
-    cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} movie={row.original.MovieUrl} karaoke={row.original.KaraokeId} />
+    cell: ({ row }: { row: { original: ReceivedVideoSong } }) => {
+      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} videoSongId={row.original.VideoSongId} />
     },
   },
 ]
 
-export const KaraokeGlobalFilterColumns: ColumnDef<ReceivedKaraoke>[] = [
+export const KaraokeGlobalFilterColumns: ColumnDef<ReceivedVideoSong>[] = [
   // TODO:　クリックでfilterしたい
   {
     header: "名前",
     accessorKey: "VtuberName",
     enableSorting: true,
-    cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
+    cell: ({ row }: { row: { original: ReceivedVideoSong } }) => {
       return (
         <div className="relative">
           <Link href={`/vtuber/${row.original.VtuberKana}`} className={`flex ${LinkTW.base}`}>

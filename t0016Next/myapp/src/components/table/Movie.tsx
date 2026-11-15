@@ -4,7 +4,7 @@ import Link from "next/link"
 import { domain } from "@/../env"
 import { extractVideoId } from "@/util"
 import axios from "axios"
-import { ReceivedMovie, FavoriteMovie } from "@/types/vtuber_content"
+import { ReceivedVideo, FavoriteVideo } from "@/types/vtuber_content"
 import { ToDeleteContext } from "@/pages/crud/delete"
 import { LinkTW, TableCss } from "@/styles/tailwiind"
 import { useAuth } from "@/providers/AuthProvider"
@@ -13,7 +13,7 @@ import { useVideo } from "@/providers/VideoProvider"
 
 // topページ, mypage用
 type MovieTableProps = {
-  posts: ReceivedMovie[]
+  posts: ReceivedVideo[]
 }
 
 export function MovieTable({ posts: movies }: MovieTableProps) {
@@ -58,11 +58,11 @@ export function MovieTable({ posts: movies }: MovieTableProps) {
   )
 }
 
-const columns: Column<ReceivedMovie>[] = [
+const columns: Column<ReceivedVideo>[] = [
   {
     Header: "VTuber(click it)",
     accessor: "VtuberName",
-    Cell: ({ row }: { row: { original: ReceivedMovie } }) => {
+    Cell: ({ row }: { row: { original: ReceivedVideo } }) => {
       return (
         <span className="relative">
           <Link href={`/vtuber/${row.original.VtuberKana}`} className={`flex ${LinkTW.base}`}>
@@ -75,15 +75,15 @@ const columns: Column<ReceivedMovie>[] = [
   },
   {
     Header: "歌枠 (Click it)",
-    accessor: "MovieTitle",
-    Cell: ({ row }: { row: { original: ReceivedMovie } }) => {
+    accessor: "Title",
+    Cell: ({ row }: { row: { original: ReceivedVideo } }) => {
       const { updateVideo } = useVideo()
 
       return (
         <span className="relative">
           <button className={`flex ${LinkTW.base}`} onClick={() => updateVideo(extractVideoId(row.original.MovieUrl), 1)}>
             <Image src="/content/play_black.svg" className="w-5 mr-2" alt="" width={24} height={20} />
-            {row.original.MovieTitle}
+            {row.original.Title}
           </button>
         </span>
       )
@@ -92,10 +92,10 @@ const columns: Column<ReceivedMovie>[] = [
   {
     Header: "いいね",
     accessor: "Count",
-    Cell: ({ row }: { row: { original: ReceivedMovie } }) => {
+    Cell: ({ row }: { row: { original: ReceivedVideo } }) => {
       return (
         <span className="w-5">
-          <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} movie={row.original.MovieUrl} />
+          <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} videoId={row.original.VideoId} />
         </span>
       )
     },
@@ -105,10 +105,10 @@ const columns: Column<ReceivedMovie>[] = [
 type FavoriteColumn = {
   count: number
   isFav: boolean
-  movie: string
+  videoId: number
 }
 
-function FavoriteColumn({ count, isFav, movie }: FavoriteColumn) {
+function FavoriteColumn({ count, isFav, videoId }: FavoriteColumn) {
   const [isFavNow, setIsCheck] = useState(isFav)
   const [isDisplay, setIsDisplay] = useState<boolean>(false)
   const { isSignin } = useAuth()
@@ -128,18 +128,18 @@ function FavoriteColumn({ count, isFav, movie }: FavoriteColumn) {
       },
     })
     try {
-      const reqBody: FavoriteMovie = {
-        MovieUrl: movie,
+      const reqBody: FavoriteVideo = {
+        VideoId: videoId,
       }
       if (isFavNow) {
-        const response = await axiosClient.delete(`${domain.backendHost}/fav/unfavorite/movie`, {
+        const response = await axiosClient.delete(`${domain.backendHost}/fav/unfavorite/video`, {
           data: reqBody,
         })
         if (!response.status) {
           throw new Error(response.statusText)
         }
       } else {
-        const response = await axiosClient.post(`${domain.backendHost}/fav/favorite/movie`, reqBody)
+        const response = await axiosClient.post(`${domain.backendHost}/fav/favorite/video`, reqBody)
         if (!response.status) {
           throw new Error(response.statusText)
         }
@@ -165,7 +165,7 @@ function FavoriteColumn({ count, isFav, movie }: FavoriteColumn) {
 
 ///////////////////////////////////
 type MovieDeleteTableProps = {
-  posts: ReceivedMovie[]
+  posts: ReceivedVideo[]
 }
 
 export function MovieDeleteTable({ posts }: MovieDeleteTableProps) {
@@ -210,12 +210,12 @@ export function MovieDeleteTable({ posts }: MovieDeleteTableProps) {
   )
 }
 
-const deleteColumns: Column<ReceivedMovie>[] = [
+const deleteColumns: Column<ReceivedVideo>[] = [
   { Header: "VTuber", accessor: "VtuberName" },
   {
     Header: "歌枠 (Click it)",
-    accessor: "MovieTitle",
-    Cell: ({ row }: { row: { original: ReceivedMovie } }) => {
+    accessor: "Title",
+    Cell: ({ row }: { row: { original: ReceivedVideo } }) => {
       const { setCurrentVideoId, setCurrentStart } = useContext(ToDeleteContext) //表示ページにyoutubeのカレントデータを渡す
       const handleClick = (url: string, start: number) => {
         setCurrentVideoId(extractVideoId(url))
@@ -225,7 +225,7 @@ const deleteColumns: Column<ReceivedMovie>[] = [
         <span className="relative">
           <button className="flex" onClick={() => handleClick(row.original.MovieUrl, 1)}>
             <Image src="/content/play_black.svg" className="w-5 mr-2" alt="" width={24} height={20} />
-            {row.original.MovieTitle}
+            {row.original.Title}
           </button>
         </span>
       )
@@ -234,7 +234,7 @@ const deleteColumns: Column<ReceivedMovie>[] = [
   {
     Header: "削除",
     accessor: "VtuberId",
-    Cell: ({ row }: { row: { original: ReceivedMovie } }) => {
+    Cell: ({ row }: { row: { original: ReceivedVideo } }) => {
       const { setToDeleteVtuberId, setToDeleteMovieUrl } = useContext(ToDeleteContext)
       const clickHandler = () => {
         setToDeleteVtuberId(row.original.VtuberId)

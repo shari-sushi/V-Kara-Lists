@@ -6,7 +6,7 @@ import Link from "next/link"
 import { domain } from "@/../env"
 import { timeStringToSecondNum, extractVideoId } from "@/util"
 import { shuffleArray } from "../SomeFunction"
-import { ReceivedKaraoke, FavoriteKaraoke } from "@/types/vtuber_content"
+import { ReceivedVideoSong, FavoriteVideoSong } from "@/types/vtuber_content"
 import { ToDeleteContext } from "@/pages/crud/delete"
 import { LinkTW, TableCss as TableTW } from "@/styles/tailwiind"
 import { useAuth } from "@/providers/AuthProvider"
@@ -17,23 +17,22 @@ import { useVideo } from "@/providers/VideoProvider"
 import { dummyKaraokeArray } from "@/util/dummyData/dummyData"
 
 type KaraokeTableProps = {
-  posts: ReceivedKaraoke[]
+  posts: ReceivedVideoSong[]
 }
 
 const SelectPostContext = React.createContext(
   {} as {
-    setSelectedPost: (arg0: ReceivedKaraoke) => void
+    setSelectedPost: (arg0: ReceivedVideoSong) => void
   }
 )
 
 type FavoriteColumnProps = {
   count: number
   isFav: boolean
-  movie: string
-  karaoke: number
+  videoSongId: number
 }
 
-function FavoriteColumn({ count, isFav: initialFav, movie, karaoke }: FavoriteColumnProps) {
+function FavoriteColumn({ count, isFav: initialFav, videoSongId }: FavoriteColumnProps) {
   const [isFavorite, setIsFavorite] = useState(initialFav)
   const [isDisplay, setIsDisplay] = useState<boolean>(false)
   const { isSignin } = useAuth()
@@ -53,19 +52,18 @@ function FavoriteColumn({ count, isFav: initialFav, movie, karaoke }: FavoriteCo
     })
 
     try {
-      const reqBody: FavoriteKaraoke = {
-        MovieUrl: movie,
-        KaraokeId: karaoke,
+      const reqBody: FavoriteVideoSong = {
+        VideoSongId: videoSongId,
       }
       if (isFavorite) {
-        const response = await axiosClient.delete(`${domain.backendHost}/fav/unfavorite/karaoke`, {
+        const response = await axiosClient.delete(`${domain.backendHost}/fav/unfavorite/video-song`, {
           data: reqBody,
         })
         if (!response.status) {
           throw new Error(response.statusText)
         }
       } else {
-        const response = await axiosClient.post(`${domain.backendHost}/fav/favorite/karaoke`, reqBody)
+        const response = await axiosClient.post(`${domain.backendHost}/fav/favorite/video-song`, reqBody)
         if (!response.status) {
           throw new Error(response.statusText)
         }
@@ -92,15 +90,15 @@ function FavoriteColumn({ count, isFav: initialFav, movie, karaoke }: FavoriteCo
 
 ///////////////////////////////////////////////////////////////
 // /karaoke/sings ページネーション
-const PaginationReturnPostColumns: Column<ReceivedKaraoke>[] = [
+const PaginationReturnPostColumns: Column<ReceivedVideoSong>[] = [
   { Header: "VTuber", accessor: "VtuberName" },
   {
     Header: "曲名(Click it)",
-    accessor: "KaraokeId",
-    Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
+    accessor: "VideoSongId",
+    Cell: ({ row }: { row: { original: ReceivedVideoSong } }) => {
       const { setSelectedPost } = useContext(SelectPostContext)
       const { updateVideo } = useVideo()
-      const handleClickPlay = (post: ReceivedKaraoke) => {
+      const handleClickPlay = (post: ReceivedVideoSong) => {
         updateVideo(extractVideoId(row.original.MovieUrl), timeStringToSecondNum(row.original.SingStart))
         setSelectedPost(post)
       }
@@ -132,19 +130,19 @@ const PaginationReturnPostColumns: Column<ReceivedKaraoke>[] = [
     },
   },
   { Header: "再生開始", accessor: "SingStart" },
-  { Header: "動画タイトル", accessor: "MovieTitle" },
+  { Header: "動画タイトル", accessor: "Title" },
   {
     Header: "いいね",
     accessor: "Count",
-    Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} movie={row.original.MovieUrl} karaoke={row.original.KaraokeId} />
+    Cell: ({ row }: { row: { original: ReceivedVideoSong } }) => {
+      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} videoSongId={row.original.VideoSongId} />
     },
   },
 ]
 
 type KaraokeTableReturnPostProps = {
-  karaokes: ReceivedKaraoke[]
-  setSelectedPost: (arg0: ReceivedKaraoke) => void
+  karaokes: ReceivedVideoSong[]
+  setSelectedPost: (arg0: ReceivedVideoSong) => void
 }
 
 export function KaraokePaginationTable({ karaokes, setSelectedPost }: KaraokeTableReturnPostProps) {
@@ -245,11 +243,11 @@ export function KaraokePaginationTable({ karaokes, setSelectedPost }: KaraokeTab
 
 ///////////////////////////////////////////////////
 // // top youtube横　カラム少な目→api側未調整（余計なデータがを渡されている状態）
-const ThinColumns: Column<ReceivedKaraoke>[] = [
+const ThinColumns: Column<ReceivedVideoSong>[] = [
   {
     Header: "VTuber(click it)",
     accessor: "VtuberName",
-    Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
+    Cell: ({ row }: { row: { original: ReceivedVideoSong } }) => {
       return (
         <span className="relative">
           <Link href={`/vtuber/${row.original.VtuberKana}`} className={`flex ${LinkTW.base}`}>
@@ -262,8 +260,8 @@ const ThinColumns: Column<ReceivedKaraoke>[] = [
   },
   {
     Header: "曲名(Click it)",
-    accessor: "KaraokeId",
-    Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
+    accessor: "VideoSongId",
+    Cell: ({ row }: { row: { original: ReceivedVideoSong } }) => {
       const { updateVideo } = useVideo()
       const [isDisplay, setIsDisplay] = useState<boolean>(false)
       const handleClick = async () => {
@@ -293,14 +291,14 @@ const ThinColumns: Column<ReceivedKaraoke>[] = [
   {
     Header: "いいね",
     accessor: "Count",
-    Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} movie={row.original.MovieUrl} karaoke={row.original.KaraokeId} />
+    Cell: ({ row }: { row: { original: ReceivedVideoSong } }) => {
+      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} videoSongId={row.original.VideoSongId} />
     },
   },
 ]
 
 export const KaraokeThinTable = ({ posts }: KaraokeTableProps) => {
-  const data = posts || ([] as ReceivedKaraoke[])
+  const data = posts || ([] as ReceivedVideoSong[])
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns: ThinColumns, data }, useSortBy, useRowSelect)
 
   return (
@@ -431,13 +429,13 @@ export function KaraokeDeleteTable({ posts: karaokes }: KaraokeTableProps) {
   )
 }
 
-const deleteColumns: Column<ReceivedKaraoke>[] = [
+const deleteColumns: Column<ReceivedVideoSong>[] = [
   {
     Header: "VTuber(click it)",
     accessor: "VtuberName",
-    Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
+    Cell: ({ row }: { row: { original: ReceivedVideoSong } }) => {
       return (
-        <span key={row.original.KaraokeId} className="relative">
+        <span key={row.original.VideoSongId} className="relative">
           <Link href={`/vtuber/${row.original.VtuberKana}`} className={`flex ${LinkTW.base}`}>
             <Image src="/content/external_link.svg" className="w-5 mr-1" width={24} height={20} alt="" />
             {row.original.VtuberName}
@@ -449,7 +447,7 @@ const deleteColumns: Column<ReceivedKaraoke>[] = [
   {
     Header: "曲",
     accessor: "SongName",
-    Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
+    Cell: ({ row }: { row: { original: ReceivedVideoSong } }) => {
       const { setCurrentVideoId, setCurrentStart } = useContext(ToDeleteContext)
       const clickHandler = (url: string, SingStart: string) => {
         setCurrentVideoId(extractVideoId(url))
@@ -468,20 +466,20 @@ const deleteColumns: Column<ReceivedKaraoke>[] = [
     },
   },
   { Header: "再生開始", accessor: "SingStart" },
-  { Header: "歌枠", accessor: "MovieTitle" },
+  { Header: "歌枠", accessor: "Title" },
   {
     Header: "削除",
-    accessor: "KaraokeId",
-    Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
+    accessor: "VideoSongId",
+    Cell: ({ row }: { row: { original: ReceivedVideoSong } }) => {
       const { setToDeleteVtuberId, setToDeleteMovieUrl, setToDeleteKaraokeId } = useContext(ToDeleteContext)
       const clickHandler = () => {
         setToDeleteVtuberId(row.original.VtuberId)
         setToDeleteMovieUrl(row.original.MovieUrl)
-        setToDeleteKaraokeId(row.original.KaraokeId)
+        setToDeleteKaraokeId(row.original.VideoSongId)
       }
       return (
         <>
-          {row.original.KaraokeId != undefined && (
+          {row.original.VideoSongId != undefined && (
             <button className={`${LinkTW.base}`} onClick={() => clickHandler()}>
               削除
             </button>
@@ -497,11 +495,11 @@ const deleteColumns: Column<ReceivedKaraoke>[] = [
 // 全件取得してフロント側でランダムにしてるけど、バック側でランダム５件+α取得すべき
 // (+αはフロント側で完結するランダム更新機能を実装するために必要)
 
-const random5columns: Column<ReceivedKaraoke>[] = [
+const random5columns: Column<ReceivedVideoSong>[] = [
   {
     Header: "VTuber(click it)",
     accessor: "VtuberName",
-    Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
+    Cell: ({ row }: { row: { original: ReceivedVideoSong } }) => {
       return (
         <span className="relative">
           <Link href={`/vtuber/${row.original.VtuberKana}`} className={`flex ${LinkTW.base}`}>
@@ -514,11 +512,11 @@ const random5columns: Column<ReceivedKaraoke>[] = [
   },
   {
     Header: "曲名(Click it)",
-    accessor: "KaraokeId",
-    Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
+    accessor: "VideoSongId",
+    Cell: ({ row }: { row: { original: ReceivedVideoSong } }) => {
       const [isDisplay, setIsDisplay] = useState<boolean>(false)
       const { updateVideo } = useVideo()
-      const playSong = (post: ReceivedKaraoke) => {
+      const playSong = (post: ReceivedVideoSong) => {
         updateVideo(extractVideoId(post.MovieUrl), timeStringToSecondNum(post.SingStart))
       }
 
@@ -549,8 +547,8 @@ const random5columns: Column<ReceivedKaraoke>[] = [
   {
     Header: "いいね",
     accessor: "Count",
-    Cell: ({ row }: { row: { original: ReceivedKaraoke } }) => {
-      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} movie={row.original.MovieUrl} karaoke={row.original.KaraokeId} />
+    Cell: ({ row }: { row: { original: ReceivedVideoSong } }) => {
+      return <FavoriteColumn count={row.original.Count} isFav={row.original.IsFav} videoSongId={row.original.VideoSongId} />
     },
   },
 ]

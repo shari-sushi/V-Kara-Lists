@@ -1,17 +1,17 @@
 import { Table } from "@tanstack/react-table"
-import { ReceivedKaraoke } from "@/types/vtuber_content"
+import { ReceivedVideoSong } from "@/types/vtuber_content"
 
 export type KaraokeTablePaginationButtonsProps = {
-  table: Table<ReceivedKaraoke>
+  table: Table<ReceivedVideoSong>
   maxPageSize: number
 }
 
 export type KaraokeTableFilterInputProps = {
-  table: Table<ReceivedKaraoke>
+  table: Table<ReceivedVideoSong>
   accesKey?: string
 }
 
 export type KaraokeTableReturnPostProps = {
-  posts: ReceivedKaraoke[]
-  setSelectedPost: (arg0: ReceivedKaraoke) => void
+  posts: ReceivedVideoSong[]
+  setSelectedPost: (arg0: ReceivedVideoSong) => void
 }

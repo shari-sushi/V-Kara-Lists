@@ -3,3 +3,4 @@ export * from "./webStrage/cookie"
 // export * from "./webStrage/getCookies";
 export * from "./regularExpression/User"
 export * from "./regularExpression/VtuberContent"
+export * from "./videoCategory/videoCategory"

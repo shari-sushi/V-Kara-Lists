@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import axios from "axios"
 import { domain } from "@/../env"
-import type { BasicDataProps } from "@/types/vtuber_content"
+import { VIDEO_CATEGORY, type BasicDataProps, type VideoCategory } from "@/types/vtuber_content"
 import { DropDownVtuber } from "@/components/dropDown/Vtuber"
 import { DropDownMovie } from "@/components/dropDown/Movie"
 import { ValidateEditRules } from "@/util"
@@ -38,29 +38,33 @@ type EditVtuber = {
   IntroMovieUrl: string | null | undefined
 }
 
+// 新APIは動画・歌をID(VideoId/VideoSongId)で特定する。UIは #414 以前と同じく動画URLで選択するため、
+// 送信時に選択中の動画URLから VideoId を引き当てる。
 type EditMovie = {
+  VideoId: number
+  Category: VideoCategory
   VtuberId: number
-  MovieTitle: string | undefined
+  Title: string | undefined
   MovieUrl: string
 }
 type EditKaraoke = {
-  MovieUrl: string
-  KaraokeId: number
+  VideoId: number
+  VideoSongId: number
   SongName: string | undefined
   SingStart: string | undefined
 }
 
 export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke, setSelectedVtuber, setSelectedMovie, setSelectedKaraoke, clearMovieHandler }: EditDataProps) {
-  const { vtubers, vtubers_movies: videos, vtubers_movies_karaokes: karaokeSongs } = posts
+  const { vtubers, vtubers_videos: videos, vtubers_video_songs: karaokeSongs } = posts
 
   const foundVtuber = vtubers?.find((vtuber) => vtuber.VtuberId === selectedVtuber)
   const foundMovie = videos?.find((video) => video.MovieUrl === selectedMovie)
-  const foundKaraoke = karaokeSongs?.find((songs) => songs.KaraokeId === selectedKaraoke)
+  const foundKaraoke = karaokeSongs?.find((songs) => songs.VideoSongId === selectedKaraoke)
 
   const [vtuberNameInput, setVtuberNameInput] = useState(foundVtuber?.VtuberName ?? "")
   const [VtuberKanaInput, setVtuberKanaInput] = useState(foundVtuber?.VtuberKana ?? "")
   const [IntroMovieUrInput, setIntroMovieUrInput] = useState(foundVtuber?.IntroMovieUrl ?? "")
-  const [MovieTitleInput, setMovieTitleInput] = useState(foundMovie?.MovieTitle ?? "")
+  const [MovieTitleInput, setMovieTitleInput] = useState(foundMovie?.Title ?? "")
   const [SingStartInput, setSingStartInput] = useState(foundKaraoke?.SingStart ?? "")
   const [SongNameInput, setSongNameInput] = useState(foundKaraoke?.SongName ?? "")
 
@@ -108,12 +112,15 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
       }
     } else if (crudContentType === "movie") {
       try {
+        if (!foundMovie) throw new Error("編集対象の動画が見つかりません")
         const reqBody: EditMovie = {
+          VideoId: foundMovie.VideoId, //既存値
+          Category: VIDEO_CATEGORY.KARAOKE,
           VtuberId: selectedVtuber, //既存値
           MovieUrl: selectedMovie, //既存値
-          MovieTitle: CrudData.MovieTitle || foundMovie?.MovieTitle,
+          Title: CrudData.Title || foundMovie?.Title,
         }
-        const response = await axiosClient.post("/edit/movie", reqBody)
+        const response = await axiosClient.post("/edit/video", reqBody)
         if (response.status) {
           resultDisplay()
         } else {
@@ -125,13 +132,14 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
       }
     } else if (crudContentType === "karaoke") {
       try {
+        if (!foundMovie) throw new Error("編集対象の動画が見つかりません")
         const reqBody: EditKaraoke = {
-          MovieUrl: selectedMovie, //既存値
-          KaraokeId: selectedKaraoke, //既存値
+          VideoId: foundMovie.VideoId, //既存値
+          VideoSongId: selectedKaraoke, //既存値
           SongName: CrudData.SongName || foundKaraoke?.SongName,
           SingStart: CrudData.SingStart || foundKaraoke?.SingStart,
         }
-        const response = await axiosClient.post("/edit/karaoke", reqBody)
+        const response = await axiosClient.post("/edit/video-song", reqBody)
         if (response.status) {
           resultDisplay()
         } else {
@@ -261,12 +269,12 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
                 </div>
                 <input
                   className={`${ToClickTW.input}`}
-                  {...register("MovieTitle", ValidateEditRules.MovieTitle)}
-                  placeholder={foundMovie?.MovieTitle || "動画を選択してください"}
+                  {...register("Title", ValidateEditRules.Title)}
+                  placeholder={foundMovie?.Title || "動画を選択してください"}
                   onChange={(e) => setMovieTitleInput(e.target.value)}
                   disabled={foundMovie == null}
                 />
-                <span className="text-black">{errors.MovieTitle?.message}</span>
+                <span className="text-black">{errors.Title?.message}</span>
               </div>
               <div className="flex">
                 <span className={`${FormTW.label}`}>歌枠の URL は編集できません</span>

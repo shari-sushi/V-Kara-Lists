@@ -5,10 +5,10 @@ import Link from "next/link"
 import { domain } from "@/../env"
 import { Layout } from "@/components/layout/Layout"
 import { ToClickTW } from "@/styles/tailwiind"
-import type { ReceivedKaraoke, ReceivedMovie, ReceivedVtuber } from "@/types/vtuber_content"
+import type { ReceivedVideoSong, ReceivedVideo, ReceivedVtuber } from "@/types/vtuber_content"
 import type { ContextType } from "@/types/server"
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
-import { timeStringToSecondNum } from "@/util"
+import { timeStringToSecondNum, filterKaraokeCategory } from "@/util"
 import { DropDownVtuber } from "@/components/dropDown/Vtuber"
 import { DropDownMovie } from "@/components/dropDown/Movie"
 import KaraokeGlobalFilterTable from "@/components/table-tanstack/Karaoke/KaraokeGlobalFilterTable"
@@ -23,9 +23,9 @@ const pageName = "カラオケ(全曲)"
 type TopPageProps = {
   posts: {
     vtubers: ReceivedVtuber[]
-    vtubers_movies: ReceivedMovie[]
-    vtubers_movies_karaokes: ReceivedKaraoke[]
-    latest_karaokes: ReceivedKaraoke[]
+    vtubers_videos: ReceivedVideo[]
+    vtubers_video_songs: ReceivedVideoSong[]
+    latest_video_songs: ReceivedVideoSong[]
   }
   isSignin: boolean
   hasError: boolean
@@ -40,15 +40,15 @@ export default function SingsPage({ posts, isSignin, hasError }: TopPageProps) {
   )
 }
 
-const MainItem = ({ posts: { latest_karaokes: latestKaraoke, vtubers, vtubers_movies: videos, vtubers_movies_karaokes: karaokes } }: TopPageProps) => {
+const MainItem = ({ posts: { latest_video_songs: latestKaraoke, vtubers, vtubers_videos: videos, vtubers_video_songs: karaokes } }: TopPageProps) => {
   //船長　kORHSmXcYNc, 00:08:29
   const { videoState } = useVideo({ youtubeId: "5WzeYsoGCZc", startTime: timeStringToSecondNum("00:22:04") })
 
-  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke | undefined>(undefined)
+  const [selectedPost, setSelectedPost] = useState<ReceivedVideoSong | undefined>(undefined)
 
   const [selectedVtuber, setSelectedVtuber] = useState<number>(0)
   const [selectedMovie, setSelectedMovie] = useState<string>("")
-  const [filteredKaraokes, setFilteredKaraokes] = useState<ReceivedKaraoke[]>([])
+  const [filteredKaraokes, setFilteredKaraokes] = useState<ReceivedVideoSong[]>([])
   const clearMovieHandler = () => {
     // TODO: 実装
   }
@@ -99,14 +99,14 @@ const MainItem = ({ posts: { latest_karaokes: latestKaraoke, vtubers, vtubers_mo
   )
 }
 
-const FilterKaraokesByParentContent = (karaokes: ReceivedKaraoke[], selectedVtuber: number, selectedMovie: string) => {
+const FilterKaraokesByParentContent = (karaokes: ReceivedVideoSong[], selectedVtuber: number, selectedMovie: string) => {
   if (selectedVtuber == 0 && selectedMovie == "") {
     return karaokes
   } else if (selectedVtuber != 0 && selectedMovie == "") {
-    const choiceKaraoke = karaokes.filter((karaokes: ReceivedKaraoke) => karaokes.VtuberId === selectedVtuber)
+    const choiceKaraoke = karaokes.filter((karaokes: ReceivedVideoSong) => karaokes.VtuberId === selectedVtuber)
     return choiceKaraoke
   } else {
-    const choiceKaraoke = karaokes.filter((karaokes: ReceivedKaraoke) => karaokes.MovieUrl === selectedMovie)
+    const choiceKaraoke = karaokes.filter((karaokes: ReceivedVideoSong) => karaokes.MovieUrl === selectedMovie)
     return choiceKaraoke
   }
 }
@@ -127,9 +127,9 @@ export async function getServerSideProps(context: ContextType) {
   // apiをリソース毎に分けるまでの仮
   type PageResponse = {
     vtubers: ReceivedVtuber[]
-    vtubers_movies: ReceivedMovie[]
-    vtubers_movies_karaokes: ReceivedKaraoke[]
-    latest_karaokes: ReceivedKaraoke[]
+    vtubers_videos: ReceivedVideo[]
+    vtubers_video_songs: ReceivedVideoSong[]
+    latest_video_songs: ReceivedVideoSong[]
   }
 
   let resData: PageResponse | undefined = undefined
@@ -137,15 +137,21 @@ export async function getServerSideProps(context: ContextType) {
 
   try {
     const res = await axios.get(`${domain.backendHost}/vcontents/`, options)
-    resData = res.data as PageResponse
+    const data = res.data as PageResponse
+    resData = {
+      ...data,
+      vtubers_videos: filterKaraokeCategory(data.vtubers_videos),
+      vtubers_video_songs: filterKaraokeCategory(data.vtubers_video_songs),
+      latest_video_songs: filterKaraokeCategory(data.latest_video_songs),
+    }
     hasError = false
   } catch (error) {
     console.log("erroe in axios.get:", error)
     resData = {
       vtubers: [],
-      vtubers_movies: [],
-      vtubers_movies_karaokes: [],
-      latest_karaokes: [],
+      vtubers_videos: [],
+      vtubers_video_songs: [],
+      latest_video_songs: [],
     }
   }
   return {

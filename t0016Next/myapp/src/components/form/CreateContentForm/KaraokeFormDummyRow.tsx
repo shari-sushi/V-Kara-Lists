@@ -14,7 +14,7 @@ export const KaraokeFormDummyRow = ({ append }: KaraokeFormDummyRowProps) => {
       Array.from({ length: count }, () => {
         return {
           Index: uuidv4(),
-          KaraokeId: 0,
+          VideoSongId: 0,
           SingStart: "00:00:00",
           SongName: "",
         }

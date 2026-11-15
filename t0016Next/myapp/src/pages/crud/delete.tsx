@@ -2,10 +2,10 @@ import React, { useContext, useEffect, useMemo, useState } from "react"
 import https from "https"
 import axios, { AxiosRequestConfig } from "axios"
 import { domain } from "@/../env"
-import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from "@/types/vtuber_content"
+import type { ReceivedVtuber, ReceivedVideo, ReceivedVideoSong } from "@/types/vtuber_content"
 import type { ContextType } from "@/types/server"
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
-import { timeStringToSecondNum, extractVideoId } from "@/util"
+import { timeStringToSecondNum, extractVideoId, filterKaraokeCategory } from "@/util"
 import { Layout } from "@/components/layout/Layout"
 import { VtuberDeleteTable } from "@/components/table/Vtuber"
 import { MovieDeleteTable } from "@/components/table/Movie"
@@ -40,11 +40,11 @@ export const ToDeleteContext = React.createContext<{
 })
 
 type MyPagePosts = {
-  vtubers_movies_karaokes_u_created: ReceivedKaraoke[]
-  vtubers_movies_u_created: ReceivedMovie[]
+  vtubers_video_songs_u_created: ReceivedVideoSong[]
+  vtubers_videos_u_created: ReceivedVideo[]
   vtubers_u_created: ReceivedVtuber[]
   all_vtubers: ReceivedVtuber[]
-  all_vtubers_movies: ReceivedMovie[]
+  all_vtubers_videos: ReceivedVideo[]
 }
 
 type DeletePageProps = {
@@ -72,8 +72,8 @@ export const DeletePage = ({ posts, isSignin, hasError }: DeletePageProps) => {
 
 const MainItem = ({ posts }: DeletePageProps) => {
   const vtubers = posts?.vtubers_u_created != null ? posts.vtubers_u_created : ([] as ReceivedVtuber[])
-  const movies = useMemo(() => (posts?.vtubers_movies_u_created != null ? posts.vtubers_movies_u_created : ([] as ReceivedMovie[])), [posts])
-  const karaokes = useMemo(() => (posts?.vtubers_movies_karaokes_u_created != null ? posts.vtubers_movies_karaokes_u_created : ([] as ReceivedKaraoke[])), [posts])
+  const movies = useMemo(() => (posts?.vtubers_videos_u_created != null ? posts.vtubers_videos_u_created : ([] as ReceivedVideo[])), [posts])
+  const karaokes = useMemo(() => (posts?.vtubers_video_songs_u_created != null ? posts.vtubers_video_songs_u_created : ([] as ReceivedVideoSong[])), [posts])
 
   const [toDeleteVtuberId, setToDeleteVtuberId] = useState<number>(0)
   const [toDeleteMovieUrl, setToDeleteMovieUrl] = useState<string>("")
@@ -96,7 +96,7 @@ const MainItem = ({ posts }: DeletePageProps) => {
 
   useEffect(() => {
     if (toDeleteVtuberId && toDeleteMovieUrl && toDeleteKaraokeId) {
-      const foundKaraoke = karaokes.find((karaoke) => karaoke.KaraokeId === toDeleteKaraokeId)
+      const foundKaraoke = karaokes.find((karaoke) => karaoke.VideoSongId === toDeleteKaraokeId)
       if (foundKaraoke) {
         const foundSingStart = timeStringToSecondNum(foundKaraoke.SingStart)
         setCurrentStart(foundSingStart)
@@ -180,24 +180,23 @@ type DeleteVtuber = {
   VtuberId: number
   VtuberName: string | undefined
 }
+// 新APIは動画・歌をID(VideoId/VideoSongId)で特定する。UIは #414 以前と同じく動画URLで選択するため、
+// 送信時に選択中の動画URLから VideoId を引き当てる。
 type DeleteMovie = {
-  VtuberId: number | undefined
-  MovieUrl: string
+  VideoId: number
 }
 type DeleteKaraoke = {
-  MovieUrl: string
-  KaraokeId: number
-  SongName: string
+  VideoSongId: number
 }
 
 export function DeleteDecideButton({ posts, selectedVtuberId, selectedMovieUrl, selectedKaraokeId }: selectedDate) {
   const vtubers = posts?.all_vtubers || [{} as ReceivedVtuber]
-  const movies = posts?.all_vtubers_movies || [{} as ReceivedMovie]
-  const karaokes = posts?.vtubers_movies_karaokes_u_created || [{} as ReceivedKaraoke]
+  const movies = posts?.all_vtubers_videos || [{} as ReceivedVideo]
+  const karaokes = posts?.vtubers_video_songs_u_created || [{} as ReceivedVideoSong]
 
   const foundVtuber = vtubers.find((vtuber) => vtuber.VtuberId == selectedVtuberId)
   const foundMovie = movies.find((movie) => movie.MovieUrl == selectedMovieUrl)
-  const foundKaraoke = karaokes.find((karaoke) => karaoke.KaraokeId == selectedKaraokeId)
+  const foundKaraoke = karaokes.find((karaoke) => karaoke.VideoSongId == selectedKaraokeId)
 
   const [crudContentType, setCrudContentType] = useState<string>("")
   useEffect(() => {
@@ -247,10 +246,9 @@ export function DeleteDecideButton({ posts, selectedVtuberId, selectedMovieUrl, 
     } else if (crudContentType === "movie" && foundMovie?.MovieUrl) {
       try {
         const reqBody: DeleteMovie = {
-          VtuberId: selectedVtuberId, //deleteで必須
-          MovieUrl: foundMovie.MovieUrl, //deleteで必須
+          VideoId: foundMovie.VideoId,
         }
-        const response = await axiosClient.delete("/delete/movie", {
+        const response = await axiosClient.delete("/delete/video", {
           data: reqBody,
         })
         if (response.status) {
@@ -266,11 +264,9 @@ export function DeleteDecideButton({ posts, selectedVtuberId, selectedMovieUrl, 
     } else if (crudContentType === "karaoke" && foundKaraoke?.SongName) {
       try {
         const reqBody: DeleteKaraoke = {
-          MovieUrl: selectedMovieUrl, //deleteで必須
-          KaraokeId: selectedKaraokeId, //deleteで必須
-          SongName: foundKaraoke.SongName, //deleteで必須
+          VideoSongId: foundKaraoke.VideoSongId,
         }
-        const response = await axiosClient.delete("/delete/karaoke", {
+        const response = await axiosClient.delete("/delete/video-song", {
           data: reqBody,
         })
         if (response.status) {
@@ -321,7 +317,7 @@ export function DeleteDecideButton({ posts, selectedVtuberId, selectedMovieUrl, 
                 VTuber：{foundVtuber?.VtuberName}
                 <br />
                 &nbsp;&nbsp; の<br />
-                歌枠動画：{foundMovie?.MovieTitle} <br />
+                歌枠動画：{foundMovie?.Title} <br />
                 <span className="mt-32"> を削除しますか？</span>
               </div>
             )}
@@ -329,7 +325,7 @@ export function DeleteDecideButton({ posts, selectedVtuberId, selectedMovieUrl, 
               <div className="mx-auto">
                 VTuber：{foundVtuber?.VtuberName && foundVtuber?.VtuberName}
                 <br />
-                歌枠動画：{foundMovie?.MovieTitle}
+                歌枠動画：{foundMovie?.Title}
                 <br />
                 &nbsp;&nbsp; の<br />
                 曲：{foundKaraoke?.SongName}
@@ -372,14 +368,20 @@ export async function getServerSideProps(context: ContextType) {
 
   try {
     const res = await axios.get(`${domain.backendHost}/vcontents/delete/deletePage`, options)
-    resData = res.data as MyPagePosts
+    const data = res.data as MyPagePosts
+    resData = {
+      ...data,
+      all_vtubers_videos: filterKaraokeCategory(data.all_vtubers_videos),
+      vtubers_videos_u_created: filterKaraokeCategory(data.vtubers_videos_u_created),
+      vtubers_video_songs_u_created: filterKaraokeCategory(data.vtubers_video_songs_u_created),
+    }
     hasError = false
   } catch (error) {
     resData = {
       all_vtubers: [],
-      all_vtubers_movies: [],
-      vtubers_movies_karaokes_u_created: [],
-      vtubers_movies_u_created: [],
+      all_vtubers_videos: [],
+      vtubers_video_songs_u_created: [],
+      vtubers_videos_u_created: [],
       vtubers_u_created: [],
     }
 

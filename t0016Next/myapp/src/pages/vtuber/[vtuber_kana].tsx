@@ -5,9 +5,9 @@ import Link from "next/link"
 import { domain } from "@/../env"
 import { Layout } from "@/components/layout/Layout"
 import { ToClickTW } from "@/styles/tailwiind"
-import type { ReceivedKaraoke, ReceivedMovie } from "@/types/vtuber_content"
+import { VIDEO_CATEGORY, type ReceivedVideoSong, type ReceivedVideo, type ReceivedPublicVideo } from "@/types/vtuber_content"
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
-import { timeStringToSecondNum, extractVideoId } from "@/util"
+import { timeStringToSecondNum, extractVideoId, filterKaraokeCategory } from "@/util"
 import { DropDownAllMovie } from "@/components/dropDown/Movie"
 import { NotFoundVtuber } from "@/components/layout/Main"
 import { GetServerSidePropsContext } from "next"
@@ -18,16 +18,23 @@ import { useVideo } from "@/providers/VideoProvider"
 
 const pageName = "Vtuber特設ページ" // VTuberの名前になるようにレンダリングフェーズで変更している
 
+type VtuberPagePosts = {
+  vtubers_videos: Pick<ReceivedVideo, "MovieUrl" | "Title">[]
+  vtubers_video_songs: ReceivedVideoSong[]
+}
+
+type VtuberPageResponse = {
+  vtubers_videos: ReceivedPublicVideo[]
+  vtubers_video_songs: ReceivedVideoSong[]
+}
+
 type VtuberPage = {
-  posts: {
-    vtubers_movies: ReceivedMovie[]
-    vtubers_movies_karaokes: ReceivedKaraoke[]
-  }
+  posts: VtuberPagePosts | null
   isSignin: boolean
 }
 
 export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
-  const karaokes: ReceivedKaraoke[] = useMemo(() => posts?.vtubers_movies_karaokes || [], [posts])
+  const karaokes: ReceivedVideoSong[] = useMemo(() => posts?.vtubers_video_songs || [], [posts])
 
   const playKaraokeNumber = generateRandomNumber(karaokes.length)
 
@@ -42,7 +49,7 @@ export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
   const [selectedMovie, setSelectedMovie] = useState<string>("")
 
   // propsとして必要
-  const [selectedPost, setSelectedPost] = useState<ReceivedKaraoke>({} as ReceivedKaraoke)
+  const [selectedPost, setSelectedPost] = useState<ReceivedVideoSong>({} as ReceivedVideoSong)
 
   const isVideoInContent = videoState.position === "in-content"
 
@@ -102,7 +109,7 @@ export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
                 <div>
                   <span>動画絞込み（入力できます）</span>
                   <DropDownAllMovie
-                    preMovies={posts?.vtubers_movies}
+                    preMovies={posts?.vtubers_videos ?? []}
                     setSelectedMovie={setSelectedMovie}
                     // clearMovieHandler={clearMovieHandler}
                   />
@@ -125,7 +132,7 @@ export default function VtuberOriginalPage({ posts, isSignin }: VtuberPage) {
   )
 }
 
-const filterKaraokesByUrl = (karaokes: ReceivedKaraoke[], url: string) => {
+const filterKaraokesByUrl = (karaokes: ReceivedVideoSong[], url: string) => {
   if (url == "") {
     return karaokes
   }
@@ -147,10 +154,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
   }
 
-  let resData = null
+  let resData: VtuberPagePosts | null = null
   try {
     const res = await axios.get(`${domain.backendHost}/vcontents/vtuber/${kana}`, options)
-    resData = res.data
+    const data = res.data as VtuberPageResponse
+    resData = {
+      vtubers_videos: (data.vtubers_videos ?? []).filter((video) => video.category === VIDEO_CATEGORY.KARAOKE).map((video) => ({ MovieUrl: video.movie_url, Title: video.title })),
+      vtubers_video_songs: filterKaraokeCategory(data.vtubers_video_songs),
+    }
   } catch (error) {
     console.log(`error in axios.get with \`/vcontents/vtuber/${kana}\`: `, error)
   }

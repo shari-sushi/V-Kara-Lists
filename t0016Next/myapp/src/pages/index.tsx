@@ -2,7 +2,7 @@ import Link from "next/link"
 import https from "https"
 import axios, { AxiosRequestConfig } from "axios"
 import { domain } from "@/../env"
-import type { ReceivedVtuber, ReceivedMovie, ReceivedKaraoke } from "@/types/vtuber_content"
+import type { ReceivedVtuber, ReceivedVideo, ReceivedVideoSong } from "@/types/vtuber_content"
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
 import { Layout } from "@/components/layout/Layout"
 import { VtuberTable } from "@/components/table/Vtuber"
@@ -13,7 +13,7 @@ import { ContextType } from "@/types/server"
 import Image from "next/image"
 import { TopPageNotice } from "@/features/notice/notice"
 import { checkLoggedin } from "@/util/webStrage/cookie"
-import { timeStringToSecondNum, extractVideoId } from "@/util"
+import { timeStringToSecondNum, extractVideoId, filterKaraokeCategory } from "@/util"
 import { generateRandomNumber } from "@/components/SomeFunction"
 import { useVideo } from "@/providers/VideoProvider"
 import { FailedMessage } from "@/components/Message/FailedMessage"
@@ -23,9 +23,9 @@ const pageName = "Top"
 type TopPageProps = {
   posts: {
     vtubers: ReceivedVtuber[]
-    vtubers_movies: ReceivedMovie[]
-    vtubers_movies_karaokes: ReceivedKaraoke[]
-    latest_karaokes: ReceivedKaraoke[]
+    vtubers_videos: ReceivedVideo[]
+    vtubers_video_songs: ReceivedVideoSong[]
+    latest_video_songs: ReceivedVideoSong[]
   }
   isSignin: boolean
   hasError: boolean
@@ -45,12 +45,12 @@ const TopPage = ({ posts, isSignin, hasError }: TopPageProps) => {
 }
 
 const MainItem = ({ posts }: TopPageProps) => {
-  const hasKaraokes = posts.latest_karaokes.length > 0
-  const playKaraokeNumber = hasKaraokes ? generateRandomNumber(posts.latest_karaokes.length - 1) : 0
+  const hasKaraokes = posts.latest_video_songs.length > 0
+  const playKaraokeNumber = hasKaraokes ? generateRandomNumber(posts.latest_video_songs.length - 1) : 0
   const { videoState } = useVideo({
     // データが無い時は 音恋宮 花に亡霊
-    youtubeId: hasKaraokes ? extractVideoId(posts.latest_karaokes[playKaraokeNumber].MovieUrl) : "jgGA5hVNpyM",
-    startTime: hasKaraokes ? timeStringToSecondNum(posts.latest_karaokes[playKaraokeNumber].SingStart) : 3718,
+    youtubeId: hasKaraokes ? extractVideoId(posts.latest_video_songs[playKaraokeNumber].MovieUrl) : "jgGA5hVNpyM",
+    startTime: hasKaraokes ? timeStringToSecondNum(posts.latest_video_songs[playKaraokeNumber].SingStart) : 3718,
     isPlaying: hasKaraokes,
   })
   // const handleMovieClickYouTube = (url: string, start: number) => {
@@ -92,7 +92,7 @@ const MainItem = ({ posts }: TopPageProps) => {
             もっと見る
           </Link>
           <div id="table" className="absolute mt-7 m w-[98%] md:w-[99%] overflow-y-scroll h-[82%] md:h-[88%] ">
-            <KaraokeThinTable posts={posts?.latest_karaokes} />
+            <KaraokeThinTable posts={posts?.latest_video_songs} />
           </div>
         </div>
       </div>
@@ -111,14 +111,14 @@ const MainItem = ({ posts }: TopPageProps) => {
               歌枠(動画)
             </h2>
             <div className="max-h-96 overflow-y-auto">
-              <MovieTable posts={posts?.vtubers_movies} />
+              <MovieTable posts={posts?.vtubers_videos} />
             </div>
           </div>
           <div>
             <h2 className="flex">
               <Image src="/content/note.svg" className="h-5 mr-1" width={24} height={24} alt="note icon" />歌
             </h2>
-            <KaraokeMinRandomTable posts={posts.vtubers_movies_karaokes} />
+            <KaraokeMinRandomTable posts={posts.vtubers_video_songs} />
           </div>
         </div>
       </div>
@@ -155,9 +155,9 @@ export async function getServerSideProps(context: ContextType) {
   // apiをリソース毎に分けるまでの仮
   type PageResponse = {
     vtubers: ReceivedVtuber[]
-    vtubers_movies: ReceivedMovie[]
-    vtubers_movies_karaokes: ReceivedKaraoke[]
-    latest_karaokes: ReceivedKaraoke[]
+    vtubers_videos: ReceivedVideo[]
+    vtubers_video_songs: ReceivedVideoSong[]
+    latest_video_songs: ReceivedVideoSong[]
   }
 
   let resData: PageResponse | undefined = undefined
@@ -165,15 +165,21 @@ export async function getServerSideProps(context: ContextType) {
 
   try {
     const res = await axios.get(`${domain.backendHost}/vcontents/`, options)
-    resData = res.data as PageResponse
+    const data = res.data as PageResponse
+    resData = {
+      ...data,
+      vtubers_videos: filterKaraokeCategory(data.vtubers_videos),
+      vtubers_video_songs: filterKaraokeCategory(data.vtubers_video_songs),
+      latest_video_songs: filterKaraokeCategory(data.latest_video_songs),
+    }
     hasError = false
   } catch (error) {
     console.log("erroe in axios.get:", error)
     resData = {
       vtubers: [],
-      vtubers_movies: [],
-      vtubers_movies_karaokes: [],
-      latest_karaokes: [],
+      vtubers_videos: [],
+      vtubers_video_songs: [],
+      latest_video_songs: [],
     }
   }
 

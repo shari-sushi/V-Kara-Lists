@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react"
 import Select from "react-select"
-import type { BasicDataProps, ReceivedKaraoke } from "@/types/vtuber_content"
+import type { BasicDataProps, ReceivedVideoSong } from "@/types/vtuber_content"
 import { DropStyle } from "./common"
 
 type Options = {
@@ -9,7 +9,7 @@ type Options = {
 }
 
 type DropDownKaraokeSongsProps = {
-  karaokeSongs: ReceivedKaraoke[]
+  karaokeSongs: ReceivedVideoSong[]
   selectedMovie: string
   onKaraokeSelect: (karaokeSongId: number) => void
 }
@@ -25,9 +25,9 @@ export const DropDownKaraokeSongs = ({ karaokeSongs, selectedMovie, onKaraokeSel
 
     const fetchKaraokes = async () => {
       try {
-        const choiceKaraoke = karaokeSongs.filter((karaokes: ReceivedKaraoke) => karaokes.MovieUrl === selectedMovie)
-        let havingKaraoke = choiceKaraoke.map((karaoke: ReceivedKaraoke) => ({
-          value: karaoke.KaraokeId,
+        const choiceKaraoke = karaokeSongs.filter((karaokes: ReceivedVideoSong) => karaokes.MovieUrl === selectedMovie)
+        let havingKaraoke = choiceKaraoke.map((karaoke: ReceivedVideoSong) => ({
+          value: karaoke.VideoSongId,
           label: karaoke.SongName || "",
         }))
         if (havingKaraoke) {
@@ -65,13 +65,13 @@ export const DropDownKaraokeSongs = ({ karaokeSongs, selectedMovie, onKaraokeSel
 }
 
 type DropDownKaraokePartialMatchSearchProps = {
-  preKaraokes: ReceivedKaraoke[]
-  setSelectedKaraokes: (value: ReceivedKaraoke[]) => void
+  preKaraokes: ReceivedVideoSong[]
+  setSelectedKaraokes: (value: ReceivedVideoSong[]) => void
 }
 
 export const PartialMatchSearch = ({ preKaraokes, setSelectedKaraokes }: DropDownKaraokePartialMatchSearchProps) => {
   const [karaokeOptions, setKaraokeOptions] = useState<Options[]>([])
-  const [selectedKaraoke, setSelectedKaraoke] = useState<ReceivedKaraoke[]>([])
+  const [selectedKaraoke, setSelectedKaraoke] = useState<ReceivedVideoSong[]>([])
   const text = ""
   // text == ""ならpreKaraokeをそのまま返したいというかそもそもここで処理したらバケツリレー大変だしな…
 

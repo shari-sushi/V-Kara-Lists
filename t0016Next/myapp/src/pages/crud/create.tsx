@@ -2,11 +2,11 @@ import { useEffect, useState, useMemo } from "react"
 import https from "https"
 import axios, { AxiosRequestConfig } from "axios"
 import { domain } from "@/../env"
-import type { ReceivedMovie, ReceivedKaraoke, BasicDataProps } from "@/types/vtuber_content"
+import type { ReceivedVideo, ReceivedVideoSong, BasicDataProps } from "@/types/vtuber_content"
 import type { ContextType } from "@/types/server"
 import { Layout } from "@/components/layout/Layout"
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
-import { timeStringToSecondNum, extractVideoId } from "@/util"
+import { timeStringToSecondNum, extractVideoId, filterKaraokeCategory } from "@/util"
 import { CreateForm } from "@/components/form/CreateContentForm/CreateContentForm"
 import { NotLoggedIn } from "@/components/layout/Main"
 import { checkLoggedin } from "@/util/webStrage/cookie"
@@ -32,8 +32,8 @@ export const CreatePage = ({ posts, isSignin, hasError }: CreatePageProps) => {
 }
 
 const MainItem = ({ posts, isSignin }: CreatePageProps) => {
-  const movies = useMemo(() => posts?.vtubers_movies || ([] as ReceivedMovie[]), [posts])
-  const karaokes = useMemo(() => posts?.vtubers_movies_karaokes || ([] as ReceivedKaraoke[]), [posts])
+  const movies = useMemo(() => posts?.vtubers_videos || ([] as ReceivedVideo[]), [posts])
+  const karaokes = useMemo(() => posts?.vtubers_video_songs || ([] as ReceivedVideoSong[]), [posts])
 
   const [selectedVtuberId, setSelectedVtuberId] = useState<number>(0)
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string>("")
@@ -59,7 +59,7 @@ const MainItem = ({ posts, isSignin }: CreatePageProps) => {
 
   const handleSelectKaraokeSong = (songId: number) => {
     const startTimeStr = karaokes.find((k) => {
-      k.KaraokeId
+      k.VideoSongId
     })?.SingStart
     if (startTimeStr == null) return
 
@@ -137,13 +137,18 @@ export async function getServerSideProps(context: ContextType) {
 
   try {
     const res = await axios.get(`${domain.backendHost}/vcontents/`, options)
-    resData = res.data as BasicDataProps
+    const data = res.data as BasicDataProps
+    resData = {
+      ...data,
+      vtubers_videos: filterKaraokeCategory(data.vtubers_videos),
+      vtubers_video_songs: filterKaraokeCategory(data.vtubers_video_songs),
+    }
     hasError = false
   } catch (error) {
     resData = {
       vtubers: [],
-      vtubers_movies: [],
-      vtubers_movies_karaokes: [],
+      vtubers_videos: [],
+      vtubers_video_songs: [],
     }
     console.log("erroe in axios.get:", error)
   }

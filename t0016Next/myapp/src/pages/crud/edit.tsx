@@ -3,12 +3,12 @@ import Link from "next/link"
 import https from "https"
 import axios, { AxiosRequestConfig } from "axios"
 import { domain } from "@/../env"
-import type { ReceivedMovie, ReceivedKaraoke, BasicDataProps } from "@/types/vtuber_content"
+import type { ReceivedVideo, ReceivedVideoSong, BasicDataProps } from "@/types/vtuber_content"
 import type { ContextType } from "@/types/server"
 import { EditPageProps, EditForm } from "@/components/form/EditContentForm"
 import { Layout } from "@/components/layout/Layout"
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
-import { timeStringToSecondNum, extractVideoId } from "@/util"
+import { timeStringToSecondNum, extractVideoId, filterKaraokeCategory } from "@/util"
 import { NotLoggedIn } from "@/components/layout/Main"
 import { checkLoggedin } from "@/util/webStrage/cookie"
 import { useVideo } from "@/providers/VideoProvider"
@@ -48,8 +48,8 @@ const MainItem = ({ posts }: EditPageProps) => {
   const [currentVideoId, setCurrentVideoId] = useState<string>("AAsRtnbDs-0")
   const [currentStart, setCurrentStart] = useState<number>(27)
 
-  const movies = useMemo(() => posts?.vtubers_movies_karaokes || [{} as ReceivedMovie], [posts])
-  const karaokes = useMemo(() => posts?.vtubers_movies_karaokes || [{} as ReceivedKaraoke], [posts])
+  const movies = useMemo(() => posts?.vtubers_video_songs || [{} as ReceivedVideo], [posts])
+  const karaokes = useMemo(() => posts?.vtubers_video_songs || [{} as ReceivedVideoSong], [posts])
 
   useEffect(() => {
     const foundMovie = movies.find((movies) => movies.MovieUrl === selectedMovie)
@@ -76,7 +76,7 @@ const MainItem = ({ posts }: EditPageProps) => {
   useEffect(() => {
     if (selectedVtuber && selectedMovie && selectedKaraoke) {
       const foundMovies = karaokes.filter((karaoke) => karaoke.MovieUrl === selectedMovie)
-      const foundKaraoke = foundMovies.find((foundMovie) => foundMovie.KaraokeId === selectedKaraoke)
+      const foundKaraoke = foundMovies.find((foundMovie) => foundMovie.VideoSongId === selectedKaraoke)
       if (foundKaraoke) {
         const foundSingStart = timeStringToSecondNum(foundKaraoke.SingStart)
         setCurrentStart(foundSingStart)
@@ -144,13 +144,18 @@ export async function getServerSideProps(context: ContextType) {
 
   try {
     const res = await axios.get(`${domain.backendHost}/vcontents/`, options)
-    resData = res.data as BasicDataProps
+    const data = res.data as BasicDataProps
+    resData = {
+      ...data,
+      vtubers_videos: filterKaraokeCategory(data.vtubers_videos),
+      vtubers_video_songs: filterKaraokeCategory(data.vtubers_video_songs),
+    }
     hasError = false
   } catch (error) {
     resData = {
       vtubers: [],
-      vtubers_movies: [],
-      vtubers_movies_karaokes: [],
+      vtubers_videos: [],
+      vtubers_video_songs: [],
     }
     console.log("erroe in axios.get:", error)
   }

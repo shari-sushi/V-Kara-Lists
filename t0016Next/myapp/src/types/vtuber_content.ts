@@ -11,14 +11,35 @@ export type BasicDataProps = {
 }
 
 // 11:オリ曲 12:歌ってみた 31:歌枠 32:ライブ
-export type VideoCategory = 11 | 12 | 31 | 32
-
+// next/babel(Next 13同梱のBabel)が `satisfies` を解釈できず実行時にimportするとビルドが落ちるため、
+// as const の値から VideoCategory を導出する形にしている。
 export const VIDEO_CATEGORY = {
   ORIGINAL_SONG: 11,
   COVERED_SONG: 12,
   KARAOKE: 31,
   LIVE: 32,
-} as const satisfies Record<string, VideoCategory>
+} as const
+
+export type VideoCategory = (typeof VIDEO_CATEGORY)[keyof typeof VIDEO_CATEGORY]
+
+// 登録・編集・削除フォームで扱うデータの種類。UI上の呼び名(動画=movie, 歌=karaoke)を #414 以前から維持している。
+export type CrudContentType = "none" | "vtuber" | "movie" | "karaoke"
+
+export type CreateContentData = {
+  VtuberId: number
+  VtuberName: string
+  VtuberKana: string
+  IntroMovieUrl: string | null
+  MovieUrl: string
+  Title: string
+  Songs: {
+    Index: string
+    // TODO: 作成のリクエスト時はid不要なので消す
+    VideoSongId: number
+    SingStart: string
+    SongName: string
+  }[]
+}
 
 //以下、基礎の型３つ
 
@@ -102,6 +123,16 @@ export type ReceivedVideoSong = {
 
   Count: number
   IsFav: boolean
+}
+
+// VTuberページの動画一覧(api.PublicVideo)。他のレスポンスと違いjsonタグ付きのためsnake_caseで届く。
+export type ReceivedPublicVideo = {
+  video_id: VideoId
+  category: VideoCategory
+  movie_url: string
+  title: string
+  vtuber_id: VtuberId
+  published_at: string | null
 }
 
 export type FavoriteVideo = {
