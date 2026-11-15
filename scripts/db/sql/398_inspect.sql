@@ -40,15 +40,10 @@ SELECT '== videos by category ==' AS section;
 SELECT category, COUNT(*) AS n FROM videos GROUP BY category ORDER BY category;
 
 SELECT '== migration blockers / skipped rows (0 が望ましい) ==' AS section;
--- 新テーブルに同じ movie_url が別カテゴリで登録済み（移行時は新側を優先し、旧 karaokes は付け替えない）
-SELECT 'movie_url_conflict_non_karaoke_category' AS check_name, COUNT(*) AS n
-FROM movies m JOIN videos v ON v.movie_url = m.movie_url WHERE v.category <> 31
--- 新テーブルに同じ movie_url が歌枠で登録済み（移行時は新側の動画に旧 karaokes をマージする）
-UNION ALL SELECT 'movie_url_already_in_videos_as_karaoke', COUNT(*)
-FROM movies m JOIN videos v ON v.movie_url = m.movie_url WHERE v.category = 31
+-- 旧テーブルだけで判定できるチェック。新テーブルが無くても実行できるよう、新テーブルを参照するチェックとは別の文にしている
 -- 同じ動画・同じ開始時刻の旧 karaokes。旧側の karaoke_uq があれば 0 になる。
 -- 0 でなければ video_songs の UNIQUE(video_id, sing_start) に違反し、移行全体がロールバックされる → 移行を中止して扱いを決める
-UNION ALL SELECT 'karaokes_duplicate_movie_url_sing_start', COUNT(*) FROM (
+SELECT 'karaokes_duplicate_movie_url_sing_start' AS check_name, COUNT(*) AS n FROM (
   SELECT movie_url, sing_start FROM karaokes
   WHERE sing_start IS NOT NULL
   GROUP BY movie_url, sing_start HAVING COUNT(*) > 1
@@ -77,3 +72,11 @@ UNION ALL SELECT 'favorites_movie_duplicate_null_and_zero', COUNT(*) FROM (
   WHERE deleted_at IS NULL AND COALESCE(karaoke_id, 0) = 0
   GROUP BY listener_id, movie_url HAVING COUNT(*) > 1
 ) d;
+
+SELECT '== conflicts with new tables (新テーブルが無ければエラーになる。想定どおり) ==' AS section;
+-- 新テーブルに同じ movie_url が別カテゴリで登録済み（移行時は新側を優先し、旧 karaokes は付け替えない）
+SELECT 'movie_url_conflict_non_karaoke_category' AS check_name, COUNT(*) AS n
+FROM movies m JOIN videos v ON v.movie_url = m.movie_url WHERE v.category <> 31
+-- 新テーブルに同じ movie_url が歌枠で登録済み（移行時は新側の動画に旧 karaokes をマージする）
+UNION ALL SELECT 'movie_url_already_in_videos_as_karaoke', COUNT(*)
+FROM movies m JOIN videos v ON v.movie_url = m.movie_url WHERE v.category = 31;
