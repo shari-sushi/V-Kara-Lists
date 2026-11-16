@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import Select from "react-select"
 import type { ReceivedVideo } from "@/types/vtuber_content"
 import { DropStyle } from "./common"
+import { titleWithLiveMark } from "@/util"
 
 // DropDonwMo, Kaについは、on~~Seletがnillとか0なら処理を止めべき
 type MovieOptions = {
@@ -14,9 +15,11 @@ type DropDownMovieProps = {
   disabled: boolean
   setSelectedMovie: (movieUrl: string) => void
   clearMovieHandler: () => void
+  // 歌枠とライブが混在する場面(登録・編集)では true にして、ライブに印を付ける
+  showLiveMark?: boolean
 }
 
-export const DropDownMovie = ({ videos, disabled, setSelectedMovie, clearMovieHandler }: DropDownMovieProps) => {
+export const DropDownMovie = ({ videos, disabled, setSelectedMovie, clearMovieHandler, showLiveMark = false }: DropDownMovieProps) => {
   const handleMovieClear = () => {
     setSelectedMovie("")
     clearMovieHandler()
@@ -26,7 +29,7 @@ export const DropDownMovie = ({ videos, disabled, setSelectedMovie, clearMovieHa
     ? undefined
     : videos?.map((movie: ReceivedVideo) => ({
         value: movie.MovieUrl,
-        label: movie.Title,
+        label: showLiveMark ? titleWithLiveMark(movie) : movie.Title,
       }))
 
   return (

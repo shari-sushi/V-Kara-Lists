@@ -1,164 +1,18 @@
-import React, { useState, useEffect, useMemo } from "react"
-import https from "https"
-import axios, { AxiosRequestConfig } from "axios"
-import Link from "next/link"
-import { domain } from "@/../env"
-import { Layout } from "@/components/layout/Layout"
-import { ToClickTW } from "@/styles/tailwiind"
-import type { ReceivedVideoSong, ReceivedVideo, ReceivedVtuber } from "@/types/vtuber_content"
+import { SongListPage, type SongListPageProps } from "@/components/content/SongListPage"
+import { fetchSongListPageProps } from "@/api/songListPage"
+import { VIDEO_CATEGORY } from "@/types/vtuber_content"
 import type { ContextType } from "@/types/server"
-import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
-import { timeStringToSecondNum, filterKaraokeCategory } from "@/util"
-import { DropDownVtuber } from "@/components/dropDown/Vtuber"
-import { DropDownMovie } from "@/components/dropDown/Movie"
-import KaraokeGlobalFilterTable from "@/components/table-tanstack/Karaoke/KaraokeGlobalFilterTable"
 import { checkLoggedin } from "@/util/webStrage/cookie"
-import { findVtuber } from "@/components/form/util/getYoutubeVideo"
-import { useVideo } from "@/providers/VideoProvider"
-import { dummyKaraokeArray } from "@/util/dummyData/dummyData"
-import { FailedMessage } from "@/components/Message/FailedMessage"
 
 const pageName = "カラオケ(全曲)"
 
-type TopPageProps = {
-  posts: {
-    vtubers: ReceivedVtuber[]
-    vtubers_videos: ReceivedVideo[]
-    vtubers_video_songs: ReceivedVideoSong[]
-    latest_video_songs: ReceivedVideoSong[]
-  }
-  isSignin: boolean
-  hasError: boolean
-}
-
-export default function SingsPage({ posts, isSignin, hasError }: TopPageProps) {
-  return (
-    <Layout pageName={pageName} isSignin={isSignin}>
-      {hasError && <FailedMessage />}
-      <MainItem posts={posts} isSignin={isSignin} hasError={hasError} />
-    </Layout>
-  )
-}
-
-const MainItem = ({ posts: { latest_video_songs: latestKaraoke, vtubers, vtubers_videos: videos, vtubers_video_songs: karaokes } }: TopPageProps) => {
-  //船長　kORHSmXcYNc, 00:08:29
-  const { videoState } = useVideo({ youtubeId: "5WzeYsoGCZc", startTime: timeStringToSecondNum("00:22:04") })
-
-  const [selectedPost, setSelectedPost] = useState<ReceivedVideoSong | undefined>(undefined)
-
-  const [selectedVtuber, setSelectedVtuber] = useState<number>(0)
-  const [selectedMovie, setSelectedMovie] = useState<string>("")
-  const [filteredKaraokes, setFilteredKaraokes] = useState<ReceivedVideoSong[]>([])
-  const clearMovieHandler = () => {
-    // TODO: 実装
-  }
-
-  // TODO: useEffectをやめてコールバックで操作する
-  useEffect(() => {
-    const filteredKaraokes = FilterKaraokesByParentContent(karaokes, selectedVtuber, selectedMovie)
-    setFilteredKaraokes(filteredKaraokes)
-  }, [selectedVtuber, selectedMovie, karaokes])
-
-  return (
-    <div className="flex flex-col w-full max-w-[1000px] mx-auto">
-      <div className={`pt-6 flex flex-col items-center`}>
-        <div className={`flex ${videoState.position === "in-content" ? "" : "w-full max-w-[600px]"}`}>
-          <div id="feature" className={`flex flex-col md:flex-row bg-[#657261] rounded p-1 w-full mx-auto max-w-[1000px]`}>
-            {/* 左側の要素 */}
-            {/* TODO: 動画はVideoLayoutで常に表示するようにしつつ、ここではスペーサーであるAltBoxを表示/非表示するようにする */}
-            {videoState.position === "in-content" && (
-              <div className="flex flex-col mr-1 ">
-                <div className="relative flex justify-center">
-                  <YouTubePlayer videoId={videoState.youtubeId} start={videoState.startTime} />
-                </div>
-              </div>
-            )}
-
-            {/* 右側の要素 */}
-            <div id="right" className={`relative px-1 rounded border ${videoState.position !== "in-content" ? "w-full" : ""}`}>
-              <h1 className="text-lg">絞込み（入力できます）</h1>
-              <DropDownVtuber vtubers={vtubers} onSelectVtuber={setSelectedVtuber} defaultMenuIsOpen={false} />
-
-              <DropDownMovie videos={videos} disabled={selectedVtuber === 0} setSelectedMovie={setSelectedMovie} clearMovieHandler={clearMovieHandler} />
-              <div className="pt-3 flex justify-end">
-                <div className="w-fit">
-                  <span>お探しの歌枠や歌がありませんか？</span> <br />
-                  <Link className={`${ToClickTW.regular} justify-center float-right px-3 mr-2`} href="/crud/create">
-                    データを登録する
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="flex flex-col w-full">
-        <KaraokeGlobalFilterTable posts={filteredKaraokes} setSelectedPost={setSelectedPost} />
-      </div>
-    </div>
-  )
-}
-
-const FilterKaraokesByParentContent = (karaokes: ReceivedVideoSong[], selectedVtuber: number, selectedMovie: string) => {
-  if (selectedVtuber == 0 && selectedMovie == "") {
-    return karaokes
-  } else if (selectedVtuber != 0 && selectedMovie == "") {
-    const choiceKaraoke = karaokes.filter((karaokes: ReceivedVideoSong) => karaokes.VtuberId === selectedVtuber)
-    return choiceKaraoke
-  } else {
-    const choiceKaraoke = karaokes.filter((karaokes: ReceivedVideoSong) => karaokes.MovieUrl === selectedMovie)
-    return choiceKaraoke
-  }
+export default function SingsPage(props: SongListPageProps) {
+  return <SongListPage {...props} pageName={pageName} category={VIDEO_CATEGORY.KARAOKE} />
 }
 
 export async function getServerSideProps(context: ContextType) {
   const { sessionToken, isLoggedin } = checkLoggedin(context)
   console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin) // 会員、非会員、どのページかの記録のため
 
-  const httpsAgent = new https.Agent({ rejectUnauthorized: false })
-  const options: AxiosRequestConfig = {
-    headers: {
-      cookie: `auth-token=${sessionToken}`,
-    },
-    withCredentials: true,
-    httpsAgent: process.env.NODE_ENV === "production" ? undefined : httpsAgent,
-  }
-
-  // apiをリソース毎に分けるまでの仮
-  type PageResponse = {
-    vtubers: ReceivedVtuber[]
-    vtubers_videos: ReceivedVideo[]
-    vtubers_video_songs: ReceivedVideoSong[]
-    latest_video_songs: ReceivedVideoSong[]
-  }
-
-  let resData: PageResponse | undefined = undefined
-  let hasError: boolean = true
-
-  try {
-    const res = await axios.get(`${domain.backendHost}/vcontents/`, options)
-    const data = res.data as PageResponse
-    resData = {
-      ...data,
-      vtubers_videos: filterKaraokeCategory(data.vtubers_videos),
-      vtubers_video_songs: filterKaraokeCategory(data.vtubers_video_songs),
-      latest_video_songs: filterKaraokeCategory(data.latest_video_songs),
-    }
-    hasError = false
-  } catch (error) {
-    console.log("erroe in axios.get:", error)
-    resData = {
-      vtubers: [],
-      vtubers_videos: [],
-      vtubers_video_songs: [],
-      latest_video_songs: [],
-    }
-  }
-  return {
-    props: {
-      posts: resData,
-      isSignin: isLoggedin,
-      hasError: hasError,
-    } as TopPageProps,
-  }
+  return { props: await fetchSongListPageProps(sessionToken, isLoggedin, VIDEO_CATEGORY.KARAOKE) }
 }

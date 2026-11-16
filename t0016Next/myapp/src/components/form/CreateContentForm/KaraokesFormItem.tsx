@@ -95,7 +95,7 @@ const KaraokesFormItem = ({
             動画(歌枠)
             <NeedBox />
           </div>
-          <DropDownMovie videos={selectedVtuberVideos} disabled={selectedVtuberId === 0} setSelectedMovie={setSelectedVideoUrl} clearMovieHandler={clearMovieHandler} />
+          <DropDownMovie videos={selectedVtuberVideos} disabled={selectedVtuberId === 0} setSelectedMovie={setSelectedVideoUrl} clearMovieHandler={clearMovieHandler} showLiveMark />
           {selectedVideoUrl == "" && <div className="text-[#ff3f3f] text-sm">動画を選択してください</div>}
         </div>
       </div>

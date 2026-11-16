@@ -8,7 +8,7 @@ import type { ContextType } from "@/types/server"
 import { EditPageProps, EditForm } from "@/components/form/EditContentForm"
 import { Layout } from "@/components/layout/Layout"
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
-import { timeStringToSecondNum, extractVideoId, filterKaraokeCategory } from "@/util"
+import { timeStringToSecondNum, extractVideoId, filterMultiSongCategory } from "@/util"
 import { NotLoggedIn } from "@/components/layout/Main"
 import { checkLoggedin } from "@/util/webStrage/cookie"
 import { useVideo } from "@/providers/VideoProvider"
@@ -147,8 +147,8 @@ export async function getServerSideProps(context: ContextType) {
     const data = res.data as BasicDataProps
     resData = {
       ...data,
-      vtubers_videos: filterKaraokeCategory(data.vtubers_videos),
-      vtubers_video_songs: filterKaraokeCategory(data.vtubers_video_songs),
+      vtubers_videos: filterMultiSongCategory(data.vtubers_videos),
+      vtubers_video_songs: filterMultiSongCategory(data.vtubers_video_songs),
     }
     hasError = false
   } catch (error) {

@@ -1,4 +1,4 @@
-import { CreateContentData, VIDEO_CATEGORY } from "@/types/vtuber_content"
+import type { CreateContentData, VideoCategory } from "@/types/vtuber_content"
 import { CreateVideoRequest, CreateVideoSongsRequest, CreateVtuberRequest } from "@/api/index"
 
 export const getCreateVtuberReq = (crudData: CreateContentData): CreateVtuberRequest => {
@@ -9,11 +9,11 @@ export const getCreateVtuberReq = (crudData: CreateContentData): CreateVtuberReq
   }
 }
 
-// 登録フォームから作れる動画は歌枠のみ(ライブ・オリ曲・歌ってみたは準備中 #458)
-export const getCreateKaraokeVideoReq = (crudData: CreateContentData, vtuberId: number): CreateVideoRequest => {
+// 登録フォームから作れる動画は歌枠・ライブのみ(オリ曲・歌ってみたは準備中)
+export const getCreateVideoReq = (crudData: CreateContentData, vtuberId: number, category: VideoCategory): CreateVideoRequest => {
   return {
     VtuberId: vtuberId,
-    Category: VIDEO_CATEGORY.KARAOKE,
+    Category: category,
     Title: crudData.Title,
     MovieUrl: crudData.MovieUrl,
   }

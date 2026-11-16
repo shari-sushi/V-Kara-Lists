@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import axios from "axios"
 import { domain } from "@/../env"
-import type { BasicDataProps, VideoCategory } from "@/types/vtuber_content"
+import { type BasicDataProps, type VideoCategory, VIDEO_CATEGORY } from "@/types/vtuber_content"
 import { DropDownVtuber } from "@/components/dropDown/Vtuber"
 import { DropDownMovie } from "@/components/dropDown/Movie"
 import { ValidateEditRules } from "@/util"
@@ -11,6 +11,7 @@ import { DropDownKaraokeSongs } from "../dropDown/Karaoke"
 import { findVtuber } from "@/components/form/util/getYoutubeVideo"
 import router from "next/router"
 import { CrudContentSelector } from "./util/CrudContetntSelector"
+import { VideoCategoryRadio } from "./util/VideoCategoryRadio"
 
 export type EditPageProps = {
   posts: BasicDataProps
@@ -70,6 +71,11 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
 
   const [crudContentType, setCrudContentType] = useState<string>("karaoke")
 
+  // 動画の種類(歌枠⇔ライブ)の編集値。どの動画に対する選択かを一緒に持ち、
+  // 別の動画を選び直したら自動でその動画の既存値に戻るようにする(effectで同期しなくて済む)。
+  const [categoryEdit, setCategoryEdit] = useState<{ movieUrl: string; category: VideoCategory } | undefined>(undefined)
+  const editingCategory: VideoCategory = categoryEdit?.movieUrl === selectedMovie ? categoryEdit.category : (foundMovie?.Category ?? VIDEO_CATEGORY.KARAOKE)
+
   const axiosClient = axios.create({
     baseURL: `${domain.backendHost}/vcontents`,
     withCredentials: true,
@@ -115,7 +121,7 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
         if (!foundMovie) throw new Error("編集対象の動画が見つかりません")
         const reqBody: EditMovie = {
           VideoId: foundMovie.VideoId, //既存値
-          Category: foundMovie.Category, //既存値
+          Category: editingCategory,
           VtuberId: selectedVtuber, //既存値
           MovieUrl: selectedMovie, //既存値
           Title: CrudData.Title || foundMovie?.Title,
@@ -192,7 +198,7 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
                 </span>
               )}
             </div>
-            <DropDownMovie videos={videos} disabled={selectedVtuber === 0} setSelectedMovie={setSelectedMovie} clearMovieHandler={clearMovieHandler} />
+            <DropDownMovie videos={videos} disabled={selectedVtuber === 0} setSelectedMovie={setSelectedMovie} clearMovieHandler={clearMovieHandler} showLiveMark />
           </div>
         )}
         {crudContentType === "karaoke" && (
@@ -278,8 +284,16 @@ export function EditForm({ posts, selectedVtuber, selectedMovie, selectedKaraoke
                 />
                 <span className="text-black">{errors.Title?.message}</span>
               </div>
+              <div className="mb-3">
+                <span className="block text-gray-700 text-sm font-bold">動画の種類:</span>
+                {foundMovie == null ? (
+                  <span className="text-black">動画を選択してください</span>
+                ) : (
+                  <VideoCategoryRadio name="editVideoCategory" value={editingCategory} onChange={(category) => setCategoryEdit({ movieUrl: selectedMovie, category })} />
+                )}
+              </div>
               <div className="flex">
-                <span className={`${FormTW.label}`}>歌枠の URL は編集できません</span>
+                <span className={`${FormTW.label}`}>動画の URL は編集できません</span>
               </div>
             </div>
           )}
