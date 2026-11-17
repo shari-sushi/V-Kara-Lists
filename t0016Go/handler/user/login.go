@@ -36,10 +36,8 @@ func (h *UserHandler) LogIn(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Printf("emailAES:%v\n", emailAES)
 
 	foundListener, err := h.UserService.FindUserByEmail(emailAES)
-	fmt.Printf("Listener Logged in:%v\n", foundListener)
 	if err != nil {
 		fmt.Printf("err:LogIn FindUserByEmail, %v\n", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{
