@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"regexp"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -114,6 +115,16 @@ func ParseToken(tokenString string) (*jwt.Token, error) {
 	return token, nil
 }
 
+const (
+	signupPasswordMinLength = 8
+	loginPasswordMinLength  = 4
+	// bcryptは72バイトを超えるとエラーになるため、それ以下に収める
+	passwordMaxLength = 64
+)
+
+// スペース(0x20)〜チルダ(0x7E)。制御文字・マルチバイト文字を除外する
+var printableASCIIPattern = regexp.MustCompile(`^[\x20-\x7E]+$`)
+
 func ValidateSignup(m *domain.Listener) error {
 	err := validation.ValidateStruct(m,
 		validation.Field(&m.ListenerName,
@@ -127,8 +138,19 @@ func ValidateSignup(m *domain.Listener) error {
 		),
 		validation.Field(&m.Password,
 			validation.Required.Error("Password is required"),
-			validation.Length(4, 20).Error("Password needs 4 ~ 20 chars"),
+			validation.Length(signupPasswordMinLength, passwordMaxLength).Error("Password needs 8 ~ 64 chars"),
+			validation.Match(printableASCIIPattern).Error("Password must consist of printable ASCII characters"),
 		),
 	)
 	return err
+}
+
+// 旧ルール(4〜20文字)で登録済みのユーザーもログインできるよう、下限は新規登録より緩くする
+func ValidateLogin(m *domain.Listener) error {
+	return validation.ValidateStruct(m,
+		validation.Field(&m.Password,
+			validation.Required.Error("Password is required"),
+			validation.Length(loginPasswordMinLength, passwordMaxLength).Error("Password needs 4 ~ 64 chars"),
+		),
+	)
 }

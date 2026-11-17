@@ -19,6 +19,13 @@ func (h *UserHandler) LogIn(c *gin.Context) {
 		})
 		return
 	}
+	if err := common.ValidateLogin(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid validation",
+			"error":   err.Error(),
+		})
+		return
+	}
 
 	emailAES, err := common.EncryptByAES(user.Email)
 	if err != nil {

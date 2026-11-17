@@ -18,12 +18,26 @@ export const ValidateEmail = {
   },
 }
 
-const PasswordPattern = /^[a-z\d\-]{4,255}$/i
+// 半角の英数字・記号・スペース（0x20〜0x7E）のみ。APIの ValidateSignup と揃える
+const SignupPasswordPattern = /^[\x20-\x7E]{8,64}$/
 
-export const ValidatePassword = {
-  required: true,
+export const ValidateSignupPassword = {
+  required: "※パスワードを入力してください",
   pattern: {
-    value: PasswordPattern,
-    message: "※英数字、+-で4文字以上必要です",
+    value: SignupPasswordPattern,
+    message: "※半角の英数字・記号・スペースで8〜64文字にしてください",
+  },
+}
+
+// 旧ルール（4〜20文字）で登録済みのユーザーもログインできるよう、新規登録より緩くする。APIの ValidateLogin と揃える
+export const ValidateLoginPassword = {
+  required: "※パスワードを入力してください",
+  minLength: {
+    value: 4,
+    message: "※4文字以上で入力してください",
+  },
+  maxLength: {
+    value: 64,
+    message: "※64文字以内で入力してください",
   },
 }
