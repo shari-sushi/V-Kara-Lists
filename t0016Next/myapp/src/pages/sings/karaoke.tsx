@@ -1,5 +1,5 @@
 import { SongListPage, type SongListPageProps } from "@/components/content/SongListPage"
-import { fetchSongListPageProps } from "@/api/songListPage"
+import { getSongListPageProps } from "@/features/songList/getSongListPageProps"
 import { VIDEO_CATEGORY } from "@/types/vtuber_content"
 import type { ContextType } from "@/types/server"
 import { checkLoggedin } from "@/util/webStrage/cookie"
@@ -14,5 +14,5 @@ export async function getServerSideProps(context: ContextType) {
   const { sessionToken, isLoggedin } = checkLoggedin(context)
   console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin) // 会員、非会員、どのページかの記録のため
 
-  return { props: await fetchSongListPageProps(sessionToken, isLoggedin, VIDEO_CATEGORY.KARAOKE) }
+  return { props: await getSongListPageProps(sessionToken, isLoggedin, VIDEO_CATEGORY.KARAOKE) }
 }

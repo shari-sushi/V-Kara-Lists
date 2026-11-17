@@ -5,7 +5,7 @@ import { domain } from "@/../env"
 import type { ReceivedVtuber, ReceivedVideo, ReceivedVideoSong } from "@/types/vtuber_content"
 import type { ContextType } from "@/types/server"
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
-import { timeStringToSecondNum, extractVideoId, filterMultiSongCategory } from "@/util"
+import { timeStringToSecondNum, extractVideoId, filterMultiSongCategory, titleWithLiveMark } from "@/util"
 import { Layout } from "@/components/layout/Layout"
 import { VtuberDeleteTable } from "@/components/table/Vtuber"
 import { MovieDeleteTable } from "@/components/table/Movie"
@@ -317,7 +317,7 @@ export function DeleteDecideButton({ posts, selectedVtuberId, selectedMovieUrl, 
                 VTuber：{foundVtuber?.VtuberName}
                 <br />
                 &nbsp;&nbsp; の<br />
-                動画：{foundMovie?.Title} <br />
+                動画：{foundMovie ? titleWithLiveMark(foundMovie) : ""} <br />
                 <span className="mt-32"> を削除しますか？</span>
               </div>
             )}
@@ -325,7 +325,7 @@ export function DeleteDecideButton({ posts, selectedVtuberId, selectedMovieUrl, 
               <div className="mx-auto">
                 VTuber：{foundVtuber?.VtuberName && foundVtuber?.VtuberName}
                 <br />
-                動画：{foundMovie?.Title}
+                動画：{foundMovie ? titleWithLiveMark(foundMovie) : ""}
                 <br />
                 &nbsp;&nbsp; の<br />
                 曲：{foundKaraoke?.SongName}

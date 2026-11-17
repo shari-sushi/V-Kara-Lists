@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import Link from "next/link"
 import { Layout } from "@/components/layout/Layout"
 import { ToClickTW } from "@/styles/tailwiind"
-import type { ReceivedVideoSong, ReceivedVideo, ReceivedVtuber, VideoCategory } from "@/types/vtuber_content"
+import type { ReceivedVideoSong, SongListPosts, VideoCategory } from "@/types/vtuber_content"
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
 import { timeStringToSecondNum, VIDEO_CATEGORY_LABELS } from "@/util"
 import { DropDownVtuber } from "@/components/dropDown/Vtuber"
@@ -10,13 +10,6 @@ import { DropDownMovie } from "@/components/dropDown/Movie"
 import KaraokeGlobalFilterTable from "@/components/table-tanstack/Karaoke/KaraokeGlobalFilterTable"
 import { useVideo } from "@/providers/VideoProvider"
 import { FailedMessage } from "@/components/Message/FailedMessage"
-
-export type SongListPosts = {
-  vtubers: ReceivedVtuber[]
-  vtubers_videos: ReceivedVideo[]
-  vtubers_video_songs: ReceivedVideoSong[]
-  latest_video_songs: ReceivedVideoSong[]
-}
 
 export type SongListPageProps = {
   posts: SongListPosts

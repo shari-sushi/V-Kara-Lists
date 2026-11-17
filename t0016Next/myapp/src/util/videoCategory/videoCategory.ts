@@ -7,6 +7,7 @@ export const filterByCategory = <T extends { Category: VideoCategory }>(items: T
 export const filterKaraokeCategory = <T extends { Category: VideoCategory }>(items: T[] | null | undefined): T[] => filterByCategory(items, VIDEO_CATEGORY.KARAOKE)
 
 // 1動画に複数曲を持つカテゴリ(歌枠・ライブ)。登録・編集・削除の画面はこの2つを同じ形で扱う。
+// バックエンドの domain.VideoCategory.IsSingleSong()(t0016Go/domain/vtuber_content.go)と同じ区分なので、カテゴリを増やすときは両方を合わせること。
 export const MULTI_SONG_CATEGORIES: readonly VideoCategory[] = [VIDEO_CATEGORY.KARAOKE, VIDEO_CATEGORY.LIVE]
 
 export const filterMultiSongCategory = <T extends { Category: VideoCategory }>(items: T[] | null | undefined): T[] => (items ?? []).filter((item) => MULTI_SONG_CATEGORIES.includes(item.Category))

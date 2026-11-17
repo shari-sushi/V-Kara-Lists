@@ -1,7 +1,7 @@
 import { GetServerSideProps } from "next"
 import { DevelopingContentPage } from "@/components/content/DevelopingContentPage"
 import { SongListPage, type SongListPageProps } from "@/components/content/SongListPage"
-import { fetchSongListPageProps } from "@/api/songListPage"
+import { getSongListPageProps } from "@/features/songList/getSongListPageProps"
 import { VIDEO_CATEGORY } from "@/types/vtuber_content"
 import { checkLoggedin } from "@/util/webStrage/cookie"
 
@@ -44,7 +44,7 @@ export const getServerSideProps: GetServerSideProps<Props, { category: string }>
   if (category === "live") {
     // 他ページはsessionTokenもログに出しているが、認証トークンをログに残さないためここでは出さない
     console.log("pageName, isLoggedin =", LIVE_PAGE_NAME, isLoggedin) // 会員、非会員、どのページかの記録のため
-    return { props: { kind: "live", pageProps: await fetchSongListPageProps(sessionToken, isLoggedin, VIDEO_CATEGORY.LIVE) } }
+    return { props: { kind: "live", pageProps: await getSongListPageProps(sessionToken, isLoggedin, VIDEO_CATEGORY.LIVE) } }
   }
   return { props: { kind: "developing", isSignin: isLoggedin, category: category as VideoCategoryPath } }
 }

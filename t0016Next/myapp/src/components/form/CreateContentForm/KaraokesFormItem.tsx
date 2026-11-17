@@ -92,7 +92,7 @@ const KaraokesFormItem = ({
 
         <div className="flex flex-col w-full ">
           <div className={`${FormTW.label}`}>
-            動画(歌枠)
+            動画
             <NeedBox />
           </div>
           <DropDownMovie videos={selectedVtuberVideos} disabled={selectedVtuberId === 0} setSelectedMovie={setSelectedVideoUrl} clearMovieHandler={clearMovieHandler} showLiveMark />
