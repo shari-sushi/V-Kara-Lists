@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { useForm } from "react-hook-form"
-import { type BasicDataProps, type CrudContentType, CreateContentData } from "@/types/vtuber_content"
+import { type BasicDataProps, type CrudContentType, type VideoCategory, CreateContentData, VIDEO_CATEGORY } from "@/types/vtuber_content"
 import { DropDownVtuber } from "@/components/dropDown/Vtuber"
 import { extractVideoId, ValidateCreateRules } from "@/util"
 import { FormTW, ToClickTW } from "@/styles/tailwiind"
@@ -11,10 +11,11 @@ import KaraokesFormItem from "./KaraokesFormItem"
 import { FormLabel } from "./FormLabel"
 import { ErrorMessage } from "./ErrorMessage"
 import { CrudContentSelector } from "../util/CrudContetntSelector"
-import { getCreateVideoSongsReq, getCreateKaraokeVideoReq, getCreateVtuberReq } from "./getRequest"
+import { getCreateVideoSongsReq, getCreateVideoReq, getCreateVtuberReq } from "./getRequest"
 import { api } from "@/api/index"
 import { InputMovieUrlHintBox } from "./InputMovieUrlHintBox"
 import { v4 as uuidv4 } from "uuid"
+import { VideoCategoryRadio } from "../util/VideoCategoryRadio"
 
 export type CreatePageProps = {
   posts: BasicDataProps
@@ -37,6 +38,7 @@ export function CreateForm({ posts, selectedVtuberId, selectedMovieUrl, selected
   const { vtubers, vtubers_videos: videos } = posts
 
   const [crudContentType, setCrudContentType] = useState<CrudContentType>("movie")
+  const [videoCategory, setVideoCategory] = useState<VideoCategory>(VIDEO_CATEGORY.KARAOKE)
   const [isOkVideoTitle, setIsOkVideoTitle] = useState(false)
   const [isAbleVideoTitleInput, setIsAbleVideoTitleInput] = useState(false)
   const [isDisplayHint, setIsDisplayHint] = useState(false)
@@ -122,7 +124,7 @@ export function CreateForm({ posts, selectedVtuberId, selectedMovieUrl, selected
           setIsDisplayErrorModal(true)
           return
         }
-        api.CreateVideo(getCreateKaraokeVideoReq(createData, selectedVtuberId), openSuccessModal)
+        api.CreateVideo(getCreateVideoReq(createData, selectedVtuberId, videoCategory), openSuccessModal)
         return
 
       case "karaoke": {
@@ -216,6 +218,10 @@ export function CreateForm({ posts, selectedVtuberId, selectedMovieUrl, selected
                 <div className="flex flex-col">
                   <h2 className="text-black text-center">登録するデータを入力してください</h2>
                   <div className="flex flex-col gap-y-3">
+                    <div>
+                      <FormLabel label="動画の種類" need />
+                      <VideoCategoryRadio name="createVideoCategory" value={videoCategory} onChange={setVideoCategory} />
+                    </div>
                     <div>
                       <div className="flex gap-x-1 mb-1">
                         <FormLabel label="動画URL" need bodyNote={<InputMovieUrlHintBox isDisplay={isDisplayHint} setIsDisplay={setIsDisplayHint} />} />

@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react"
 import { useTable, useSortBy, Column, useRowSelect } from "react-table"
 import Link from "next/link"
 import { domain } from "@/../env"
-import { extractVideoId } from "@/util"
+import { extractVideoId, titleWithLiveMark } from "@/util"
 import axios from "axios"
 import { ReceivedVideo, FavoriteVideo } from "@/types/vtuber_content"
 import { ToDeleteContext } from "@/pages/crud/delete"
@@ -213,7 +213,7 @@ export function MovieDeleteTable({ posts }: MovieDeleteTableProps) {
 const deleteColumns: Column<ReceivedVideo>[] = [
   { Header: "VTuber", accessor: "VtuberName" },
   {
-    Header: "歌枠 (Click it)",
+    Header: "動画 (Click it)",
     accessor: "Title",
     Cell: ({ row }: { row: { original: ReceivedVideo } }) => {
       const { setCurrentVideoId, setCurrentStart } = useContext(ToDeleteContext) //表示ページにyoutubeのカレントデータを渡す
@@ -225,7 +225,7 @@ const deleteColumns: Column<ReceivedVideo>[] = [
         <span className="relative">
           <button className="flex" onClick={() => handleClick(row.original.MovieUrl, 1)}>
             <Image src="/content/play_black.svg" className="w-5 mr-2" alt="" width={24} height={20} />
-            {row.original.Title}
+            {titleWithLiveMark(row.original)}
           </button>
         </span>
       )

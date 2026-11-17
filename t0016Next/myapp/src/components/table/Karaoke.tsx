@@ -4,7 +4,7 @@ import axios from "axios"
 import Link from "next/link"
 
 import { domain } from "@/../env"
-import { timeStringToSecondNum, extractVideoId } from "@/util"
+import { timeStringToSecondNum, extractVideoId, titleWithLiveMark } from "@/util"
 import { shuffleArray } from "../SomeFunction"
 import { ReceivedVideoSong, FavoriteVideoSong } from "@/types/vtuber_content"
 import { ToDeleteContext } from "@/pages/crud/delete"
@@ -466,7 +466,11 @@ const deleteColumns: Column<ReceivedVideoSong>[] = [
     },
   },
   { Header: "再生開始", accessor: "SingStart" },
-  { Header: "歌枠", accessor: "Title" },
+  {
+    Header: "動画",
+    accessor: "Title",
+    Cell: ({ row }: { row: { original: ReceivedVideoSong } }) => <>{titleWithLiveMark(row.original)}</>,
+  },
   {
     Header: "削除",
     accessor: "VideoSongId",

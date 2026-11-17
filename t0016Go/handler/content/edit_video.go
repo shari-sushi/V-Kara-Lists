@@ -1,11 +1,13 @@
 package content
 
 import (
+	"errors"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sharin-sushi/0016go_next_relation/domain"
+	"github.com/sharin-sushi/0016go_next_relation/service"
 )
 
 func (h *ContentHandler) EditVideo(c *gin.Context) {
@@ -30,6 +32,18 @@ func (h *ContentHandler) EditVideo(c *gin.Context) {
 
 	if err := h.ContentService.UpdateVideo(video); err != nil {
 		log.Println("err:", err)
+		if errors.Is(err, service.ErrVideoCategoryGroupChange) {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "Category cannot change between single-song and multi-song",
+			})
+			return
+		}
+		if errors.Is(err, service.ErrInvalidVideoCategory) {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"message": "Category is invalid",
+			})
+			return
+		}
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Inputter can modify each data",
 		})

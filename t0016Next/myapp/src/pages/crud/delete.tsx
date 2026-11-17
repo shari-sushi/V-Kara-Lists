@@ -5,7 +5,7 @@ import { domain } from "@/../env"
 import type { ReceivedVtuber, ReceivedVideo, ReceivedVideoSong } from "@/types/vtuber_content"
 import type { ContextType } from "@/types/server"
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
-import { timeStringToSecondNum, extractVideoId, filterKaraokeCategory } from "@/util"
+import { timeStringToSecondNum, extractVideoId, filterMultiSongCategory, titleWithLiveMark, toLoggableError } from "@/util"
 import { Layout } from "@/components/layout/Layout"
 import { VtuberDeleteTable } from "@/components/table/Vtuber"
 import { MovieDeleteTable } from "@/components/table/Movie"
@@ -149,7 +149,7 @@ const MainItem = ({ posts }: DeletePageProps) => {
             <VtuberDeleteTable posts={vtubers} />
             <div className="flex mt-4 ">
               <Image src="/content/movie.svg" className="h-5 mr-1" width={24} height={20} alt="" />
-              歌枠(動画): 自分の登録数{movies.length}
+              動画(歌枠・ライブ): 自分の登録数{movies.length}
             </div>
             <MovieDeleteTable posts={movies} />
 
@@ -317,7 +317,7 @@ export function DeleteDecideButton({ posts, selectedVtuberId, selectedMovieUrl, 
                 VTuber：{foundVtuber?.VtuberName}
                 <br />
                 &nbsp;&nbsp; の<br />
-                歌枠動画：{foundMovie?.Title} <br />
+                動画：{foundMovie ? titleWithLiveMark(foundMovie) : ""} <br />
                 <span className="mt-32"> を削除しますか？</span>
               </div>
             )}
@@ -325,7 +325,7 @@ export function DeleteDecideButton({ posts, selectedVtuberId, selectedMovieUrl, 
               <div className="mx-auto">
                 VTuber：{foundVtuber?.VtuberName && foundVtuber?.VtuberName}
                 <br />
-                歌枠動画：{foundMovie?.Title}
+                動画：{foundMovie ? titleWithLiveMark(foundMovie) : ""}
                 <br />
                 &nbsp;&nbsp; の<br />
                 曲：{foundKaraoke?.SongName}
@@ -351,7 +351,7 @@ export function DeleteDecideButton({ posts, selectedVtuberId, selectedMovieUrl, 
 
 export async function getServerSideProps(context: ContextType) {
   const { sessionToken, isLoggedin } = checkLoggedin(context)
-  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin) // 会員、非会員、どのページかの記録のため
+  console.log("pageName, isLoggedin =", pageName, isLoggedin) // 会員、非会員、どのページかの記録のため
 
   const httpsAgent = new https.Agent({ rejectUnauthorized: false })
   const options: AxiosRequestConfig = {
@@ -371,9 +371,9 @@ export async function getServerSideProps(context: ContextType) {
     const data = res.data as MyPagePosts
     resData = {
       ...data,
-      all_vtubers_videos: filterKaraokeCategory(data.all_vtubers_videos),
-      vtubers_videos_u_created: filterKaraokeCategory(data.vtubers_videos_u_created),
-      vtubers_video_songs_u_created: filterKaraokeCategory(data.vtubers_video_songs_u_created),
+      all_vtubers_videos: filterMultiSongCategory(data.all_vtubers_videos),
+      vtubers_videos_u_created: filterMultiSongCategory(data.vtubers_videos_u_created),
+      vtubers_video_songs_u_created: filterMultiSongCategory(data.vtubers_video_songs_u_created),
     }
     hasError = false
   } catch (error) {
@@ -385,7 +385,7 @@ export async function getServerSideProps(context: ContextType) {
       vtubers_u_created: [],
     }
 
-    console.log("erroe in axios.get:", error)
+    console.log("erroe in axios.get:", toLoggableError(error))
   }
 
   return {

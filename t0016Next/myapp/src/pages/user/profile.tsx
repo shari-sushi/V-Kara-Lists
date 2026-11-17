@@ -1,3 +1,4 @@
+import { toLoggableError } from "@/util"
 import { useEffect, useState } from "react"
 import https from "https"
 import axios, { AxiosRequestConfig } from "axios"
@@ -57,7 +58,7 @@ export default Profile
 
 export async function getServerSideProps(context: ContextType) {
   const { sessionToken, isLoggedin } = checkLoggedin(context)
-  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin) // 会員、非会員、どのページかの記録のため
+  console.log("pageName, isLoggedin =", pageName, isLoggedin) // 会員、非会員、どのページかの記録のため
 
   const httpsAgent = new https.Agent({ rejectUnauthorized: false })
   const options: AxiosRequestConfig = {
@@ -84,7 +85,7 @@ export async function getServerSideProps(context: ContextType) {
       Password: "",
       CreatedAt: null,
     }
-    console.log("erroe in axios.get:", error)
+    console.log("erroe in axios.get:", toLoggableError(error))
   }
 
   return {

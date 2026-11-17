@@ -6,7 +6,7 @@ import type { ReceivedVideo, ReceivedVideoSong, BasicDataProps } from "@/types/v
 import type { ContextType } from "@/types/server"
 import { Layout } from "@/components/layout/Layout"
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
-import { timeStringToSecondNum, extractVideoId, filterKaraokeCategory } from "@/util"
+import { timeStringToSecondNum, extractVideoId, filterMultiSongCategory, toLoggableError } from "@/util"
 import { CreateForm } from "@/components/form/CreateContentForm/CreateContentForm"
 import { NotLoggedIn } from "@/components/layout/Main"
 import { checkLoggedin } from "@/util/webStrage/cookie"
@@ -120,7 +120,7 @@ export default CreatePage
 
 export async function getServerSideProps(context: ContextType) {
   const { sessionToken, isLoggedin } = checkLoggedin(context)
-  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin) // 会員、非会員、どのページかの記録のため
+  console.log("pageName, isLoggedin =", pageName, isLoggedin) // 会員、非会員、どのページかの記録のため
 
   const httpsAgent = new https.Agent({ rejectUnauthorized: false })
   const options: AxiosRequestConfig = {
@@ -140,8 +140,8 @@ export async function getServerSideProps(context: ContextType) {
     const data = res.data as BasicDataProps
     resData = {
       ...data,
-      vtubers_videos: filterKaraokeCategory(data.vtubers_videos),
-      vtubers_video_songs: filterKaraokeCategory(data.vtubers_video_songs),
+      vtubers_videos: filterMultiSongCategory(data.vtubers_videos),
+      vtubers_video_songs: filterMultiSongCategory(data.vtubers_video_songs),
     }
     hasError = false
   } catch (error) {
@@ -150,7 +150,7 @@ export async function getServerSideProps(context: ContextType) {
       vtubers_videos: [],
       vtubers_video_songs: [],
     }
-    console.log("erroe in axios.get:", error)
+    console.log("erroe in axios.get:", toLoggableError(error))
   }
 
   return {

@@ -7,7 +7,7 @@ import { Layout } from "@/components/layout/Layout"
 import { ToClickTW } from "@/styles/tailwiind"
 import { VIDEO_CATEGORY, type ReceivedVideoSong, type ReceivedVideo, type ReceivedPublicVideo } from "@/types/vtuber_content"
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
-import { timeStringToSecondNum, extractVideoId, filterKaraokeCategory } from "@/util"
+import { timeStringToSecondNum, extractVideoId, filterKaraokeCategory, toLoggableError } from "@/util"
 import { DropDownAllMovie } from "@/components/dropDown/Movie"
 import { NotFoundVtuber } from "@/components/layout/Main"
 import { GetServerSidePropsContext } from "next"
@@ -143,7 +143,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   const kana = context.query.vtuber_kana
 
   const { sessionToken, isLoggedin } = checkLoggedin(context)
-  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin) // 会員、非会員、どのページかの記録のため
+  console.log("pageName, isLoggedin =", pageName, isLoggedin) // 会員、非会員、どのページかの記録のため
 
   const httpsAgent = new https.Agent({ rejectUnauthorized: false })
   const options: AxiosRequestConfig = {
@@ -163,7 +163,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       vtubers_video_songs: filterKaraokeCategory(data.vtubers_video_songs),
     }
   } catch (error) {
-    console.log(`error in axios.get with \`/vcontents/vtuber/${kana}\`: `, error)
+    console.log(`error in axios.get with \`/vcontents/vtuber/${kana}\`: `, toLoggableError(error))
   }
   return {
     props: {

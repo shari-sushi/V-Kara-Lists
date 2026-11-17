@@ -4,6 +4,14 @@ import { ListenerId } from "./user"
 // 2つに統一された。4種のコンテンツ(歌枠・ライブ・オリ曲・歌ってみた)の違いは
 // VideoCategory の値だけで表現する。
 
+// 歌一覧ページ(歌枠・ライブ)で使う GET /vcontents/ の返り値
+export type SongListPosts = {
+  vtubers: ReceivedVtuber[]
+  vtubers_videos: ReceivedVideo[]
+  vtubers_video_songs: ReceivedVideoSong[]
+  latest_video_songs: ReceivedVideoSong[]
+}
+
 export type BasicDataProps = {
   vtubers: ReceivedVtuber[]
   vtubers_videos: ReceivedVideo[]

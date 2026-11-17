@@ -25,7 +25,7 @@ export const CrudContentSelector = ({ contentType, setContentType }: CrudContent
                     ${contentType === "movie" ? "bg-[#66a962]" : "bg-[#776D5C]"}
                     `}
         >
-          動画(歌枠)
+          動画
         </button>
         <button
           onClick={() => setContentType("karaoke")}
