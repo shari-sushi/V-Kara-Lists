@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig } from "axios"
 import { domain } from "@/../env"
 import type { SongListPosts, VideoCategory } from "@/types/vtuber_content"
 import type { SongListPageProps } from "@/components/content/SongListPage"
-import { filterByCategory } from "@/util"
+import { filterByCategory, toLoggableError } from "@/util"
 
 const EMPTY_POSTS: SongListPosts = {
   vtubers: [],
@@ -39,7 +39,7 @@ export const getSongListPageProps = async (sessionToken: string | undefined, isL
       hasError: false,
     }
   } catch (error) {
-    console.log("erroe in axios.get:", error)
+    console.log("erroe in axios.get:", toLoggableError(error))
     return { posts: EMPTY_POSTS, isSignin: isLoggedin, hasError: true }
   }
 }

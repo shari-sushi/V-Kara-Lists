@@ -42,7 +42,6 @@ export const getServerSideProps: GetServerSideProps<Props, { category: string }>
 
   const { sessionToken, isLoggedin } = checkLoggedin(context)
   if (category === "live") {
-    // 他ページはsessionTokenもログに出しているが、認証トークンをログに残さないためここでは出さない
     console.log("pageName, isLoggedin =", LIVE_PAGE_NAME, isLoggedin) // 会員、非会員、どのページかの記録のため
     return { props: { kind: "live", pageProps: await getSongListPageProps(sessionToken, isLoggedin, VIDEO_CATEGORY.LIVE) } }
   }

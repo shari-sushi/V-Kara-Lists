@@ -13,7 +13,7 @@ import { ContextType } from "@/types/server"
 import Image from "next/image"
 import { TopPageNotice } from "@/features/notice/notice"
 import { checkLoggedin } from "@/util/webStrage/cookie"
-import { timeStringToSecondNum, extractVideoId, filterKaraokeCategory } from "@/util"
+import { timeStringToSecondNum, extractVideoId, filterKaraokeCategory, toLoggableError } from "@/util"
 import { generateRandomNumber } from "@/components/SomeFunction"
 import { useVideo } from "@/providers/VideoProvider"
 import { FailedMessage } from "@/components/Message/FailedMessage"
@@ -141,7 +141,7 @@ const TitleGroup = () => {
 
 export async function getServerSideProps(context: ContextType) {
   const { sessionToken, isLoggedin } = checkLoggedin(context)
-  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin) // 会員、非会員、どのページかの記録のため
+  console.log("pageName, isLoggedin =", pageName, isLoggedin) // 会員、非会員、どのページかの記録のため
 
   const httpsAgent = new https.Agent({ rejectUnauthorized: false })
   const options: AxiosRequestConfig = {
@@ -174,7 +174,7 @@ export async function getServerSideProps(context: ContextType) {
     }
     hasError = false
   } catch (error) {
-    console.log("erroe in axios.get:", error)
+    console.log("erroe in axios.get:", toLoggableError(error))
     resData = {
       vtubers: [],
       vtubers_videos: [],

@@ -5,7 +5,7 @@ import { domain } from "@/../env"
 import type { ReceivedVtuber, ReceivedVideo, ReceivedVideoSong } from "@/types/vtuber_content"
 import type { ContextType } from "@/types/server"
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
-import { timeStringToSecondNum, extractVideoId, filterMultiSongCategory, titleWithLiveMark } from "@/util"
+import { timeStringToSecondNum, extractVideoId, filterMultiSongCategory, titleWithLiveMark, toLoggableError } from "@/util"
 import { Layout } from "@/components/layout/Layout"
 import { VtuberDeleteTable } from "@/components/table/Vtuber"
 import { MovieDeleteTable } from "@/components/table/Movie"
@@ -351,7 +351,7 @@ export function DeleteDecideButton({ posts, selectedVtuberId, selectedMovieUrl, 
 
 export async function getServerSideProps(context: ContextType) {
   const { sessionToken, isLoggedin } = checkLoggedin(context)
-  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin) // 会員、非会員、どのページかの記録のため
+  console.log("pageName, isLoggedin =", pageName, isLoggedin) // 会員、非会員、どのページかの記録のため
 
   const httpsAgent = new https.Agent({ rejectUnauthorized: false })
   const options: AxiosRequestConfig = {
@@ -385,7 +385,7 @@ export async function getServerSideProps(context: ContextType) {
       vtubers_u_created: [],
     }
 
-    console.log("erroe in axios.get:", error)
+    console.log("erroe in axios.get:", toLoggableError(error))
   }
 
   return {

@@ -11,7 +11,7 @@ import { VtuberTable } from "@/components/table/Vtuber"
 import { MovieTable } from "@/components/table/Movie"
 import { KaraokePaginationTable } from "@/components/table/Karaoke"
 import { YouTubePlayer } from "@/components/moviePlayer/YoutubePlayer"
-import { extractVideoId, filterKaraokeCategory } from "@/util"
+import { extractVideoId, filterKaraokeCategory, toLoggableError } from "@/util"
 import { ContextType } from "@/types/server"
 import { NotLoggedIn } from "@/components/layout/Main"
 import { ToClickTW } from "@/styles/tailwiind"
@@ -152,7 +152,7 @@ export default MyPage
 
 export async function getServerSideProps(context: ContextType) {
   const { sessionToken, isLoggedin } = checkLoggedin(context)
-  console.log("pageName, sessionToken, isLoggedin =", pageName, sessionToken, isLoggedin) // 会員、非会員、どのページかの記録のため
+  console.log("pageName, isLoggedin =", pageName, isLoggedin) // 会員、非会員、どのページかの記録のため
 
   const httpsAgent = new https.Agent({ rejectUnauthorized: false })
   const options: AxiosRequestConfig = {
@@ -182,7 +182,7 @@ export async function getServerSideProps(context: ContextType) {
     }
     hasError = false
   } catch (error) {
-    console.log("erroe in axios.get:", error)
+    console.log("erroe in axios.get:", toLoggableError(error))
     resData = {
       vtubers_video_songs_u_created: [],
       vtubers_videos_u_created: [],
