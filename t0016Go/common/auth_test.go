@@ -3,6 +3,9 @@ package common
 import (
 	"strings"
 	"testing"
+	"time"
+
+	"github.com/golang-jwt/jwt"
 
 	"github.com/sharin-sushi/0016go_next_relation/domain"
 )
@@ -59,4 +62,32 @@ func TestValidateLogin(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestGenerateToken(t *testing.T) {
+	t.Setenv("SECRET_KEY", "test-secret")
+
+	tokenString, err := GenerateToken(1)
+	if err != nil {
+		t.Fatalf("GenerateToken() error = %v", err)
+	}
+	token, err := ParseToken(tokenString)
+	if err != nil {
+		t.Fatalf("ParseToken() error = %v", err)
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		t.Fatalf("claims type = %T", token.Claims)
+	}
+	exp, ok := claims["exp"].(float64)
+	if !ok {
+		t.Fatalf("exp type = %T", claims["exp"])
+	}
+
+	t.Run("success: 有効期限が約7日後になる", func(t *testing.T) {
+		got := time.Until(time.Unix(int64(exp), 0))
+		if got < authTokenLifetime-time.Minute || got > authTokenLifetime {
+			t.Errorf("token lifetime = %v, want about %v", got, authTokenLifetime)
+		}
+	})
 }

@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -20,8 +19,6 @@ func (h *UserHandler) GetListenerProfile(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error fetching listener info"})
 		return
 	}
-
-	fmt.Printf("ListenerInfo = %v \n", ListenerInfo)
 
 	c.JSON(http.StatusOK, gin.H{
 		"ListenerId":   ListenerInfo.ListenerId,

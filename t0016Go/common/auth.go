@@ -20,22 +20,19 @@ func SetListenerIdIntoCookie(c *gin.Context, ListenerId domain.ListenerId) (err 
 	if err != nil {
 		return
 	}
-	// TODO time使う
-	cookieMaxAge := 60 * 60 * 24 * 7
 	hostDomain := GetEnvHostDomain()
 	cookie := &http.Cookie{
 		Name:     "auth-token",
 		Value:    token,
 		Path:     "/",
 		Domain:   hostDomain,
-		MaxAge:   cookieMaxAge,
+		MaxAge:   int(authTokenLifetime.Seconds()),
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteLaxMode,
 	}
 
 	http.SetCookie(c.Writer, cookie)
-	fmt.Printf("ログイン 発行したcookie: %v \n", cookie)
 	return
 }
 
@@ -53,7 +50,6 @@ func UnsetAuthCookie(c *gin.Context) (err error) {
 	}
 
 	http.SetCookie(c.Writer, cookie)
-	fmt.Printf("ログアウト：発行したcookie: %v \n", cookie)
 	return
 }
 
@@ -85,14 +81,14 @@ func TakeListenerIdFromJWT(c *gin.Context) (domain.ListenerId, error) {
 	return domain.ListenerId(listenerId), err
 }
 
+// JWTとCookieの有効期限を揃えるため共通で使う
+const authTokenLifetime = 7 * 24 * time.Hour
+
 func GenerateToken(ListenerId int) (string, error) {
 	secretKey := os.Getenv("SECRET_KEY")
-	// TODO
-	tokenLifeTime := 60 * 60 * 24 * 7
-
 	claims := jwt.MapClaims{
 		"listener_id": ListenerId,
-		"exp":         time.Now().Add(time.Hour * time.Duration(tokenLifeTime)).Unix(),
+		"exp":         time.Now().Add(authTokenLifetime).Unix(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString([]byte(secretKey))
