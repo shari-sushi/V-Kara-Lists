@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -8,6 +9,8 @@ import (
 	"github.com/sharin-sushi/0016go_next_relation/common"
 	"github.com/sharin-sushi/0016go_next_relation/domain"
 )
+
+const loginFailedMessage = "failed Login: Please confirm the Email&Password you entered"
 
 func (h *UserHandler) LogIn(c *gin.Context) {
 	var user domain.Listener
@@ -19,44 +22,41 @@ func (h *UserHandler) LogIn(c *gin.Context) {
 		})
 		return
 	}
+	if err := common.ValidateLogin(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid validation",
+			"error":   err.Error(),
+		})
+		return
+	}
 
 	emailAES, err := common.EncryptByAES(user.Email)
 	if err != nil {
-		fmt.Printf("err:, LogIn EncryptByAES%v\n", err.Error())
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"message": "failed encrypt email",
-			"error":   err.Error(),
-		})
+		fmt.Printf("err: LogIn EncryptByAES, %v\n", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "failed Login: bad system."})
 		return
 	}
-	fmt.Printf("emailAES:%v\n", emailAES)
 
+	// 未登録とパスワード違いで応答(ステータス・本文・応答時間)を揃え、登録済みのメールアドレスを判定させない
 	foundListener, err := h.UserService.FindUserByEmail(emailAES)
-	fmt.Printf("Listener Logged in:%v\n", foundListener)
+	listenerExists := err == nil
+	if errors.Is(err, domain.ErrListenerNotFound) {
+		foundListener.Password, err = common.DummyPasswordHash()
+	}
 	if err != nil {
-		fmt.Printf("err:LogIn FindUserByEmail, %v\n", err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Error fetching listener info",
-			"error":   err.Error(),
-		})
+		fmt.Printf("err: LogIn FindUserByEmail, %v\n", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "failed Login: bad system."})
 		return
 	}
 
-	if err := common.CompareHashAndPassword(foundListener.Password, string(user.Password)); err != nil {
-		fmt.Println("err.Error:", err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "failed Login: Please confirm the Email&Password you entered",
-			"error":   err.Error(),
-		})
+	if err := common.CompareHashAndPassword(foundListener.Password, user.Password); err != nil || !listenerExists {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": loginFailedMessage})
 		return
 	}
 
 	if err := common.SetListenerIdIntoCookie(c, foundListener.ListenerId); err != nil {
-		fmt.Printf("err:, LogIn SetListenerIdintoCookie%v\n", err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{
-			"message": "failed Login: failed set cookie. bad system.",
-			"error":   err.Error(),
-		})
+		fmt.Printf("err: LogIn SetListenerIdIntoCookie, %v\n", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "failed Login: bad system."})
 		return
 	}
 

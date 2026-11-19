@@ -6,7 +6,7 @@ import { useRouter } from "next/router"
 import { domain } from "@/../env"
 import type { SignupListener, LoginUser as LoginListener } from "@/types/user"
 import { Checkbox } from "@/components/SomeFunction"
-import { ValidateListenerName, ValidatePassword, ValidateEmail } from "@/util"
+import { ValidateListenerName, ValidateSignupPassword, ValidateLoginPassword, ValidateEmail } from "@/util"
 import { NeedBox } from "@/components/box/Box"
 import { FormTW, ToClickTW } from "@/styles/tailwiind"
 
@@ -64,7 +64,7 @@ export const SigninForm = () => {
               <label className={`${FormTW.label}`}>Password</label>
               <NeedBox />
             </div>
-            <input className={`${ToClickTW.input}`} placeholder="Password" type={isRevealPassword ? "text" : "password"} {...register("Password", ValidatePassword)} />
+            <input className={`${ToClickTW.input}`} placeholder="Password" type={isRevealPassword ? "text" : "password"} {...register("Password", ValidateLoginPassword)} />
             <span className="text-red-400">
               {errors.Password && errors.Password.message} <br />
             </span>
@@ -160,7 +160,8 @@ export function SignupForm() {
             <label className={`${FormTW.label}`}>Password</label>
             <NeedBox />
           </div>
-          <input className={`${ToClickTW.input}`} placeholder="Password" type={isRevealPassword ? "text" : "password"} {...register("Password", ValidatePassword)} />
+          <input className={`${ToClickTW.input}`} placeholder="Password" type={isRevealPassword ? "text" : "password"} {...register("Password", ValidateSignupPassword)} />
+          <p className="text-gray-500 text-sm">15文字以上を推奨します</p>
           <span className="text-red-400">
             {errors.Password && errors.Password.message} <br />
           </span>

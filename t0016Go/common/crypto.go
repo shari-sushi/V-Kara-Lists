@@ -4,16 +4,23 @@ import (
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/rand"
 	"encoding/hex"
 	"fmt"
 	"os"
 	"strconv"
+	"sync"
 
 	"github.com/joho/godotenv"
 	"golang.org/x/crypto/bcrypt"
 )
 
 var bcryptCost int
+
+var (
+	dummyPasswordHash     []byte
+	dummyPasswordHashOnce sync.Once
+)
 var aesKey []byte
 var aesIv []byte
 var costString string
@@ -102,4 +109,26 @@ func pkcs7Unpad(data []byte) []byte {
 	dataLength := len(data)
 	padLength := int(data[dataLength-1])
 	return data[:dataLength-padLength]
+}
+
+// DummyPasswordHash は存在しないユーザーのログイン時に照合用として使うハッシュを返す。
+// 実在ユーザーと同じくbcryptの照合を通して応答時間を揃え、応答時間から登録済みかどうかを判定させないために使う。
+// 元のパスワードは乱数で、誰にも分からない
+func DummyPasswordHash() (string, error) {
+	var err error
+	dummyPasswordHashOnce.Do(func() {
+		randomPassword := make([]byte, 32)
+		if _, err = rand.Read(randomPassword); err != nil {
+			return
+		}
+		// 実在ユーザーと同じコストにするため、bcryptCostが確定した後(初回呼び出し時)に生成する
+		dummyPasswordHash, err = bcrypt.GenerateFromPassword(randomPassword, bcryptCost)
+	})
+	if err != nil {
+		return "", err
+	}
+	if dummyPasswordHash == nil {
+		return "", fmt.Errorf("dummy password hash is not generated")
+	}
+	return string(dummyPasswordHash), nil
 }
