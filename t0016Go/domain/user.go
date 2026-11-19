@@ -1,10 +1,14 @@
 package domain
 
 import (
+	"errors"
 	"time"
 
 	"gorm.io/gorm"
 )
+
+// ErrListenerNotFound はリスナーが存在しないことを表す。DBライブラリ固有のエラーを上位層に漏らさないために使う
+var ErrListenerNotFound = errors.New("listener not found")
 
 // // User
 type ListenerId int

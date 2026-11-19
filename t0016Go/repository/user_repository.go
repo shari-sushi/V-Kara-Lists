@@ -1,7 +1,10 @@
 package repository
 
 import (
+	"errors"
+
 	"github.com/sharin-sushi/0016go_next_relation/domain"
+	"gorm.io/gorm"
 )
 
 type userRepository struct {
@@ -20,6 +23,9 @@ func (db *userRepository) CreateUser(user domain.Listener) (domain.Listener, err
 func (db *userRepository) FindUserByEmail(email string) (domain.Listener, error) {
 	var user domain.Listener
 	err := db.Where("email = ?", email).First(&user).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return user, domain.ErrListenerNotFound
+	}
 	if err != nil {
 		return user, err
 	}
